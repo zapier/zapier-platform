@@ -49,11 +49,20 @@ const runLambda = (event) => {
 };
 runLambda.testName = 'runLambda';
 
-const runLocally = async (event) => {
-  const handler = createLambdaHandler(
-    path.resolve(__dirname, '../test/userapp'),
-  );
-  return handler(event, {});
+const runLocally = (event) => {
+  return new Promise((resolve, reject) => {
+    const handler = createLambdaHandler(
+      path.resolve(__dirname, '../test/userapp/'),
+    );
+
+    handler(event, {}, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
 };
 runLocally.testName = 'runLocally';
 

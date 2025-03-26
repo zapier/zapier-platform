@@ -112,7 +112,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -154,7 +154,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
@@ -197,7 +197,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.outputFileSync(tmpReadmePath, 'README');
@@ -252,7 +252,7 @@ describe('build (runs slowly)', function () {
 
     fs.outputFileSync(
       path.join(tmpProjectDir, 'zapierwrapper.js'),
-      "console.log('hello!')",
+      "require('./index');",
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
