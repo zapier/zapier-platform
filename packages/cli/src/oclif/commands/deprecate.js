@@ -15,7 +15,7 @@ class DeprecateCommand extends BaseCommand {
 
     this.log(
       `${colors.yellow('Warning: Deprecation is an irreversible action that will eventually block access to this version.')}\n` +
-        `${colors.yellow('If your changes are non-breaking, use `zapier migrate` instead to move users over to a newer version.')}\n`,
+        `${colors.yellow('If all your changes are non-breaking, use `zapier migrate` instead to move users over to a newer version.')}\n`,
     );
 
     if (
