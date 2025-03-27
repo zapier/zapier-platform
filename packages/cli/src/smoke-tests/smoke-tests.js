@@ -292,18 +292,18 @@ describe('smoke tests - setup will take some time', function () {
 
   describe('zapier init w/ templates (runs very slowly)', () => {
     const testableTemplates = [
-      'basic-auth',
-      'custom-auth',
-      'digest-auth',
-      // 'oauth1-trello',
-      'oauth2',
-      'session-auth',
-
-      'dynamic-dropdown',
-      'files',
-      'minimal',
-      'search-or-create',
-      'typescript',
+      { name: 'basic-auth' },
+      { name: 'custom-auth' },
+      { name: 'digest-auth' },
+      { name: 'oauth2' },
+      { name: 'session-auth' },
+      { name: 'dynamic-dropdown' },
+      { name: 'files' },
+      { name: 'minimal', module: 'commonjs' },
+      { name: 'minimal', module: 'esm' },
+      { name: 'search-or-create' },
+      { name: 'typescript', module: 'commonjs' },
+      { name: 'typescript', module: 'esm' },
     ];
 
     const invokeCommandsByTemplate = {
@@ -424,15 +424,29 @@ describe('smoke tests - setup will take some time', function () {
     });
 
     testableTemplates.forEach((template) => {
-      it(`${template} should test out of the box`, function () {
+      let testName, appDirName;
+      if (template.module) {
+        testName = `${template.name} (${template.module})`;
+        appDirName = `${template.name}-${template.module}`;
+      } else {
+        testName = template.name;
+        appDirName = template.name;
+      }
+
+      it(`${testName} should test out of the box`, function () {
         this.retries(3); // retry up to 3 times
 
-        runCommand(context.cliBin, ['init', template, '-t', template], {
+        const args = ['init', appDirName, '-t', template.name];
+        if (template.module) {
+          args.push('-m', template.module);
+        }
+
+        runCommand(context.cliBin, args, {
           cwd: subfolderPath,
           input: 'a', // tells `yo` to replace the auth file
         });
 
-        const appDir = path.join(subfolderPath, template);
+        const appDir = path.join(subfolderPath, appDirName);
         yarnInstall(corePackage.path, appDir);
 
         // should not throw an error
@@ -440,7 +454,7 @@ describe('smoke tests - setup will take some time', function () {
           cwd: appDir,
         });
 
-        const invokeCommands = invokeCommandsByTemplate[template];
+        const invokeCommands = invokeCommandsByTemplate[template.name];
         if (!invokeCommands) {
           return;
         }

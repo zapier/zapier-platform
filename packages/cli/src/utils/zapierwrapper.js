@@ -1,6 +1,7 @@
 // Utility functions that helps you copy and delete the Lambda function entry
 // point zapierwrapper.mjs or zapierwrapper.js to the integration directory.
 
+const { existsSync } = require('node:fs');
 const { readFile, writeFile, rm } = require('node:fs/promises');
 const { join } = require('node:path');
 
@@ -22,6 +23,14 @@ const copyZapierWrapper = async (corePackageDir, appDir) => {
     wrapperFilename = 'zapierwrapper.js';
   }
   const wrapperPath = join(corePackageDir, 'include', wrapperFilename);
+
+  if (appPackageJson.type === 'module' && !existsSync(wrapperPath)) {
+    throw new Error(
+      "Couldn't find zapierwrapper.mjs in zapier-platform-core. Are you trying to run ESM? " +
+        'If so, you need to upgrade zapier-platform-core to at least v17.',
+    );
+  }
+
   const wrapperText = (await readFile(wrapperPath, 'utf8')).replace(
     '{REPLACE_ME_PACKAGE_NAME}',
     appPackageJson.name,
