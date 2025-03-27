@@ -18,14 +18,15 @@ class DeprecateCommand extends BaseCommand {
         `${colors.yellow('If your changes are non-breaking, use `zapier migrate` instead to move users over to a newer version.')}\n`,
     );
 
-    const shouldContinue = await this.confirm(
-      'Are you sure you want to deprecate this version? This will notify users that their Zaps or other automations will stop working after the specified date.' +
-        (hasActiveUsers
-          ? `\n\nThis version has ${versionInfo.user_count} active user(s). Strongly consider migrating users to another version before deprecating!`
-          : ''),
-    );
-
-    if (!shouldContinue) {
+    if (
+      !this.flags.force &&
+      !(await this.confirm(
+        'Are you sure you want to deprecate this version? This will notify users that their Zaps or other automations will stop working after the specified date.' +
+          (hasActiveUsers
+            ? `\n\nThis version has ${versionInfo.user_count} active user(s). Strongly consider migrating users to another version before deprecating!`
+            : ''),
+      ))
+    ) {
       this.log('\nDeprecation cancelled.');
       return;
     }
