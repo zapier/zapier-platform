@@ -164,7 +164,7 @@ Zapier will immediately send emails warning users of the deprecation if a date l
 
 There are other side effects: they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
 
-Do not use deprecation if you have non-breaking changes, such as:
+Do not use deprecation if you only have non-breaking changes, such as:
 - Fixing help text
 - Adding new triggers/actions
 - Improving existing functionality
