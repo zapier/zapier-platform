@@ -13,7 +13,7 @@ const { DateTime, IANAZone } = require('luxon');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { localAppCommand, getLocalAppHandler } = require('../../utils/local');
+const { localAppCommand } = require('../../utils/local');
 const { startSpinner, endSpinner } = require('../../utils/display');
 
 const ACTION_TYPE_PLURALS = {
@@ -259,7 +259,7 @@ const getAuthLabel = async (labelTemplate, authData, meta, zcacheTestObj) => {
   const testResult = await testAuth(authData, meta, zcacheTestObj);
   labelTemplate = labelTemplate.replace('__', '.');
   const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
-  return tpl(testResult);
+  return tpl({ ...testResult, bundle: { authData, inputData: testResult } });
 };
 
 const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
@@ -407,10 +407,6 @@ class InvokeCommand extends BaseCommand {
     }
 
     if (!_.isEmpty(env)) {
-      // process.env changed, so we need to reload the modules that have loaded
-      // the old values of process.env
-      getLocalAppHandler({ reload: true });
-
       // Save envs so the user won't have to re-enter them if the command fails
       await appendEnv(env);
       console.warn('CLIENT_ID and CLIENT_SECRET saved to .env file.');

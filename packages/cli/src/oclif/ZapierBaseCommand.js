@@ -18,7 +18,7 @@ class ZapierBaseCommand extends Command {
 
     if (this.flags.debug) {
       this.debug.enabled = true; // enables this.debug on the command
-      require('debug').enable('zapier:*'); // enables all further spawned functions, like API
+      require('debug').enable('zapier:*,oclif:zapier:*'); // enables all further spawned functions, like API
     }
 
     this.debug('argv is', this.argv);
