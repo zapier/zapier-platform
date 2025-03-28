@@ -1127,19 +1127,21 @@ class InvokeCommand extends BaseCommand {
     const zcacheTestObj = {};
     const cursorTestObj = {};
 
-    let authData;
+    let authData = {};
     if (authId) {
       // Fill authData with curlies if we're in relay mode
       const authFields = appDefinition.authentication.fields || [];
-      authData = {};
       for (const field of authFields) {
         if (field.key) {
           authData[field.key] = `{{${field.key}}}`;
         }
       }
-    } else {
-      authData = loadAuthDataFromEnv();
     }
+
+    // Load from .env as well even in relay mode, in case the integration code
+    // assumes there are values in bundle.authData. Loading from .env at least
+    // gives the developer an option to override the values in bundle.authData.
+    authData = { ...authData, ...loadAuthDataFromEnv() };
 
     if (actionType === 'auth') {
       const meta = {
