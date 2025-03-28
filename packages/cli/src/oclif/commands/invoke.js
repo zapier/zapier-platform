@@ -759,7 +759,7 @@ class InvokeCommand extends BaseCommand {
       return this.promptWithList(
         message,
         choices.map((c) => {
-          const id = c[idField] || 'null';
+          const id = c[idField] ?? 'null';
           const label = getLabelForDynamicDropdown(c, labelField, idField);
           return {
             name: `${label} (${id})`,
