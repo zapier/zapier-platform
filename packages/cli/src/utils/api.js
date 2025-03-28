@@ -293,6 +293,11 @@ const getVersionInfo = () => {
   });
 };
 
+const getSpecificVersionInfo = async (version) => {
+  const app = await getWritableApp();
+  return callAPI(`/apps/${app.id}/versions/${version}`);
+};
+
 // Intended to match logic of https://gitlab.com/zapier/team-developer-platform/dev-platform/-/blob/9fa28d8bacd04ebdad5937bd039c71aede4ede47/web/frontend/assets/app/entities/CliApp/CliApp.ts#L96
 const isPublished = (appStatus) => {
   const publishedStatuses = ['public', 'beta'];
@@ -500,6 +505,7 @@ module.exports = {
   getLinkedAppConfig,
   getWritableApp,
   getVersionInfo,
+  getSpecificVersionInfo,
   isPublished,
   listApps,
   listCanaries,

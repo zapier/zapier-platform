@@ -160,17 +160,22 @@ This only works if there are no users or Zaps on that version. You will probably
 
 Use this when an integration version will not be supported or start breaking at a known date.
 
-Zapier will send an email warning users of the deprecation once a date is set, they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
+Zapier will immediately send emails warning users of the deprecation if a date less than 30 days in the future is set, otherwise the emails will be sent exactly 30 days before the configured deprecation date.
 
-After the deprecation date has passed it will be safe to delete that integration version.
+There are other side effects: they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
 
-Do not use this if you have non-breaking changes, such as fixing help text.
+Do not use deprecation if you only have non-breaking changes, such as:
+- Fixing help text
+- Adding new triggers/actions
+- Improving existing functionality
+- other bug fixes that don't break existing automations.
 
 **Arguments**
 * (required) `version` | The version to deprecate.
 * (required) `date` | The date (YYYY-MM-DD) when Zapier will make the specified version unavailable.
 
 **Flags**
+* `-f, --force` | Skip confirmation prompt. Use with caution.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
