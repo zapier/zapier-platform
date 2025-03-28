@@ -55,13 +55,11 @@ const runLocally = (event) => {
       path.resolve(__dirname, '../test/userapp/'),
     );
 
-    handler(event, {}, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
+    try {
+      resolve(handler(event, {}));
+    } catch (err) {
+      reject(err);
+    }
   });
 };
 runLocally.testName = 'runLocally';

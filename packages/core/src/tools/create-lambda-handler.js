@@ -203,7 +203,7 @@ const createLambdaHandler = (appRawOrPath) => {
     const logBuffer = [];
     const logger = createLogger(event, { logBuffer });
 
-    const logErrorAndThrow = async (logMsg, logData, err) => {
+    const logErrorAndReturn = async (logMsg, logData, err) => {
       await logger(logMsg, logData);
 
       // Check for `.message` in case someone did `throw "My Error"`
@@ -213,7 +213,7 @@ const createLambdaHandler = (appRawOrPath) => {
           .join('')}`;
       }
 
-      throw err;
+      return err;
     };
 
     const handlerDomain = domain.create();
@@ -222,11 +222,18 @@ const createLambdaHandler = (appRawOrPath) => {
     // also ideally we could remove domain since it's deprecated...
     return new Promise((resolve, reject) => {
       handlerDomain.on('error', async (err) => {
+        // This error handler is only called when someone (we or devs) missed
+        // catching an error in a callback. Errors thrown by promises should be
+        // already caught by the try-catch below.
+        // Notice this one starts with "Uncaught error" while the other one starts
+        // with "Unhandled error". You can use this to distinguish between them in
+        // the logs.
         const logMsg = `Uncaught error: ${err}\n${
           (err && err.stack) || '<stack>'
         }`;
         const logData = { err, log_type: 'error' };
-        await logErrorAndThrow(logMsg, logData, err);
+        const loggedErr = await logErrorAndReturn(logMsg, logData, err);
+        reject(loggedErr);
       });
 
       handlerDomain.run(async () => {
@@ -263,7 +270,12 @@ const createLambdaHandler = (appRawOrPath) => {
             (err && err.stack) || '<stack>'
           }`;
           const logData = { err, log_type: 'error' };
-          await logErrorAndThrow(logMsg, logData, err);
+          const loggedErr = await logErrorAndReturn(logMsg, logData, err);
+          reject(loggedErr);
+        } finally {
+          // TODO is this the correct setup with `finally`, given the logger setup?
+          // I'm not familiar with how the /input endpoint works.
+          await logger.end();
         }
       });
     });
