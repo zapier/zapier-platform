@@ -65,8 +65,9 @@ const logResponse = (resp) => {
     infoMsg += ` after ${logs.data.request_duration_ms}ms`;
   }
 
-  resp._addContext(infoMsg);
-  resp._addContext(
+  const whatHappened = resp.request.input._zapier.whatHappened;
+  whatHappened.push(infoMsg);
+  whatHappened.push(
     `Received content "${String(logs.data.response_content).substr(0, 100)}"`,
   );
 

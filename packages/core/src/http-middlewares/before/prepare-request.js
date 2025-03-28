@@ -119,7 +119,6 @@ const prepareRequest = function (req) {
       ['_zapier', 'app', 'flags', 'skipThrowForStatus'],
       false,
     ),
-    _addContext: () => {},
   });
 
   req = sugarBody(req);
@@ -144,7 +143,10 @@ const prepareRequest = function (req) {
 
   req._requestStart = new Date();
 
-  req._addContext(`Starting ${req.method} request to ${req.url}`);
+  const whatHappened = req.input._zapier.whatHappened;
+  if (whatHappened) {
+    whatHappened.push(`Starting ${req.method} request to ${req.url}`);
+  }
 
   return finalRequest(req);
 };

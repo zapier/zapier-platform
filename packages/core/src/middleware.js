@@ -3,7 +3,6 @@
 const _ = require('lodash');
 
 const envelope = require('./tools/envelope');
-const ZapierPromise = require('./tools/promise');
 
 /**
    Applies before and after middleware functions, returning
@@ -40,6 +39,17 @@ const ZapierPromise = require('./tools/promise');
    output. The default is false.
 */
 
+const enrichErrorMessages = (error, input) => {
+  if (error.doNotContextify) {
+    throw error;
+  }
+  if (input._zapier && input._zapier.whatHappened) {
+    const details = input._zapier.whatHappened.map((f) => `  ${f}`).join('\n');
+    error.message = `${error.message}\nWhat happened:\n${details}\n  ${error.message}`;
+  }
+  throw error;
+};
+
 const applyMiddleware = (befores, afters, app, options) => {
   options = _.defaults({}, options, {
     skipEnvelope: false,
@@ -55,13 +65,9 @@ const applyMiddleware = (befores, afters, app, options) => {
   };
 
   return (input) => {
-    const context = ZapierPromise.makeContext();
-    const resolve = (val) => ZapierPromise.resolve(val).bind(context);
-
     const beforeMiddleware = (beforeInput) => {
       return befores.reduce((collector, func) => {
         return collector.then((newInput) => {
-          newInput._addContext = context.addContext;
           const args = [newInput].concat(options.extraArgs);
           const result = func.apply(undefined, args);
           if (typeof result !== 'object') {
@@ -69,33 +75,36 @@ const applyMiddleware = (befores, afters, app, options) => {
           }
           return result;
         });
-      }, resolve(beforeInput));
+      }, Promise.resolve(beforeInput));
     };
 
     const afterMiddleware = (output) => {
       return afters.reduce((collector, func) => {
         return collector.then((newOutput) => {
-          newOutput._addContext = context.addContext;
           const args = [newOutput].concat(options.extraArgs);
           const maybePromise = func.apply(undefined, args);
           if (typeof maybePromise !== 'object') {
             throw new Error('Middleware should return an object.');
           }
-          return resolve(maybePromise).then(ensureEnvelope);
+          return Promise.resolve(maybePromise).then(ensureEnvelope);
         });
-      }, resolve(output));
+      }, Promise.resolve(output));
     };
 
-    const promise = beforeMiddleware(input).then((newInput) => {
-      return resolve(app(newInput))
-        .then(ensureEnvelope)
-        .then((output) => {
-          output.input = newInput;
-          return afterMiddleware(output);
-        });
-    });
+    const promise = async (input) => {
+      const newInput = await beforeMiddleware(input); // this returns a new input with new whatHappened
+      try {
+        // the error happens in the below line
+        let output = await app(newInput);
+        output = await ensureEnvelope(output);
+        output.input = newInput;
+        return afterMiddleware(output);
+      } catch (error) {
+        return enrichErrorMessages(error, newInput);
+      }
+    };
 
-    return promise;
+    return promise(input);
   };
 };
 
