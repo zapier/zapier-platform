@@ -398,8 +398,10 @@ The following is a non-exhaustive list of current limitations and may be support
 * `zapier invoke auth label`
 * `zapier invoke trigger new_recipe`
 * `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
-* `zapier invoke search find_recipe -i @file.json`
+* `zapier invoke search find_recipe -i @file.json --non-interactive`
 * `cat file.json | zapier invoke trigger new_recipe -i @-`
+* `zapier invoke search find_ticket --authentication-id 12345`
+* `zapier invoke create add_ticket -a -`
 
 
 ## jobs
