@@ -15,6 +15,12 @@ const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const { localAppCommand, getLocalAppHandler } = require('../../utils/local');
 const { startSpinner, endSpinner } = require('../../utils/display');
+const {
+  getLinkedAppConfig,
+  listAuthentications,
+  readCredentials,
+} = require('../../utils/api');
+const { AUTH_KEY } = require('../../constants');
 
 const ACTION_TYPE_PLURALS = {
   trigger: 'triggers',
@@ -235,9 +241,74 @@ const appendEnv = async (vars, prefix = '') => {
   );
 };
 
-const testAuth = async (authData, meta, zcacheTestObj) => {
+const replaceDoubleCurlies = async (request) => {
+  // Use lcurly-fieldName-rcurly instead of {{fieldName}} to bypass node-fetch's
+  // URL validation in case the variable is used in a URL.
+  if (request.url) {
+    request.url = request.url
+      .replaceAll('{{', 'lcurly-')
+      .replaceAll('}}', '-rcurly');
+  }
+  return request;
+};
+
+const restoreDoubleCurlies = async (response) => {
+  if (response.url) {
+    response.url = response.url
+      .replaceAll('lcurly-', '{{')
+      .replaceAll('-rcurly', '}}');
+  }
+  if (response.request?.url) {
+    response.request.url = response.request.url
+      .replaceAll('lcurly-', '{{')
+      .replaceAll('-rcurly', '}}');
+  }
+  return response;
+};
+
+const localAppCommandWithRelayErrorHandler = async (args) => {
+  let output;
+  try {
+    output = await localAppCommand(args);
+  } catch (outerError) {
+    if (outerError.name === 'ResponseError') {
+      let response;
+      try {
+        response = JSON.parse(outerError.message);
+      } catch (innerError) {
+        throw outerError;
+      }
+      if (typeof response.content === 'string') {
+        const match = response.content.match(/domain filter `([^`]+)`/);
+        if (!match) {
+          throw outerError;
+        }
+        const domainFilter = match[1];
+        const requestUrl = response.request.url
+          .replaceAll('lcurly-', '{{')
+          .replaceAll('-rcurly', '}}');
+        throw new Error(
+          `Request to ${requestUrl} was blocked. ` +
+            `Only these domain names are allowed: ${domainFilter}. ` +
+            'Contact Zapier team to verify your domain filter setting.',
+        );
+      }
+    }
+    throw outerError;
+  }
+  return output;
+};
+
+const testAuth = async (
+  authId,
+  authData,
+  meta,
+  zcacheTestObj,
+  appId,
+  deployKey,
+) => {
   startSpinner('Invoking authentication.test');
-  const result = await localAppCommand({
+  const result = await localAppCommandWithRelayErrorHandler({
     command: 'execute',
     method: 'authentication.test',
     bundle: {
@@ -250,13 +321,31 @@ const testAuth = async (authData, meta, zcacheTestObj) => {
     zcacheTestObj,
     customLogger,
     calledFromCliInvoke: true,
+    appId,
+    deployKey,
+    relayAuthenticationId: authId,
   });
   endSpinner();
   return result;
 };
 
-const getAuthLabel = async (labelTemplate, authData, meta, zcacheTestObj) => {
-  const testResult = await testAuth(authData, meta, zcacheTestObj);
+const getAuthLabel = async (
+  labelTemplate,
+  authId,
+  authData,
+  meta,
+  zcacheTestObj,
+  appId,
+  deployKey,
+) => {
+  const testResult = await testAuth(
+    authId,
+    authData,
+    meta,
+    zcacheTestObj,
+    appId,
+    deployKey,
+  );
   labelTemplate = labelTemplate.replace('__', '.');
   const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
   return tpl({ ...testResult, bundle: { authData, inputData: testResult } });
@@ -632,10 +721,13 @@ class InvokeCommand extends BaseCommand {
     field,
     appDefinition,
     inputData,
+    authId,
     authData,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     const message = formatFieldDisplay(field) + ':';
     if (field.dynamic) {
@@ -655,16 +747,19 @@ class InvokeCommand extends BaseCommand {
         'triggers',
         trigger,
         inputData,
+        authId,
         authData,
         meta,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
       return this.promptWithList(
         message,
         choices.map((c) => {
-          const id = c[idField] || 'null';
+          const id = c[idField] ?? 'null';
           const label = getLabelForDynamicDropdown(c, labelField, idField);
           return {
             name: `${label} (${id})`,
@@ -685,11 +780,14 @@ class InvokeCommand extends BaseCommand {
     inputData,
     inputFields,
     appDefinition,
+    authId,
     authData,
     meta,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     const missingFields = getMissingRequiredInputFields(inputData, inputFields);
     if (missingFields.length) {
@@ -704,10 +802,13 @@ class InvokeCommand extends BaseCommand {
           f,
           appDefinition,
           inputData,
+          authId,
           authData,
           timezone,
           zcacheTestObj,
           cursorTestObj,
+          appId,
+          deployKey,
         );
       }
     }
@@ -717,10 +818,13 @@ class InvokeCommand extends BaseCommand {
     inputData,
     inputFields,
     appDefinition,
+    authId,
     authData,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     inputFields = inputFields.filter((f) => f.key);
     if (!inputFields.length) {
@@ -768,10 +872,13 @@ class InvokeCommand extends BaseCommand {
         field,
         appDefinition,
         inputData,
+        authId,
         authData,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
     }
   }
@@ -780,31 +887,40 @@ class InvokeCommand extends BaseCommand {
     inputData,
     inputFields,
     appDefinition,
+    authId,
     authData,
     meta,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     await this.promptOrErrorForRequiredInputFields(
       inputData,
       inputFields,
       appDefinition,
+      authId,
       authData,
       meta,
       timezone,
       zcacheTestObj,
       cursorTestObj,
+      appId,
+      deployKey,
     );
     if (!this.nonInteractive && !meta.isFillingDynamicDropdown) {
       await this.promptForInputFieldEdit(
         inputData,
         inputFields,
         appDefinition,
+        authId,
         authData,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
     }
   }
@@ -814,11 +930,14 @@ class InvokeCommand extends BaseCommand {
     actionTypePlural,
     action,
     inputData,
+    authId,
     authData,
     meta,
     timezone,
     zcacheTestObj,
     cursorTestObj,
+    appId,
+    deployKey,
   ) {
     // Do these in order:
     // 1. Prompt for static input fields that alter dynamic fields
@@ -835,17 +954,20 @@ class InvokeCommand extends BaseCommand {
       inputData,
       staticInputFields,
       appDefinition,
+      authId,
       authData,
       meta,
       timezone,
       zcacheTestObj,
       cursorTestObj,
+      appId,
+      deployKey,
     );
 
     let methodName = `${actionTypePlural}.${action.key}.operation.inputFields`;
     startSpinner(`Invoking ${methodName}`);
 
-    const inputFields = await localAppCommand({
+    const inputFields = await localAppCommandWithRelayErrorHandler({
       command: 'execute',
       method: methodName,
       bundle: {
@@ -857,6 +979,11 @@ class InvokeCommand extends BaseCommand {
       cursorTestObj,
       customLogger,
       calledFromCliInvoke: true,
+      appId,
+      deployKey,
+      relayAuthenticationId: authId,
+      beforeRequest: [replaceDoubleCurlies],
+      afterResponse: [restoreDoubleCurlies],
     });
     endSpinner();
 
@@ -867,11 +994,14 @@ class InvokeCommand extends BaseCommand {
         inputData,
         inputFields,
         appDefinition,
+        authId,
         authData,
         meta,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
     }
 
@@ -879,7 +1009,7 @@ class InvokeCommand extends BaseCommand {
     methodName = `${actionTypePlural}.${action.key}.operation.perform`;
 
     startSpinner(`Invoking ${methodName}`);
-    const output = await localAppCommand({
+    const output = await localAppCommandWithRelayErrorHandler({
       command: 'execute',
       method: methodName,
       bundle: {
@@ -891,15 +1021,42 @@ class InvokeCommand extends BaseCommand {
       cursorTestObj,
       customLogger,
       calledFromCliInvoke: true,
+      appId,
+      deployKey,
+      relayAuthenticationId: authId,
+      beforeRequest: [replaceDoubleCurlies],
+      afterResponse: [restoreDoubleCurlies],
     });
     endSpinner();
 
     return output;
   }
 
+  async promptForAuthentication() {
+    const auths = (await listAuthentications()).authentications;
+    if (!auths || auths.length === 0) {
+      throw new Error(
+        'No authentications/connections found for your integration. ' +
+          'Add a new connection at https://zapier.com/app/connections ' +
+          'or use local auth data by removing the `--authentication-id` flag.',
+      );
+    }
+    const authChoices = auths.map((auth) => ({
+      name: `${auth.title} | ${auth.app_version} | ID: ${auth.id}`,
+      value: auth.id,
+    }));
+    return this.promptWithList(
+      'Which authentication/connection would you like to use?',
+      authChoices,
+      { useStderr: true },
+    );
+  }
+
   async perform() {
+    let authId = this.flags['authentication-id'];
+
     const dotenvResult = dotenv.config({ override: true });
-    if (_.isEmpty(dotenvResult.parsed)) {
+    if (!authId && _.isEmpty(dotenvResult.parsed)) {
       console.warn(
         'The .env file does not exist or is empty. ' +
           'You may need to set some environment variables in there if your code uses process.env.',
@@ -955,9 +1112,36 @@ class InvokeCommand extends BaseCommand {
       }
     }
 
-    const authData = loadAuthDataFromEnv();
+    const appId = (await getLinkedAppConfig(null, false))?.id;
+    const deployKey = (await readCredentials(false))[AUTH_KEY];
+
+    if (authId === '-' || authId === '') {
+      if (this.nonInteractive) {
+        throw new Error(
+          "You cannot specify '-' or an empty string for `--authentication-id` in non-interactive mode.",
+        );
+      }
+      authId = (await this.promptForAuthentication()).toString();
+    }
+
     const zcacheTestObj = {};
     const cursorTestObj = {};
+
+    let authData = {};
+    if (authId) {
+      // Fill authData with curlies if we're in relay mode
+      const authFields = appDefinition.authentication.fields || [];
+      for (const field of authFields) {
+        if (field.key) {
+          authData[field.key] = `{{${field.key}}}`;
+        }
+      }
+    }
+
+    // Load from .env as well even in relay mode, in case the integration code
+    // assumes there are values in bundle.authData. Loading from .env at least
+    // gives the developer an option to override the values in bundle.authData.
+    authData = { ...authData, ...loadAuthDataFromEnv() };
 
     if (actionType === 'auth') {
       const meta = {
@@ -970,6 +1154,13 @@ class InvokeCommand extends BaseCommand {
       };
       switch (actionKey) {
         case 'start': {
+          if (authId) {
+            throw new Error(
+              'The `--authentication-id` flag is not applicable. ' +
+                'The `auth start` subcommand is to initialize local auth data in the .env file, ' +
+                'whereas `--authentication-id` is for proxying requests using production auth data.',
+            );
+          }
           const newAuthData = await this.startAuth(
             appDefinition,
             zcacheTestObj,
@@ -984,6 +1175,13 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'refresh': {
+          if (authId) {
+            throw new Error(
+              'The `--authentication-id` flag is not applicable. ' +
+                'The `auth refresh` subcommand can only refresh your local auth data in the .env file. ' +
+                'You might want to run `auth test` instead, which tests and may refresh auth data with the specified authentication ID in production.',
+            );
+          }
           const newAuthData = await this.refreshAuth(
             appDefinition,
             authData,
@@ -999,7 +1197,14 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'test': {
-          const output = await testAuth(authData, meta, zcacheTestObj);
+          const output = await testAuth(
+            authId,
+            authData,
+            meta,
+            zcacheTestObj,
+            appId,
+            deployKey,
+          );
           console.log(JSON.stringify(output, null, 2));
           return;
         }
@@ -1009,14 +1214,24 @@ class InvokeCommand extends BaseCommand {
             console.warn(
               'Function-based connection label is not supported yet. Printing auth test result instead.',
             );
-            const output = await testAuth(authData, meta, zcacheTestObj);
+            const output = await testAuth(
+              authId,
+              authData,
+              meta,
+              zcacheTestObj,
+              appId,
+              deployKey,
+            );
             console.log(JSON.stringify(output, null, 2));
           } else {
             const output = await getAuthLabel(
               labelTemplate,
+              authId,
               authData,
               meta,
               zcacheTestObj,
+              appId,
+              deployKey,
             );
             if (output) {
               console.log(output);
@@ -1085,11 +1300,14 @@ class InvokeCommand extends BaseCommand {
         actionTypePlural,
         action,
         inputData,
+        authId,
         authData,
         meta,
         timezone,
         zcacheTestObj,
         cursorTestObj,
+        appId,
+        deployKey,
       );
       console.log(JSON.stringify(output, null, 2));
     }
@@ -1149,6 +1367,11 @@ InvokeCommand.flags = buildFlags({
         'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
       default: 9000,
     }),
+    'authentication-id': Flags.string({
+      char: 'a',
+      description:
+        'EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify \'-\' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
+    }),
   },
 });
 
@@ -1171,12 +1394,20 @@ InvokeCommand.examples = [
   'zapier invoke auth label',
   'zapier invoke trigger new_recipe',
   `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
-  'zapier invoke search find_recipe -i @file.json',
+  'zapier invoke search find_recipe -i @file.json --non-interactive',
   'cat file.json | zapier invoke trigger new_recipe -i @-',
+  'zapier invoke search find_ticket --authentication-id 12345',
+  'zapier invoke create add_ticket -a -',
 ];
 InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/search action locally.
 
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
+
+Why use this command?
+
+* Fast feedback loop: Write code and run this command to verify if it works immediately
+* Step-by-step debugging: Running locally means you can use a debugger to step through your code
+* Untruncated logs: View complete logs and errors in your terminal
 
 This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have a \`.env\` file yet, you can use the \`zapier invoke auth start\` command to help you initialize it, or you can manually create it.
 
@@ -1217,6 +1448,8 @@ To add input data, use the \`--inputData\` flag. The input data can come from th
 When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don't want to get interactive prompts, use the \`--non-interactive\` flag.
 
 The \`--debug\` flag will show you the HTTP request logs and any console logs you have in your code.
+
+EXPERIMENTAL: Apart from providing auth data via the \`.env\` file, you can also use the \`--authentication-id\` flag to specify which production authentication/connection to use. You can find authentication IDs at https://zapier.com/app/connections.
 
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
