@@ -32,21 +32,15 @@ const getLocalAppHandler = async (appDir, shouldDeleteWrapper) => {
       ...event,
       calledFromCli: true,
     };
-    await app.handler(event, ctx);
+    return await app.handler(event, ctx);
   };
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
 const localAppCommand = async (event, appDir, shouldDeleteWrapper = false) => {
   const handler = await getLocalAppHandler(appDir, shouldDeleteWrapper);
-  // TODO this is returning undefined, why!
-  return new Promise((resolve, reject) => {
-    try {
-      resolve(handler(event, {}));
-    } catch (err) {
-      reject(err);
-    }
-  });
+  const response = await handler(event, {});
+  return response.results;
 };
 
 module.exports = {

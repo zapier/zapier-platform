@@ -2,30 +2,13 @@
 
 const createLambdaHandler = require('./create-lambda-handler');
 const resolveMethodPath = require('./resolve-method-path');
-// const ZapierPromise = require('./promise');
 const { isFunction } = require('lodash');
 const { genId } = require('./data');
 const { shouldPaginate } = require('./should-paginate');
 
-// Convert a app handler to promise for convenience.
-// const promisifyHandler = (handler) => {
-//   return (event) => {
-//     return new ZapierPromise((resolve, reject) => {
-//       handler(event, {}, (err, resp) => {
-//         if (err) {
-//           reject(err);
-//         } else {
-//           resolve(resp);
-//         }
-//       });
-//     });
-//   };
-// };
-
 // A shorthand compatible wrapper for testing.
 const createAppTester = (appRaw, { customStoreKey } = {}) => {
   const handler = createLambdaHandler(appRaw);
-  // const createHandlerPromise = promisifyHandler(handler);
 
   const randomSeed = genId();
 
