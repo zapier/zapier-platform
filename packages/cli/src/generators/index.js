@@ -213,7 +213,7 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
   const packageJsonExtension = {
     typescript: {
       scripts: {
-        test: 'vitest',
+        test: 'vitest --run',
         clean: 'rimraf ./dist ./build',
         build: 'npm run clean && tsc',
         '_zapier-build': 'npm run build',
