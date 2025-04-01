@@ -379,6 +379,7 @@ const _buildFunc = async ({
     startSpinner('Building app definition.json');
   }
 
+  // TODO this is returning undefined
   const rawDefinition = await localAppCommand(
     { command: 'definition' },
     tmpDir,

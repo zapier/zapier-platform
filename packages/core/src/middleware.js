@@ -65,36 +65,35 @@ const applyMiddleware = (befores, afters, app, options) => {
   };
 
   return (input) => {
-    const beforeMiddleware = (beforeInput) => {
-      return befores.reduce((collector, func) => {
-        return collector.then((newInput) => {
-          const args = [newInput].concat(options.extraArgs);
-          const result = func.apply(undefined, args);
-          if (typeof result !== 'object') {
-            throw new Error('Middleware should return an object.');
-          }
-          return result;
-        });
-      }, Promise.resolve(beforeInput));
+    const beforeMiddleware = async (beforeInput) => {
+      let newInput = beforeInput;
+      for (const func of befores) {
+        const args = [newInput].concat(options.extraArgs);
+        const result = func.apply(undefined, args);
+        if (typeof result !== 'object') {
+          throw new Error('Middleware should return an object.');
+        }
+        newInput = result;
+      }
+      return newInput;
     };
 
-    const afterMiddleware = (output) => {
-      return afters.reduce((collector, func) => {
-        return collector.then((newOutput) => {
-          const args = [newOutput].concat(options.extraArgs);
-          const maybePromise = func.apply(undefined, args);
-          if (typeof maybePromise !== 'object') {
-            throw new Error('Middleware should return an object.');
-          }
-          return Promise.resolve(maybePromise).then(ensureEnvelope);
-        });
-      }, Promise.resolve(output));
+    const afterMiddleware = async (output) => {
+      for (const func of afters) {
+        const args = [output].concat(options.extraArgs);
+        const maybePromise = func.apply(undefined, args);
+        if (typeof maybePromise !== 'object') {
+          throw new Error('Middleware should return an object.');
+        }
+        output = await Promise.resolve(maybePromise);
+        output = ensureEnvelope(output);
+      }
+      return output;
     };
 
     const promise = async (input) => {
-      const newInput = await beforeMiddleware(input); // this returns a new input with new whatHappened
+      const newInput = await beforeMiddleware(input);
       try {
-        // the error happens in the below line
         let output = await app(newInput);
         output = await ensureEnvelope(output);
         output.input = newInput;
