@@ -320,8 +320,8 @@ describe('build in workspaces', function () {
   before(async () => {
     tmpDir = getNewTempDirPath();
 
-    // When releasing, the core version the example apps points can be still
-    // non-existent. Let's make sure it points to the local one.
+    // The core version the example apps point to may not
+    // exist yet. Let's make sure it points to the local one.
     corePackage = await npmPackCore();
 
     // Set up a monorepo project structure with two integrations as npm
@@ -429,7 +429,7 @@ describe('build in workspaces', function () {
       {
         skipNpmInstall: true,
         skipValidation: true,
-        printProgress: true,
+        printProgress: false,
         checkOutdated: false,
       },
     );

@@ -286,7 +286,6 @@ const _buildFunc = async ({
     'zapier-' + crypto.randomBytes(4).toString('hex'),
   );
   debug('Using temp directory: ', tmpDir);
-  console.log('tmpDir', tmpDir);
 
   if (checkOutdated) {
     maybeNotifyAboutOutdated();
@@ -307,13 +306,11 @@ const _buildFunc = async ({
     : undefined;
 
   await copyDir(wdir, tmpDir, { filter: copyFilter });
-  console.log('tmpDir', tmpDir);
 
   if (skipNpmInstall) {
     const corePackageDir = findCorePackageDir();
     const nodeModulesDir = path.dirname(corePackageDir);
     const workspaceRoot = path.dirname(nodeModulesDir);
-    console.log('workspaceRoot', workspaceRoot);
     if (wdir !== workspaceRoot) {
       // If we're in here, it means the user is using npm/yarn workspaces
       const workspaces = listWorkspaces(workspaceRoot);
@@ -340,7 +337,6 @@ const _buildFunc = async ({
           return true;
         },
         onDirExists: (dir) => {
-          console.log('onDirExists', dir);
           // Don't overwrite existing sub-directories in node_modules
           return false;
         },
@@ -365,7 +361,6 @@ const _buildFunc = async ({
     'node_modules',
     constants.PLATFORM_PACKAGE,
   );
-  console.log('corePath', corePath);
   if (!fs.existsSync(corePath)) {
     throw new Error(
       'Could not install dependencies properly. Error log:\n' + output.stderr,
