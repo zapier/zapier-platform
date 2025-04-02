@@ -315,10 +315,14 @@ describe('build (runs slowly)', function () {
 });
 
 describe('build in workspaces', function () {
-  let tmpDir, origCwd;
+  let tmpDir, origCwd, corePackage;
 
   before(async () => {
     tmpDir = getNewTempDirPath();
+
+    // When releasing, the core version the example apps points can be still
+    // non-existent. Let's make sure it points to the local one.
+    corePackage = await npmPackCore();
 
     // Set up a monorepo project structure with two integrations as npm
     // workspaces:
@@ -361,7 +365,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '8.3.2',
-          'zapier-platform-core': '15.5.1',
+          'zapier-platform-core': corePackage.path,
         },
         private: true,
       }),
@@ -380,7 +384,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '9.0.1',
-          'zapier-platform-core': '15.5.1',
+          'zapier-platform-core': corePackage.path,
         },
         private: true,
       }),
@@ -391,6 +395,7 @@ describe('build in workspaces', function () {
 
   after(() => {
     fs.removeSync(tmpDir);
+    corePackage.cleanup();
   });
 
   beforeEach(() => {
@@ -424,7 +429,7 @@ describe('build in workspaces', function () {
       {
         skipNpmInstall: true,
         skipValidation: true,
-        printProgress: false,
+        printProgress: true,
         checkOutdated: false,
       },
     );
@@ -440,7 +445,7 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal('15.5.1');
+    corePackageJson.version.should.equal('16.3.1');
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
@@ -498,7 +503,7 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal('15.5.1');
+    corePackageJson.version.should.equal('16.3.1');
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
