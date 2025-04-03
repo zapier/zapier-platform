@@ -100,7 +100,7 @@ mapTransformers.set(
               params: namedReferenceNode('BeforeRequestMiddleware'),
             } satisfies TArray,
           ],
-        } as TUnion,
+        } satisfies TUnion,
       };
     });
     return {
@@ -152,7 +152,7 @@ mapTransformers.set(
               params: namedReferenceNode('AfterResponseMiddleware'),
             } satisfies TArray,
           ],
-        } as TUnion,
+        } satisfies TUnion,
       };
     });
     return {
