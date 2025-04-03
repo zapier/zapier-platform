@@ -15,11 +15,11 @@ export const tools: { env: { inject: (filename?: string) => void } };
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
   appRaw: object,
-  options?: { customStoreKey?: string }
+  options?: { customStoreKey?: string },
 ) => <T, B extends Bundle>(
   func: (z: ZObject, bundle: B) => T | Promise<T>,
   bundle?: Partial<B>, // partial so we don't have to make a full bundle in tests
-  clearZcacheBeforeUse?: boolean
+  clearZcacheBeforeUse?: boolean,
 ) => Promise<T>; // appTester always returns a promise
 
 type HttpMethod =
@@ -31,9 +31,9 @@ type HttpMethod =
   | 'OPTIONS'
   | 'HEAD';
 
-export interface Bundle<InputData = { [x: string]: any }> {
+export interface Bundle<$InputData extends Record<string, any> = {}> {
   authData: { [x: string]: string };
-  inputData: InputData;
+  inputData: $InputData;
   inputDataRaw: { [x: string]: string };
   meta: {
     isBulkRead: boolean;
@@ -108,7 +108,9 @@ export interface Bundle<InputData = { [x: string]: any }> {
      * by the inputField.meta property. Useful for storing extra data
      * in dynamically created input fields.
      */
-    inputFields: { [fieldKey: string]: { [metaKey: string]: string | number | boolean } };
+    inputFields: {
+      [fieldKey: string]: { [metaKey: string]: string | number | boolean };
+    };
   };
   rawRequest?: Partial<{
     method: HttpMethod;
@@ -206,10 +208,10 @@ export interface RawHttpResponse<T = any> extends BaseHttpResponse {
   text(): Promise<string>;
 }
 
-type DehydrateFunc = <T>(
+type DehydrateFunc = <T extends { [x: string]: any }>(
   func: (z: ZObject, bundle: Bundle<T>) => any,
   inputData?: T,
-  cacheExpiration?: number
+  cacheExpiration?: number,
 ) => string;
 
 export interface ZObject {
@@ -217,15 +219,16 @@ export interface ZObject {
     // most specific overloads go first
     <T = any>(
       url: string,
-      options: HttpRequestOptions & { raw: true }
+      options: HttpRequestOptions & { raw: true },
     ): Promise<RawHttpResponse<T>>;
-    <T = any>(options: HttpRequestOptionsWithUrl & { raw: true }): Promise<
-      RawHttpResponse<T>
-    >;
+    <T = any>(
+      options: HttpRequestOptionsWithUrl & { raw: true },
+    ): Promise<RawHttpResponse<T>>;
 
-    <T = any>(url: string, options?: HttpRequestOptions): Promise<
-      HttpResponse<T>
-    >;
+    <T = any>(
+      url: string,
+      options?: HttpRequestOptions,
+    ): Promise<HttpResponse<T>>;
     <T = any>(options: HttpRequestOptionsWithUrl): Promise<HttpResponse<T>>;
   };
 
@@ -248,7 +251,7 @@ export interface ZObject {
       input: string | Buffer | NodeJS.ReadableStream,
       knownLength?: number,
       filename?: string,
-      contentType?: string
+      contentType?: string,
     ): string;
     (input: Promise<RawHttpResponse>): string;
     (input: Promise<string>): string;
@@ -273,7 +276,7 @@ export interface ZObject {
     algorithm: string,
     data: string,
     encoding?: string,
-    input_encoding?: string
+    input_encoding?: string,
   ) => string;
 
   errors: {
@@ -287,7 +290,13 @@ export interface ZObject {
 
   cache: {
     get: (key: string) => Promise<any>;
-    set: (key: string, value: any, ttl?: number, scope?: string[], nx?: boolean) => Promise<boolean|null>;
+    set: (
+      key: string,
+      value: any,
+      ttl?: number,
+      scope?: string[],
+      nx?: boolean,
+    ) => Promise<boolean | null>;
     delete: (key: string) => Promise<boolean>;
   };
 }
@@ -295,24 +304,24 @@ export interface ZObject {
 /**
  * A function that performs the action.
  *
- * @template BI The shape of data in the `bundle.inputData` object.
- * @template R The return type of the function.
+ * @template $InputData The shape of data in the `bundle.inputData` object.
+ * @template $Return The return type of the function.
  */
-export type PerformFunction<BI = Record<string, any>, R = any> = (
-  z: ZObject,
-  bundle: Bundle<BI>
-) => Promise<R>;
+export type PerformFunction<
+  $InputData extends Record<string, any> = {},
+  $Return = any,
+> = (z: ZObject, bundle: Bundle<$InputData>) => Promise<$Return>;
 
 export type BeforeRequestMiddleware = (
   request: HttpRequestOptionsWithUrl,
   z: ZObject,
-  bundle: Bundle
+  bundle: Bundle,
 ) => HttpRequestOptionsWithUrl | Promise<HttpRequestOptionsWithUrl>;
 
 export type AfterResponseMiddleware = (
   response: HttpResponse,
   z: ZObject,
-  bundle: Bundle
+  bundle: Bundle,
 ) => HttpResponse | Promise<HttpResponse>;
 
 export interface BufferedItem<InputData = { [x: string]: any }> {
@@ -349,5 +358,5 @@ export interface PerformBufferResult {
 
 export const performBuffer: (
   z: ZObject,
-  bundle: BufferedBundle
+  bundle: BufferedBundle,
 ) => Promise<PerformBufferResult>;

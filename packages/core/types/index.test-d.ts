@@ -28,8 +28,12 @@ const basicDisplay: BasicDisplay = {
 expectType<BasicDisplay>(basicDisplay);
 
 const oauth2Config: AuthenticationOAuth2Config = {
-  authorizeUrl: 'https://example.com/authorize',
-  getAccessToken: 'https://example.com/token',
+  authorizeUrl: {
+    url: 'https://example.com/authorize',
+  },
+  getAccessToken: {
+    url: 'https://example.com/token',
+  },
   refreshAccessToken: async (z: ZObject, b: Bundle) => 'some-refresh-token',
 };
 expectType<AuthenticationOAuth2Config>(oauth2Config);
