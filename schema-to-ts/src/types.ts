@@ -49,7 +49,7 @@ export interface CliOptions {
    * to its sibling custom types module in platform-core, but can be
    * overridden to `zapier-platform-core` for example.
    *
-   * @default "./zapier.custom"
+   * @default "./custom"
    */
   platformCoreCustomImport: string;
 }
