@@ -278,11 +278,13 @@ This doesn't register or deploy the integration with Zapier - try the `zapier re
 
 **Flags**
 * `-t, --template` | The template to start your integration with. One of `[basic-auth | callback | custom-auth | digest-auth | dynamic-dropdown | files | minimal | oauth1-trello | oauth2 | openai | search-or-create | session-auth | typescript]`.
+* `-m, --module` | Choose module type: CommonJS or ES Modules. Only enabled for Typescript and Minimal templates. One of `[commonjs | esm]`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier init myapp`
 * `zapier init ./path/myapp --template oauth2`
+* `zapier init ./path/myapp --template minimal --module esm`
 
 
 ## integrations
