@@ -1,7 +1,7 @@
-import wrap from 'word-wrap';
+import type { Token, Tokens, TokensList } from 'marked';
 
-import { Token, lexer, type TokensList } from 'marked';
-import type { Tokens } from 'marked';
+import { lexer } from 'marked';
+import wrap from 'word-wrap';
 
 const SINGLE_LINE_CONTENT_WIDTH = 60;
 const MULTILINE_DEFAULT_CONTENT_WIDTH = 65;
