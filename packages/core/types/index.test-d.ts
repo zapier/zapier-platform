@@ -3,7 +3,7 @@ import type {
   BeforeRequestMiddleware,
   Bundle,
   ZObject,
-} from './zapier.custom';
+} from './custom';
 import type {
   App,
   Authentication,
@@ -16,9 +16,8 @@ import type {
   Create,
   Search,
   Trigger,
-} from './zapier.generated';
-
-import { expectType, expectDeprecated } from 'tsd';
+} from './schemas.generated';
+import { expectDeprecated, expectType } from 'tsd';
 
 const basicDisplay: BasicDisplay = {
   label: 'some-label',
@@ -138,7 +137,7 @@ const checkPermissionsError: AfterResponseMiddleware = (response, z) => {
   if (response.status === 403) {
     throw new z.errors.Error(
       response.json?.['o:errorDetails']?.[0].detail,
-      response.status.toString()
+      response.status.toString(),
     );
   }
   return response;
@@ -170,7 +169,7 @@ expectType<App>(app);
 // Return types from z.request
 async (z: ZObject) => {
   const resp = await z.request<{ id: number; name: string }>(
-    'https://example.com'
+    'https://example.com',
   );
   expectType<{ id: number; name: string }>(resp.data);
   expectDeprecated(resp.json);
@@ -187,7 +186,7 @@ async (z: ZObject) => {
 async (z: ZObject) => {
   const resp = await z.request<{ id: number; name: string }>(
     'https://example.com',
-    { raw: true }
+    { raw: true },
   );
   const result = await resp.json();
   expectType<{ id: number; name: string }>(result);

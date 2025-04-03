@@ -37,7 +37,7 @@ program
   .option(
     '--platform-core-custom-import <path>',
     'What import path to use for the custom `PerformFunction` tpe. Defaults to its sibling custom types module in platform-core, but can be overridden to `zapier-platform-core` for example.',
-    './zapier.custom',
+    './custom',
   );
 
 const main = async () => {

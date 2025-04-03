@@ -12,7 +12,7 @@ import type {
   AfterResponseMiddleware,
   BeforeRequestMiddleware,
   PerformFunction,
-} from './zapier.custom';
+} from './custom';
 
 /**
  * Represents a full app.
