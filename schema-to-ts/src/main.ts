@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 
-import type { CliOptions, CompilerOptions } from './types.js';
-import { Command, Option } from 'commander';
+import { Command, Option } from '@commander-js/extra-typings';
 import { compile, loadExportedSchemas } from './compiler.js';
 
+import type { CompilerOptions } from './types.js';
 import { logger } from './utils.js';
 import { writeFileSync } from 'fs';
 
-const program = new Command();
-
-program
+const program = new Command()
   .name(process.env.npm_package_name!)
   .version(process.env.npm_package_version!)
   .description(process.env.npm_package_description!)
@@ -20,12 +18,12 @@ program
       .default('info'),
   )
   .option(
-    '-s, --schema-json [file]',
+    '-s, --schema-json <file>',
     'The `exported-schema.json` file from zapier-platform-schema to compile from. Typically the latest built output from zapier-platform-schema.',
     '../schema/exported-schema.json',
   )
   .option(
-    '-o, --output [file]',
+    '-o, --output <file>',
     'The file to write the generated TypeScript to. Typically intended to be put in ../core/types as a generated module.',
     '../core/types/zapier.generated.d.ts',
   )
@@ -42,7 +40,7 @@ program
 
 const main = async () => {
   program.parse();
-  const options = program.opts<CliOptions>();
+  const options = program.opts();
   if (options.logLevel) {
     logger.level = options.logLevel;
   }
@@ -51,7 +49,7 @@ const main = async () => {
   // Load the schema JSON file. The `zapier-platform-schema` package
   // has an `exported-schema.json` file of all the schemas we want to
   // compile.
-  const { version, schemas } = loadExportedSchemas(options.schemaJson!);
+  const { version, schemas } = loadExportedSchemas(options.schemaJson);
 
   const compilerOptions: CompilerOptions = {
     ...options,
