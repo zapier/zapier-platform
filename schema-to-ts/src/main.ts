@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import { Command, Option } from '@commander-js/extra-typings';
 import { compile, loadExportedSchemas } from './compiler.js';
 
