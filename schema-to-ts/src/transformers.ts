@@ -164,27 +164,28 @@ mapTransformers.set(
 
 mapTransformers.set(
   'patch-perform-function-types',
-  makeMapTransformer((node) => {
+  makeMapTransformer((node, options) => {
     // Search for the "FunctionSchema" JsonSchema, and patch in a
     // reference to the (also injected) `PerformFunction` type.
-    if (node.standaloneName === 'FunctionSchema' && node.type === 'UNION') {
-      const performFuncReference: NamedAst = {
-        standaloneName: 'PerformFunction',
-        type: 'CUSTOM_TYPE',
-        params: `func-ref:perform`,
-      };
-      return {
-        ...node,
-        // Include a reference to the PerformFunction type for the
-        // "FunctionSchema" union. This is done because JSON Schema
-        // doesn't have a way to represent functions, but this is the
-        // most common use-case for downstream code before zapier push
-        // is run.
-        params: [performFuncReference, ...node.params],
-      };
+    if (node.standaloneName !== 'FunctionSchema' || node.type !== 'UNION') {
+      return node;
     }
-    // Leave every other node unchanged.
-    return node;
+    if (options.skipPatchPerformFunction) {
+      return node;
+    }
+
+    const performFuncReference: NamedAst = {
+      standaloneName: 'PerformFunction',
+      type: 'CUSTOM_TYPE',
+      params: `func-ref:perform`,
+    };
+    return {
+      ...node,
+      // instead of the union of types in node.params, replace it with
+      // a single reference to the PerformFunction type. A single-item
+      // union then becomes a simple reference.
+      params: [performFuncReference],
+    } satisfies TUnion;
   }),
 );
 
