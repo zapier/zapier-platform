@@ -2,7 +2,7 @@
 
 import type { CliOptions, CompilerOptions } from './types.js';
 import { Command, Option } from 'commander';
-import { compile, loadExportedSchemas } from './main.js';
+import { compile, loadExportedSchemas } from './compiler.js';
 
 import { logger } from './utils.js';
 import { writeFileSync } from 'fs';
