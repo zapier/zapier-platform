@@ -30,7 +30,7 @@ export interface CliOptions {
   /**
    * The file to write the generated TypeScript to.
    *
-   * @default "../core/types/zapier.generated.d.ts"
+   * @default "../core/types/schemas.generated.d.ts"
    */
   output?: string;
 

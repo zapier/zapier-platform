@@ -25,7 +25,7 @@ const program = new Command()
   .option(
     '-o, --output <file>',
     'The file to write the generated TypeScript to. Typically intended to be put in ../core/types as a generated module.',
-    '../core/types/zapier.generated.d.ts',
+    '../core/types/schemas.generated.d.ts',
   )
   .option(
     '--skip-patch-perform-function',
@@ -62,7 +62,7 @@ const main = async () => {
   const typescript = await compile(schemas, compilerOptions);
 
   // Write it to a real file. Defaults to writing it straight to the
-  // ../core/types/ directory as `zapier.generated.d.ts`.
+  // ../core/types/ directory as `schemas.generated.d.ts`.
   writeFileSync(options.output!, typescript);
   logger.info({ output: options.output }, 'Wrote generated TypeScript to file');
 
