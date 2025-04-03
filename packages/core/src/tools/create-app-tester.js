@@ -56,8 +56,7 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       event.detailedLogToStdout = true;
     }
 
-    // TODO remove?? added the {} so that context wasn't undefined
-    return handler(event, {}).then((resp) => {
+    return handler(event).then((resp) => {
       delete appRaw._testRequest; // clear adHocFunc so tests can't affect each other
       return resp.results;
     });

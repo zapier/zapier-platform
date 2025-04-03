@@ -56,7 +56,7 @@ const runLocally = (event) => {
     );
 
     try {
-      resolve(handler(event, {}));
+      resolve(handler(event));
     } catch (err) {
       reject(err);
     }

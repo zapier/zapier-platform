@@ -141,7 +141,7 @@ const getAppRawOverride = async (rpc, appRawOverride) => {
 
   const fetchedOverride = await rpc('get_definition_override');
 
-  // store/"cache" override
+  // store or "cache" override
 
   fs.writeFileSync(hashPath, appRawOverride);
   fs.writeFileSync(overridePath, JSON.stringify(fetchedOverride));
@@ -177,17 +177,7 @@ const loadApp = async (event, rpc, appRawOrPath) => {
 };
 
 const createLambdaHandler = (appRawOrPath) => {
-  const handler = async (event, context) => {
-    // Wait for all async events to complete before callback returns.
-    // This is not strictly necessary since this is the default now when
-    // using the callback; just putting it here to be explicit.
-    // In some cases, the code hangs and never exits because the event loop is not
-    // empty, so we can override the default behavior and exit after the app is done.
-    context.callbackWaitsForEmptyEventLoop = true;
-    if (event.skipWaitForAsync === true) {
-      context.callbackWaitsForEmptyEventLoop = false;
-    }
-
+  const handler = async (event, context = {}) => {
     // If we're running out of memory or file descriptors, force exit the process.
     // The backend will try again via @retry(ProcessExitedException).
     checkMemory(event);

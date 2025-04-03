@@ -39,7 +39,7 @@ const getLocalAppHandler = async (appDir, shouldDeleteWrapper) => {
 // Runs a local app command (./index.js) like {command: 'validate'};
 const localAppCommand = async (event, appDir, shouldDeleteWrapper = false) => {
   const handler = await getLocalAppHandler(appDir, shouldDeleteWrapper);
-  const response = await handler(event, {});
+  const response = await handler(event);
   return response.results;
 };
 
