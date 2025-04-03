@@ -36,7 +36,7 @@
     "validate": "lerna run validate",
     "bump": "./scripts/bump.js",
     "prepare": "husky",
-    "generate-types": "cd schema-to-ts && yarn generate-types:build"
+    "generate-types": "cd schema-to-ts && yarn generate-types"
   },
   "husky": {
     "hooks": {

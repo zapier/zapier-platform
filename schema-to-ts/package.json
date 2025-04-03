@@ -7,14 +7,11 @@
   "main": "dist/cli.js",
   "type": "module",
   "scripts": {
-    "test": "vitest --run",
+    "test": "tsc && vitest --run",
     "clean": "rm -rf dist",
-    "prebuild": "yarn clean",
-    "build": "tsc",
-    "generate-types": "node ./dist/cli.js --schema-json ../packages/schema/exported-schema.json --output ../packages/core/types/schemas.generated.d.ts",
-    "generate-types:build": "yarn build && yarn generate-types",
+    "generate-types": "tsx ./src/cli.ts --schema-json ../packages/schema/exported-schema.json --output ../packages/core/types/schemas.generated.d.ts",
     "git-add": "git add ../packages/core/types/schemas.generated.d.ts",
-    "precommit": "yarn build && yarn generate-types && yarn git-add"
+    "precommit": "yarn generate-types && yarn git-add"
   },
   "dependencies": {
     "commander": "^13.1.0",
@@ -28,6 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.17.30",
+    "tsx": "^4.19.3",
     "typescript": "^5.8.2",
     "vitest": "^3.1.1"
   }
