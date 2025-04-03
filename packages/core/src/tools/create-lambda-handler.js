@@ -263,8 +263,6 @@ const createLambdaHandler = (appRawOrPath) => {
           const loggedErr = await logErrorAndReturn(logMsg, logData, err);
           reject(loggedErr);
         } finally {
-          // TODO is this the correct setup with `finally`, given the logger setup?
-          // I'm not familiar with how the /input endpoint works.
           await logger.end();
         }
       });
