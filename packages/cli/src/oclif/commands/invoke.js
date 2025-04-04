@@ -249,6 +249,12 @@ const replaceDoubleCurlies = async (request) => {
       .replaceAll('{{', 'lcurly-')
       .replaceAll('}}', '-rcurly');
   }
+
+  // The authorization header may confuse zapier.com and it's relay's job to add
+  // it, so we delete it here.
+  delete request.headers.authorization;
+  delete request.headers.Authorization;
+
   return request;
 };
 
@@ -267,6 +273,14 @@ const restoreDoubleCurlies = async (response) => {
 };
 
 const localAppCommandWithRelayErrorHandler = async (args) => {
+  if (args.relayAuthenticationId) {
+    args = {
+      ...args,
+      beforeRequest: [replaceDoubleCurlies],
+      afterResponse: [restoreDoubleCurlies],
+    };
+  }
+
   let output;
   try {
     output = await localAppCommand(args);
@@ -982,8 +996,6 @@ class InvokeCommand extends BaseCommand {
       appId,
       deployKey,
       relayAuthenticationId: authId,
-      beforeRequest: [replaceDoubleCurlies],
-      afterResponse: [restoreDoubleCurlies],
     });
     endSpinner();
 
@@ -1024,8 +1036,6 @@ class InvokeCommand extends BaseCommand {
       appId,
       deployKey,
       relayAuthenticationId: authId,
-      beforeRequest: [replaceDoubleCurlies],
-      afterResponse: [restoreDoubleCurlies],
     });
     endSpinner();
 
