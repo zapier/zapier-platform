@@ -1,5 +1,8 @@
 const zlib = require('zlib');
 const _ = require('lodash');
+
+const { ALLOWED_HTTP_DATA_CONTENT_TYPES, getContentType } = require('./http');
+
 const constants = require('../constants');
 
 const createHttpPatch = (event) => {
@@ -45,7 +48,7 @@ const createHttpPatch = (event) => {
         return originalRequest(options, callback);
       }
 
-      // Ignore requests made via the request client
+      // Ignore requests made via the request client (z.request)
       if (_.get(options.headers, 'user-agent', []).indexOf('Zapier') !== -1) {
         return originalRequest(options, callback);
       }
@@ -54,24 +57,39 @@ const createHttpPatch = (event) => {
       const newCallback = function (response) {
         const chunks = [];
 
+        // Only include request or response data for specific content types
+        // which we are able to read in logs and which are not typically too large
+        const requestContentType = getContentType(options.headers || {});
+        const responseContentType = getContentType(response.headers || {});
+
+        const shouldIncludeRequestData =
+          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(requestContentType);
+        const shouldIncludeResponseData =
+          ALLOWED_HTTP_DATA_CONTENT_TYPES.has(responseContentType);
+
         const sendToLogger = (responseBody) => {
           // Prepare data for GL
           const logData = {
             log_type: 'http',
-            request_type: 'devplatform-outbound',
+            // Using a custom request_type to differentiate from z.request() since `request_via_client` is not logged in GL
+            request_type: 'patched-devplatform-outbound',
             request_url: requestUrl,
             request_method: options.method || 'GET',
             request_headers: options.headers,
-            request_data: options.body || '',
+            request_data: shouldIncludeRequestData
+              ? options.body || ''
+              : '<unsupported format>',
             request_via_client: false,
             response_status_code: response.statusCode,
             response_headers: response.headers,
-            response_content: responseBody,
+            response_content: shouldIncludeResponseData
+              ? responseBody
+              : '<unsupported format>',
           };
 
           object.zapierLogger(
             `${logData.response_status_code} ${logData.request_method} ${logData.request_url}`,
-            logData
+            logData,
           );
         };
 
@@ -88,13 +106,20 @@ const createHttpPatch = (event) => {
             });
           } else {
             const responseBody = _.map(chunks, (chunk) =>
-              chunk.toString()
+              chunk.toString(),
             ).join('\n');
             sendToLogger(responseBody);
           }
         };
 
-        response.on('data', (chunk) => chunks.push(chunk));
+        const originalEmit = response.emit;
+
+        response.emit = function (event, ...args) {
+          if (event === 'data') {
+            chunks.push(args[0]);
+          }
+          return originalEmit.apply(this, [event, ...args]);
+        };
         response.on('end', logResponse);
         response.on('error', logResponse);
 

@@ -1,10 +1,10 @@
-const authentication = require('./authentication')
-const { includeBearerToken } = require('./before-handlers')
-const hydrators = require('./hydrators')
+const authentication = require('./authentication');
+const { includeBearerToken } = require('./before-handlers');
+const hydrators = require('./hydrators');
 
-const folder = require('./resources/folder')
-const file = require('./resources/file')
-const createTextFile = require('./creates/text-file')
+const folder = require('./resources/folder');
+const file = require('./resources/file');
+const createTextFile = require('./creates/text-file');
 
 // We can roll up all our behaviors in an App.
 const App = {
@@ -29,7 +29,7 @@ const App = {
    */
   resources: {
     [folder.key]: folder,
-    [file.key]: file
+    [file.key]: file,
   },
 
   triggers: {},
@@ -40,8 +40,8 @@ const App = {
    * allow users to create plain text files, so we register that create here.
    */
   creates: {
-    [createTextFile.key]: createTextFile
-  }
-}
+    [createTextFile.key]: createTextFile,
+  },
+};
 
-module.exports = App
+module.exports = App;

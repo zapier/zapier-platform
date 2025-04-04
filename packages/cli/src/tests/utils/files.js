@@ -1,8 +1,7 @@
-require('should');
-const files = require('../../utils/files');
-
-const path = require('path');
 const os = require('os');
+const path = require('path');
+const should = require('should');
+const files = require('../../utils/files');
 
 describe('files', () => {
   let tmpDir;
@@ -33,32 +32,142 @@ describe('files', () => {
         files.readFile(fileName).then((buf) => {
           buf.toString().should.equal(data);
           done();
-        })
+        }),
       )
       .catch(done);
   });
 
-  // TODO: this is broken in travis - works locally though
-  it.skip('should copy a directory', (done) => {
-    const srcDir = os.tmpdir();
-    const srcFileName = path.resolve(srcDir, 'read-write-test.txt');
-    const dstDir = path.resolve(srcDir, 'zapier-platform-cli-test-dest-dir');
-    const dstFileName = path.resolve(dstDir, 'read-write-test.txt');
-    const data = '123';
+  describe('copyDir', () => {
+    let tmpDir, srcDir, dstDir;
 
-    files
-      .writeFile(srcFileName, data)
-      .then(files.copyDir(srcDir, dstDir))
-      .then(() =>
-        files.readFile(dstFileName).then((buf) => {
-          buf.toString().should.equal(data);
-          done();
-        })
-      )
-      .catch((err) => {
-        console.log('error', err);
-        done(err);
+    beforeEach(async () => {
+      tmpDir = path.join(os.tmpdir(), 'zapier-platform-cli-copyDir-test');
+      srcDir = path.join(tmpDir, 'src');
+      dstDir = path.join(tmpDir, 'dst');
+
+      await files.removeDir(srcDir);
+      await files.ensureDir(srcDir);
+      await files.writeFile(path.join(srcDir, '01.txt'), 'chapter 1');
+      await files.writeFile(path.join(srcDir, '02.txt'), 'chapter 2');
+      await files.ensureDir(path.join(srcDir, '03'));
+      await files.writeFile(path.join(srcDir, '03', '03.txt'), 'chapter 3');
+      await files.writeFile(path.join(srcDir, '03', 'cover.jpg'), 'image data');
+      await files.writeFile(path.join(srcDir, '03', 'photo.jpg'), 'photo data');
+
+      await files.removeDir(dstDir);
+      await files.ensureDir(dstDir);
+      await files.writeFile(path.join(dstDir, '01.txt'), 'ch 1');
+      await files.writeFile(path.join(dstDir, '02.txt'), 'ch 2');
+      await files.ensureDir(path.join(dstDir, '03'));
+      await files.writeFile(path.join(dstDir, '03', '03.txt'), 'ch 3');
+      await files.writeFile(path.join(dstDir, '03', 'cover.jpg'), 'old data');
+      await files.writeFile(path.join(dstDir, '03', 'fig.png'), 'png data');
+    });
+
+    afterEach(async () => {
+      await files.removeDir(tmpDir);
+    });
+
+    it('should copy a directory without clobber', async () => {
+      // clobber defaults to false
+      await files.copyDir(srcDir, dstDir);
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '01.txt')),
+        'ch 1',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', '03.txt')),
+        'ch 3',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'fig.png')),
+        'png data',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'photo.jpg')),
+        'photo data',
+      );
+    });
+
+    it('should copy a directory with clobber', async () => {
+      await files.copyDir(srcDir, dstDir, { clobber: true });
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '02.txt')),
+        'chapter 2',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', '03.txt')),
+        'chapter 3',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'cover.jpg')),
+        'image data',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'fig.png')),
+        'png data',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'photo.jpg')),
+        'photo data',
+      );
+    });
+
+    it('should copy a directory with onDirExists returning false', async () => {
+      await files.copyDir(srcDir, dstDir, {
+        clobber: true,
+        onDirExists: () => false,
       });
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '02.txt')),
+        'chapter 2',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', '03.txt')),
+        'ch 3',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'cover.jpg')),
+        'old data',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'fig.png')),
+        'png data',
+      );
+      files
+        .fileExistsSync(path.join(dstDir, '03', 'photo.jpg'))
+        .should.be.false();
+    });
+
+    it('should copy a directory with onDirExists deleting dir', async () => {
+      await files.copyDir(srcDir, dstDir, {
+        clobber: true,
+        onDirExists: (dir) => {
+          // Delete existing directory => completely overwrite the directory
+          files.removeDirSync(dir);
+          return true;
+        },
+      });
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '01.txt')),
+        'chapter 1',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', '03.txt')),
+        'chapter 3',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'cover.jpg')),
+        'image data',
+      );
+      should.equal(
+        await files.readFileStr(path.join(dstDir, '03', 'photo.jpg')),
+        'photo data',
+      );
+      files
+        .fileExistsSync(path.join(dstDir, '03', 'fig.png'))
+        .should.be.false();
+    });
   });
 
   describe('validateFileExists', () => {
@@ -77,7 +186,7 @@ describe('files', () => {
         })
         .catch((err) => {
           err.message.should.eql(
-            ': File ./i-do-not-exist.txt not found. Oh noes.'
+            ': File ./i-do-not-exist.txt not found. Oh noes.',
           );
           done();
         });

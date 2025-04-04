@@ -10,7 +10,7 @@ const RequestSchema = require('./RequestSchema');
 // TODO: would be nice to deep merge these instead
 // or maybe use allOf which is built into json-schema
 const BasicHookOperationSchema = JSON.parse(
-  JSON.stringify(BasicOperationSchema.schema)
+  JSON.stringify(BasicOperationSchema.schema),
 );
 
 const hookTechnicallyRequired =
@@ -83,7 +83,6 @@ BasicHookOperationSchema.properties = {
   inputFields: BasicHookOperationSchema.properties.inputFields,
   outputFields: BasicHookOperationSchema.properties.outputFields,
   sample: BasicHookOperationSchema.properties.sample,
-  throttle: BasicHookOperationSchema.properties.throttle,
 };
 
 BasicHookOperationSchema.examples = [
@@ -114,5 +113,5 @@ BasicHookOperationSchema.antiExamples = [
 
 module.exports = makeSchema(
   BasicHookOperationSchema,
-  BasicOperationSchema.dependencies
+  BasicOperationSchema.dependencies,
 );

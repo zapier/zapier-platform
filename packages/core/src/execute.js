@@ -21,12 +21,12 @@ const executeHttpRequest = (input, options) => {
       skipThrowForStatus: false,
     },
     options,
-    constants.REQUEST_OBJECT_SHORTHAND_OPTIONS
+    constants.REQUEST_OBJECT_SHORTHAND_OPTIONS,
   );
   return input.z.request(options).then((response) => {
     if (response.data === undefined) {
       throw new Error(
-        'Response needs to be JSON, form-urlencoded or parsed in middleware.'
+        'Response needs to be JSON, form-urlencoded or parsed in middleware.',
       );
     }
     return response.data;
@@ -38,8 +38,8 @@ const executeInputOutputFields = (inputOutputFields, input) => {
 
   return ZapierPromise.all(
     inputOutputFields.map((field) =>
-      _.isFunction(field) ? field(input.z, input.bundle) : field
-    )
+      _.isFunction(field) ? field(input.z, input.bundle) : field,
+    ),
   ).then((fields) => _.flatten(fields));
 };
 
@@ -87,7 +87,7 @@ const execute = (app, input) => {
       const requestWithInput = _.extend(
         {},
         injectInput(input)(options),
-        constants.REQUEST_OBJECT_SHORTHAND_OPTIONS
+        constants.REQUEST_OBJECT_SHORTHAND_OPTIONS,
       );
       const preparedRequest = addQueryParams(prepareRequest(requestWithInput));
       return preparedRequest.url;
@@ -95,7 +95,7 @@ const execute = (app, input) => {
     return executeHttpRequest(input, options);
   } else {
     throw new Error(
-      `Error: Could not find the method to call: ${input._zapier.event.method}`
+      `Error: Could not find the method to call: ${input._zapier.event.method}`,
     );
   }
 };

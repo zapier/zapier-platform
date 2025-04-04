@@ -31,15 +31,40 @@ const rpcCacheMock = (zcacheTestObj, method, key, value = null, ttl = null) => {
   throw new Error(`Unexpected method '${method}'`);
 };
 
+const rpcCursorMock = (cursorTestObj, method, key, value = null) => {
+  if (method === 'get_cursor') {
+    return cursorTestObj[key] || null;
+  }
+
+  if (method === 'set_cursor') {
+    cursorTestObj[key] = value;
+    return null;
+  }
+
+  throw new Error(`Unexpected method '${method}'`);
+};
+
 const createRpcClient = (event) => {
-  return function (method) {
+  return async function (method) {
     const params = _.toArray(arguments);
     params.shift();
 
     const zcacheMethods = ['zcache_get', 'zcache_set', 'zcache_delete'];
-    if (zcacheMethods.includes(method) && _.isPlainObject(event.zcacheTestObj)) {
+    if (
+      zcacheMethods.includes(method) &&
+      _.isPlainObject(event.zcacheTestObj)
+    ) {
       const [key, value = null] = params;
       return rpcCacheMock(event.zcacheTestObj, method, key, value);
+    }
+
+    const cursorMethods = ['get_cursor', 'set_cursor'];
+    if (
+      cursorMethods.includes(method) &&
+      _.isPlainObject(event.cursorTestObj)
+    ) {
+      const [key, value = null] = params;
+      return rpcCursorMock(event.cursorTestObj, method, key, value);
     }
 
     const id = genId();
@@ -65,32 +90,53 @@ const createRpcClient = (event) => {
       if (constants.IS_TESTING) {
         throw new Error(
           'No deploy key found. Make sure you set the `ZAPIER_DEPLOY_KEY` environment variable ' +
-            'to write tests that rely on the RPC API (i.e. z.stashFile)'
+            'to write tests that rely on the RPC API (i.e. z.stashFile)',
         );
       } else {
         throw new Error('No token found - cannot call RPC');
       }
     }
 
-    return request(req)
-      .then((res) => {
+    // RPC can fail, so let's retry.
+    // Be careful what we throw here as this will be forwarded to the user.
+    const maxRetries = 3;
+    let attempt = 0;
+    let res;
+
+    while (attempt < maxRetries) {
+      // We will throw here, which will be caught by catch logic to either retry or bubble up.
+      try {
+        res = await request(req);
+
+        if (res.status >= 500) {
+          throw new Error('Unable to reach the RPC server');
+        }
         if (res.content) {
+          // check if the ids match
           if (res.content.id !== id) {
             throw new Error(
-              `Got id ${res.content.id} but expected ${id} when calling RPC`
+              `Got id ${res.content.id} but expected ${id} when calling RPC`,
             );
           }
-          return res.content;
+          if (res.content.error) {
+            throw new Error(res.content.error);
+          }
+          return res.content.result;
         } else {
           throw new Error(`Got a ${res.status} when calling RPC`);
         }
-      })
-      .then((content) => {
-        if (content.error) {
-          throw new Error(content.error);
+      } catch (err) {
+        attempt++;
+
+        if (attempt === maxRetries || (res && res.status < 500)) {
+          throw new Error(
+            `RPC request failed after ${attempt} attempts: ${err.message}`,
+          );
         }
-        return content.result;
-      });
+        // sleep for 100ms before retrying
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    }
   };
 };
 

@@ -2,18 +2,16 @@ const crypto = require('crypto');
 const os = require('os');
 const path = require('path');
 
-const browserify = require('browserify');
-const through = require('through2');
 const _ = require('lodash');
 const archiver = require('archiver');
+const esbuild = require('esbuild');
 const fs = require('fs');
 const fse = require('fs-extra');
 const klaw = require('klaw');
 const updateNotifier = require('update-notifier');
 const colors = require('colors/safe');
-const ignore = require('ignore');
-const gitIgnore = require('parse-gitignore');
 const semver = require('semver');
+const { minimatch } = require('minimatch');
 
 const {
   constants: { Z_BEST_COMPRESSION },
@@ -21,13 +19,7 @@ const {
 
 const constants = require('../constants');
 
-const {
-  writeFile,
-  readFile,
-  copyDir,
-  ensureDir,
-  removeDir,
-} = require('./files');
+const { writeFile, copyDir, ensureDir, removeDir } = require('./files');
 
 const {
   prettyJSONstringify,
@@ -43,71 +35,44 @@ const {
   validateApp,
 } = require('./api');
 
+const { copyZapierWrapper } = require('./zapierwrapper');
+
 const checkMissingAppInfo = require('./check-missing-app-info');
 
-const { runCommand, isWindows } = require('./misc');
+const { runCommand, isWindows, findCorePackageDir } = require('./misc');
+const { respectGitIgnore } = require('./ignore');
+const { localAppCommand } = require('./local');
 
 const debug = require('debug')('zapier:build');
 
 const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
 
 // given entry points in a directory, return a list of files that uses
-// could probably be done better with module-deps...
-// TODO: needs to include package.json files too i think
-//   https://github.com/serverless/serverless-optimizer-plugin?
-const requiredFiles = (cwd, entryPoints) => {
+const requiredFiles = async ({ cwd, entryPoints }) => {
   if (!_.endsWith(cwd, path.sep)) {
     cwd += path.sep;
   }
 
-  const argv = {
-    noParse: [undefined],
-    extensions: [],
-    ignoreTransform: [],
-    entries: entryPoints,
-    fullPaths: false,
-    builtins: false,
-    commondir: false,
-    bundleExternal: true,
-    basedir: cwd,
-    browserField: false,
-    detectGlobals: true,
-    insertGlobals: false,
-    insertGlobalVars: {
-      process: undefined,
-      global: undefined,
-      'Buffer.isBuffer': undefined,
-      Buffer: undefined,
-    },
-    ignoreMissing: true,
-    debug: false,
-    standalone: undefined,
-  };
-  const b = browserify(argv);
-
-  return new Promise((resolve, reject) => {
-    b.on('error', reject);
-
-    const paths = [];
-    b.pipeline.get('deps').push(
-      through
-        .obj((row, enc, next) => {
-          const filePath = row.file || row.id;
-          paths.push(stripPath(cwd, filePath));
-          next();
-        })
-        .on('end', () => {
-          paths.sort();
-          resolve(paths);
-        })
-    );
-    b.bundle();
+  const result = await esbuild.build({
+    entryPoints,
+    outdir: './build',
+    bundle: true,
+    platform: 'node',
+    metafile: true,
+    logLevel: 'warning',
+    external: ['../test/userapp'],
+    format: 'esm',
+    write: false, // no need to write outfile
   });
+
+  return Object.keys(result.metafile.inputs).map((path) =>
+    stripPath(cwd, path),
+  );
 };
 
 const listFiles = (dir) => {
-  const isBlacklisted = (filePath) => {
-    return constants.BLACKLISTED_PATHS.find((excluded) => {
+  const isBlocklisted = (filePath) => {
+    return constants.BLOCKLISTED_PATHS.find((excluded) => {
       return filePath.search(excluded) === 0;
     });
   };
@@ -118,7 +83,7 @@ const listFiles = (dir) => {
     klaw(dir, { preserveSymlinks: true })
       .on('data', (item) => {
         const strippedPath = stripPath(cwd, item.path);
-        if (!item.stats.isDirectory() && !isBlacklisted(strippedPath)) {
+        if (!item.stats.isDirectory() && !isBlocklisted(strippedPath)) {
           paths.push(strippedPath);
         }
       })
@@ -128,26 +93,6 @@ const listFiles = (dir) => {
         resolve(paths);
       });
   });
-};
-
-// Exclude file paths in .gitignore
-const respectGitIgnore = (dir, paths) => {
-  const gitIgnorePath = path.join(dir, '.gitignore');
-  if (!fs.existsSync(gitIgnorePath)) {
-    if (!constants.IS_TESTING) {
-      console.warn(
-        `\n\n\t${colors.yellow(
-          '!! Warning !!'
-        )}\n\nThere is no .gitignore, so we are including all files. This might make the source.zip file too large\n`
-      );
-    }
-    return paths;
-  }
-  const gitIgnoredPaths = gitIgnore(gitIgnorePath);
-  const validGitIgnorePaths = gitIgnoredPaths.filter(ignore.isPathValid);
-  const gitFilter = ignore().add(validGitIgnorePaths);
-
-  return gitFilter.filter(paths);
 };
 
 const forceIncludeDumbPath = (appConfig, filePath) => {
@@ -172,10 +117,10 @@ const forceIncludeDumbPath = (appConfig, filePath) => {
     filePath.endsWith(path.join('bin', 'linux-x64-node-14', 'deasync.node')) ||
     filePath.endsWith(
       // Special, for zapier-platform-legacy-scripting-runner
-      path.join('bin', `linux-x64-node-${nodeMajorVersion}`, 'deasync.node')
+      path.join('bin', `linux-x64-node-${nodeMajorVersion}`, 'deasync.node'),
     ) ||
     filePath.match(
-      path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/
+      path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/,
     ) ||
     matchesConfigInclude
   );
@@ -214,16 +159,21 @@ const writeZipFromPaths = (dir, zipPath, paths) => {
 };
 
 const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [
-    path.resolve(dir, 'zapierwrapper.js'),
-    path.resolve(dir, 'index.js'),
-  ];
+  const entryPoints = [path.resolve(dir, 'zapierwrapper.js')];
+
+  const indexPath = path.resolve(dir, 'index.js');
+  if (fs.existsSync(indexPath)) {
+    // Necessary for CommonJS integrations. The zapierwrapper they use require()
+    // the index.js file using a variable. esbuild can't detect it, so we need
+    // to add it here specifically.
+    entryPoints.push(indexPath);
+  }
 
   let paths;
 
   const [dumbPaths, smartPaths, appConfig] = await Promise.all([
     listFiles(dir),
-    requiredFiles(dir, entryPoints),
+    requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
 
@@ -231,7 +181,7 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
     paths = dumbPaths;
   } else {
     let finalPaths = smartPaths.concat(
-      dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig))
+      dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig)),
     );
     finalPaths = _.uniq(finalPaths);
     finalPaths.sort();
@@ -254,30 +204,12 @@ const makeSourceZip = async (dir, zipPath) => {
   await writeZipFromPaths(dir, zipPath, finalPaths);
 };
 
-// Similar to utils.appCommand, but given a ready to go app
-// with a different location and ready to go zapierwrapper.js.
-const _appCommandZapierWrapper = (dir, event) => {
-  const app = require(`${dir}/zapierwrapper.js`);
-  event = Object.assign({}, event, {
-    calledFromCli: true,
-  });
-  return new Promise((resolve, reject) => {
-    app.handler(event, {}, (err, resp) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(resp);
-      }
-    });
-  });
-};
-
 const maybeNotifyAboutOutdated = () => {
   // find a package.json for the app and notify on the core dep
   // `build` won't run if package.json isn't there, so if we get to here we're good
   const requiredVersion = _.get(
     require(path.resolve('./package.json')),
-    `dependencies.${constants.PLATFORM_PACKAGE}`
+    `dependencies.${constants.PLATFORM_PACKAGE}`,
   );
 
   if (requiredVersion) {
@@ -289,11 +221,11 @@ const maybeNotifyAboutOutdated = () => {
     if (notifier.update && notifier.update.latest !== requiredVersion) {
       notifier.notify({
         message: `There's a newer version of ${colors.cyan(
-          constants.PLATFORM_PACKAGE
+          constants.PLATFORM_PACKAGE,
         )} available.\nConsider updating the dependency in your\n${colors.cyan(
-          'package.json'
+          'package.json',
         )} (${colors.grey(notifier.update.current)} → ${colors.green(
-          notifier.update.latest
+          notifier.update.latest,
         )}) and then running ${colors.red('zapier test')}.`,
       });
     }
@@ -305,10 +237,9 @@ const maybeRunBuildScript = async (options = {}) => {
 
   // Make sure we don't accidentally call the Zapier build hook inside itself
   if (process.env.npm_lifecycle_event !== ZAPIER_BUILD_KEY) {
-    const pJson = require(path.resolve(
-      options.cwd || process.cwd(),
-      'package.json'
-    ));
+    const pJson = require(
+      path.resolve(options.cwd || process.cwd(), 'package.json'),
+    );
 
     if (_.get(pJson, ['scripts', ZAPIER_BUILD_KEY])) {
       startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
@@ -318,10 +249,32 @@ const maybeRunBuildScript = async (options = {}) => {
   }
 };
 
+// Get `workspaces` from root package.json and convert them to absolute paths.
+// Returns an empty array if package.json can't be found.
+const listWorkspaces = (workspaceRoot) => {
+  const packageJsonPath = path.join(workspaceRoot, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return [];
+  }
+
+  let packageJson;
+  try {
+    packageJson = require(packageJsonPath);
+  } catch (err) {
+    return [];
+  }
+
+  return (packageJson.workspaces || []).map((relpath) =>
+    path.resolve(workspaceRoot, relpath),
+  );
+};
+
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
   skipValidation = false,
+  printProgress = true,
+  checkOutdated = true,
 } = {}) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -330,10 +283,13 @@ const _buildFunc = async ({
   const osTmpDir = await fse.realpath(os.tmpdir());
   const tmpDir = path.join(
     osTmpDir,
-    'zapier-' + crypto.randomBytes(4).toString('hex')
+    'zapier-' + crypto.randomBytes(4).toString('hex'),
   );
+  debug('Using temp directory: ', tmpDir);
 
-  maybeNotifyAboutOutdated();
+  if (checkOutdated) {
+    maybeNotifyAboutOutdated();
+  }
 
   await maybeRunBuildScript();
 
@@ -341,15 +297,59 @@ const _buildFunc = async ({
   await ensureDir(tmpDir);
   await ensureDir(constants.BUILD_DIR);
 
-  startSpinner('Copying project to temp directory');
-  await copyDir(wdir, tmpDir, {
-    filter: skipNpmInstall ? (dir) => !dir.includes('.zip') : undefined,
-  });
+  if (printProgress) {
+    startSpinner('Copying project to temp directory');
+  }
+
+  const copyFilter = skipNpmInstall
+    ? (src) => !src.endsWith('.zip')
+    : undefined;
+
+  await copyDir(wdir, tmpDir, { filter: copyFilter });
+
+  if (skipNpmInstall) {
+    const corePackageDir = findCorePackageDir();
+    const nodeModulesDir = path.dirname(corePackageDir);
+    const workspaceRoot = path.dirname(nodeModulesDir);
+    if (wdir !== workspaceRoot) {
+      // If we're in here, it means the user is using npm/yarn workspaces
+      const workspaces = listWorkspaces(workspaceRoot);
+
+      await copyDir(nodeModulesDir, path.join(tmpDir, 'node_modules'), {
+        filter: (src) => {
+          if (src.endsWith('.zip')) {
+            return false;
+          }
+          const stat = fse.lstatSync(src);
+          if (stat.isSymbolicLink()) {
+            const realPath = path.resolve(
+              path.dirname(src),
+              fse.readlinkSync(src),
+            );
+            for (const workspace of workspaces) {
+              // Use minimatch to do glob pattern match. If match, it means the
+              // symlink points to a workspace package, so we don't copy it.
+              if (minimatch(realPath, workspace)) {
+                return false;
+              }
+            }
+          }
+          return true;
+        },
+        onDirExists: (dir) => {
+          // Don't overwrite existing sub-directories in node_modules
+          return false;
+        },
+      });
+    }
+  }
 
   let output = {};
   if (!skipNpmInstall) {
-    endSpinner();
-    startSpinner('Installing project dependencies');
+    if (printProgress) {
+      endSpinner();
+      startSpinner('Installing project dependencies');
+    }
     output = await runCommand('npm', ['install', '--production'], {
       cwd: tmpDir,
     });
@@ -359,51 +359,46 @@ const _buildFunc = async ({
   const corePath = path.join(
     tmpDir,
     'node_modules',
-    constants.PLATFORM_PACKAGE
+    constants.PLATFORM_PACKAGE,
   );
   if (!fs.existsSync(corePath)) {
     throw new Error(
-      'Could not install dependencies properly. Error log:\n' + output.stderr
+      'Could not install dependencies properly. Error log:\n' + output.stderr,
     );
   }
-  endSpinner();
 
-  startSpinner('Applying entry point file');
-  // TODO: should this routine for include exist elsewhere?
-  const zapierWrapperBuf = await readFile(
-    path.join(
-      tmpDir,
-      'node_modules',
-      constants.PLATFORM_PACKAGE,
-      'include',
-      'zapierwrapper.js'
-    )
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Applying entry point files');
+  }
+
+  await copyZapierWrapper(corePath, tmpDir);
+
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Building app definition.json');
+  }
+
+  const rawDefinition = await localAppCommand(
+    { command: 'definition' },
+    tmpDir,
+    false,
   );
-  await writeFile(
-    path.join(tmpDir, 'zapierwrapper.js'),
-    zapierWrapperBuf.toString()
-  );
-  endSpinner();
-
-  startSpinner('Building app definition.json');
-  const rawDefinition = (
-    await _appCommandZapierWrapper(tmpDir, {
-      command: 'definition',
-    })
-  ).results;
-
   const fileWriteError = await writeFile(
     path.join(tmpDir, 'definition.json'),
-    prettyJSONstringify(rawDefinition)
+    prettyJSONstringify(rawDefinition),
   );
 
   if (fileWriteError) {
     debug('\nFile Write Error:\n', fileWriteError, '\n');
     throw new Error(
-      `Unable to write ${tmpDir}/definition.json, please check file permissions!`
+      `Unable to write ${tmpDir}/definition.json, please check file permissions!`,
     );
   }
-  endSpinner();
+
+  if (printProgress) {
+    endSpinner();
+  }
 
   if (!skipValidation) {
     /**
@@ -412,20 +407,20 @@ const _buildFunc = async ({
      * (Remote - `validateApp`) Both the Schema, AppVersion, and Auths are validated
      */
 
-    startSpinner('Validating project schema');
-    const validateResponse = await _appCommandZapierWrapper(tmpDir, {
-      command: 'validate',
-    });
-
-    const validationErrors = validateResponse.results;
+    if (printProgress) {
+      startSpinner('Validating project schema and style');
+    }
+    const validationErrors = await localAppCommand(
+      { command: 'validate' },
+      tmpDir,
+      false,
+    );
     if (validationErrors.length) {
       debug('\nErrors:\n', validationErrors, '\n');
       throw new Error(
-        'We hit some validation errors, try running `zapier validate` to see them!'
+        'We hit some validation errors, try running `zapier validate` to see them!',
       );
     }
-
-    startSpinner('Validating project style');
 
     // No need to mention specifically we're validating style checks as that's
     //   implied from `zapier validate`, though it happens as a separate process
@@ -435,13 +430,15 @@ const _buildFunc = async ({
       debug(
         '\nErrors:\n',
         prettyJSONstringify(styleChecksResponse.errors.results),
-        '\n'
+        '\n',
       );
       throw new Error(
-        'We hit some style validation errors, try running `zapier validate` to see them!'
+        'We hit some style validation errors, try running `zapier validate` to see them!',
       );
     }
-    endSpinner();
+    if (printProgress) {
+      endSpinner();
+    }
 
     if (_.get(styleChecksResponse, ['warnings', 'total_failures'])) {
       console.log(colors.yellow('WARNINGS:'));
@@ -457,16 +454,21 @@ const _buildFunc = async ({
     debug('\nWarning: Skipping Validation');
   }
 
-  startSpinner('Zipping project and dependencies');
+  if (printProgress) {
+    startSpinner('Zipping project and dependencies');
+  }
   await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyDetection);
   await makeSourceZip(
     tmpDir,
     path.join(wdir, sourceZipPath),
-    disableDependencyDetection
+    disableDependencyDetection,
   );
-  endSpinner();
 
-  startSpinner('Testing build');
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Testing build');
+  }
+
   if (!isWindows()) {
     // TODO err, what should we do on windows?
 
@@ -476,21 +478,27 @@ const _buildFunc = async ({
     await runCommand(
       'find',
       ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'],
-      { cwd: tmpDir }
+      { cwd: tmpDir },
     );
   }
-  endSpinner();
 
-  startSpinner('Cleaning up temp directory');
+  if (printProgress) {
+    endSpinner();
+    startSpinner('Cleaning up temp directory');
+  }
+
   await removeDir(tmpDir);
-  endSpinner();
+
+  if (printProgress) {
+    endSpinner();
+  }
 
   return zipPath;
 };
 
 const buildAndOrUpload = async (
   { build = false, upload = false } = {},
-  buildOpts
+  buildOpts,
 ) => {
   if (!(build || upload)) {
     throw new Error('must either build or upload');

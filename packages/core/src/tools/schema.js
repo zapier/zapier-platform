@@ -125,7 +125,7 @@ const compileApp = (appRaw) => {
   actions.forEach((a) => {
     const collisions = _.intersection(
       Object.keys(extras[a] || {}),
-      Object.keys(appRaw[a] || {})
+      Object.keys(appRaw[a] || {}),
     );
     if (collisions.length) {
       problemKeys = problemKeys.concat(collisions.map((k) => `${a}.${k}`));
@@ -165,7 +165,7 @@ const compileApp = (appRaw) => {
     appRaw.triggers[trigger.key] = copyPropertiesFromResource(
       'trigger',
       trigger,
-      appRaw
+      appRaw,
     );
   });
 
@@ -173,7 +173,7 @@ const compileApp = (appRaw) => {
     appRaw.searches[search.key] = copyPropertiesFromResource(
       'search',
       search,
-      appRaw
+      appRaw,
     );
   });
 
@@ -181,7 +181,7 @@ const compileApp = (appRaw) => {
     appRaw.creates[create.key] = copyPropertiesFromResource(
       'create',
       create,
-      appRaw
+      appRaw,
     );
   });
 

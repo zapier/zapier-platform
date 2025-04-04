@@ -33,7 +33,7 @@ describe('uniqueInputFieldKeys', () => {
       .every(
         (err) =>
           err.message ===
-          'inputField keys must be unique for each action. The key "name" is already in use at creates.foo.operation.inputFields[0].key'
+          'inputField keys must be unique for each action. The key "name" is already in use at creates.foo.operation.inputFields[0].key',
       )
       .should.be.true();
   });
@@ -73,10 +73,10 @@ describe('uniqueInputFieldKeys', () => {
     results.errors.should.have.length(2);
 
     results.errors[0].message.should.eql(
-      `inputField keys must be unique for each action, even if they're children. The key "name" is already in use at creates.foo.operation.inputFields[0].children[1].key`
+      `inputField keys must be unique for each action, even if they're children. The key "name" is already in use at creates.foo.operation.inputFields[0].children[1].key`,
     );
     results.errors[1].message.should.eql(
-      `inputField keys must be unique for each action. The key "name" is already in use at creates.foo.operation.inputFields[0].children[1].key`
+      `inputField keys must be unique for each action. The key "name" is already in use at creates.foo.operation.inputFields[0].children[1].key`,
     );
   });
 
@@ -113,7 +113,7 @@ describe('uniqueInputFieldKeys', () => {
       .every(
         (err) =>
           err.message ===
-          `inputField keys must be unique for each action, even if they're children. The key "name" is already in use at creates.foo.operation.inputFields[0].children[0].key`
+          `inputField keys must be unique for each action, even if they're children. The key "name" is already in use at creates.foo.operation.inputFields[0].children[0].key`,
       )
       .should.be.true();
   });

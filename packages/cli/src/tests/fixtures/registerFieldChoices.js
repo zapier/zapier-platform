@@ -2,13 +2,11 @@ module.exports = {
   intention: [
     {
       value: 'global',
-      name:
-        "Public: I'm evaluating making my app available to the entire Zapier ecosystem",
+      name: "Public: I'm evaluating making my app available to the entire Zapier ecosystem",
     },
     {
       value: 'private',
-      name:
-        "Private: I'm building an integration for personal use or to explore the Zapier platform",
+      name: "Private: I'm building an integration for personal use or to explore the Zapier platform",
     },
   ],
   role: [

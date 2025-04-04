@@ -18,19 +18,21 @@ const getChangelogFromMarkdown = (version, markdown) => {
     .split('\n');
 
   let startingLine = lines.findIndex((line) =>
-    RegExp(`^#{1,4} .*${version.split('.').join('\\.')}`).test(line)
+    RegExp(`^#{1,4} .*${version.split('.').join('\\.')}`).test(line),
   );
 
   if (startingLine === -1) {
     throw new Error(`Version '${version}' not found in changelog`);
   }
 
+  const headerLevel = lines[startingLine].match(/^#+/)[0].length;
+
   startingLine++;
 
   // Find the next line that starts with one or more '#' chars
   let endingLine = lines
     .slice(startingLine)
-    .findIndex((line) => /^#{1,4} /.test(line));
+    .findIndex((line) => new RegExp(`^#{1,${headerLevel}} `).test(line));
 
   if (endingLine === -1) {
     endingLine = lines.length;

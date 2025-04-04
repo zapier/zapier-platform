@@ -9,20 +9,20 @@ const appTester = zapier.createAppTester(App);
 
 describe('triggers', () => {
   describe('new recipe trigger', () => {
-    it('should load recipe from fake hook', done => {
+    it('should load recipe from fake hook', (done) => {
       const bundle = {
         inputData: {
-          style: 'mediterranean'
+          style: 'mediterranean',
         },
         cleanedRequest: {
           id: 1,
           name: 'name 1',
-          directions: 'directions 1'
-        }
+          directions: 'directions 1',
+        },
       };
 
       appTester(App.triggers.recipe.operation.perform, bundle)
-        .then(results => {
+        .then((results) => {
           results.length.should.eql(1);
 
           const firstRecipe = results[0];
@@ -34,18 +34,18 @@ describe('triggers', () => {
         .catch(done);
     });
 
-    it('should load recipe from list', done => {
+    it('should load recipe from list', (done) => {
       const bundle = {
         inputData: {
-          style: 'mediterranean'
+          style: 'mediterranean',
         },
         meta: {
-          frontend: true
-        }
+          frontend: true,
+        },
       };
 
       appTester(App.triggers.recipe.operation.performList, bundle)
-        .then(results => {
+        .then((results) => {
           results.length.should.be.greaterThan(1);
 
           const firstRecipe = results[0];

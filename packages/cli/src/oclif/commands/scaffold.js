@@ -1,13 +1,16 @@
-const path = require('path');
+/* eslint-disable camelcase */
+// @ts-check
 
-const { flags } = require('@oclif/command');
+const path = require('path');
+const fs = require('fs');
+
+const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
 const {
-  createTemplateContext,
-  getRelativeRequirePath,
+  createScaffoldingContext,
   plural,
   updateEntryFile,
   isValidEntryFileUpdate,
@@ -18,127 +21,90 @@ const { isValidAppInstall } = require('../../utils/misc');
 const { writeFile } = require('../../utils/files');
 const { ISSUES_URL } = require('../../constants');
 
-const getNewFileDirectory = (action, test = false) =>
-  path.join(test ? 'test/' : '', plural(action));
-
-const getLocalFilePath = (directory, actionKey) =>
-  path.join(directory, actionKey);
-/**
- * both the string to `require` and later, the filepath to write to
- */
-const getFullActionFilePath = (directory, actionKey) =>
-  path.join(process.cwd(), getLocalFilePath(directory, actionKey));
-
-const getFullActionFilePathWithExtension = (directory, actionKey, isTest) =>
-  `${getFullActionFilePath(directory, actionKey)}${isTest ? '.test' : ''}.js`;
-
 class ScaffoldCommand extends BaseCommand {
   async perform() {
     const { actionType, noun } = this.args;
-
-    // TODO: interactive portion here?
+    const indexFileLocal = this.flags.entry ?? this.defaultIndexFileLocal();
     const {
-      dest: newActionDir = getNewFileDirectory(actionType),
-      testDest: newTestActionDir = getNewFileDirectory(actionType, true),
-      entry = 'index.js',
+      dest: actionDirLocal = this.defaultActionDirLocal(indexFileLocal),
+      'test-dest': testDirLocal = this.defaultTestDirLocal(indexFileLocal),
       force,
     } = this.flags;
 
-    // this is possible, just extra work that's out of scope
-    // const tsParser = j.withParser('ts')
-    // tsParser(codeStr)
-    // will have to change logic probably though
-    if (entry.endsWith('ts')) {
-      this.error(
-        `Typescript isn't supported for scaffolding yet. Instead, try copying the example code at https://github.com/zapier/zapier-platform/blob/b8224ec9855be91c66c924b731199a068b1e913a/example-apps/typescript/src/resources/recipe.ts`
-      );
-    }
+    const language = indexFileLocal.endsWith('.ts') ? 'ts' : 'js';
 
-    const shouldIncludeComments = !this.flags['no-help']; // when called from other commands (namely `init`) this will be false
-    const templateContext = createTemplateContext(
+    const context = createScaffoldingContext({
       actionType,
       noun,
-      shouldIncludeComments
-    );
+      language,
+      indexFileLocal,
+      actionDirLocal,
+      testDirLocal,
+      includeIntroComments: !this.flags['no-help'],
+      preventOverwrite: !force,
+    });
 
-    const actionKey = templateContext.KEY;
-
-    const preventOverwrite = !force;
     // TODO: read from config file?
 
-    this.startSpinner(
-      `Creating new file: ${getLocalFilePath(newActionDir, actionKey)}.js`
-    );
-    await writeTemplateFile(
-      actionType,
-      templateContext,
-      getFullActionFilePathWithExtension(newActionDir, actionKey),
-      preventOverwrite
-    );
+    this.startSpinner(`Creating new file: ${context.actionFileLocal}`);
+
+    await writeTemplateFile({
+      destinationPath: context.actionFileResolved,
+      templateType: context.actionType,
+      language: context.language,
+      preventOverwrite: context.preventOverwrite,
+      templateContext: context.templateContext,
+    });
     this.stopSpinner();
 
-    this.startSpinner(
-      `Creating new test file: ${getLocalFilePath(
-        newTestActionDir,
-        actionKey
-      )}.js`
-    );
-    await writeTemplateFile(
-      'test',
-      templateContext,
-      getFullActionFilePathWithExtension(newTestActionDir, actionKey, true),
-      preventOverwrite
-    );
+    this.startSpinner(`Creating new test file: ${context.testFileLocal}`);
+    await writeTemplateFile({
+      destinationPath: context.testFileResolved,
+      templateType: 'test',
+      language: context.language,
+      preventOverwrite: context.preventOverwrite,
+      templateContext: context.templateContext,
+    });
     this.stopSpinner();
 
     // * rewire the index.js to point to the new file
-    this.startSpinner(`Rewriting your ${entry}`);
+    this.startSpinner(`Rewriting your ${context.indexFileLocal}`);
 
-    const entryFilePath = path.join(process.cwd(), entry);
-
-    const originalContents = await updateEntryFile(
-      entryFilePath,
-      templateContext.VARIABLE,
-      getFullActionFilePath(newActionDir, actionKey),
-      actionType,
-      templateContext.KEY
-    );
+    const originalContents = await updateEntryFile({
+      language: context.language,
+      indexFileResolved: context.indexFileResolved,
+      actionRelativeImportPath: context.actionRelativeImportPath,
+      actionImportName: context.templateContext.VARIABLE,
+      actionType: context.actionType,
+    });
 
     if (isValidAppInstall().valid) {
       const success = isValidEntryFileUpdate(
-        entryFilePath,
-        actionType,
-        templateContext.KEY
+        context.language,
+        context.indexFileResolved,
+        context.actionType,
+        context.templateContext.KEY,
       );
 
       this.stopSpinner({ success });
 
       if (!success) {
-        const entryName = splitFileFromPath(entryFilePath)[1];
+        const entryName = splitFileFromPath(context.indexFileResolved)[1];
 
         this.startSpinner(
-          `Unable to successfully rewrite your ${entryName}. Rolling back...`
+          `Unable to successfully rewrite your ${entryName}. Rolling back...`,
         );
-        await writeFile(entryFilePath, originalContents);
+        await writeFile(context.indexFileResolved, originalContents);
         this.stopSpinner();
 
         this.error(
           [
-            `\nPlease add the following lines to ${entryFilePath}:`,
-            ` * \`const ${
-              templateContext.VARIABLE
-            } = require('./${getRelativeRequirePath(
-              entryFilePath,
-              getFullActionFilePath(newActionDir, actionKey)
-            )}');\` at the top-level`,
-            ` * \`[${templateContext.VARIABLE}.key]: ${
-              templateContext.VARIABLE
-            }\` in the "${plural(
-              actionType
-            )}" object in your exported integration definition.`,
+            `\nPlease add the following lines to ${context.indexFileResolved}:`,
+            ` * \`const ${context.templateContext.VARIABLE} = require('./${context.actionRelativeImportPath}');\` at the top-level`,
+            ` * \`[${context.templateContext.VARIABLE}.key]: ${context.templateContext.VARIABLE}\` in the "${context.actionTypePlural}" object in your exported integration definition.`,
             '',
-            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${entryFilePath}.`,
-          ].join('\n')
+            `Also, please file an issue at ${ISSUES_URL} with the contents of your ${context.indexFileResolved}.`,
+          ].join('\n'),
         );
       }
     }
@@ -146,49 +112,89 @@ class ScaffoldCommand extends BaseCommand {
     this.stopSpinner();
 
     if (!this.flags.invokedFromAnotherCommand) {
-      this.log(`\nAll done! Your new ${actionType} is ready to use.`);
+      this.log(`\nAll done! Your new ${context.actionType} is ready to use.`);
     }
+  }
+
+  /**
+   * If `--entry` is not provided, this will determine the path to the
+   * root index file. Notably, we'll look for tsconfig.json and
+   * src/index.ts first, because even TS apps have a root level plain
+   * index.js that we should ignore.
+   *
+   * @returns {string}
+   */
+  defaultIndexFileLocal() {
+    const tsConfigPath = path.join(process.cwd(), 'tsconfig.json');
+    const srcIndexTsPath = path.join(process.cwd(), 'src', 'index.ts');
+    if (fs.existsSync(tsConfigPath) && fs.existsSync(srcIndexTsPath)) {
+      this.log('Automatically detected TypeScript project');
+      return 'src/index.ts';
+    }
+
+    return 'index.js';
+  }
+
+  /**
+   * If `--dest` is not provided, this will determine the directory for
+   * the new action file to be created in.
+   *
+   * @param {string} indexFileLocal - The path to the index file
+   * @returns {string}
+   */
+  defaultActionDirLocal(indexFileLocal) {
+    const parent = path.dirname(indexFileLocal);
+    return path.join(parent, plural(this.args.actionType));
+  }
+
+  /**
+   * If `--test-dest` is not provided, this will determine the directory
+   * for the new test file to be created in.
+   *
+   * @param {string} indexFileLocal - The path to the index file
+   * @returns {string}
+   */
+  defaultTestDirLocal(indexFileLocal) {
+    const parent = path.dirname(indexFileLocal);
+    return path.join(parent, 'test', plural(this.args.actionType));
   }
 }
 
-ScaffoldCommand.args = [
-  {
-    name: 'actionType',
+ScaffoldCommand.args = {
+  actionType: Args.string({
     help: 'What type of step type are you creating?',
     required: true,
     options: ['trigger', 'search', 'create', 'resource'],
-  },
-  {
-    name: 'noun',
+  }),
+  noun: Args.string({
     help: 'What sort of object this action acts on. For example, the name of the new thing to create',
     required: true,
-  },
-];
+  }),
+};
 
 ScaffoldCommand.flags = buildFlags({
   commandFlags: {
-    dest: flags.string({
+    dest: Flags.string({
       char: 'd',
       description:
         "Specify the new file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `[triggers|searches|creates]/{noun}`.",
     }),
-    'test-dest': flags.string({
+    'test-dest': Flags.string({
       description:
         "Specify the new test file's directory. Use this flag when you want to create a different folder structure such as `src/triggers` instead of the default `triggers`. Defaults to `test/[triggers|searches|creates]/{noun}`.",
     }),
-    entry: flags.string({
+    entry: Flags.string({
       char: 'e',
       description:
-        "Supply the path to your integration's root (`index.js`). Only needed if your `index.js` is in a subfolder, like `src`.",
-      default: 'index.js',
+        "Supply the path to your integration's entry point (`index.js` or `src/index.ts`). This will try to automatically detect the correct file if not provided.",
     }),
-    force: flags.boolean({
+    force: Flags.boolean({
       char: 'f',
       description:
-        'Should we overwrite an exisiting trigger/search/create file?',
+        'Should we overwrite an existing trigger/search/create file?',
       default: false,
     }),
-    'no-help': flags.boolean({
+    'no-help': Flags.boolean({
       description:
         "When scaffolding, should we skip adding helpful intro comments? Useful if this isn't your first rodeo.",
       default: false,

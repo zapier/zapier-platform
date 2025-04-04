@@ -32,7 +32,7 @@ const prepareRawResponse = (resp, request) => {
       throw new Error(
         'You passed {raw: true} in request() - the response.content property is not ' +
           'available! Try response.body.pipe() for streaming, response.buffer() for a ' +
-          'buffer, or response.text() for string.'
+          'buffer, or response.text() for string.',
       );
     },
   });
@@ -45,7 +45,9 @@ const prepareContentResponse = async (resp, request) => {
 
   // trim down the response signature a ton for simplicity
   const preppedResp = {
+    url: resp.url,
     status: resp.status,
+    redirected: resp.redirected,
     json: undefined,
     data: undefined,
     content,

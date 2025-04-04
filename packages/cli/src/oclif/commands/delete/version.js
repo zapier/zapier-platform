@@ -1,4 +1,5 @@
 const BaseCommand = require('../../ZapierBaseCommand');
+const { Args } = require('@oclif/core');
 const { buildFlags } = require('../../buildFlags');
 const { callAPI } = require('../../../utils/api');
 
@@ -17,13 +18,12 @@ class DeleteVersionCommand extends BaseCommand {
   }
 }
 
-DeleteVersionCommand.args = [
-  {
-    name: 'version',
-    required: true,
+DeleteVersionCommand.args = {
+  version: Args.string({
     description: `Specify the version to delete. It must have no users or Zaps.`,
-  },
-];
+    required: true,
+  }),
+};
 DeleteVersionCommand.flags = buildFlags();
 DeleteVersionCommand.skipValidInstallCheck = true;
 DeleteVersionCommand.description = `Delete a specific version of your integration.

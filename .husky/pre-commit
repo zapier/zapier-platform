@@ -1,4 +1,1 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
-yarn lerna run --stream precommit && yarn lint-staged
+yarn lerna run --stream precommit && yarn generate-types && yarn lint-staged

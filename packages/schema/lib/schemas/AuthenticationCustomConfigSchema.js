@@ -33,5 +33,5 @@ module.exports = makeSchema(
     ],
     antiExamples: [{ example: { foo: true }, reason: 'Invalid key.' }],
   },
-  [RequestSchema, FunctionSchema]
+  [RequestSchema, FunctionSchema],
 );

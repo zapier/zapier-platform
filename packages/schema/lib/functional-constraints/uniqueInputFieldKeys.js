@@ -30,8 +30,8 @@ const uniqueInputFieldKeys = (definition) => {
               }.key`,
               inputField.key,
               `/BasicOperationSchema`,
-              `instance.${actionType}.${key}.operation.inputFields[${index}].key`
-            )
+              `instance.${actionType}.${key}.operation.inputFields[${index}].key`,
+            ),
           );
         } else {
           existingKeys[inputField.key] = `inputFields[${index}]`;
@@ -48,13 +48,12 @@ const uniqueInputFieldKeys = (definition) => {
                 }.key`,
                 subField.key,
                 `/BasicOperationSchema`,
-                `instance.${actionType}.${key}.operation.inputFields[${index}].children[${subFieldIndex}].key`
-              )
+                `instance.${actionType}.${key}.operation.inputFields[${index}].children[${subFieldIndex}].key`,
+              ),
             );
           } else {
-            existingKeys[
-              subField.key
-            ] = `inputFields[${index}].children[${subFieldIndex}]`;
+            existingKeys[subField.key] =
+              `inputFields[${index}].children[${subFieldIndex}]`;
           }
         });
       });

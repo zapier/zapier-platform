@@ -11,7 +11,7 @@ describe('creates', () => {
     const bundle = { inputData: { question: 'Will this work?' } };
     const result = await appTester(
       App.creates.prediction.operation.perform,
-      bundle
+      bundle,
     );
     expect(result).toMatchObject({
       status: '...thinking...',
@@ -35,7 +35,7 @@ describe('creates', () => {
 
     const result = await appTester(
       App.creates.prediction.operation.performResume,
-      bundle
+      bundle,
     );
     expect(result).toMatchObject({
       status: 'success',

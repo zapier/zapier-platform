@@ -19,7 +19,7 @@ describe('errors', () => {
       error.should.instanceOf(errors.Error);
       error.name.should.eql('AppError');
       error.message.should.eql(
-        '{"message":"My Message","code":"MyCode","status":400}'
+        '{"message":"My Message","code":"MyCode","status":400}',
       );
     });
   });
@@ -48,7 +48,7 @@ describe('errors', () => {
       error.should.instanceOf(errors.ResponseError);
       error.name.should.eql('ResponseError');
       error.message.should.eql(
-        `{"status":400,"headers":{"content-type":"text/html; charset=utf-8","retry-after":60},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`
+        `{"status":400,"headers":{"content-type":"text/html; charset=utf-8","retry-after":60},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
       );
     });
 
@@ -80,7 +80,7 @@ describe('errors', () => {
       error.should.instanceOf(errors.ResponseError);
       error.name.should.eql('ResponseError');
       error.message.should.eql(
-        `{"status":401,"headers":{"content-type":"application/json","retry-after":60},"content":null,"request":{"url":"https://example.com"}}`
+        `{"status":401,"headers":{"content-type":"application/json","retry-after":60},"content":null,"request":{"url":"https://example.com"}}`,
       );
     });
   });

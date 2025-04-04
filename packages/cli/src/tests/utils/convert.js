@@ -47,11 +47,11 @@ const visualAppDefinition = {
           },
           {
             source:
-              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
+              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // modify your api response to return an array of Field objects\n    // see https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
           },
           {
             source:
-              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // modify your api response to return an array of Field objects\n    // see https://zapier.github.io/zapier-platform-schema/build/schema.html#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
+              "// Configure a request to an endpoint of your api that\n// returns custom field meta data for the authenticated\n// user.  Don't forget to congigure authentication!\n\nconst options = {\n  url: 'https://api.example.com/custom_field_meta_data',\n  method: 'GET',\n  headers: {\n    'Accept': 'application/json'\n  },\n  params: {\n\n  }\n}\n\nreturn z.request(options)\n  .then((response) => {\n    const results = response.data;\n\n    // modify your api response to return an array of Field objects\n    // see https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#fieldschema\n    // for schema definition.\n\n    return results;\n  });\n",
           },
           {
             required: false,
@@ -258,16 +258,25 @@ const setupTempWorkingDir = () => {
 };
 
 describe('convert', () => {
-  let tempAppDir, readTempFile;
+  let tempAppDir, readTempFile, origConsoleWarn;
+  const warnings = [];
 
   beforeEach(() => {
     tempAppDir = setupTempWorkingDir();
     readTempFile = (fpath) =>
       fs.readFileSync(path.join(tempAppDir, fpath), 'utf-8');
+
+    origConsoleWarn = console.warn;
+    warnings.length = 0;
+    console.warn = (msg) => {
+      warnings.push(msg);
+    };
   });
 
   afterEach(() => {
     fs.removeSync(tempAppDir);
+
+    console.warn = origConsoleWarn;
   });
 
   describe('visual builder apps', () => {
@@ -298,15 +307,15 @@ describe('convert', () => {
           tempAppDir,
           'node_modules',
           'zapier-platform-core',
-          'index.js'
+          'index.js',
         ),
-        `module.exports = {version: "${visualAppDefinition.platformVersion}"}`
+        `module.exports = {version: "${visualAppDefinition.platformVersion}"}`,
       );
 
       const pkg = require(path.join(tempAppDir, 'package.json'));
       should(pkg.name).eql('my-w-istia-app');
       should(pkg.dependencies['zapier-platform-core']).eql(
-        visualAppDefinition.platformVersion
+        visualAppDefinition.platformVersion,
       );
       should(pkg.version).eql('1.0.2');
 
@@ -330,11 +339,11 @@ describe('convert', () => {
 
       should(idxFile.includes("require('./package.json').version")).be.true();
       should(
-        idxFile.includes("require('zapier-platform-core').version")
+        idxFile.includes("require('zapier-platform-core').version"),
       ).be.true();
       should(idxFile.includes('source:')).be.false();
       should(
-        idxFile.includes('const beforeRequest = async(z, bundle)')
+        idxFile.includes('const beforeRequest = async(z, bundle)'),
       ).be.false();
 
       // requiring the file ensures the js is syntactically valid
@@ -346,11 +355,11 @@ describe('convert', () => {
       const createFile = readTempFile('creates/create_project.js');
       should(createFile.includes('source:')).be.false();
       should(
-        createFile.includes('const inputFields = async (z, bundle)')
+        createFile.includes('const inputFields = async (z, bundle)'),
       ).be.true();
       should(createFile.includes('inputFields0')).be.false();
       should(
-        createFile.includes('const inputFields1 = async (z, bundle)')
+        createFile.includes('const inputFields1 = async (z, bundle)'),
       ).be.true();
 
       // renderStep -> perform etc
@@ -363,19 +372,19 @@ describe('convert', () => {
       const authenticationFile = readTempFile('authentication.js');
       should(authenticationFile.includes('source:')).be.false();
       should(
-        authenticationFile.includes('const test = async (z, bundle)')
+        authenticationFile.includes('const test = async (z, bundle)'),
       ).be.true();
       should(
         authenticationFile.includes(
-          'const refreshAccessToken = async (z, bundle)'
-        )
+          'const refreshAccessToken = async (z, bundle)',
+        ),
       ).be.true();
 
       // renderHydrators
       const hydratorsFile = readTempFile('hydrators.js');
       should(hydratorsFile.includes('source:')).be.false();
       should(
-        hydratorsFile.includes('getMovieDetails = async (z, bundle)')
+        hydratorsFile.includes('getMovieDetails = async (z, bundle)'),
       ).be.true();
     });
 
@@ -385,6 +394,74 @@ describe('convert', () => {
       appDefinition.triggers.codemode.operation.perform.source +=
         '\n// a comment';
       await convertApp(visualApp, appDefinition, tempAppDir);
+    });
+
+    it('should not break over syntax error in authentication', async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.authentication.test.source += '{ bad code }';
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      warnings.should.have.length(1);
+      warnings[0].should.containEql('Your code has syntax error');
+      warnings[0].should.containEql('authentication.js');
+
+      const authenticationFile = readTempFile('authentication.js');
+      should(
+        authenticationFile.includes('const test = async (z, bundle)'),
+      ).be.true();
+      should(authenticationFile.includes('{ bad code }')).be.true();
+    });
+
+    it('should not break over syntax error in step', async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.triggers.codemode.operation.perform.source +=
+        '{ bad code }';
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      warnings.should.have.length(1);
+      warnings[0].should.containEql('Your code has syntax error');
+      warnings[0].should.containEql('triggers/codemode.js');
+
+      const triggerFile = readTempFile('triggers/codemode.js');
+      should(triggerFile.includes('const perform = async (z)')).be.true();
+      should(triggerFile.includes('{ bad code }')).be.true();
+    });
+
+    it('should not break over syntax error in hydrator', async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.hydrators.getMovieDetails.source += '{ bad code }';
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      warnings.should.have.length(1);
+      warnings[0].should.containEql('Your code has syntax error');
+      warnings[0].should.containEql('hydrators.js');
+
+      const hydratorsFile = readTempFile('hydrators.js');
+      should(
+        hydratorsFile.includes('getMovieDetails = async (z, bundle)'),
+      ).be.true();
+      should(hydratorsFile.includes('{ bad code }')).be.true();
+    });
+
+    it("should not replace 'source' in sample", async () => {
+      // PDE-4495
+      const appDefinition = cloneDeep(visualAppDefinition);
+      appDefinition.creates.create_project.operation.sample = {
+        id: 1234,
+        data: {
+          objects: [{ source: 'not a function' }],
+        },
+      };
+      await convertApp(visualApp, appDefinition, tempAppDir);
+
+      const createFile = readTempFile('creates/create_project.js');
+      should(
+        createFile.includes('const inputFields = async (z, bundle)'),
+      ).be.true();
+      should(createFile.includes("[{ source: 'not a function' }]")).be.true();
     });
   });
 });

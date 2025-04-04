@@ -101,7 +101,7 @@ const addInputData = (event, bundle, convertedBundle) => {
   } else if (event.name.startsWith('auth.oauth2.token')) {
     // Overwrite convertedBundle.auth_fields with bundle.inputData
     convertedBundle.auth_fields = Object.keys(
-      convertedBundle.auth_fields
+      convertedBundle.auth_fields,
     ).reduce((result, k) => {
       result[k] = bundle.inputData[k] || convertedBundle.auth_fields[k];
       return result;
@@ -116,7 +116,7 @@ const addHookData = (event, bundle, convertedBundle) => {
 
     if (!convertedBundle.request.querystring) {
       convertedBundle.request.querystring = convertToQueryString(
-        bundle.inputData
+        bundle.inputData,
       );
     }
     if (!convertedBundle.request.content) {
@@ -139,12 +139,12 @@ const addHookData = (event, bundle, convertedBundle) => {
 const addRequestData = async (event, z, bundle, convertedBundle) => {
   Object.assign(
     convertedBundle.request.headers,
-    _.get(bundle, 'request.headers')
+    _.get(bundle, 'request.headers'),
   );
 
   Object.assign(
     convertedBundle.request.params,
-    _.get(bundle, 'request.params')
+    _.get(bundle, 'request.params'),
   );
 
   const body = _.get(bundle, 'request.body');
@@ -163,10 +163,10 @@ const addRequestData = async (event, z, bundle, convertedBundle) => {
           }, {});
 
         const fileFieldKeys = Object.keys(body).filter((k) =>
-          isFileField(k, bundle)
+          isFileField(k, bundle),
         );
         const fileMetas = await Promise.all(
-          fileFieldKeys.map((k) => LazyFile(body[k]).meta())
+          fileFieldKeys.map((k) => LazyFile(body[k]).meta()),
         );
 
         files = _.zip(fileFieldKeys, fileMetas)
@@ -291,7 +291,7 @@ const bundleConverter = async (bundle, event, z) => {
 
   if (bundle._legacyUrl) {
     convertedBundle.raw_url = convertedBundle.url_raw = undoCurlyReplacement(
-      bundle._legacyUrl
+      bundle._legacyUrl,
     );
   }
 

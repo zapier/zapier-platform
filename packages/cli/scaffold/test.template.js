@@ -10,7 +10,7 @@ describe('<%= ACTION_PLURAL %>.<%= KEY %>', () => {
   it('should run', async () => {
     const bundle = { inputData: {} };
 
-    const results = await appTester(App.<%= ACTION_PLURAL %>.<%= KEY %>.<%= MAYBE_RESOURCE %>operation.perform, bundle);
+    const results = await appTester(App.<%= ACTION_PLURAL %>['<%= KEY %>'].<%= MAYBE_RESOURCE %>operation.perform, bundle);
     expect(results).toBeDefined();
     // TODO: add more assertions
   });

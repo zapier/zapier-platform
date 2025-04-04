@@ -20,6 +20,7 @@ const prepareTestRequest = ({
   reqBody = {},
   resBody = {},
   reqQueryParams = '',
+  resHeaders = {},
 } = {}) =>
   prepareRequestLog(
     {
@@ -37,10 +38,11 @@ const prepareTestRequest = ({
       status: 200,
       headers: {
         'content-type': 'application/json',
+        ...resHeaders,
       },
 
       content: resBody,
-    }
+    },
   );
 
 describe('logger', () => {
@@ -292,6 +294,158 @@ describe('logger', () => {
           response_status_code: 200,
           response_headers: 'content-type: application/json',
           response_content: '{"access_token":":censored:14:777829d1c1:"}',
+        },
+      },
+    ]);
+  });
+
+  it('should replace secret in response content as a JSON string', async () => {
+    const event = {
+      method: 'authentication.sessionConfig.perform',
+    };
+    const logger = createlogger(event, options);
+
+    const { message, data } = prepareTestRequest({
+      reqBody: {
+        username: 'user1234',
+        password: 'password1234',
+      },
+      resBody: '"new_access_token_is_secret"',
+    });
+
+    logger(message, data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data:
+            '{"username":"user1234","password":":censored:12:60562c5b6c:"}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: '":censored:26:fea118210f:"',
+        },
+      },
+    ]);
+  });
+
+  it('should replace secret in response content for oauth1 as query params', async () => {
+    const event = {
+      method: 'authentication.oauth1Config.getAccessToken',
+    };
+    const logger = createlogger(event, options);
+
+    const { message, data } = prepareTestRequest({
+      reqBody: {
+        username: 'user1234',
+        password: 'password1234',
+      },
+      resBody: '"oauth_token=1234"',
+    });
+
+    logger(message, data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data:
+            '{"username":"user1234","password":":censored:12:60562c5b6c:"}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: '":censored:16:766f32ee8c:"',
+        },
+      },
+    ]);
+  });
+
+  it('should replace set-cookie header', async () => {
+    const event = {
+      method: 'authentication.sessionConfig.perform',
+    };
+    const logger = createlogger(event, options);
+
+    const { message, data } = prepareTestRequest({
+      reqBody: {
+        username: 'user1234',
+        password: 'password1234',
+      },
+      resBody: '"new_access_token_is_secret"',
+      resHeaders: {
+        'set-cookie':
+          '_sid=1234567890; domain=password1234.com; HttpOnly; Secure',
+      },
+    });
+
+    logger(message, data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data:
+            '{"username":"user1234","password":":censored:12:60562c5b6c:"}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers:
+            'content-type: application/json\nset-cookie: :censored:58:a5f1e7f860:',
+          response_content: '":censored:26:fea118210f:"',
+        },
+      },
+    ]);
+  });
+
+  it('should leave response content of null uncensored', async () => {
+    const event = {
+      method: 'authentication.sessionConfig.perform',
+    };
+    const logger = createlogger(event, options);
+
+    const { message, data } = prepareTestRequest({
+      resBody: JSON.stringify(null),
+    });
+
+    await logger(message, data);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST http://example.com',
+        data: {
+          log_type: 'http',
+          request_type: 'devplatform-outbound',
+          request_url: 'http://example.com',
+          request_method: 'POST',
+          request_headers: 'accept: application/json',
+          request_data: '{}',
+          request_via_client: true,
+          response_status_code: 200,
+          response_headers: 'content-type: application/json',
+          response_content: 'null',
         },
       },
     ]);

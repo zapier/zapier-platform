@@ -5,15 +5,20 @@ const perform = async (z, bundle) => {
   // Ideally, we should poll through all the pages of results, but in this
   // example we're going to omit that part. Thus, this trigger only "see" the
   // people in their first page of results.
-  const response = await z.request({ url: 'https://swapi.dev/api/people/' });
-  let peopleArray = response.data.results;
+  const response = await z.request({ url: 'https://swapi.info/api/people/' });
+  let peopleArray = response.data;
 
   if (bundle.inputData.species_id) {
     // The Zap's setup has requested a specific species of person. Since the
     // API/endpoint can't perform the filtering, we'll perform it here, within
     // the integration, and return the matching objects/records back to Zapier.
     peopleArray = peopleArray.filter((person) => {
-      const speciesID = extractID(person.species[0]);
+      let speciesID;
+      if (!person.species || !person.species.length) {
+        speciesID = 1; // Assume human if species is not provided
+      } else {
+        speciesID = extractID(person.species[0]);
+      }
       return speciesID === bundle.inputData.species_id;
     });
   }

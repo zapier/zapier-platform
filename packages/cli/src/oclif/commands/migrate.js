@@ -1,4 +1,6 @@
-const { flags } = require('@oclif/command');
+const _ = require('lodash');
+const debug = require('debug')('zapier:migrate');
+const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
@@ -6,6 +8,51 @@ const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
 class MigrateCommand extends BaseCommand {
+  async run_require_confirmation_pre_checks(app, requestBody) {
+    const assumeYes = 'yes' in this.flags;
+    const url = `/apps/${app.id}/pre-migration-require-confirmation-checks`;
+
+    this.startSpinner(`Running pre-checks before migration...`);
+
+    try {
+      await callAPI(
+        url,
+        {
+          method: 'POST',
+          body: requestBody,
+        },
+        true,
+      );
+    } catch (response) {
+      this.stopSpinner({ success: false });
+
+      // 409 from the backend specifically signals pre-checks failed
+      if (response.status === 409) {
+        const softCheckErrors = _.get(response, 'json.errors', []);
+        const formattedErrors = softCheckErrors.map((e) => `* ${e}`).join('\n');
+
+        this.log();
+        this.log('Non-blocking checks prior to migration returned warnings:');
+        this.log(formattedErrors);
+        this.log();
+
+        const shouldContinuePreChecks =
+          assumeYes ||
+          (await this.confirm(
+            'Would you like to continue with the migration regardless?',
+          ));
+
+        if (!shouldContinuePreChecks) {
+          this.error('Cancelled migration.');
+        }
+      } else {
+        debug('Soft pre-checks before migration failed:', response.errText);
+      }
+    } finally {
+      this.stopSpinner();
+    }
+  }
+
   async perform() {
     const percent = this.args.percent;
     if (isNaN(percent) || percent < 1 || percent > 100) {
@@ -14,6 +61,7 @@ class MigrateCommand extends BaseCommand {
 
     const account = this.flags.account;
     const user = this.flags.user;
+
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
     let flagType;
@@ -24,13 +72,13 @@ class MigrateCommand extends BaseCommand {
 
     if (user && account) {
       this.error(
-        'Cannot specify both `--user` and `--account`. Use only one or the other.'
+        'Cannot specify both `--user` and `--account`. Use only one or the other.',
       );
     }
 
     if ((user || account) && percent !== 100) {
       this.error(
-        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`
+        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`,
       );
     }
 
@@ -45,12 +93,12 @@ class MigrateCommand extends BaseCommand {
       toVersion !== app.latest_version
     ) {
       this.log(
-        `You're trying to migrate all the users to ${toVersion}, which is not the current production version.`
+        `You're trying to migrate all the users to ${toVersion}, which is not the current production version.`,
       );
       promoteFirst = await this.confirm(
         `Do you want to promote ${toVersion} to production first?`,
         true,
-        true
+        true,
       );
     }
 
@@ -67,15 +115,18 @@ class MigrateCommand extends BaseCommand {
         email_type: flagType,
       },
     };
+
+    await this.run_require_confirmation_pre_checks(app, body);
+
     if (user || account) {
       this.startSpinner(
         `Starting migration from ${fromVersion} to ${toVersion} for ${
           user || account
-        }`
+        }`,
       );
     } else {
       this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`
+        `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`,
       );
     }
     if (percent) {
@@ -91,42 +142,44 @@ class MigrateCommand extends BaseCommand {
     }
 
     this.log(
-      '\nMigration successfully queued, please check `zapier jobs` to track the status. Migrations usually take between 5-10 minutes.'
+      '\nMigration successfully queued, please check `zapier jobs` to track the status. Migrations usually take between 5-10 minutes.',
     );
   }
 }
 
 MigrateCommand.flags = buildFlags({
   commandFlags: {
-    user: flags.string({
+    user: Flags.string({
       description:
         "Migrates all of a users' Private Zaps within all accounts for which the specified user is a member",
     }),
-    account: flags.string({
+    account: Flags.string({
       description:
         "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
+    }),
+    yes: Flags.boolean({
+      char: 'y',
+      description:
+        'Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.',
     }),
   },
 });
 
-MigrateCommand.args = [
-  {
-    name: 'fromVersion',
+MigrateCommand.args = {
+  fromVersion: Args.string({
     required: true,
     description: 'The version FROM which to migrate users.',
-  },
-  {
-    name: 'toVersion',
+  }),
+  toVersion: Args.string({
     required: true,
     description: 'The version TO which to migrate users.',
-  },
-  {
-    name: 'percent',
+  }),
+  percent: Args.string({
     default: 100,
     description: 'Percentage (between 1 and 100) of users to migrate.',
-    parse: (input) => parseInt(input, 10),
-  },
-];
+    parse: async (input) => parseInt(input, 10),
+  }),
+};
 
 MigrateCommand.skipValidInstallCheck = true;
 MigrateCommand.examples = [
@@ -147,15 +200,17 @@ Since a migration is only for non-breaking changes, users are not emailed about 
 
 We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-You can migrate a specific user's Zaps by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`). This will migrate Zaps in any account the user is a member of where the following criteria is met.
+You can migrate a specific user's Zaps by using \`--user\` (i.e. \`zapier migrate 1.0.0 1.0.1 --user=user@example.com\`). This will migrate Zaps that are private for that user. Zaps that are
 
-  - The Zap is owned by the user.
-  - The Zap is not shared.
-  - The integration auth used is not shared.
+  - [shared across the team](https://help.zapier.com/hc/en-us/articles/8496277647629),
+  - [shared app connections](https://help.zapier.com/hc/en-us/articles/8496326497037-Share-app-connections-with-your-team), or
+  - in a [team/company account](https://help.zapier.com/hc/en-us/articles/22330977078157-Collaborate-with-members-of-your-Team-or-Company-account)
 
-Alternatively, you can pass the \`--account\` flag, (i.e. \`zapier migrate 1.0.0 1.0.1 --account=account@example.com\`). This will migrate all users' Zaps, Private & Shared, within all accounts for which the specified user is a member.
+will **not** be migrated.
 
-**The \`--account\` flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.**
+Alternatively, you can pass the \`--account\` flag, (i.e. \`zapier migrate 1.0.0 1.0.1 --account=account@example.com\`). This will migrate all Zaps owned by the user, Private & Shared, within all accounts for which the specified user is a member.
+
+**The \`--account\` flag should be used cautiously as it can break shared Zaps for other users in Team or Enterprise accounts.**
 
 You cannot pass both \`PERCENT\` and \`--user\` or \`--account\`.
 

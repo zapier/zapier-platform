@@ -18,7 +18,7 @@ const resolveMethodPath = (app, needle, explodeIfMissing = true) => {
     )
   ) {
     throw new Error(
-      `You must pass in a function/array/object. We got ${typeof needle} instead.`
+      `You must pass in a function/array/object. We got ${typeof needle} instead.`,
     );
   }
 
@@ -28,7 +28,7 @@ const resolveMethodPath = (app, needle, explodeIfMissing = true) => {
     memoizedFindMapDeep(app, needle, isEqual);
   if (!path && explodeIfMissing) {
     throw new Error(
-      'We could not find your function/array/object anywhere on your App definition.'
+      'We could not find your function/array/object anywhere on your App definition.',
     );
   }
 

@@ -1,0 +1,34 @@
+{
+  "name": "zapier-schema-to-ts",
+  "version": "0.1.0",
+  "description": "Converts zapier-platform-schema JsonSchema definitions to TypeScript types",
+  "author": "Thomas Cranny <thomas.cranny@zapier.com>",
+  "private": true,
+  "main": "dist/cli.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest --run",
+    "clean": "rm -rf dist",
+    "prebuild": "yarn clean",
+    "build": "tsc",
+    "generate-types": "node ./dist/cli.js --schema-json ../packages/schema/exported-schema.json --output ../packages/core/types/zapier.generated.d.ts",
+    "generate-types:build": "yarn build && yarn generate-types",
+    "git-add": "git add ../packages/core/types/zapier.generated.d.ts",
+    "precommit": "yarn build && yarn generate-types && yarn git-add"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "deepmerge": "^4.3.1",
+    "json-schema-to-typescript": "14.1.0",
+    "marked": "^12.0.2",
+    "pino": "^9.1.0",
+    "pino-pretty": "^11.0.0",
+    "prettier": "^3.4.1",
+    "word-wrap": "^1.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "typescript": "^5.5.3",
+    "vitest": "^1.6.1"
+  }
+}

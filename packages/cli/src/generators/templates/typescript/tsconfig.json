@@ -1,11 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "lib": ["esnext"],
-    "outDir": "./lib",
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "noUncheckedIndexedAccess": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
     "rootDir": "./src",
     "strict": true
-  }
+  },
+  "include": ["./src/**/*.ts"],
+  "exclude": ["./**/*.test.ts"]
 }

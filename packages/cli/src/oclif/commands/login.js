@@ -2,7 +2,7 @@ const colors = require('colors/safe');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { flags } = require('@oclif/command');
+const { Flags } = require('@oclif/core');
 
 const {
   AUTH_LOCATION,
@@ -49,7 +49,7 @@ const isValidDeployKey = (k) =>
 class LoginCommand extends BaseCommand {
   promptForDeployKey() {
     this.log(
-      `To generate a deploy key, go to ${DEPLOY_KEY_DASH_URL} and create/copy a key, then paste the result below.`
+      `To generate a deploy key, go to ${DEPLOY_KEY_DASH_URL} and create/copy a key, then paste the result below.`,
     );
     return this.prompt('Paste your Deploy Key here:', {
       validate: isValidDeployKey,
@@ -70,19 +70,19 @@ class LoginCommand extends BaseCommand {
     if (!credentialsPresent) {
       this.stopSpinner(); // end the spinner in checkCredentials()
       this.log(
-        colors.yellow(`Your ${AUTH_LOCATION} has not been set up yet.\n`)
+        colors.yellow(`Your ${AUTH_LOCATION} has not been set up yet.\n`),
       );
     } else if (!credentialsGood) {
       this.log(
         colors.red(
-          `Your ${AUTH_LOCATION} looks like it has invalid credentials.\n`
-        )
+          `Your ${AUTH_LOCATION} looks like it has invalid credentials.\n`,
+        ),
       );
     } else {
       this.log(
         colors.green(
-          `Your ${AUTH_LOCATION} looks valid. You may update it now though.\n`
-        )
+          `Your ${AUTH_LOCATION} looks valid. You may update it now though.\n`,
+        ),
       );
     }
 
@@ -93,7 +93,7 @@ class LoginCommand extends BaseCommand {
       deployKey = await this.promptForDeployKey();
     } else {
       const email = await this.prompt(
-        'What email address do you use to log into Zapier?'
+        'What email address do you use to log into Zapier?',
       );
       if (await isSamlEmail(email)) {
         // category 2
@@ -102,13 +102,13 @@ class LoginCommand extends BaseCommand {
         // category 1
         this.log(
           `\n\nNow you'll enter your Zapier password.\nIf you log into Zapier via the ${colors.green(
-            'log in with Google button'
+            'log in with Google button',
           )} (or a different social network), you may not have a Zapier password.\nIf that's the case, hit CTRL+C and re-run this command with the ${colors.cyan(
-            `--sso`
-          )} flag.\n\n`
+            `--sso`,
+          )} flag.\n\n`,
         );
         const password = await this.promptHidden(
-          'What is your Zapier password?'
+          'What is your Zapier password?',
         );
 
         let goodResponse;
@@ -118,7 +118,7 @@ class LoginCommand extends BaseCommand {
           if (errors[0].startsWith('missing totp_code')) {
             const code = await this.prompt(
               'What is your current 6-digit 2FA code?',
-              { validate: isValidTotpCode }
+              { validate: isValidTotpCode },
             );
             goodResponse = await createCredentials(email, password, code);
           } else {
@@ -132,7 +132,7 @@ class LoginCommand extends BaseCommand {
       AUTH_LOCATION,
       prettyJSONstringify({
         [AUTH_KEY]: deployKey,
-      })
+      }),
     );
 
     await checkCredentials();
@@ -143,7 +143,7 @@ class LoginCommand extends BaseCommand {
 
 LoginCommand.flags = buildFlags({
   commandFlags: {
-    sso: flags.boolean({
+    sso: Flags.boolean({
       char: 's',
       description:
         "Use this flag if you log into Zapier a Single Sign-On (SSO) button and don't have a Zapier password.",

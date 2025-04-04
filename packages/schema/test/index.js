@@ -9,7 +9,7 @@ const appDefinition = require('../examples/definition.json');
 
 const copy = (o) => JSON.parse(JSON.stringify(o));
 
-const NUM_SCHEMAS = 54; // changes regularly as we expand
+const NUM_SCHEMAS = 60; // changes regularly as we expand
 
 describe('app', () => {
   describe('validation', () => {
@@ -28,12 +28,36 @@ describe('app', () => {
       results.errors.length.should.eql(4);
     });
 
-    it('should invalidate a bad named trigger', () => {
+    it('should invalidate a badly named trigger', () => {
       const appCopy = copy(appDefinition);
       appCopy.triggers['3contact_by_tag'] = appCopy.triggers.contact_by_tag;
       delete appCopy.triggers.contact_by_tag;
       const results = schema.validateAppDefinition(appCopy);
-      results.errors.length.should.eql(2); // invalid name and top-level key doesn't match trigger key
+      results.errors[0].stack.should.eql(
+        'instance.triggers additionalProperty "3contact_by_tag" exists in instance when not allowed',
+      );
+      results.errors.length.should.eql(2); // additional property error + top-level key doesn't match trigger key
+    });
+
+    it('should invalidate a badly named create', () => {
+      const appCopy = copy(appDefinition);
+      appCopy.creates['3contact_by_tag'] = appCopy.creates.tag_create;
+      delete appCopy.creates.tag_create;
+      const results = schema.validateAppDefinition(appCopy);
+      results.errors[0].stack.should.eql(
+        'instance.creates additionalProperty "3contact_by_tag" exists in instance when not allowed',
+      );
+      results.errors.length.should.eql(2); // additional property error + top-level key doesn't match create key
+    });
+
+    it('should invalidate a create with a bad key', () => {
+      const appCopy = copy(appDefinition);
+      appCopy.creates.tag_create.key = 'tag:create';
+      const results = schema.validateAppDefinition(appCopy);
+      results.errors[0].stack.should.eql(
+        'instance.creates.tag_create.key does not match pattern "^[a-zA-Z]+[a-zA-Z0-9_]*$"',
+      );
+      results.errors.length.should.eql(2); // invalid name and top-level key doesn't match create key
     });
 
     it('should run and pass functional constraints', function () {
@@ -131,13 +155,13 @@ describe('app', () => {
       const results = schema.validateAppDefinition(definition);
       results.errors.should.have.length(3);
       results.errors[0].stack.should.eql(
-        'instance.searchOrCreates.fooSearchOrCreate.key must match a "key" from a search (options: fooSearch)'
+        'instance.searchOrCreates.fooSearchOrCreate.key must match a "key" from a search (options: fooSearch)',
       );
       results.errors[1].stack.should.eql(
-        'instance.searchOrCreates.fooSearchOrCreate.search must match a "key" from a search (options: fooSearch)'
+        'instance.searchOrCreates.fooSearchOrCreate.search must match a "key" from a search (options: fooSearch)',
       );
       results.errors[2].stack.should.eql(
-        'instance.searchOrCreates.fooSearchOrCreate.create must match a "key" from a create (options: fooCreate)'
+        'instance.searchOrCreates.fooSearchOrCreate.create must match a "key" from a create (options: fooCreate)',
       );
     });
 
@@ -201,6 +225,72 @@ describe('app', () => {
       const results = schema.validateAppDefinition(appCopy);
       results.errors.should.eql([]);
     });
+
+    it('should validate safe/unsafe auth fields', () => {
+      const appCopy = copy(appDefinition);
+
+      // Set up a "custom" auth that has two fields:
+      //   - "username" which is safe
+      //   - "password" which is not safe
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'username',
+            type: 'string',
+            isNoSecret: true, // allowed
+            required: true,
+          },
+          {
+            key: 'password',
+            type: 'password',
+            isNoSecret: false, // password is not safe
+            required: true,
+          },
+        ],
+      };
+
+      const results = schema.validateAppDefinition(appCopy);
+
+      // Expect zero errors
+      results.errors.should.have.length(0);
+      should(results.valid).eql(true);
+    });
+
+    it('should invalidate a "safe" password field', () => {
+      const appCopy = copy(appDefinition);
+
+      // Same "custom" auth but now marking "password" as isNoSecret=true
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'password',
+            type: 'string',
+            isNoSecret: true, // invalid: password cannot be safe
+            required: true,
+          },
+        ],
+      };
+
+      const results = schema.validateAppDefinition(appCopy);
+
+      // Expect at least one error because "password" can't have isNoSecret = true
+      results.errors.should.have.length(1);
+      should(results.valid).eql(false);
+
+      const [error] = results.errors;
+      error.name.should.equal('sensitive');
+      error.stack.should.eql(
+        'instance.authentication.fields[0] cannot set isNoSecret as true for the sensitive key "password".',
+      );
+    });
   });
 
   describe('export', () => {
@@ -214,6 +304,6 @@ describe('app', () => {
 describe('auto test', () => {
   const _exportedSchema = schema.exportSchema();
   Object.keys(_exportedSchema.schemas).map((id) =>
-    testUtils.testInlineSchemaExamples(id)
+    testUtils.testInlineSchemaExamples(id),
   );
 });

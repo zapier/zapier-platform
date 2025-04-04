@@ -65,5 +65,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [BulkReadSchema]
+  [BulkReadSchema],
 );

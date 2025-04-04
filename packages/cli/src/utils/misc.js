@@ -25,21 +25,24 @@ const isWindows = () => {
 
 // Run a bash command with a promise.
 const runCommand = (command, args, options) => {
-  if (isWindows()) {
-    command += '.cmd';
-  }
-
   if (_.get(global, ['argOpts', 'debug'])) {
     debug.enabled = true;
   }
 
   options = options || {};
 
+  if (isWindows()) {
+    command += '.cmd';
+
+    // See CVE-2024-27980
+    options.shell = true;
+  }
+
   debug('\n');
   debug(
     `Running ${colors.bold(
-      command + ' ' + args.join(' ')
-    )} command in ${colors.bold(options.cwd || process.cwd())}:\n`
+      command + ' ' + args.join(' '),
+    )} command in ${colors.bold(options.cwd || process.cwd())}:\n`,
   );
 
   return new Promise((resolve, reject) => {
@@ -77,6 +80,22 @@ const runCommand = (command, args, options) => {
 const isValidNodeVersion = (version = process.version) =>
   semver.satisfies(version, NODE_VERSION_CLI_REQUIRES);
 
+const findCorePackageDir = () => {
+  let baseDir = process.cwd();
+  // 500 is just an arbitrary number to prevent infinite loops
+  for (let i = 0; i < 500; i++) {
+    const dir = path.join(baseDir, 'node_modules', PLATFORM_PACKAGE);
+    if (fse.existsSync(dir)) {
+      return dir;
+    }
+    if (baseDir === '/' || baseDir.match(/^[a-z]:\\$/i)) {
+      break;
+    }
+    baseDir = path.dirname(baseDir);
+  }
+  throw new Error(`Could not find ${PLATFORM_PACKAGE}.`);
+};
+
 const isValidAppInstall = () => {
   let packageJson, dependedCoreVersion;
   try {
@@ -90,8 +109,8 @@ const isValidAppInstall = () => {
       return {
         valid: false,
         reason: `Your app doesn't depend on ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
-          `npm install -E ${PLATFORM_PACKAGE}`
-        )}\` to resolve`,
+          `npm install -E ${PLATFORM_PACKAGE}`,
+        )}\` to resolve.`,
       };
     } else if (!semver.valid(dependedCoreVersion)) {
       // semver.valid only matches exact versions
@@ -104,28 +123,27 @@ const isValidAppInstall = () => {
     return { valid: false, reason: String(err) };
   }
 
+  let corePackageDir;
   try {
-    const installedPackageJson = require(path.join(
-      process.cwd(),
-      'node_modules',
-      PLATFORM_PACKAGE,
-      'package.json'
-    ));
-
-    const installedCoreVersion = installedPackageJson.version;
-    // not an error for now, but something to mention to them
-    if (dependedCoreVersion !== installedCoreVersion) {
-      console.warn(
-        `\nYour code depends on v${dependedCoreVersion} of ${PLATFORM_PACKAGE}, but your local copy is v${installedCoreVersion}. You should probably reinstall your dependencies.\n`
-      );
-    }
+    corePackageDir = findCorePackageDir();
   } catch (err) {
     return {
       valid: false,
       reason: `Looks like you're missing a local installation of ${PLATFORM_PACKAGE}. Run \`${colors.cyan(
-        'npm install'
-      )}\` to resolve`,
+        'npm install',
+      )}\` to resolve.`,
     };
+  }
+
+  const installedPackageJson = require(
+    path.join(corePackageDir, 'package.json'),
+  );
+  const installedCoreVersion = installedPackageJson.version;
+
+  if (installedCoreVersion !== dependedCoreVersion) {
+    console.warn(
+      `\nYour code depends on v${dependedCoreVersion} of ${PLATFORM_PACKAGE}, but your local copy is v${installedCoreVersion}. You should probably reinstall your dependencies.\n`,
+    );
   }
 
   return { valid: true };
@@ -162,7 +180,7 @@ const printVersionInfo = (context) => {
   if (fileExistsSync(path.resolve('./package.json'))) {
     let requiredVersion = _.get(
       require(path.resolve('./package.json')),
-      `dependencies.${PLATFORM_PACKAGE}`
+      `dependencies.${PLATFORM_PACKAGE}`,
     );
     if (requiredVersion) {
       // might be a caret, have to coerce for later comparison
@@ -174,34 +192,34 @@ const printVersionInfo = (context) => {
       if (requiredVersion !== PACKAGE_VERSION) {
         versions.push(
           `${colors.yellow('\nWarning!')} "CLI" (${colors.green(
-            PACKAGE_VERSION
+            PACKAGE_VERSION,
           )}) and "core" (${colors.green(
-            requiredVersion
+            requiredVersion,
           )}) versions are out of sync. This is probably fine, but if you're experiencing issues, update the ${colors.cyan(
-            PLATFORM_PACKAGE
+            PLATFORM_PACKAGE,
           )} dependency in your ${colors.cyan(
-            'package.json'
-          )} to ${colors.green(PACKAGE_VERSION)}.`
+            'package.json',
+          )} to ${colors.green(PACKAGE_VERSION)}.`,
         );
       }
 
       if (
         fileExistsSync(
-          path.resolve(`./node_modules/${PLATFORM_PACKAGE}/package.json`)
+          path.resolve(`./node_modules/${PLATFORM_PACKAGE}/package.json`),
         )
       ) {
         // double check they have the right version installed
-        const installedPkgVersion = require(path.resolve(
-          `./node_modules/${PLATFORM_PACKAGE}/package.json`
-        )).version;
+        const installedPkgVersion = require(
+          path.resolve(`./node_modules/${PLATFORM_PACKAGE}/package.json`),
+        ).version;
 
         if (requiredVersion !== installedPkgVersion) {
           versions.push(
             `${colors.yellow('\nWarning!')} Required version (${colors.green(
-              requiredVersion
+              requiredVersion,
             )}) and installed version (${colors.green(
-              installedPkgVersion
-            )}) are out of sync. Run ${colors.cyan('`npm install`')} to fix.\n`
+              installedPkgVersion,
+            )}) are out of sync. Run ${colors.cyan('`npm install`')} to fix.\n`,
           );
         }
       }
@@ -214,6 +232,7 @@ const printVersionInfo = (context) => {
 module.exports = {
   camelCase,
   entryPoint,
+  findCorePackageDir,
   isValidAppInstall,
   isValidNodeVersion,
   isWindows,

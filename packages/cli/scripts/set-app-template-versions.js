@@ -56,7 +56,7 @@ const setVersion = (template, rootTmpDir) => {
   packagesVersions = `${newVersions.nodeVersion}, ${newVersions.npmVersion}, and ${newVersions.coreVersion}`;
 
   console.log(
-    `Setting versions of ${PACKAGES_NAMES} to ${packagesVersions} respectively in ${template} app template.`
+    `Setting versions of ${PACKAGES_NAMES} to ${packagesVersions} respectively in ${template} app template.`,
   );
   console.log(`cloning ${cloneUrl}\n`);
 
@@ -64,13 +64,13 @@ const setVersion = (template, rootTmpDir) => {
     .then(() => {
       const packageJsonFile = path.resolve(
         rootTmpDir,
-        `${repoName}/package.json`
+        `${repoName}/package.json`,
       );
       const packageJson = require(packageJsonFile);
 
       const travisYamlFile = path.resolve(
         rootTmpDir,
-        `${repoName}/.travis.yml`
+        `${repoName}/.travis.yml`,
       );
       const travisYaml = yaml.load(travisYamlFile);
 
@@ -107,19 +107,19 @@ const setVersion = (template, rootTmpDir) => {
     .then((result) => {
       if (result === 'skip') {
         console.log(
-          `${template} is already set to ${packagesVersions} for ${PACKAGES_NAMES} respectively, skipping`
+          `${template} is already set to ${packagesVersions} for ${PACKAGES_NAMES} respectively, skipping`,
         );
         return 'skip';
       }
       console.log(
-        `Set ${PACKAGES_NAMES} versions to ${packagesVersions} respectively on app template ${template} successfully.`
+        `Set ${PACKAGES_NAMES} versions to ${packagesVersions} respectively on app template ${template} successfully.`,
       );
       return null;
     })
     .catch((err) => {
       console.error(
         `Error setting ${PACKAGES_NAMES} versions for app template ${template}:`,
-        err
+        err,
       );
       return template;
     });
@@ -130,13 +130,13 @@ fse.removeSync(rootTmpDir);
 fse.ensureDirSync(rootTmpDir);
 
 const tasks = _.map(appTemplates, (template) =>
-  setVersion(template, rootTmpDir)
+  setVersion(template, rootTmpDir),
 );
 
 Promise.all(tasks).then((results) => {
   const failures = _.filter(
     results,
-    (result) => result !== null && result !== 'skip'
+    (result) => result !== null && result !== 'skip',
   );
   const skipped = _.filter(results, (result) => result === 'skip');
   const successCount = tasks.length - failures.length - skipped.length;
@@ -144,17 +144,17 @@ Promise.all(tasks).then((results) => {
   if (failures.length) {
     console.error(
       `failed to set ${PACKAGES_NAMES} versions on these templates:`,
-      failures.join(', ')
+      failures.join(', '),
     );
   }
   if (skipped.length) {
     console.log(
-      `skipped ${skipped.length} templates because versions for ${PACKAGES_NAMES} were already set to ${packagesVersions} respectively`
+      `skipped ${skipped.length} templates because versions for ${PACKAGES_NAMES} were already set to ${packagesVersions} respectively`,
     );
   }
   if (successCount) {
     console.log(
-      `Successfully updated versions in ${successCount} app templates`
+      `Successfully updated versions in ${successCount} app templates`,
     );
   }
 });

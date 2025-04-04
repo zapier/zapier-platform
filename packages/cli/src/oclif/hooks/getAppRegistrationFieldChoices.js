@@ -10,10 +10,10 @@ module.exports = async function (options) {
   let formFields;
 
   try {
-    formFields = await callAPI('/apps/fields-choices');
+    formFields = await callAPI('/apps/fields-choices', { skipDeployKey: true });
   } catch (e) {
     this.error(
-      `Unable to connect to Zapier API. Please check your connection and try again. ${e}`
+      `Unable to connect to Zapier API. Please check your connection and try again. ${e}`,
     );
   }
 
@@ -28,17 +28,17 @@ module.exports = async function (options) {
   if (cmd && cmd.flags) {
     if (cmd.flags.audience) {
       cmd.flags.audience.options = formFields.intention.map(
-        (audienceOption) => audienceOption.value
+        (audienceOption) => audienceOption.value,
       );
     }
     if (cmd.flags.role) {
       cmd.flags.role.options = formFields.role.map(
-        (roleOption) => roleOption.value
+        (roleOption) => roleOption.value,
       );
     }
     if (cmd.flags.category) {
       cmd.flags.category.options = formFields.app_category.map(
-        (categoryOption) => categoryOption.value
+        (categoryOption) => categoryOption.value,
       );
     }
   }

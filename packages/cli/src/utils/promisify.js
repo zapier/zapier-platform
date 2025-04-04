@@ -30,7 +30,7 @@ const promisifyAll = (object, context) => {
       result[name] = method;
       return result;
     },
-    {}
+    {},
   );
 };
 

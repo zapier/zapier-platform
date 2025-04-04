@@ -17,7 +17,7 @@ const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
 const SOURCE_PATH = `${BUILD_DIR}/source.zip`;
-const BLACKLISTED_PATHS = [
+const BLOCKLISTED_PATHS = [
   // Will be excluded from build.zip and source.zip
   '.git',
   '.env',
@@ -26,7 +26,7 @@ const BLACKLISTED_PATHS = [
 ];
 const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;
-const NODE_VERSION_CLI_REQUIRES = '>=16'; // should be the oldest non-ETL version
+const NODE_VERSION_CLI_REQUIRES = '>=18'; // should be the oldest non-ETL version
 const AUTH_KEY = 'deployKey';
 const ANALYTICS_KEY = 'analyticsMode';
 const ANALYTICS_MODES = {
@@ -42,7 +42,7 @@ const PACKAGE_VERSION = packageJson.version;
 const UPDATE_NOTIFICATION_INTERVAL = 1000 * 60 * 60 * 24 * 7; // one week
 
 const CHECK_REF_DOC_LINK =
-  'https://platform.zapier.com/docs/integration-checks-reference';
+  'https://docs.zapier.com/platform/publish/integration-checks-reference';
 
 const ISSUES_URL =
   'https://github.com/zapier/zapier-platform/issues/new/choose';
@@ -91,7 +91,7 @@ module.exports = {
   AUTH_LOCATION,
   AUTH_LOCATION_RAW,
   BASE_ENDPOINT,
-  BLACKLISTED_PATHS,
+  BLOCKLISTED_PATHS,
   BUILD_DIR,
   BUILD_PATH,
   CHECK_REF_DOC_LINK,

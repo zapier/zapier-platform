@@ -10,7 +10,7 @@ const RequestSchema = require('./RequestSchema');
 // TODO: would be nice to deep merge these instead
 // or maybe use allOf which is built into json-schema
 const BasicHookToPollOperationSchema = JSON.parse(
-  JSON.stringify(BasicOperationSchema.schema)
+  JSON.stringify(BasicOperationSchema.schema),
 );
 
 BasicHookToPollOperationSchema.id = '/BasicHookToPollOperationSchema';
@@ -61,6 +61,11 @@ BasicHookToPollOperationSchema.properties = {
   inputFields: BasicHookToPollOperationSchema.properties.inputFields,
   outputFields: BasicHookToPollOperationSchema.properties.outputFields,
   sample: BasicHookToPollOperationSchema.properties.sample,
+  maxPollingDelay: {
+    description:
+      'The maximum amount of time to wait between polling requests in seconds. Minimum value is 20s and will default to 20 if not set, or set to a lower value.',
+    type: 'integer',
+  },
 };
 
 BasicHookToPollOperationSchema.examples = [
@@ -89,5 +94,5 @@ BasicHookToPollOperationSchema.antiExamples = [
 
 module.exports = makeSchema(
   BasicHookToPollOperationSchema,
-  BasicOperationSchema.dependencies
+  BasicOperationSchema.dependencies,
 );

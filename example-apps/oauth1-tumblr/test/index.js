@@ -9,7 +9,7 @@ require('should');
 // const appTester = zapier.createAppTester(App);
 
 describe('My App', () => {
-  it('should test something', done => {
+  it('should test something', (done) => {
     const x = 1;
     x.should.eql(1);
 

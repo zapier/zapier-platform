@@ -1,6 +1,6 @@
 const { join } = require('path');
 
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 const yeoman = require('yeoman-environment');
 
 const BaseCommand = require('../ZapierBaseCommand');
@@ -10,39 +10,45 @@ const { TEMPLATE_CHOICES, ProjectGenerator } = require('../../generators');
 class InitCommand extends BaseCommand {
   async perform() {
     const { path } = this.args;
-    const { template } = this.flags;
+    const { template, module } = this.flags;
 
     const env = yeoman.createEnv();
     env.registerStub(ProjectGenerator, 'zapier:integration');
 
-    env.run('zapier:integration', { path, template }, () => {
-      this.log();
-      this.log(`A new integration has been created in directory "${path}".`);
-      this.log(`Read all about it in "${join(path, 'README.md')}".`);
-    });
+    await env.run('zapier:integration', { path, template, module });
+
+    this.log();
+    this.log(`A new integration has been created in directory "${path}".`);
+    this.log(`Read all about it in "${join(path, 'README.md')}".`);
   }
 }
 
 InitCommand.flags = buildFlags({
   commandFlags: {
-    template: flags.string({
+    template: Flags.string({
       char: 't',
       description: 'The template to start your integration with.',
       options: TEMPLATE_CHOICES,
     }),
+    module: Flags.string({
+      char: 'm',
+      description:
+        'Choose module type: CommonJS or ES Modules. Only enabled for Typescript and Minimal templates.',
+      options: ['commonjs', 'esm'],
+    }),
   },
 });
-InitCommand.args = [
-  {
-    name: 'path',
-    required: true,
+InitCommand.args = {
+  path: Args.string({
     description:
       "Where to create the new integration. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation",
-  },
-];
+    required: true,
+  }),
+};
 InitCommand.examples = [
   'zapier init myapp',
   'zapier init ./path/myapp --template oauth2',
+  'zapier init ./path/myapp --template minimal --module esm',
 ];
 InitCommand.description = `Initialize a new Zapier integration with a project template.
 

@@ -13,7 +13,14 @@ describe('changelog utils', () => {
       appDir = makeTempDir();
       fs.writeFileSync(
         path.join(appDir, 'CHANGELOG.md'),
-        '## 3.0.0\n\n' +
+        '## 4.0.0\n\n' +
+          '### Changed\n\n' +
+          'Switch changelog format\n' +
+          '### Security\n' +
+          'Update dependencies\n' +
+          '### Fixes\n' +
+          'No code, no issue\n' +
+          '## 3.0.0\n\n' +
           'Made some changes that affect app actions\n' +
           '- Update the trigger/pr_review action, as well as changes for #456\n' +
           '1. Fix trigger/new_card #208\n' +
@@ -29,9 +36,9 @@ describe('changelog utils', () => {
           '## 1.0.0\n\n' +
           '* Removing beta "label".\n' +
           '* Minor docs fixes.\n' +
-          '#### 0.0.1\n' +
+          '# 0.0.1\n' +
           'initial release\n\n' +
-          'just for internal testing\n\n'
+          'just for internal testing\n\n',
       );
     });
 
@@ -47,10 +54,20 @@ describe('changelog utils', () => {
       changelog.should.equal('initial release\n\njust for internal testing');
     });
 
+    it('should include subheads', async () => {
+      const { appMetadata, issueMetadata, changelog } =
+        await changelogUtil.getVersionChangelog('4.0.0', appDir);
+      should(appMetadata).equal(undefined);
+      should(issueMetadata).equal(undefined);
+      changelog.should.equal(
+        '### Changed\n\nSwitch changelog format\n### Security\nUpdate dependencies\n### Fixes\nNo code, no issue',
+      );
+    });
+
     it('should find changelog for 1.0.0', () =>
       changelogUtil.getVersionChangelog('1.0.0', appDir).then((log) => {
         log.changelog.should.eql(
-          '* Removing beta "label".\n* Minor docs fixes.'
+          '* Removing beta "label".\n* Minor docs fixes.',
         );
       }));
 
@@ -92,7 +109,7 @@ describe('changelog utils', () => {
           '4. Add trigger/new_contact #10\n' +
           '5. New action! create/add_contact\n' +
           'However, we also addressed fixed open issues!\n' +
-          '- Fix #123 and an issue with create/send_message'
+          '- Fix #123 and an issue with create/send_message',
       );
       appMetadata.should.deepEqual([
         {

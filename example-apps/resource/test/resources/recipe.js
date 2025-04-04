@@ -8,15 +8,15 @@ const App = require('../../index');
 const appTester = zapier.createAppTester(App);
 
 describe('recipe resource', () => {
-  it('should get an existing recipe', done => {
+  it('should get an existing recipe', (done) => {
     const bundle = {
       inputData: {
-        id: 1
-      }
+        id: 1,
+      },
     };
 
     appTester(App.resources.recipe.get.operation.perform, bundle)
-      .then(results => {
+      .then((results) => {
         results.name.should.eql('name 1');
         results.directions.should.eql('directions 1');
         done();
@@ -24,15 +24,15 @@ describe('recipe resource', () => {
       .catch(done);
   });
 
-  it('should list existing recipes', done => {
+  it('should list existing recipes', (done) => {
     const bundle = {
       inputData: {
-        style: 'style 2'
-      }
+        style: 'style 2',
+      },
     };
 
     appTester(App.resources.recipe.list.operation.perform, bundle)
-      .then(results => {
+      .then((results) => {
         results.length.should.above(0);
 
         const firstRecipe = results[0];
@@ -43,32 +43,32 @@ describe('recipe resource', () => {
       .catch(done);
   });
 
-  it('should create a new recipe', done => {
+  it('should create a new recipe', (done) => {
     const bundle = {
       inputData: {
         name: 'Smith Family Recipe',
         directions: '1. Order out :)',
-        authorId: 1
-      }
+        authorId: 1,
+      },
     };
 
     appTester(App.resources.recipe.create.operation.perform, bundle)
-      .then(results => {
+      .then((results) => {
         results.should.have.property('name');
         done();
       })
       .catch(done);
   });
 
-  it('should find a recipe', done => {
+  it('should find a recipe', (done) => {
     const bundle = {
       inputData: {
-        name: 'Smith Family Recipe'
-      }
+        name: 'Smith Family Recipe',
+      },
     };
 
     appTester(App.resources.recipe.search.operation.perform, bundle)
-      .then(results => {
+      .then((results) => {
         results[0].should.have.property('name');
         done();
       })

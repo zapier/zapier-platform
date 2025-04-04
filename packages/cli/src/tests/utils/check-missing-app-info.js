@@ -14,8 +14,8 @@ describe('check missing required app info', () => {
     };
     should(() => checkMissingAppInfo(app)).throw(
       new Error(
-        `Your integration is missing required info (category, audience, role). Please, run "zapier register" to add it.`
-      )
+        `Your integration is missing required info (category, audience, role). Please, run "zapier register" to add it.`,
+      ),
     );
   });
   it('should return false when all the required app info are set', () => {

@@ -1,5 +1,5 @@
+const { Flags } = require('@oclif/core');
 const BaseCommand = require('../ZapierBaseCommand');
-const { flags } = require('@oclif/command');
 const { buildFlags } = require('../buildFlags');
 const { grey } = require('colors/safe');
 const { pick } = require('lodash');
@@ -8,32 +8,32 @@ const { listLogs } = require('../../utils/api');
 
 // pulled out so we can pull these explicitly to send to the server
 const commandFlags = {
-  version: flags.string({
+  version: Flags.string({
     char: 'v',
     description: 'Filter logs to the specified version.',
   }),
-  status: flags.string({
+  status: Flags.string({
     char: 's',
     description: 'Filter logs to only see errors or successes',
     options: ['any', 'success', 'error'],
     default: 'any', // this doesn't really need to be a status
   }),
-  type: flags.string({
+  type: Flags.string({
     char: 't',
     description: 'See logs of the specified type',
     options: ['console', 'bundle', 'http'],
     default: 'console',
   }),
-  detailed: flags.boolean({
+  detailed: Flags.boolean({
     // no char since it conflicts with --debug
     description: 'See extra info, like request/response body and headers.',
   }),
-  user: flags.string({
+  user: Flags.string({
     char: 'u',
     description: 'Only show logs for this user. Defaults to your account.',
     default: 'me',
   }),
-  limit: flags.integer({
+  limit: Flags.integer({
     description:
       'Cap the number of logs returned. Max is 50 (also the default)',
     default: 50,
@@ -102,8 +102,8 @@ class LogsCommand extends BaseCommand {
       if (this.flags.type === 'http' && !this.flags.detailed) {
         this.log(
           grey(
-            '  TIP: Use `zapier logs --type=http --detailed` to include response information.'
-          )
+            '  TIP: Use `zapier logs --type=http --detailed` to include response information.',
+          ),
         );
       }
     }

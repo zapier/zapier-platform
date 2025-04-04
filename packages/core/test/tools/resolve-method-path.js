@@ -25,61 +25,61 @@ describe('resolve-method-path', () => {
   it('should resolve a request method object with a url', () => {
     resolveMethodPath(
       app,
-      app.resources.contact.list.operation.perform
-    ).should.eql('resources.contact.list.operation.perform');
+      app.resources.contacterror.list.operation.perform,
+    ).should.eql('resources.contacterror.list.operation.perform');
   });
 
   it('should resolve a method in a module', () => {
     resolveMethodPath(moduleApp, moduleApp.authentication.test).should.eql(
-      'authentication.test'
+      'authentication.test',
     );
 
     resolveMethodPath(
       moduleApp,
-      moduleAppDefinition.authentication.oauth2Config.authorizeUrl
+      moduleAppDefinition.authentication.oauth2Config.authorizeUrl,
     ).should.eql('authentication.oauth2Config.authorizeUrl');
   });
 
   it('should resolve an inputFields array', () => {
     resolveMethodPath(
       app,
-      app.resources.contact.list.operation.inputFields
+      app.resources.contact.list.operation.inputFields,
     ).should.eql('resources.contact.list.operation.inputFields');
   });
 
   it('should resolve a function', () => {
     resolveMethodPath(
       app,
-      app.creates.contactCreate.operation.perform
+      app.creates.contactCreate.operation.perform,
     ).should.eql('creates.contactCreate.operation.perform');
 
     resolveMethodPath(
       app,
-      app.triggers.contactList.operation.perform
+      app.triggers.contactList.operation.perform,
     ).should.eql('triggers.contactList.operation.perform');
 
     resolveMethodPath(app, app.hydrators.getBigStuff).should.eql(
-      'hydrators.getBigStuff'
+      'hydrators.getBigStuff',
     );
   });
 
   it('should resolve authentication paths', () => {
     const authApp = schemaTools.prepareApp(oauthAppDef);
     resolveMethodPath(authApp, authApp.authentication.test).should.eql(
-      'authentication.test'
+      'authentication.test',
     );
     resolveMethodPath(
       authApp,
-      authApp.authentication.oauth2Config.getAccessToken
+      authApp.authentication.oauth2Config.getAccessToken,
     ).should.eql('authentication.oauth2Config.getAccessToken');
     // oauthAppDef !== authApp due to prepareApp() - so make sure isEqual is used
     resolveMethodPath(
       authApp,
-      oauthAppDef.authentication.oauth2Config.authorizeUrl
+      oauthAppDef.authentication.oauth2Config.authorizeUrl,
     ).should.eql('authentication.oauth2Config.authorizeUrl');
     resolveMethodPath(
       authApp,
-      authApp.authentication.oauth2Config.authorizeUrl
+      authApp.authentication.oauth2Config.authorizeUrl,
     ).should.eql('authentication.oauth2Config.authorizeUrl');
   });
 
@@ -89,7 +89,7 @@ describe('resolve-method-path', () => {
     for (let i = 1000; i >= 0; i--) {
       resolveMethodPath(
         authApp,
-        oauthAppDef.authentication.oauth2Config.authorizeUrl
+        oauthAppDef.authentication.oauth2Config.authorizeUrl,
       );
     }
   });

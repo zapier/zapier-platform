@@ -1,25 +1,25 @@
-'use strict'
+'use strict';
 
-const _ = require('lodash')
+const _ = require('lodash');
 
-const utils = require('../utils')
-const handleError = utils.handleError
-const getFileDetailsFromRequest = utils.getFileDetailsFromRequest
-const baseItem = require('./base-item')
+const utils = require('../utils');
+const handleError = utils.handleError;
+const getFileDetailsFromRequest = utils.getFileDetailsFromRequest;
+const baseItem = require('./base-item');
 
-const getFile = _.partial(baseItem.getItem, 'file')
+const getFile = _.partial(baseItem.getItem, 'file');
 
-const listFiles = _.partial(baseItem.listItems, 'file')
+const listFiles = _.partial(baseItem.listItems, 'file');
 
 const createFile = (z, bundle) => {
-  const folder = bundle.inputData.folder || ''
+  const folder = bundle.inputData.folder || '';
   // NOTE: `file` is really a URL like "https://zapier.com/engine/hydrate/<unique_id>/.blahblahblah:blah:blah/"
-  const file = bundle.inputData.file
+  const file = bundle.inputData.file;
 
   return getFileDetailsFromRequest(file)
     .then((fileDetails) => {
       const name =
-        bundle.inputData.name || fileDetails.filename || 'unnamedfile.unknown'
+        bundle.inputData.name || fileDetails.filename || 'unnamedfile.unknown';
 
       return baseItem.handleCreateWithSession(
         z,
@@ -28,13 +28,13 @@ const createFile = (z, bundle) => {
         fileDetails.size,
         fileDetails.contentType,
         folder,
-        name
-      )
+        name,
+      );
     })
-    .catch(handleError)
-}
+    .catch(handleError);
+};
 
-const searchFile = _.partial(baseItem.searchItem, 'file')
+const searchFile = _.partial(baseItem.searchItem, 'file');
 
 module.exports = {
   key: 'file',
@@ -162,4 +162,4 @@ module.exports = {
     { key: 'webUrl', label: 'URL' },
     { key: '@microsoft.graph.downloadUrl', label: 'Download URL' },
   ],
-}
+};

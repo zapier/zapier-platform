@@ -36,5 +36,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [FieldChoiceWithLabelSchema]
+  [FieldChoiceWithLabelSchema],
 );

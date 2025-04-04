@@ -9,15 +9,15 @@ const appTester = zapier.createAppTester(App);
 
 describe('searches', () => {
   describe('search recipe', () => {
-    it('should find a recipe', done => {
+    it('should find a recipe', (done) => {
       const bundle = {
         inputData: {
-          style: 'style 2'
-        }
+          style: 'style 2',
+        },
       };
 
       appTester(App.searches.recipe.operation.perform, bundle)
-        .then(results => {
+        .then((results) => {
           results.length.should.be.aboveOrEqual(1);
 
           const firstRecipe = results[0];

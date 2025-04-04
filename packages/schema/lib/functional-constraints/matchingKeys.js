@@ -22,8 +22,8 @@ const matchingKeys = (definition) => {
             `/${_.capitalize(actionType)}Schema`,
             `instance.${key}.key`,
             'invalid',
-            'key'
-          )
+            'key',
+          ),
         );
       }
     });

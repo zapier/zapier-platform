@@ -74,5 +74,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [FunctionSchema, RedirectRequestSchema, RequestSchema]
+  [FunctionSchema, RedirectRequestSchema, RequestSchema],
 );

@@ -24,11 +24,11 @@ const App = {
 
   // If you want your searches to show up, you better include it here!
   searches: {
-    [search.key]: search
+    [search.key]: search,
   },
 
   // If you want your creates to show up, you better include it here!
-  creates: {}
+  creates: {},
 };
 
 // Finally, export the app.

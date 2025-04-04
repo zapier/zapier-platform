@@ -14,7 +14,7 @@ class LogoutCommand extends BaseCommand {
     } catch (e) {
       success = false;
       this.error(
-        `Deletion API request failed. Is your ${AUTH_LOCATION} already empty or invalid? If so, feel free to ignore this error.`
+        `Deletion API request failed. Is your ${AUTH_LOCATION} already empty or invalid? If so, feel free to ignore this error.`,
       );
     } finally {
       this.stopSpinner({ success });

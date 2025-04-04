@@ -10,7 +10,7 @@ const RequestSchema = require('./RequestSchema');
 // TODO: would be nice to deep merge these instead
 // or maybe use allOf which is built into json-schema
 const BasicActionOperationSchema = JSON.parse(
-  JSON.stringify(BasicOperationSchema.schema)
+  JSON.stringify(BasicOperationSchema.schema),
 );
 
 BasicActionOperationSchema.id = '/BasicActionOperationSchema';
@@ -57,5 +57,5 @@ BasicActionOperationSchema.antiExamples = [
 
 module.exports = makeSchema(
   BasicActionOperationSchema,
-  BasicOperationSchema.dependencies
+  BasicOperationSchema.dependencies,
 );

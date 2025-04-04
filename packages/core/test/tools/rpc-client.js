@@ -15,14 +15,19 @@ describe('rpc client', () => {
   });
 
   it('should handle an explosion', () => {
-    mocky.mockRpcFail('this is an expected explosion');
+    // mock 3 explosions due to retry
+    mocky.mockRpcFail('this is an expected explosion', 500);
+    mocky.mockRpcFail('this is an expected explosion', 500);
+    mocky.mockRpcFail('this is an expected explosion', 500);
 
     return rpc('explode')
       .then(() => {
         throw new Error('this should have exploded');
       })
       .catch((err) => {
-        err.message.should.eql('this is an expected explosion');
+        err.message.should.eql(
+          'RPC request failed after 3 attempts: Unable to reach the RPC server',
+        );
       });
   });
 

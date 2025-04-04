@@ -68,7 +68,7 @@ describe('smoke tests - setup will take some time', () => {
 
     context.testScripts.validate = copyTestScript(
       'test-validate',
-      context.workdir
+      context.workdir,
     );
     context.testScripts.export = copyTestScript('test-export', context.workdir);
     console.log('setup complete!');
@@ -86,7 +86,7 @@ describe('smoke tests - setup will take some time', () => {
     const latestVersion = packageInfo['dist-tags'].latest;
 
     res = await fetch(
-      `${baseUrl}/-/zapier-platform-schema-${latestVersion}.tgz`
+      `${baseUrl}/-/zapier-platform-schema-${latestVersion}.tgz`,
     );
     const baselineSize = res.headers.get('content-length');
     const newSize = fs.statSync(context.package.path).size;
@@ -113,7 +113,7 @@ describe('smoke tests - setup will take some time', () => {
       context.workdir,
       'node_modules',
       'zapier-platform-schema',
-      'exported-schema.json'
+      'exported-schema.json',
     );
     fs.existsSync(exportedSchemaPath).should.be.true();
 
@@ -128,7 +128,7 @@ describe('smoke tests - setup will take some time', () => {
 
     schemaInPackage.should.eql(
       expectedSchema,
-      'exported-schema.json is not up-to-date. Try `npm run export`.'
+      'exported-schema.json is not up-to-date. Try `npm run export`.',
     );
   });
 });

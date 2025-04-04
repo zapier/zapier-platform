@@ -29,7 +29,12 @@ const injectZObject = (input) => {
     generateCallbackUrl: createCallbackHigherOrderFunction(input),
     hash: hashing.hashify,
     JSON: createJSONtool(),
-    require: (moduleName) => require(moduleName),
+    require: (moduleName) =>
+      require(
+        require.resolve(moduleName, {
+          paths: module.paths.concat([process.cwd()]),
+        }),
+      ),
     stashFile: createFileStasher(input),
   };
 

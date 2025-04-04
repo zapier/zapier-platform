@@ -11,7 +11,7 @@ describe('recipe', () => {
     const bundle = { inputData: { name: 'name 1' } };
     const results = await appTester(
       App.searches.recipe.operation.perform,
-      bundle
+      bundle,
     );
     expect(results.length).toBeGreaterThan(0);
 

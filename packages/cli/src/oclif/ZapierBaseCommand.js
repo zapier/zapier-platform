@@ -1,6 +1,4 @@
-const { Command } = require('@oclif/command');
-const { stdtermwidth } = require('@oclif/plugin-help/lib/screen');
-const { renderList } = require('@oclif/plugin-help/lib/list');
+const { Command } = require('@oclif/core');
 const colors = require('colors/safe');
 
 const { startSpinner, endSpinner, formatStyles } = require('../utils/display');
@@ -14,12 +12,13 @@ const inquirer = require('inquirer');
 const DATA_FORMATS = ['json', 'raw'];
 
 class ZapierBaseCommand extends Command {
-  run() {
-    this._parseFlags();
+  async run() {
+    this._initPromptModules();
+    await this._parseCommand();
 
     if (this.flags.debug) {
       this.debug.enabled = true; // enables this.debug on the command
-      require('debug').enable('zapier:*'); // enables all further spawned functions, like API
+      require('debug').enable('zapier:*,oclif:zapier:*'); // enables all further spawned functions, like API
     }
 
     this.debug('argv is', this.argv);
@@ -46,7 +45,7 @@ class ZapierBaseCommand extends Command {
 
         if (!this.flags.debug && !this.flags.invokedFromAnotherCommand) {
           errTextLines.push(
-            colors.gray('re-run this command with `--debug` for more info')
+            colors.gray('re-run this command with `--debug` for more info'),
           );
         }
 
@@ -59,11 +58,19 @@ class ZapierBaseCommand extends Command {
     return Object.getPrototypeOf(this).constructor;
   }
 
-  _parseFlags() {
-    const { flags, args } = this.parse(this._staticClassReference);
+  _initPromptModules() {
+    this._stdoutPrompt = inquirer.prompt;
+    this._stderrPrompt = inquirer.createPromptModule({
+      output: process.stderr,
+    });
+  }
+
+  async _parseCommand() {
+    const { flags, args, argv } = await this.parse(this._staticClassReference);
 
     this.flags = flags;
     this.args = args;
+    this.argv = argv;
   }
 
   perform() {
@@ -85,7 +92,7 @@ class ZapierBaseCommand extends Command {
   throwForInvalidVersion(version) {
     if (!version.match(/^\d+\.\d+\.\d+$/g)) {
       throw new Error(
-        `${version} is an invalid version str. Try something like \`1.2.3\``
+        `${version} is an invalid version str. Try something like \`1.2.3\``,
       );
     }
   }
@@ -129,6 +136,9 @@ class ZapierBaseCommand extends Command {
     headers = [],
     emptyMessage = '',
     formatOverride = '',
+    hasBorder = true,
+    showHeaders = true,
+    style = undefined,
   } = {}) {
     const formatter = formatOverride
       ? formatStyles[formatOverride]
@@ -141,16 +151,8 @@ class ZapierBaseCommand extends Command {
       this.log(colors.gray(emptyMessage));
     } else {
       // data comes out of the formatter ready to be printed (and it's always in the type to match the format) so we don't need to do anything special with it
-      console.log(formatter(rows, headers));
+      console.log(formatter(rows, headers, showHeaders, hasBorder, style));
     }
-  }
-
-  /**
-   * Print text in a list style.
-   * @param {string[][]} items
-   */
-  logList(items) {
-    this.log(renderList(items, { spacer: '\n', maxWidth: stdtermwidth }));
   }
 
   /**
@@ -205,7 +207,8 @@ class ZapierBaseCommand extends Command {
     if (Object.keys(opts).length) {
       opts.validate = this._getCustomValidatation(opts);
     }
-    const { ans } = await inquirer.prompt({
+    const prompt = opts.useStderr ? this._stderrPrompt : this._stdoutPrompt;
+    const { ans } = await prompt({
       type: 'string',
       ...opts,
       name: 'ans',
@@ -214,18 +217,23 @@ class ZapierBaseCommand extends Command {
     return ans;
   }
 
-  promptHidden(question) {
+  promptHidden(question, useStderr = false) {
     return this.prompt(question, {
       type: 'password',
       mask: true,
+      useStderr,
     });
   }
 
-  confirm(message, defaultAns = false, showCtrlC = false) {
+  confirm(message, defaultAns = false, showCtrlC = false, useStderr = false) {
     if (showCtrlC) {
       message += ' (Ctrl-C to cancel)';
     }
-    return this.prompt(message, { default: defaultAns, type: 'confirm' });
+    return this.prompt(message, {
+      default: defaultAns,
+      type: 'confirm',
+      useStderr,
+    });
   }
 
   // see here for options for choices: https://github.com/SBoudrias/Inquirer.js/#question
@@ -256,44 +264,53 @@ class ZapierBaseCommand extends Command {
       return arg.required ? argName : `[${argName}]`;
     };
 
-    return [
-      'zapier',
-      name,
-      ...(this.args || []).filter((a) => !a.hidden).map((a) => formatArg(a)),
-    ].join(' ');
+    const argv = Object.entries(this.args ?? {}).map(([argName, argValue]) => ({
+      name: argName,
+      ...argValue,
+    }));
+    const visibleArgv = argv.filter((arg) => !arg.hidden);
+
+    return ['zapier', name, ...visibleArgv.map(formatArg)].join(' ');
   }
 
   // this is fine for now but we'll want to hack into https://github.com/oclif/plugin-help/blob/master/src/command.ts at some point
   // the presentation is wrapped into the formatting, so it's a little tough to pull out
   static markdownHelp(name) {
-    const formattedArgs = () =>
-      this.args.map((arg) =>
-        arg.hidden
+    const getFormattedArgs = () =>
+      Object.keys(this.args ?? {}).map((argName) => {
+        const arg = this.args[argName];
+        return arg.hidden
           ? null
-          : `* ${arg.required ? '(required) ' : ''}\`${arg.name}\` | ${
+          : `* ${arg.required ? '(required) ' : ''}\`${argName}\` | ${
               arg.description
-            }`
-      );
-    const formattedFlags = () =>
+            }`;
+      });
+    const getFormattedFlags = () =>
       Object.entries(this.flags)
-        .map(([longName, flag]) =>
-          flag.hidden
+        .map(([flagName, flagValue]) =>
+          flagValue.hidden
             ? null
-            : `* ${flag.required ? '(required) ' : ''}\`${
-                flag.char ? `-${flag.char}, ` : ''
-              }--${longName}\` |${
-                flag.description ? ` ${flag.description}` : ''
+            : `* ${flagValue.required ? '(required) ' : ''}\`${
+                flagValue.char ? `-${flagValue.char}, ` : ''
+              }--${flagName}\` |${
+                flagValue.description ? ` ${flagValue.description}` : ''
               } ${
-                flag.options ? `One of \`[${flag.options.join(' | ')}]\`.` : ''
-              }${flag.default ? ` Defaults to \`${flag.default}\`.` : ''}
-      `.trim()
+                flagValue.options
+                  ? `One of \`[${flagValue.options.join(' | ')}]\`.`
+                  : ''
+              }${
+                flagValue.default
+                  ? ` Defaults to \`${flagValue.default}\`.`
+                  : ''
+              }
+      `.trim(),
         )
         .filter(Boolean);
 
-    const descriptionParts = this.description.split('\n').filter(Boolean);
+    const descriptionParts = this.description.split('\n\n').filter(Boolean);
     const blurb = descriptionParts[0];
     const lengthyDescription = colors.stripColors(
-      descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : ''
+      descriptionParts.length > 1 ? descriptionParts.slice(1).join('\n\n') : '',
     );
 
     return [
@@ -303,16 +320,20 @@ class ZapierBaseCommand extends Command {
       '',
       `**Usage**: \`${this.zUsage(name)}\``,
       ...(lengthyDescription ? ['', lengthyDescription] : []),
-      ...(this.args ? ['', '**Arguments**', ...formattedArgs()] : []),
-      ...(this.flags ? ['', '**Flags**', ...formattedFlags()] : []),
-      ...(this.examples
+      ...(Object.keys(this.args ?? {}).length
+        ? ['', '**Arguments**', ...getFormattedArgs()]
+        : []),
+      ...(Object.keys(this.flags ?? {}).length
+        ? ['', '**Flags**', ...getFormattedFlags()]
+        : []),
+      ...((this.examples ?? []).length
         ? [
             '',
             '**Examples**',
             this.examples.map((e) => `* \`${e}\``).join('\n'),
           ]
         : []),
-      ...(this.aliases.length
+      ...((this.aliases ?? []).length
         ? ['', '**Aliases**', this.aliases.map((e) => `* \`${e}\``).join('\n')]
         : []),
     ]
@@ -325,7 +346,7 @@ class ZapierBaseCommand extends Command {
     if (!this.args) {
       throw new Error('unable to record analytics until args are parsed');
     }
-    return recordAnalytics(this.id, true, Object.keys(this.args), this.flags);
+    return recordAnalytics(this.id, true, this.args, this.flags);
   }
 }
 

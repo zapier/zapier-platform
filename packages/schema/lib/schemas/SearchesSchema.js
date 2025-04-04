@@ -17,6 +17,7 @@ module.exports = makeSchema(
         $ref: SearchSchema.id,
       },
     },
+    additionalProperties: false,
     examples: [
       {
         recipe: {
@@ -50,5 +51,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [SearchSchema]
+  [SearchSchema],
 );

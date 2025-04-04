@@ -95,7 +95,7 @@ class DescribeCommand extends BaseCommand {
           authentication.redirect_uri = version.oauth_redirect_uri;
         } else {
           authentication.redirect_uri = grey(
-            'Run `zapier push` to see the redirect_uri.'
+            'Run `zapier push` to see the redirect_uri.',
           );
         }
       }
@@ -134,7 +134,7 @@ class DescribeCommand extends BaseCommand {
           .map((method) => method({ key: resource.key }))
           .filter((path) => _.has(definition, path))
           .join('\n'),
-      })
+      }),
     );
     this.logTitle('Resources');
     this.logTable({
@@ -153,7 +153,7 @@ class DescribeCommand extends BaseCommand {
       const rows = _.values(definition[type]).map((row) => {
         // add possible action paths
         let paths = actionTemplates.map((method) =>
-          method({ type, key: row.key })
+          method({ type, key: row.key }),
         );
 
         // add possible resource paths
@@ -161,7 +161,7 @@ class DescribeCommand extends BaseCommand {
           const key = row.operation.resource.split('.')[0];
           const resourceTemplates = makeResourceTemplates(typeMap[type]);
           paths = paths.concat(
-            resourceTemplates.map((method) => method({ key }))
+            resourceTemplates.map((method) => method({ key })),
           );
         }
 
@@ -182,7 +182,7 @@ class DescribeCommand extends BaseCommand {
           ['Available Methods', 'paths', grey('n/a')],
         ],
         emptyMessage: grey(
-          `Nothing found for ${type}. Use the \`zapier scaffold\` command to add one.`
+          `Nothing found for ${type}. Use the \`zapier scaffold\` command to add one.`,
         ),
       });
 

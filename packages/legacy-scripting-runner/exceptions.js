@@ -10,10 +10,10 @@ class AppError extends Error {
         message,
         code,
         status,
-      })
+      }),
     );
     this.name = 'AppError';
-    this.contextify = false;
+    this.doNotContextify = true;
   }
 }
 
@@ -45,7 +45,7 @@ const cliErrors = _.reduce(
   },
   {
     Error: AppError,
-  }
+  },
 );
 
 const exceptions = {

@@ -85,7 +85,7 @@ const httpDetailsLogMessage = (data) => {
       }
       return result;
     },
-    {}
+    {},
   );
 
   if (trimmedData.request_params) {
@@ -120,13 +120,19 @@ const toStdout = (event, msg, data) => {
 };
 
 // try to parse json; if successful, find secrets in it
-const attemptFindSecretsInStr = (s) => {
+const attemptFindSecretsInStr = (s, isGettingNewSecret) => {
   let parsedRespContent;
   try {
-    parsedRespContent = JSON.parse(s);
+    parsedRespContent = JSON.parse(s) || {};
   } catch {
     return [];
   }
+
+  if (isGettingNewSecret && typeof parsedRespContent === 'string') {
+    // Likely the response content itself is a secret
+    return [parsedRespContent];
+  }
+
   return findSensitiveValues(parsedRespContent);
 };
 
@@ -157,9 +163,15 @@ const buildSensitiveValues = (event, data) => {
   // for our http logs (genrated by prepareRequestLog), make sure that we try to parse the content to find any new strings
   // (such as what comes back in the response during an auth refresh)
 
+  const isGettingNewSecret =
+    event.method &&
+    (event.method.endsWith('refreshAccessToken') ||
+      event.method.endsWith('sessionConfig.perform') ||
+      event.method.endsWith('oauth1Config.getAccessToken'));
+
   for (const prop of ['response_content', 'request_data']) {
     if (data[prop]) {
-      result.push(...attemptFindSecretsInStr(data[prop]));
+      result.push(...attemptFindSecretsInStr(data[prop], isGettingNewSecret));
     }
   }
   if (data.request_params) {
@@ -318,6 +330,11 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
     toStdout(event, message, safeData);
   }
 
+  if (event.customLogger && typeof event.customLogger === 'function') {
+    // For `zapier invoke` command
+    event.customLogger(safeMessage, safeData);
+  }
+
   if (options.logBuffer && data.log_type === 'console') {
     // Cap size of messages in log buffer, in case devs log humongous things.
     options.logBuffer.push({ type: safeData.log_type, message: safeMessage });
@@ -326,12 +343,12 @@ const sendLog = async (logStreamFactory, options, event, message, data) => {
   if (options.token) {
     const logStream = logStreamFactory.getOrCreate(
       options.endpoint,
-      options.token
+      options.token,
     );
     logStream.write(
       // JSON Lines format: It's important the serialized JSON object itself has
       // no line breaks, and after an object it ends with a line break.
-      JSON.stringify({ message: safeMessage, data: safeData }) + '\n'
+      JSON.stringify({ message: safeMessage, data: safeData }) + '\n',
     );
 
     if (logStreamFactory.ended) {

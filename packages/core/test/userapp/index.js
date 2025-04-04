@@ -26,6 +26,24 @@ const List = {
   },
 };
 
+const ListRequire = {
+  key: 'listrequire',
+  noun: 'List',
+  list: {
+    display: {
+      description: 'Trigger on new thing in list.',
+      label: 'List',
+    },
+    operation: {
+      perform: (z, bundle) => {
+        // in prod, process.cwd will return the app root directory
+        const { BASE_URL } = z.require('./test/userapp/constants.js');
+        return [{ id: 1, url: BASE_URL }];
+      },
+    },
+  },
+};
+
 const Contact = {
   key: 'contact',
   noun: 'Contact',
@@ -35,8 +53,11 @@ const Contact = {
       description: 'Trigger on new contacts.',
     },
     operation: {
-      perform: {
-        url: '{{process.env.BASE_URL}}/get',
+      perform: async (z, bundle) => {
+        const response = await z.request({
+          url: `${process.env.BASE_URL}/get`,
+        });
+        return [{ id: 'dontcare', ...response.data }];
       },
       inputFields: [
         {
@@ -121,28 +142,6 @@ const LoggingFunc = {
   },
 };
 
-const RequestFunc = {
-  key: 'requestfunc',
-  noun: 'requestfunc',
-  list: {
-    display: {
-      label: 'New Request Func',
-      description: 'Makes an http request via z.request.',
-    },
-    operation: {
-      perform: (z /* , bundle */) => {
-        return z
-          .request({ url: '{{process.env.BASE_URL}}/get' })
-          .then((resp) => {
-            const result = resp.data;
-            result.id = 123;
-            return [result];
-          });
-      },
-    },
-  },
-};
-
 const RequestSugar = {
   key: 'requestsugar',
   noun: 'requestsugar',
@@ -154,7 +153,7 @@ const RequestSugar = {
     operation: {
       perform: (z /* , bundle */) => {
         return z.request(`${HTTPBIN_URL}/get`).then((resp) => {
-          return resp.data;
+          return [{ id: 'dontcare', ...resp.data }];
         });
       },
     },
@@ -386,9 +385,7 @@ const CachedCustomInputFields = {
       description: 'Get/Set custom input fields in zcache',
     },
     operation: {
-      inputFields: [
-        helpers.getCustomFields,
-      ],
+      inputFields: [helpers.getCustomFields],
       perform: () => {},
     },
   },
@@ -403,7 +400,11 @@ const HonkerDonker = {
       description: 'This will be dehydrated by list',
     },
     operation: {
-      perform: (z, bundle) => `honker donker number ${bundle.honkerId}`,
+      perform: (z, bundle) => {
+        return {
+          message: `honker donker number ${bundle.honkerId}`,
+        };
+      },
     },
   },
   list: {
@@ -415,9 +416,12 @@ const HonkerDonker = {
       perform: (z, bundle) => {
         const honkerIds = [1, 2, 3];
         return honkerIds.map((id) => {
-          return z.dehydrate(HonkerDonker.get.operation.perform, {
-            honkerId: id,
-          });
+          return {
+            id,
+            $HOIST$: z.dehydrate(HonkerDonker.get.operation.perform, {
+              honkerId: id,
+            }),
+          };
         });
       },
     },
@@ -509,7 +513,7 @@ const EnvironmentVariable = {
 const ExecuteCallbackRequest = {
   key: 'executeCallbackRequest',
   noun: 'Callback',
-  list: {
+  create: {
     display: {
       label: 'Callback Usage in a perform',
       description: 'Used for one-offs in the tests.',
@@ -518,7 +522,7 @@ const ExecuteCallbackRequest = {
       perform: (z) => {
         // we need to access the callback url
         const callbackUrl = z.generateCallbackUrl();
-        return { callbackUrl };
+        return { id: 'dontcare', callbackUrl };
       },
       performResume: (z, bundle) => {
         return Object.assign({}, bundle.outputData, bundle.cleanedRequest);
@@ -566,6 +570,32 @@ const BadCallback = {
   },
 };
 
+const createLargeResponse = (targetSizeInMB) => {
+  const targetSize = targetSizeInMB * 1024 * 1024; // Convert MB to bytes
+  const sampleData = {
+    id: 1,
+    data: 'a'.repeat(targetSize),
+  };
+  return sampleData;
+};
+
+// 10mb of data
+const ReallyBigResponse = {
+  key: 'really_big_response',
+  noun: 'Really Big Response',
+  list: {
+    display: {
+      label: 'Really Big Response',
+      description: 'This is a really big response.',
+    },
+    operation: {
+      perform: (z, bundle) => {
+        return createLargeResponse(10);
+      },
+    },
+  },
+};
+
 // custom HTTP middlewares /////
 
 /*
@@ -582,11 +612,11 @@ const App = {
   afterResponse: [],
   resources: {
     [List.key]: List,
+    [ListRequire.key]: ListRequire,
     [Contact.key]: Contact,
     [ContactError.key]: ContactError,
     [ContactSource.key]: ContactSource,
     [LoggingFunc.key]: LoggingFunc,
-    [RequestFunc.key]: RequestFunc,
     [RequestSugar.key]: RequestSugar,
     [WorkingFunc.key]: WorkingFunc,
     [WorkingFuncAsync.key]: WorkingFuncAsync,
@@ -606,6 +636,7 @@ const App = {
     [ExecuteCallbackRequest.key]: ExecuteCallbackRequest,
     [EnvironmentVariable.key]: EnvironmentVariable,
     [BadCallback.key]: BadCallback,
+    [ReallyBigResponse.key]: ReallyBigResponse,
   },
   hydrators: {
     getBigStuff: () => {},

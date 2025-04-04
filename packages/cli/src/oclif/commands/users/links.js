@@ -13,13 +13,13 @@ class UsersLinksCommand extends ZapierBaseCommand {
 
     this.log(
       `\nYou can invite users to ${bold(
-        'all'
-      )} versions of your integration using the following link:`
+        'all',
+      )} versions of your integration using the following link:`,
     );
     this.log(`\n${cyan(inviteUrl)}\n`);
 
     this.log(
-      'You can invite users to a specific integration version using the following links:'
+      'You can invite users to a specific integration version using the following links:',
     );
     this.logTable({
       rows: Object.entries(versionInviteUrls).map(([version, url]) => ({
@@ -33,7 +33,7 @@ class UsersLinksCommand extends ZapierBaseCommand {
     });
 
     this.log(
-      '\nTo invite a specific user by email, use the `zapier users:add` command.'
+      '\nTo invite a specific user by email, use the `zapier users:add` command.',
     );
   }
 }

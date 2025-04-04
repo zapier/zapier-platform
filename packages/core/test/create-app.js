@@ -17,9 +17,10 @@ describe('create-app', () => {
 
   const app = createApp(appDefinition);
 
-  const createTestInput = (method) => {
+  const createTestInput = (method, bundle) => {
     const event = {
-      bundle: {},
+      command: 'execute',
+      bundle: { ...bundle },
       method,
       callback_url: 'calback_url',
     };
@@ -32,7 +33,7 @@ describe('create-app', () => {
 
   it('should return data from promise', (done) => {
     const input = createTestInput(
-      'resources.workingfuncpromise.list.operation.perform'
+      'resources.workingfuncpromise.list.operation.perform',
     );
 
     app(input)
@@ -45,7 +46,7 @@ describe('create-app', () => {
 
   it('should return data from promise (direct)', (done) => {
     const input = createTestInput(
-      'triggers.workingfuncpromiseList.operation.perform'
+      'triggers.workingfuncpromiseList.operation.perform',
     );
 
     app(input)
@@ -80,7 +81,7 @@ describe('create-app', () => {
 
   it('should return data from an async function call with callback', (done) => {
     const input = createTestInput(
-      'resources.workingfuncasync.list.operation.perform'
+      'resources.workingfuncasync.list.operation.perform',
     );
 
     app(input)
@@ -93,7 +94,7 @@ describe('create-app', () => {
 
   it('should return data from an async function call with callback (direct)', (done) => {
     const input = createTestInput(
-      'triggers.workingfuncasyncList.operation.perform'
+      'triggers.workingfuncasyncList.operation.perform',
     );
 
     app(input)
@@ -108,18 +109,19 @@ describe('create-app', () => {
     const input = createTestInput('resources.contact.list.operation.perform');
     const output = await app(input);
 
-    should.exist(output.results.headers);
+    const result = output.results[0];
+    should.exist(result.headers);
 
     // verify that custom http before middleware was applied
-    output.results.headers['X-Hashy'].should.deepEqual([
+    result.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
-    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
+    result.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should fail on a live request call', async () => {
     const input = createTestInput(
-      'resources.failerhttp.list.operation.perform'
+      'resources.failerhttp.list.operation.perform',
     );
 
     try {
@@ -155,33 +157,23 @@ describe('create-app', () => {
     throw new Error('expected an error');
   });
 
-  it('should make call via z.request', async () => {
-    const input = createTestInput('triggers.requestfuncList.operation.perform');
-
-    const output = await app(input);
-
-    output.results[0].headers['X-Hashy'].should.deepEqual([
-      '1a3ba5251cb33ee7ade01af6a7b960b8',
-    ]);
-    output.results[0].headers['X-Author'].should.deepEqual(['One Cool Dev']);
-  });
-
   it('should make call via z.request with sugar url param', async () => {
     const input = createTestInput(
-      'triggers.requestsugarList.operation.perform'
+      'triggers.requestsugarList.operation.perform',
     );
 
     const output = await app(input);
+    const result = output.results[0];
 
-    output.results.headers['X-Hashy'].should.deepEqual([
+    result.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
-    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
+    result.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should fail on a sync function', (done) => {
     const input = createTestInput(
-      'resources.failerfunc.list.operation.perform'
+      'resources.failerfunc.list.operation.perform',
     );
 
     app(input)
@@ -209,7 +201,7 @@ describe('create-app', () => {
 
   it('should fail on promise function', (done) => {
     const input = createTestInput(
-      'resources.failerfuncpromise.list.operation.perform'
+      'resources.failerfuncpromise.list.operation.perform',
     );
 
     app(input)
@@ -224,7 +216,7 @@ describe('create-app', () => {
 
   it('should fail on promise function (direct)', (done) => {
     const input = createTestInput(
-      'triggers.failerfuncpromiseList.operation.perform'
+      'triggers.failerfuncpromiseList.operation.perform',
     );
 
     app(input)
@@ -239,7 +231,7 @@ describe('create-app', () => {
 
   it('should apply HTTP after middleware', (done) => {
     const input = createTestInput(
-      'resources.contacterror.listWithError.operation.perform'
+      'resources.contacterror.listWithError.operation.perform',
     );
 
     app(input)
@@ -256,11 +248,13 @@ describe('create-app', () => {
     const input = createTestInput('triggers.contactList.operation.perform');
     const output = await app(input);
 
-    output.results.url.should.eql(`${HTTPBIN_URL}/get`);
-    output.results.headers['X-Hashy'].should.deepEqual([
+    const result = output.results[0];
+
+    result.url.should.eql(`${HTTPBIN_URL}/get`);
+    result.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
-    output.results.headers['X-Author'].should.deepEqual(['One Cool Dev']);
+    result.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
   it('should return a rendered URL for OAuth2 authorizeURL', (done) => {
@@ -294,7 +288,7 @@ describe('create-app', () => {
     oauth2App(input)
       .then((output) => {
         output.results.should.eql(
-          'https://my-sub.example.com?scope=read%2Cwrite'
+          'https://my-sub.example.com?scope=read%2Cwrite',
         );
         done();
       })
@@ -317,6 +311,46 @@ describe('create-app', () => {
         done();
       })
       .catch(done);
+  });
+
+  describe('output checks', () => {
+    it('should check performBuffer output', async () => {
+      const definition = dataTools.jsonCopy(appDefinition);
+      definition.resources.row = {
+        key: 'row',
+        noun: 'Row',
+        create: {
+          display: {
+            label: 'Insert Row',
+          },
+          operation: {
+            performBuffer: (z, bundle) => {
+              const firstId = bundle.buffer[0].meta.id;
+              return { [firstId]: {} };
+            },
+          },
+        },
+      };
+      const app = createApp(definition);
+      const bundle = {
+        buffer: [
+          { meta: { id: 'ffee-0000' } },
+          { meta: { id: 'ffee-0001' } },
+          { meta: { id: 'ffee-0002' } },
+          { meta: { id: 'ffee-0003' } },
+          { meta: { id: 'ffee-0004' } },
+          { meta: { id: 'ffee-0005' } },
+        ],
+      };
+      const input = createTestInput(
+        'creates.rowCreate.operation.performBuffer',
+        bundle,
+      );
+      const err = await app(input).should.be.rejected();
+      err.name.should.eql('CheckError');
+      err.message.should.match(/missing these IDs as keys/);
+      err.message.should.match(/ffee-0001, ffee-0002, ffee-0003, and 2 more/);
+    });
   });
 
   describe('HTTP after middleware for auth refresh', () => {
@@ -373,7 +407,7 @@ describe('create-app', () => {
           },
         },
         true,
-        verifyRefreshAuthError
+        verifyRefreshAuthError,
       );
     });
 
@@ -389,7 +423,7 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyRefreshAuthError
+        verifyRefreshAuthError,
       );
     });
 
@@ -405,7 +439,7 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyResponseError
+        verifyResponseError,
       );
     });
 
@@ -418,7 +452,7 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyRefreshAuthError
+        verifyRefreshAuthError,
       );
     });
 
@@ -431,7 +465,7 @@ describe('create-app', () => {
           },
         },
         false,
-        verifyResponseError
+        verifyResponseError,
       );
     });
   });
@@ -459,79 +493,91 @@ describe('create-app', () => {
 
     testInputOutputFields(
       'should return static input fields',
-      'triggers.staticinputfieldsList.operation.inputFields'
+      'triggers.staticinputfieldsList.operation.inputFields',
     );
 
     testInputOutputFields(
       'should return dynamic sync input fields',
-      'triggers.dynamicsyncinputfieldsList.operation.inputFields'
+      'triggers.dynamicsyncinputfieldsList.operation.inputFields',
     );
 
     testInputOutputFields(
       'should return dynamic async input fields',
-      'triggers.dynamicasyncinputfieldsList.operation.inputFields'
+      'triggers.dynamicasyncinputfieldsList.operation.inputFields',
     );
 
     testInputOutputFields(
       'should return mix of static, sync function and promise inputFields',
-      'triggers.mixedinputfieldsList.operation.inputFields'
+      'triggers.mixedinputfieldsList.operation.inputFields',
     );
 
     testInputOutputFields(
       'should return static output fields',
-      'triggers.staticinputfieldsList.operation.outputFields'
+      'triggers.staticinputfieldsList.operation.outputFields',
     );
 
     testInputOutputFields(
       'should return dynamic sync output fields',
-      'triggers.dynamicsyncinputfieldsList.operation.outputFields'
+      'triggers.dynamicsyncinputfieldsList.operation.outputFields',
     );
 
     testInputOutputFields(
       'should return dynamic async output fields',
-      'triggers.dynamicasyncinputfieldsList.operation.outputFields'
+      'triggers.dynamicasyncinputfieldsList.operation.outputFields',
     );
 
     testInputOutputFields(
       'should return mix of static, sync function and promise outputFields',
-      'triggers.mixedinputfieldsList.operation.outputFields'
+      'triggers.mixedinputfieldsList.operation.outputFields',
     );
   });
 
   describe('hydration', () => {
-    it('should hydrate method', (done) => {
+    it('should hydrate method', async () => {
       const input = createTestInput(
-        'resources.honkerdonker.list.operation.perform'
+        'resources.honkerdonker.list.operation.perform',
       );
-
-      app(input)
-        .then((output) => {
-          output.results.should.eql([
+      const output = await app(input);
+      output.results.should.eql([
+        {
+          id: 1,
+          $HOIST$:
             'hydrate|||{"type":"method","method":"resources.honkerdonker.get.operation.perform","bundle":{"honkerId":1}}|||hydrate',
+        },
+        {
+          id: 2,
+          $HOIST$:
             'hydrate|||{"type":"method","method":"resources.honkerdonker.get.operation.perform","bundle":{"honkerId":2}}|||hydrate',
+        },
+        {
+          id: 3,
+          $HOIST$:
             'hydrate|||{"type":"method","method":"resources.honkerdonker.get.operation.perform","bundle":{"honkerId":3}}|||hydrate',
-          ]);
-          done();
-        })
-        .catch(done);
+        },
+      ]);
     });
   });
+
   describe('calling a callback method', () => {
     let results;
     before(() =>
       app(
         createTestInput(
-          'resources.executeCallbackRequest.list.operation.perform'
-        )
+          'resources.executeCallbackRequest.create.operation.perform',
+        ),
       ).then((output) => {
         results = output;
-      })
+      }),
     );
 
     it('returns a CALLBACK envelope', () =>
       results.status.should.eql('CALLBACK'));
+
     it('returns the methods values', () =>
-      results.results.should.eql({ callbackUrl: 'calback_url' }));
+      results.results.should.eql({
+        id: 'dontcare',
+        callbackUrl: 'calback_url',
+      }));
   });
 
   describe('using require', () => {
@@ -571,7 +617,7 @@ describe('create-app', () => {
             'What happened:',
             '  Executing triggers.testRequire.operation.perform with bundle',
             '  For technical reasons, use z.require() instead of require().',
-          ].join('\n')
+          ].join('\n'),
         );
       }
     });
@@ -579,13 +625,13 @@ describe('create-app', () => {
     it('should import and use the crypto module from node', async () => {
       const definition = createDefinition(`
         const crypto = z.require('crypto');
-        return crypto.createHash('md5').update('abc').digest('hex');
+        return [{id: crypto.createHash('md5').update('abc').digest('hex')}];
       `);
       const input = createTestInput('triggers.testRequire.operation.perform');
 
       const appPass = createApp(definition);
       const { results } = await appPass(input);
-      results.should.eql('900150983cd24fb0d6963f7d28e17f72');
+      results[0].id.should.eql('900150983cd24fb0d6963f7d28e17f72');
     });
 
     it('should handle require errors', async () => {
@@ -599,8 +645,19 @@ describe('create-app', () => {
       const appFail = createApp(definition);
 
       await appFail(input).should.be.rejectedWith(
-        /Cannot find module 'non-existing-package'/
+        /Cannot find module 'non-existing-package'/,
       );
+    });
+
+    it('should be able to import from other paths using zRequire', async () => {
+      const input = createTestInput(
+        'resources.listrequire.list.operation.perform',
+      );
+      const appPass = createApp(appDefinition);
+
+      const { results } = await appPass(input);
+      results.length.should.eql(1);
+      results[0].url.should.eql('www.base-url.com');
     });
   });
 
@@ -618,7 +675,7 @@ describe('create-app', () => {
         method: 'resources.executeRequestAsShorthand.create.operation.perform',
       };
       const { results } = await app(
-        createInput(appDefinition, event, testLogger)
+        createInput(appDefinition, event, testLogger),
       );
       should(results).be.an.Object().and.not.be.an.Array();
     });
@@ -642,7 +699,7 @@ describe('create-app', () => {
         method: 'resources.executeRequestAsShorthand.create.operation.perform',
       };
       const { results } = await app(
-        createInput(appDefinition, event, testLogger)
+        createInput(appDefinition, event, testLogger),
       );
       should(results).match({ foo: 'bar' });
     });
@@ -659,9 +716,9 @@ describe('create-app', () => {
         method: 'resources.executeRequestAsShorthand.create.operation.perform',
       };
       await app(
-        createInput(appDefinition, event, testLogger)
+        createInput(appDefinition, event, testLogger),
       ).should.be.rejectedWith(
-        /Response needs to be JSON, form-urlencoded or parsed in middleware/
+        /Response needs to be JSON, form-urlencoded or parsed in middleware/,
       );
     });
   });
@@ -683,7 +740,7 @@ describe('create-app', () => {
           method,
         };
         const err = await app(
-          createInput(appDefinition, event, testLogger)
+          createInput(appDefinition, event, testLogger),
         ).should.be.rejected();
         JSON.parse(err.message).status.should.eql(400);
       });
@@ -708,7 +765,7 @@ describe('create-app', () => {
           method,
         };
         const err = await app(
-          createInput(appDef, event, testLogger)
+          createInput(appDef, event, testLogger),
         ).should.be.rejected();
         JSON.parse(err.message).status.should.eql(400);
       });
@@ -733,7 +790,7 @@ describe('create-app', () => {
           method,
         };
         const { results } = await app(
-          createInput(appDef, event, testLogger)
+          createInput(appDef, event, testLogger),
         ).should.be.fulfilled();
 
         results.status.should.eql(400);
@@ -756,7 +813,7 @@ describe('create-app', () => {
           method,
         };
         const err = await app(
-          createInput(appDefinition, event, testLogger)
+          createInput(appDefinition, event, testLogger),
         ).should.be.rejected();
 
         JSON.parse(err.message).status.should.eql(400);
@@ -784,7 +841,7 @@ describe('create-app', () => {
           method,
         };
         const { results } = await app(
-          createInput(appDef, event, testLogger)
+          createInput(appDef, event, testLogger),
         ).should.be.fulfilled();
 
         results[0].status.should.eql(400);
@@ -808,7 +865,7 @@ describe('create-app', () => {
           method,
         };
         const { results } = await app(
-          createInput(appDefinition, event, testLogger)
+          createInput(appDefinition, event, testLogger),
         ).should.be.fulfilled();
 
         results[0].status.should.eql(400);
@@ -837,7 +894,7 @@ describe('create-app', () => {
           method,
         };
         const err = await app(
-          createInput(appDefinition, event, testLogger)
+          createInput(appDefinition, event, testLogger),
         ).should.be.rejected();
         JSON.parse(err.message).status.should.eql(400);
       });

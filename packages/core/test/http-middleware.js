@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const nock = require('nock');
 const FormData = require('form-data');
 const should = require('should');
 
@@ -35,7 +36,7 @@ describe('http requests', () => {
       [addRequestHeader],
       [prepareResponse],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     const response = await wrappedRequest({ url: `${HTTPBIN_URL}/get` });
@@ -58,7 +59,7 @@ describe('http requests', () => {
       [addRequestHeader],
       [prepareResponse],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     const response = await wrappedRequest({
@@ -82,7 +83,7 @@ describe('http requests', () => {
       [addRequestHeader],
       [prepareResponse],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     wrappedRequest({ url: `${HTTPBIN_URL}/get` }).catch((err) => {
@@ -103,7 +104,7 @@ describe('http requests', () => {
       [],
       [prepareResponse, addToResponseBody],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     wrappedRequest({ url: `${HTTPBIN_URL}/get` })
@@ -128,7 +129,7 @@ describe('http requests', () => {
       [],
       [prepareResponse, addToResponseBody],
       request,
-      { skipEnvelope: true }
+      { skipEnvelope: true },
     );
 
     wrappedRequest({ url: `${HTTPBIN_URL}/get` })
@@ -372,7 +373,7 @@ describe('http querystring before middleware', () => {
     };
     addQueryParams(req);
     should(req.url).eql(
-      'https://example.com?name=asdf%24%24asdf&cool=qwer$$qwer'
+      'https://example.com?name=asdf%24%24asdf&cool=qwer$$qwer',
     );
   });
 
@@ -628,6 +629,76 @@ describe('http logResponse after middleware', () => {
   });
 });
 
+describe('http throwForDisallowedHostnameAfterRedirect after middleware', () => {
+  it('does not throw for allowed hostnames', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    const localUrl = 'https://zapier.com';
+    const localScope = nock(localUrl).get('/test').reply(200, 'redirected!!');
+
+    const externalScope = nock('https://my-redirect-domain.com')
+      .get('/')
+      .reply(301, '', { Location: `${localUrl}/test` });
+
+    const response = await request({
+      url: 'https://my-redirect-domain.com',
+    });
+
+    response.status.should.equal(200);
+
+    externalScope.isDone().should.be.true();
+    localScope.isDone().should.be.true();
+  });
+
+  it('does not throw for disallowed hostname if no redirect has happened', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    const localUrl = 'http://127.0.0.1:9000';
+    const localScope = nock(localUrl)
+      .get('/test')
+      .reply(200, 'not a redirect!!');
+
+    const response = await request({
+      url: `${localUrl}/test`,
+    });
+
+    response.status.should.equal(200);
+
+    localScope.isDone().should.be.true();
+  });
+
+  it('throws for disallowed hostname after redirect', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    const localUrl = 'http://127.0.0.1:9000';
+    const localScope = nock(localUrl).get('/test').reply(200, 'redirected!!');
+
+    const externalScope = nock('http://bad-subdomain.com')
+      .get('/.good-domain.com')
+      .reply(301, '', { Location: `${localUrl}/test` });
+
+    await request({
+      url: `http://bad-subdomain.com/.good-domain.com`,
+    }).should.be.rejectedWith(errors.Error, {
+      name: 'AppError',
+      doNotContextify: true,
+      message: `{"message":"Redirecting to disallowed hostname"}`,
+    });
+
+    externalScope.isDone().should.be.true();
+
+    // Ideally this would be false but without manual control of the redirect,
+    // we can't prevent the request from being made...
+    localScope.isDone().should.be.true();
+  });
+});
+
 describe('http prepareResponse', () => {
   it('should set the expected properties', async () => {
     const request = prepareRequest({
@@ -699,7 +770,7 @@ describe('http prepareResponse', () => {
     should.throws(
       () => response.content,
       Error,
-      /You passed {raw: true} in request()/
+      /You passed {raw: true} in request()/,
     );
     should(response.data).be.Undefined();
     should(response.json).be.Undefined(); // DEPRECATED

@@ -5,8 +5,13 @@ module.exports = {
 
   triggerIsArray: require('./trigger-is-array'),
   triggerIsObject: require('./trigger-is-object'),
-  triggerHasUniqueIds: require('./trigger-has-unique-ids'),
+  triggerHasUniquePrimary: require('./trigger-has-unique-primary'),
   triggerHasId: require('./trigger-has-id'),
+
   firehoseSubscriptionIsArray: require('./firehose_is_array'),
   firehoseSubscriptionKeyIsString: require('./firehose_is_string'),
+
+  performBufferReturnType: require('./perform-buffer-return-type'),
+
+  dynamicFieldsHaveKeys: require('./dynamic-fields-have-keys'),
 };

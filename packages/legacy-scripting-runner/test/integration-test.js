@@ -77,7 +77,7 @@ describe('Integration Test', function () {
     it('get_session_info', () => {
       const input = createTestInput(
         compiledApp,
-        'authentication.sessionConfig.perform'
+        'authentication.sessionConfig.perform',
       );
       input.bundle.authData = {
         username: 'user',
@@ -98,7 +98,7 @@ describe('Integration Test', function () {
     it('get_connection_label', () => {
       const input = createTestInput(
         compiledApp,
-        'authentication.connectionLabel'
+        'authentication.connectionLabel',
       );
       input.bundle.inputData = {
         name: 'Mark',
@@ -162,7 +162,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.authorizeUrl'
+        'authentication.oauth2Config.authorizeUrl',
       );
       input.bundle.inputData = {
         my_client_id: '1234',
@@ -174,7 +174,7 @@ describe('Integration Test', function () {
           output.results,
           `${AUTH_JSON_SERVER_URL}/oauth/authorize?` +
             'client_id=1234&redirect_uri=https%3A%2F%2Fexample.com&' +
-            'response_type=code&state=qwerty'
+            'response_type=code&state=qwerty',
         );
       });
     });
@@ -188,7 +188,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.authorizeUrl'
+        'authentication.oauth2Config.authorizeUrl',
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com/new',
@@ -200,7 +200,7 @@ describe('Integration Test', function () {
           `${AUTH_JSON_SERVER_URL}/oauth/authorize?` +
             'client_id=1234&' +
             'redirect_uri=https%3A%2F%2Fexample.com%2Fnew&' +
-            'response_type=code&state=qwerty'
+            'response_type=code&state=qwerty',
         );
       });
     });
@@ -214,7 +214,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.authorizeUrl'
+        'authentication.oauth2Config.authorizeUrl',
       );
 
       // inputData should take precedence over authData for authorizeUrl. This
@@ -234,7 +234,7 @@ describe('Integration Test', function () {
           'https://from.input.data/authorize?' +
             'client_id=1234&' +
             'redirect_uri=https%3A%2F%2Fexample.com&' +
-            'response_type=code&state=qwerty'
+            'response_type=code&state=qwerty',
         );
       });
     });
@@ -248,7 +248,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.getAccessToken'
+        'authentication.oauth2Config.getAccessToken',
       );
       // inputData should take precedence over authData for getAccessToken. This
       // is because on CLI authData always holds the *saved* auth fields, and
@@ -273,14 +273,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_token_basic',
-          'pre_oauthv2_token'
+          'pre_oauthv2_token',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.getAccessToken'
+        'authentication.oauth2Config.getAccessToken',
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
@@ -298,7 +298,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'post_oauthv2_token_basic',
-          'post_oauthv2_token'
+          'post_oauthv2_token',
         );
       appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl +=
         'token';
@@ -307,7 +307,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.getAccessToken'
+        'authentication.oauth2Config.getAccessToken',
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
@@ -325,19 +325,19 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_token_basic',
-          'pre_oauthv2_token'
+          'pre_oauthv2_token',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'post_oauthv2_token_basic',
-          'post_oauthv2_token'
+          'post_oauthv2_token',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.getAccessToken'
+        'authentication.oauth2Config.getAccessToken',
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
@@ -355,14 +355,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_token_payload_only_in_params',
-          'pre_oauthv2_token'
+          'pre_oauthv2_token',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.getAccessToken'
+        'authentication.oauth2Config.getAccessToken',
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
@@ -378,14 +378,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_token_yet_to_save_auth_fields',
-          'pre_oauthv2_token'
+          'pre_oauthv2_token',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.getAccessToken'
+        'authentication.oauth2Config.getAccessToken',
       );
       // inputData should take precedence over authData
       input.bundle.authData = {
@@ -409,14 +409,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_refresh_auth_json_server',
-          'pre_oauthv2_refresh'
+          'pre_oauthv2_refresh',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.refreshAccessToken'
+        'authentication.oauth2Config.refreshAccessToken',
       );
       input.bundle.authData = {
         refresh_token: 'a_refresh_token',
@@ -431,14 +431,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_refresh_httpbin_form',
-          'pre_oauthv2_refresh'
+          'pre_oauthv2_refresh',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.refreshAccessToken'
+        'authentication.oauth2Config.refreshAccessToken',
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
@@ -456,14 +456,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_refresh_httpbin_json',
-          'pre_oauthv2_refresh'
+          'pre_oauthv2_refresh',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.refreshAccessToken'
+        'authentication.oauth2Config.refreshAccessToken',
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
@@ -481,13 +481,13 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_refresh_request_data',
-          'pre_oauthv2_refresh'
+          'pre_oauthv2_refresh',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.refreshAccessToken'
+        'authentication.oauth2Config.refreshAccessToken',
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
@@ -516,13 +516,13 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_refresh_does_not_retry',
-          'pre_oauthv2_refresh'
+          'pre_oauthv2_refresh',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.refreshAccessToken'
+        'authentication.oauth2Config.refreshAccessToken',
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
@@ -551,13 +551,13 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'pre_oauthv2_refresh_bundle_load',
-          'pre_oauthv2_refresh'
+          'pre_oauthv2_refresh',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.refreshAccessToken'
+        'authentication.oauth2Config.refreshAccessToken',
       );
       input.bundle.authData = {
         refresh_token: 'my_refresh_token',
@@ -584,7 +584,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'post_oauthv2_token_returns_nothing',
-          'post_oauthv2_token'
+          'post_oauthv2_token',
         );
       appDefWithAuth.legacy.authentication.oauth2Config.accessTokenUrl +=
         'token';
@@ -593,7 +593,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'authentication.oauth2Config.getAccessToken'
+        'authentication.oauth2Config.getAccessToken',
       );
       input.bundle.inputData = {
         redirect_uri: 'https://example.com',
@@ -613,7 +613,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.test.operation.perform'
+        'triggers.test.operation.perform',
       );
       input.bundle.authData = { access_token: 'stale_token' };
       return app(input).should.be.rejectedWith({ name: 'RefreshAuthError' });
@@ -629,7 +629,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'recipe_post_poll'
+        'recipe_post_poll',
       );
       appDef.legacy.triggers.recipe.operation.url = `${HTTPBIN_URL}/get?name={{name}}&active={{active}}`;
       const _compiledApp = schemaTools.prepareApp(appDef);
@@ -637,7 +637,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.recipe.operation.perform'
+        'triggers.recipe.operation.perform',
       );
       input.bundle.authData = { name: 'john' };
       input.bundle.inputData = { name: 'johnny', active: false };
@@ -661,7 +661,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         should.deepEqual(output.results, []);
@@ -682,7 +682,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         should.deepEqual(output.results, []);
@@ -693,7 +693,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
       _appDefWithAuth.legacy.authentication.mapping = {};
@@ -705,7 +705,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = {
         api_key: 'hello',
@@ -721,7 +721,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       _appDefWithAuth.legacy.authentication.mapping = {
@@ -735,7 +735,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = {
         api_key: 'secret',
@@ -749,7 +749,7 @@ describe('Integration Test', function () {
     it('KEY_poll', () => {
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_full.operation.perform'
+        'triggers.contact_full.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.meta = {
@@ -804,7 +804,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_underscore',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -812,7 +812,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -827,7 +827,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_header_case',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -835,7 +835,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -848,26 +848,26 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_poll_default_headers',
-        'movie_poll'
+        'movie_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
           echoed.headers['Content-Type'][0],
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
         should.equal(echoed.args.accept[0], 'application/json');
         should.equal(
           echoed.args.contentType[0],
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
       });
     });
@@ -876,14 +876,14 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_poll_stop_request',
-        'movie_poll'
+        'movie_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         should.deepEqual(output.results, []);
@@ -894,14 +894,14 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_poll_z_request_uri',
-        'movie_poll'
+        'movie_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -917,7 +917,7 @@ describe('Integration Test', function () {
     it('KEY_pre_poll', () => {
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_pre.operation.perform'
+        'triggers.contact_pre.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -932,30 +932,30 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_default_headers',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
           echoed.headers['Content-Type'][0],
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
         should.equal(echoed.args.accept[0], 'application/json');
         should.equal(
           echoed.args.contentType[0],
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
       });
     });
@@ -964,18 +964,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_dynamic_dropdown',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.meta = {
         isFillingDynamicDropdown: true,
@@ -1008,18 +1008,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_null_request_data',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -1031,18 +1031,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_bundle_meta',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.meta = {
         isLoadingSample: true,
@@ -1074,18 +1074,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_invalid_chars_in_headers',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -1097,18 +1097,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_number_header',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -1120,18 +1120,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_urlencode',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -1143,7 +1143,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_this_binding',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1151,7 +1151,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1165,14 +1165,14 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_error',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return app(input).should.be.rejectedWith(/of undefined/);
     });
@@ -1181,7 +1181,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'recipe_pre_poll_underscore_template',
-        'recipe_pre_poll'
+        'recipe_pre_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1189,7 +1189,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.recipe.operation.perform'
+        'triggers.recipe.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1203,7 +1203,7 @@ describe('Integration Test', function () {
       appDef.legacy.triggers.movie.operation.url = `${HTTPBIN_URL}/get?things={{things}}`;
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
 
       // appDef will be injected to `input` as `input._zapier.app` by
@@ -1220,7 +1220,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.inputData = {
         things: ['eyedrops', 'cyclops', 'ipod'],
@@ -1231,7 +1231,7 @@ describe('Integration Test', function () {
           things: ['eyedrops,cyclops,ipod'],
         });
         req.url.should.equal(
-          `${HTTPBIN_URL}/get?things=eyedrops%2Ccyclops%2Cipod`
+          `${HTTPBIN_URL}/get?things=eyedrops%2Ccyclops%2Cipod`,
         );
       });
     });
@@ -1240,11 +1240,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_GET_with_body',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1252,7 +1252,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -1264,11 +1264,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_GET_with_empty_body',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1276,7 +1276,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -1288,11 +1288,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_non_ascii_url',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1300,7 +1300,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const result = output.results[0];
@@ -1314,11 +1314,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_env_var',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1326,7 +1326,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
 
       return _app(input)
@@ -1344,11 +1344,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_double_headers',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1356,7 +1356,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = {
         api_key: 'one',
@@ -1371,11 +1371,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_double_headers',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1383,7 +1383,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = {
         key1: 'only',
@@ -1399,11 +1399,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_stop_request',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1411,7 +1411,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         output.results.should.be.an.Array();
@@ -1423,11 +1423,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_merge_query_params',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_make_array',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, sessionAuthConfig);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1435,7 +1435,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
@@ -1446,7 +1446,7 @@ describe('Integration Test', function () {
     it('KEY_post_poll, jQuery utils', () => {
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_post.operation.perform'
+        'triggers.contact_post.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -1478,11 +1478,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_post_post_poll:',
-        'contact_post_post_poll_disabled:'
+        'contact_post_post_poll_disabled:',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_post_post_poll_jquery_dom',
-        'contact_post_post_poll'
+        'contact_post_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1490,7 +1490,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.contact_post.operation.perform'
+        'triggers.contact_post.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1512,7 +1512,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_no_id',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1520,7 +1520,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1537,18 +1537,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_poll_request_options',
-        'movie_pre_poll'
+        'movie_pre_poll',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_request_options',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _compiledApp = schemaTools.prepareApp(appDef);
       const _app = createApp(appDef);
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       return _app(input).then((output) => {
         const request = output.results[0];
@@ -1563,7 +1563,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_z_request_auth',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1571,7 +1571,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = {
         api_key: 'secret',
@@ -1585,7 +1585,7 @@ describe('Integration Test', function () {
     it('KEY_pre_poll & KEY_post_poll', () => {
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_pre_post.operation.perform'
+        'triggers.contact_pre_post.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -1601,7 +1601,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_full_post_custom_trigger_fields',
-        'contact_full_post_custom_trigger_fields_disabled'
+        'contact_full_post_custom_trigger_fields_disabled',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1609,7 +1609,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.contact_full.operation.outputFields'
+        'triggers.contact_full.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1628,7 +1628,7 @@ describe('Integration Test', function () {
       appDef.legacy.triggers.contact_full.operation.outputFieldsUrl += 's';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_full_pre_custom_trigger_fields',
-        'contact_full_pre_custom_trigger_fields_disabled'
+        'contact_full_pre_custom_trigger_fields_disabled',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1636,7 +1636,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.contact_full.operation.outputFields'
+        'triggers.contact_full.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1654,7 +1654,7 @@ describe('Integration Test', function () {
     it('KEY_pre_custom_trigger_fields & KEY_post_custom_trigger_fields', () => {
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_full.operation.outputFields'
+        'triggers.contact_full.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -1673,7 +1673,7 @@ describe('Integration Test', function () {
       // It's an auth test only if test_poll is true AND standard_poll is false
       const input = createTestInput(
         compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.meta = {
@@ -1691,7 +1691,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_method_dehydration',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1699,7 +1699,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1722,7 +1722,7 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_poll_file_dehydration',
-        'movie_post_poll'
+        'movie_post_poll',
       );
       const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
@@ -1730,7 +1730,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return _app(input).then((output) => {
@@ -1761,7 +1761,7 @@ describe('Integration Test', function () {
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       nock(AUTH_JSON_SERVER_URL)
@@ -1801,7 +1801,7 @@ describe('Integration Test', function () {
       const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
       const input = createTestInput(
         _compiledApp,
-        'triggers.movie.operation.perform'
+        'triggers.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then(() => {
@@ -1819,7 +1819,7 @@ describe('Integration Test', function () {
       const app = createApp(appDef);
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scriptingless.operation.perform'
+        'triggers.contact_hook_scriptingless.operation.perform',
       );
       input.bundle.cleanedRequest = {
         id: 9,
@@ -1839,13 +1839,13 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
-        'contact_hook_scripting_catch_hook'
+        'contact_hook_scripting_catch_hook',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.cleanedRequest = {
         id: 10,
@@ -1865,13 +1865,13 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_array',
-        'contact_hook_scripting_catch_hook'
+        'contact_hook_scripting_catch_hook',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.cleanedRequest = [
         { id: 11, name: 'Cate' },
@@ -1893,13 +1893,13 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_raw_request',
-        'contact_hook_scripting_catch_hook'
+        'contact_hook_scripting_catch_hook',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.rawRequest = {
         headers: {
@@ -1922,13 +1922,13 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_stop_request',
-        'contact_hook_scripting_catch_hook'
+        'contact_hook_scripting_catch_hook',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       return app(input).then((output) => {
         should.deepEqual(output.results, []);
@@ -1940,11 +1940,11 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
-        'contact_hook_scripting_catch_hook'
+        'contact_hook_scripting_catch_hook',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
-        'contact_hook_scripting_pre_hook'
+        'contact_hook_scripting_pre_hook',
       );
       const appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -1952,7 +1952,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.cleanedRequest = {
@@ -1978,11 +1978,11 @@ describe('Integration Test', function () {
         'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_catch_hook_returning_object',
-        'contact_hook_scripting_catch_hook'
+        'contact_hook_scripting_catch_hook',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
-        'contact_hook_scripting_pre_hook'
+        'contact_hook_scripting_pre_hook',
       );
       const appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -1990,7 +1990,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.cleanedRequest = {
@@ -2013,7 +2013,7 @@ describe('Integration Test', function () {
         'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
-        'contact_hook_scripting_pre_hook'
+        'contact_hook_scripting_pre_hook',
       );
       const appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2021,7 +2021,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.cleanedRequest = {
@@ -2044,7 +2044,7 @@ describe('Integration Test', function () {
         'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_object',
-        'contact_hook_scripting_post_hook'
+        'contact_hook_scripting_post_hook',
       );
       const appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2052,7 +2052,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.cleanedRequest = {
@@ -2076,7 +2076,7 @@ describe('Integration Test', function () {
         'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_array',
-        'contact_hook_scripting_post_hook'
+        'contact_hook_scripting_post_hook',
       );
       const appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2084,7 +2084,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.cleanedRequest = {
@@ -2110,11 +2110,11 @@ describe('Integration Test', function () {
         'notification';
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_pre_hook_disabled',
-        'contact_hook_scripting_pre_hook'
+        'contact_hook_scripting_pre_hook',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'contact_hook_scripting_post_hook_returning_object',
-        'contact_hook_scripting_post_hook'
+        'contact_hook_scripting_post_hook',
       );
       const appDefWithAuth = withAuth(appDef, apiKeyAuth);
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2122,7 +2122,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.perform'
+        'triggers.contact_hook_scripting.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.cleanedRequest = {
@@ -2147,7 +2147,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.performSubscribe'
+        'triggers.contact_hook_scripting.operation.performSubscribe',
       );
       input.bundle.authData = { api_key: 'hey hey' };
       input.bundle.inputData = { foo: 'bar' };
@@ -2158,7 +2158,7 @@ describe('Integration Test', function () {
         should.equal(output.results.json.event, 'contact.created');
         should.equal(
           output.results.json.hidden_message,
-          'pre_subscribe was here!'
+          'pre_subscribe was here!',
         );
         should.equal(output.results.headers['X-Api-Key'], 'hey hey');
         should.equal(output.results.hiddenMessage, 'post_subscribe was here!');
@@ -2180,7 +2180,7 @@ describe('Integration Test', function () {
         should.deepEqual(output.results.json.bundleZap, { id: 9511 });
         should.equal(
           output.results.json.bundleSubscriptionUrl,
-          'https://foo.bar'
+          'https://foo.bar',
         );
       });
     });
@@ -2192,7 +2192,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'triggers.contact_hook_scripting.operation.performUnsubscribe'
+        'triggers.contact_hook_scripting.operation.performUnsubscribe',
       );
       input.bundle.authData = { api_key: 'yo yo' };
       input.bundle.inputData = { foo: 'bar', subscription_id: 8866 };
@@ -2235,7 +2235,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2272,7 +2272,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2298,7 +2298,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { key1: 'sec', key2: 'ret' };
       return app(input).then((output) => {
@@ -2315,7 +2315,7 @@ describe('Integration Test', function () {
       const legacyProps = appDefWithAuth.legacy.creates.movie.operation;
       legacyProps.url = legacyProps.url.replace(
         '/movie',
-        '/{{bundle.inputData.resource_name}}'
+        '/{{bundle.inputData.resource_name}}',
       );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2323,7 +2323,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2351,7 +2351,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.inputData = {
         title: 'Men in Black',
@@ -2367,7 +2367,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_disabled',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2375,7 +2375,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2395,7 +2395,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_unflatten',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2403,7 +2403,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2444,7 +2444,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_unflatten',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2452,7 +2452,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2480,26 +2480,26 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_write_default_headers',
-        'movie_pre_write'
+        'movie_pre_write',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         const echoed = output.results;
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
           echoed.headers['Content-Type'][0],
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
         should.equal(echoed.json.accept, 'application/json');
         should.equal(
           echoed.json.contentType,
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
       });
     });
@@ -2509,7 +2509,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'recipe_pre_write_underscore_template',
-          'recipe_pre_write'
+          'recipe_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2517,7 +2517,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.recipe.operation.perform'
+        'creates.recipe.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2536,7 +2536,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_request_fallback',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2544,7 +2544,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2566,7 +2566,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_no_content',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2574,7 +2574,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         should.deepEqual(output.results, {});
@@ -2586,7 +2586,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_request_data_empty_string',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2594,7 +2594,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         const echoed = output.results;
@@ -2607,7 +2607,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_prune_empty_params',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2615,7 +2615,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         const echoed = output.results;
@@ -2633,7 +2633,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_data_is_object',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2641,18 +2641,18 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         const echoed = output.results;
         should.equal(
           echoed.headers['content-type'],
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
         should.equal(
           echoed.textBody,
           'foo=bar&apple=123&dragonfruit=%26%3D&eggplant=1.11&eggplant=2.22&' +
-            'filbert=True&nest=foo&nest=hello'
+            'filbert=True&nest=foo&nest=hello',
         );
       });
     });
@@ -2662,7 +2662,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_stop_request',
-          'movie_pre_write'
+          'movie_pre_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2670,7 +2670,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         should.deepEqual(output.results, {});
@@ -2683,7 +2683,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_write_disabled',
-          'movie_post_write'
+          'movie_post_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2691,7 +2691,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2713,7 +2713,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_write_sloppy_mode',
-          'movie_post_write'
+          'movie_post_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2721,7 +2721,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2745,7 +2745,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_write_sloppy_mode',
-          'movie_post_write'
+          'movie_post_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2753,7 +2753,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2769,7 +2769,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_write_require',
-          'movie_post_write'
+          'movie_post_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2777,7 +2777,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -2793,7 +2793,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_write_returning_nothing',
-          'movie_post_write'
+          'movie_post_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2801,7 +2801,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2819,7 +2819,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_write_returning_string',
-          'movie_post_write'
+          'movie_post_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2827,7 +2827,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2843,21 +2843,21 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_write_intercept_error',
-        'movie_pre_write'
+        'movie_pre_write',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_write_intercept_error',
-        'movie_post_write'
+        'movie_post_write',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).should.be.rejectedWith(
-        /teapot here, go find a coffee machine/
+        /teapot here, go find a coffee machine/,
       );
     });
 
@@ -2865,18 +2865,18 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_pre_write_intercept_error',
-        'movie_pre_write'
+        'movie_pre_write',
       );
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_post_write_bad_code',
-        'movie_post_write'
+        'movie_post_write',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).should.be.rejectedWith(/I'm a teapot/);
     });
@@ -2886,12 +2886,12 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_write_disabled',
-          'movie_pre_write'
+          'movie_pre_write',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_write_disabled',
-          'movie_post_write'
+          'movie_post_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2899,7 +2899,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -2985,7 +2985,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_write_async',
-          'movie_write'
+          'movie_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -2993,7 +2993,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3048,7 +3048,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_write_sync',
-          'movie_write'
+          'movie_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3056,7 +3056,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3077,7 +3077,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_write_sync',
-          'movie_write'
+          'movie_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3085,7 +3085,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = [];
@@ -3100,7 +3100,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_write_sync',
-          'movie_write'
+          'movie_write',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3108,7 +3108,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = [1234];
@@ -3123,12 +3123,12 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_write_sync',
-          'movie_write'
+          'movie_write',
         );
       const legacyProps = appDefWithAuth.legacy.creates.movie.operation;
       legacyProps.url = legacyProps.url.replace(
         '/movie',
-        '/{{bundle.inputData.resource_name}}'
+        '/{{bundle.inputData.resource_name}}',
       );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3136,7 +3136,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3157,26 +3157,26 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_write_default_headers',
-        'movie_write'
+        'movie_write',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         const echoed = output.results;
         should.equal(echoed.headers.Accept[0], 'application/json');
         should.equal(
           echoed.headers['Content-Type'][0],
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
         should.equal(echoed.json.accept, 'application/json');
         should.equal(
           echoed.json.contentType,
-          'application/json; charset=utf-8'
+          'application/json; charset=utf-8',
         );
       });
     });
@@ -3185,14 +3185,14 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_write_json_true',
-        'movie_write'
+        'movie_write',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         const echoed = output.results;
@@ -3204,14 +3204,14 @@ describe('Integration Test', function () {
       const appDef = _.cloneDeep(appDefinition);
       appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
         'movie_write_stop_request',
-        'movie_write'
+        'movie_write',
       );
       const compiledApp = schemaTools.prepareApp(appDef);
       const app = createApp(appDef);
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.perform'
+        'creates.movie.operation.perform',
       );
       return app(input).then((output) => {
         should.deepEqual(output.results, {});
@@ -3227,7 +3227,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3244,7 +3244,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_action_fields_disabled',
-          'movie_pre_custom_action_fields'
+          'movie_pre_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3252,7 +3252,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3269,7 +3269,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_action_fields_empty_request_data',
-          'movie_pre_custom_action_fields'
+          'movie_pre_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3277,7 +3277,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3294,7 +3294,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'recipe_pre_custom_action_fields_underscore_template',
-          'recipe_pre_custom_action_fields'
+          'recipe_pre_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3302,7 +3302,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.recipe.operation.inputFields'
+        'creates.recipe.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3323,7 +3323,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_action_fields_disabled',
-          'movie_post_custom_action_fields'
+          'movie_post_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3331,7 +3331,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3351,7 +3351,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_action_fields_dict_field',
-          'movie_post_custom_action_fields'
+          'movie_post_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3359,7 +3359,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3378,7 +3378,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_action_fields_returning_nothing',
-          'movie_post_custom_action_fields'
+          'movie_post_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3386,7 +3386,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3402,12 +3402,12 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_action_fields_disabled',
-          'movie_pre_custom_action_fields'
+          'movie_pre_custom_action_fields',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_action_fields_disabled',
-          'movie_post_custom_action_fields'
+          'movie_post_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3415,7 +3415,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3434,7 +3434,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_custom_action_fields_disabled',
-          'movie_custom_action_fields'
+          'movie_custom_action_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3442,7 +3442,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.inputFields'
+        'creates.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3465,7 +3465,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.outputFields'
+        'creates.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3485,7 +3485,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_action_result_fields_disabled',
-          'movie_pre_custom_action_result_fields'
+          'movie_pre_custom_action_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3493,7 +3493,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.outputFields'
+        'creates.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3514,7 +3514,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_action_result_fields_disabled',
-          'movie_post_custom_action_result_fields'
+          'movie_post_custom_action_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3522,7 +3522,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.outputFields'
+        'creates.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3544,12 +3544,12 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_action_result_fields_disabled',
-          'movie_pre_custom_action_result_fields'
+          'movie_pre_custom_action_result_fields',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_action_result_fields_disabled',
-          'movie_post_custom_action_result_fields'
+          'movie_post_custom_action_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3557,7 +3557,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.outputFields'
+        'creates.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3579,7 +3579,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_custom_action_result_fields_disabled',
-          'movie_custom_action_result_fields'
+          'movie_custom_action_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -3587,7 +3587,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.movie.operation.outputFields'
+        'creates.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -3611,7 +3611,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3639,7 +3639,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3662,14 +3662,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_tweak_filename',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3692,14 +3692,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_replace_hydrate_url',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3722,14 +3722,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_replace_with_string_content',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3752,14 +3752,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_fully_replace_url',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3782,14 +3782,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_fully_replace_content',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3812,14 +3812,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_content_dispoistion_with_quotes',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3842,14 +3842,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_content_dispoistion_no_quotes',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3872,14 +3872,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_content_dispoistion_non_ascii',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3902,14 +3902,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_wrong_content_type',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3930,14 +3930,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file2_pre_write_rename_file_field',
-          'file2_pre_write'
+          'file2_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file2.operation.perform'
+        'creates.file2.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3960,14 +3960,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_optional_file_field',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -3985,14 +3985,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_optional_file_field',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4014,14 +4014,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'file_pre_write_cancel_multipart',
-          'file_pre_write'
+          'file_pre_write',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'creates.file.operation.perform'
+        'creates.file.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4054,7 +4054,7 @@ describe('Integration Test', function () {
       it('should get data if auth is correct', () => {
         const input = createTestInput(
           compiledApp,
-          'hydrators.legacyMethodHydrator'
+          'hydrators.legacyMethodHydrator',
         );
         input.bundle.authData = { api_key: 'secret' };
         input.bundle.inputData = {
@@ -4073,7 +4073,7 @@ describe('Integration Test', function () {
       it('should fail if bad auth', () => {
         const input = createTestInput(
           compiledApp,
-          'hydrators.legacyMethodHydrator'
+          'hydrators.legacyMethodHydrator',
         );
         input.bundle.authData = { api_key: 'bad key' };
         input.bundle.inputData = {
@@ -4088,7 +4088,7 @@ describe('Integration Test', function () {
       it('should fail if no auth', () => {
         const input = createTestInput(
           compiledApp,
-          'hydrators.legacyMethodHydrator'
+          'hydrators.legacyMethodHydrator',
         );
         input.bundle.inputData = {
           method: 'getUser',
@@ -4107,7 +4107,7 @@ describe('Integration Test', function () {
           filePromise,
           knownLength,
           filename,
-          contentType
+          contentType,
         ) => {
           // Assuming filePromise gives us a JSON string
           const response = await filePromise;
@@ -4133,7 +4133,7 @@ describe('Integration Test', function () {
 
         const input = createTestInput(
           compiledApp,
-          'hydrators.legacyFileHydrator'
+          'hydrators.legacyFileHydrator',
         );
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
@@ -4152,7 +4152,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8'
+            'application/json; encoding=utf-8',
           );
         });
       });
@@ -4166,7 +4166,7 @@ describe('Integration Test', function () {
 
         const input = createTestInput(
           compiledApp,
-          'hydrators.legacyFileHydrator'
+          'hydrators.legacyFileHydrator',
         );
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
@@ -4188,7 +4188,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8'
+            'application/json; encoding=utf-8',
           );
         });
       });
@@ -4202,7 +4202,7 @@ describe('Integration Test', function () {
 
         const input = createTestInput(
           compiledApp,
-          'hydrators.legacyFileHydrator'
+          'hydrators.legacyFileHydrator',
         );
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
@@ -4227,7 +4227,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8'
+            'application/json; encoding=utf-8',
           );
         });
       });
@@ -4241,7 +4241,7 @@ describe('Integration Test', function () {
 
         const input = createTestInput(
           compiledApp,
-          'hydrators.legacyFileHydrator'
+          'hydrators.legacyFileHydrator',
         );
         input.bundle.authData = { api_key: 'super secret' };
         input.bundle.inputData = {
@@ -4270,7 +4270,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8'
+            'application/json; encoding=utf-8',
           );
         });
       });
@@ -4287,7 +4287,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.perform'
+        'searches.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4307,14 +4307,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_search_disabled',
-          'movie_pre_search'
+          'movie_pre_search',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.perform'
+        'searches.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4334,14 +4334,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_search_stop_request',
-          'movie_pre_search'
+          'movie_pre_search',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.perform'
+        'searches.movie.operation.perform',
       );
       return app(input).then((output) => {
         should.deepEqual(output.results, []);
@@ -4355,14 +4355,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_search_disabled',
-          'movie_post_search'
+          'movie_post_search',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.perform'
+        'searches.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4382,19 +4382,19 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_search_disabled',
-          'movie_pre_search'
+          'movie_pre_search',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_search_disabled',
-          'movie_post_search'
+          'movie_post_search',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.perform'
+        'searches.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4414,14 +4414,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_search_disabled',
-          'movie_search'
+          'movie_search',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.perform'
+        'searches.movie.operation.perform',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4441,14 +4441,14 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_search_stop_request',
-          'movie_search'
+          'movie_search',
         );
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
       const app = createApp(appDefWithAuth);
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.perform'
+        'searches.movie.operation.perform',
       );
       return app(input).then((output) => {
         should.deepEqual(output.results, []);
@@ -4460,7 +4460,7 @@ describe('Integration Test', function () {
       const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.resourceUrl = legacyProps.resourceUrl.replace(
         '/movie/',
-        '/movies/'
+        '/movies/',
       );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4468,7 +4468,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.performGet'
+        'searches.movie.operation.performGet',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = {
@@ -4486,7 +4486,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_read_resource_disabled',
-          'movie_pre_read_resource'
+          'movie_pre_read_resource',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4494,7 +4494,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.performGet'
+        'searches.movie.operation.performGet',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 5 };
@@ -4510,12 +4510,12 @@ describe('Integration Test', function () {
       const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.resourceUrl = legacyProps.resourceUrl.replace(
         '/movie/',
-        '/movies/'
+        '/movies/',
       );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_read_resource_disabled',
-          'movie_post_read_resource'
+          'movie_post_read_resource',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4523,7 +4523,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.performGet'
+        'searches.movie.operation.performGet',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 6 };
@@ -4532,7 +4532,7 @@ describe('Integration Test', function () {
         should.equal(movie.id, 6);
         should.equal(
           movie.title,
-          'title 6 (movie_post_read_resource was here)'
+          'title 6 (movie_post_read_resource was here)',
         );
         should.equal(movie.anotherId, 6);
       });
@@ -4543,12 +4543,12 @@ describe('Integration Test', function () {
       const legacyProps = appDefWithAuth.legacy.searches.movie.operation;
       legacyProps.resourceUrl = legacyProps.resourceUrl.replace(
         '/movie/',
-        '/movies/'
+        '/movies/',
       );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_read_resource_array',
-          'movie_post_read_resource'
+          'movie_post_read_resource',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4556,7 +4556,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.performGet'
+        'searches.movie.operation.performGet',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 6 };
@@ -4572,12 +4572,12 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_read_resource_disabled',
-          'movie_pre_read_resource'
+          'movie_pre_read_resource',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_read_resource_disabled',
-          'movie_post_read_resource'
+          'movie_post_read_resource',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4585,7 +4585,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.performGet'
+        'searches.movie.operation.performGet',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 7 };
@@ -4594,7 +4594,7 @@ describe('Integration Test', function () {
         should.equal(movie.id, 7);
         should.equal(
           movie.title,
-          'title 7 (movie_post_read_resource was here)'
+          'title 7 (movie_post_read_resource was here)',
         );
         should.equal(movie.anotherId, 7);
       });
@@ -4605,7 +4605,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_read_resource_disabled',
-          'movie_read_resource'
+          'movie_read_resource',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4613,7 +4613,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.performGet'
+        'searches.movie.operation.performGet',
       );
       input.bundle.authData = { api_key: 'secret' };
       input.bundle.inputData = { id: 8 };
@@ -4633,7 +4633,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.inputFields'
+        'searches.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4649,7 +4649,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_search_fields_disabled',
-          'movie_pre_custom_search_fields'
+          'movie_pre_custom_search_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4657,7 +4657,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.inputFields'
+        'searches.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4674,7 +4674,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_search_fields_disabled',
-          'movie_post_custom_search_fields'
+          'movie_post_custom_search_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4682,7 +4682,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.inputFields'
+        'searches.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4700,12 +4700,12 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_search_fields_disabled',
-          'movie_pre_custom_search_fields'
+          'movie_pre_custom_search_fields',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_search_fields_disabled',
-          'movie_post_custom_search_fields'
+          'movie_post_custom_search_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4713,7 +4713,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.inputFields'
+        'searches.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4731,7 +4731,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_custom_search_fields_disabled',
-          'movie_custom_search_fields'
+          'movie_custom_search_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4739,7 +4739,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.inputFields'
+        'searches.movie.operation.inputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4761,7 +4761,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.outputFields'
+        'searches.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4781,7 +4781,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_search_result_fields_disabled',
-          'movie_pre_custom_search_result_fields'
+          'movie_pre_custom_search_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4789,7 +4789,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.outputFields'
+        'searches.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4810,7 +4810,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_search_result_fields_disabled',
-          'movie_post_custom_search_result_fields'
+          'movie_post_custom_search_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4818,7 +4818,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.outputFields'
+        'searches.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4840,12 +4840,12 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_pre_custom_search_result_fields_disabled',
-          'movie_pre_custom_search_result_fields'
+          'movie_pre_custom_search_result_fields',
         );
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_post_custom_search_result_fields_disabled',
-          'movie_post_custom_search_result_fields'
+          'movie_post_custom_search_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4853,7 +4853,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.outputFields'
+        'searches.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {
@@ -4875,7 +4875,7 @@ describe('Integration Test', function () {
       appDefWithAuth.legacy.scriptingSource =
         appDefWithAuth.legacy.scriptingSource.replace(
           'movie_custom_search_result_fields_disabled',
-          'movie_custom_search_result_fields'
+          'movie_custom_search_result_fields',
         );
 
       const compiledApp = schemaTools.prepareApp(appDefWithAuth);
@@ -4883,7 +4883,7 @@ describe('Integration Test', function () {
 
       const input = createTestInput(
         compiledApp,
-        'searches.movie.operation.outputFields'
+        'searches.movie.operation.outputFields',
       );
       input.bundle.authData = { api_key: 'secret' };
       return app(input).then((output) => {

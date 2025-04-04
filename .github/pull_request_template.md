@@ -26,5 +26,6 @@ where:
     * schema
     * core
     * legacy-scripting-runner
+    * schema-to-ts
 
 -->

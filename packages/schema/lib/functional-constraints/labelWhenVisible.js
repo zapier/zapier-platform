@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
-const actionTypes = ['triggers', 'searches', 'creates'];
+const actionTypes = ['triggers', 'searches', 'creates', 'bulkReads'];
 
 const labelWhenVisible = (definition) => {
   const errors = [];
@@ -18,8 +18,8 @@ const labelWhenVisible = (definition) => {
             `/BasicDisplaySchema`,
             `instance.${actionType}.${key}.display`,
             'invalid',
-            'key'
-          )
+            'key',
+          ),
         );
       }
     });

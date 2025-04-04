@@ -1,5 +1,5 @@
 const ZapierBaseCommand = require('../../ZapierBaseCommand');
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
 const { callAPI } = require('../../../utils/api');
@@ -12,7 +12,7 @@ class UsersAddCommand extends ZapierBaseCommand {
         `About to invite ${cyan(this.args.email)} to ${
           this.args.version ? `version ${this.args.version}` : 'all versions'
         } of your integration. An invite email will be sent. Is that ok?`,
-        true
+        true,
       ))
     ) {
       this.log('\ncancelled');
@@ -29,22 +29,20 @@ class UsersAddCommand extends ZapierBaseCommand {
   }
 }
 
-UsersAddCommand.args = [
-  {
-    name: 'email',
+UsersAddCommand.args = {
+  email: Args.string({
     description:
       "The user to be invited. If they don't have a Zapier account, they'll be prompted to create one.",
     required: true,
-  },
-  {
-    name: 'version',
+  }),
+  version: Args.string({
     description:
       'A version string (like 1.2.3). Optional, used only if you want to invite a user to a specific version instead of all versions.',
-  },
-];
+  }),
+};
 UsersAddCommand.flags = buildFlags({
   commandFlags: {
-    force: flags.boolean({
+    force: Flags.boolean({
       char: 'f',
       description: 'Skip confirmation. Useful for running programatically.',
     }),

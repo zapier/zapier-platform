@@ -18,6 +18,10 @@ const checks = [
   require('./matchingKeys'),
   require('./labelWhenVisible'),
   require('./uniqueInputFieldKeys'),
+  require('./bufferedCreateConstraints'),
+  require('./requirePerformConditionally'),
+  require('./pollingThrottle'),
+  require('./AuthFieldisSafe'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {

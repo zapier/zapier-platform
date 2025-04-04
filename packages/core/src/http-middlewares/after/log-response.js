@@ -67,7 +67,7 @@ const logResponse = (resp) => {
 
   resp._addContext(infoMsg);
   resp._addContext(
-    `Received content "${String(logs.data.response_content).substr(0, 100)}"`
+    `Received content "${String(logs.data.response_content).substr(0, 100)}"`,
   );
 
   // steamroll any results/errors with org response!

@@ -13,7 +13,7 @@ const ensureJSONEncodable = (obj, path = null, visited = null) => {
     const typeName = typeof obj;
     const pathStr = path.join('.');
     throw new TypeError(
-      `Type '${typeName}' is not JSON-encodable (path: '${pathStr}')`
+      `Type '${typeName}' is not JSON-encodable (path: '${pathStr}')`,
     );
   }
 
@@ -22,7 +22,7 @@ const ensureJSONEncodable = (obj, path = null, visited = null) => {
   if (visited.has(obj)) {
     const pathStr = path.join('.');
     throw new TypeError(
-      `Circular structure is not JSON-encodable (path: '${pathStr}')`
+      `Circular structure is not JSON-encodable (path: '${pathStr}')`,
     );
   }
 

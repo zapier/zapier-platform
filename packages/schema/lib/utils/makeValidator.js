@@ -45,7 +45,7 @@ const processBaseError = (err, path) => {
         // the subschemas have a type property
         err.message = err.message.replace(
           subschema,
-          err.schema[err.name][idx].type || 'unknown'
+          err.schema[err.name][idx].type || 'unknown',
         );
       }
     });
@@ -105,8 +105,8 @@ const cleanError = (validationError, path, validator, definition) => {
           e,
           makePath(path, validationError.property),
           validator,
-          definition
-        )
+          definition,
+        ),
       );
     });
 
@@ -131,10 +131,10 @@ const makeValidator = (mainSchema, subSchemas) => {
     validate: (definition) => {
       const results = v.validate(definition, mainSchema);
       const allErrors = results.errors.concat(
-        functionalConstraints.run(definition, mainSchema)
+        functionalConstraints.run(definition, mainSchema),
       );
       const cleanedErrors = flattenDeep(
-        allErrors.map((e) => cleanError(e, '', v, definition))
+        allErrors.map((e) => cleanError(e, '', v, definition)),
       );
 
       results.errors = cleanedErrors.map((error) => {

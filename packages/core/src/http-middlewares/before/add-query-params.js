@@ -28,7 +28,7 @@ const addQueryParams = (req) => {
         // no replaceAll in JS yet, coming in a node version soon!
         stringifiedParams = stringifiedParams.replace(
           new RegExp(valToReplace, 'g'),
-          char
+          char,
         );
       }
     }

@@ -23,20 +23,6 @@ zapier push
 
 Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md.
 
-# The "typescript" Template
+# TypeScript Template
 
-This example is mainly a proof-of-concept for using features not yet available
-in Node.
-
-In `package.json`, we've define some commonly-used scripts:
-
-```bash
-# Watch and compile as you edit code
-npm run watch
-
-# There's also a non-watch compile command
-npm run build
-
-# To push to Zapier, make sure you compile first
-npm run build && zapier push
-```
+An TypeScript template for Zapier Integrations.

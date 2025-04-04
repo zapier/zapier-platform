@@ -41,8 +41,8 @@ const createAppTester = (appRaw, { customStoreKey } = {}) => {
       } else {
         throw new Error(
           `Unable to find the following on your App instance: ${JSON.stringify(
-            methodOrFunc
-          )}`
+            methodOrFunc,
+          )}`,
         );
       }
     }

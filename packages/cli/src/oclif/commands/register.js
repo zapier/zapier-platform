@@ -1,5 +1,5 @@
 const colors = require('colors/safe');
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const {
@@ -29,7 +29,7 @@ class RegisterCommand extends ZapierBaseCommand {
       this.flags.desc.length > MAX_DESCRIPTION_LENGTH
     ) {
       throw new Error(
-        `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`
+        `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`,
       );
     }
 
@@ -38,7 +38,7 @@ class RegisterCommand extends ZapierBaseCommand {
       this.args.title.length < MIN_TITLE_LENGTH
     ) {
       throw new Error(
-        `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`
+        `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`,
       );
     }
 
@@ -47,7 +47,7 @@ class RegisterCommand extends ZapierBaseCommand {
     switch (action) {
       case 'update': {
         this.startSpinner(
-          `Updating your existing integration "${appMeta.title}"`
+          `Updating your existing integration "${appMeta.title}"`,
         );
         await callAPI(`/apps/${this.app.id}`, {
           method: 'PUT',
@@ -60,7 +60,7 @@ class RegisterCommand extends ZapierBaseCommand {
 
       case 'register': {
         this.startSpinner(
-          `Registering your new integration "${appMeta.title}"`
+          `Registering your new integration "${appMeta.title}"`,
         );
         const app = await callAPI('/apps?formId=create', {
           method: 'POST',
@@ -68,12 +68,12 @@ class RegisterCommand extends ZapierBaseCommand {
         });
         this.stopSpinner();
         this.startSpinner(
-          `Linking app to current directory with \`${CURRENT_APP_FILE}\``
+          `Linking app to current directory with \`${CURRENT_APP_FILE}\``,
         );
         await writeLinkedAppConfig(app, process.cwd());
         this.stopSpinner();
         this.log(
-          '\nFinished! Now that your integration is registered with Zapier, you can `zapier push`!'
+          '\nFinished! Now that your integration is registered with Zapier, you can `zapier push`!',
         );
         break;
       }
@@ -104,7 +104,7 @@ class RegisterCommand extends ZapierBaseCommand {
         throw new Error(
           `${flagValue} is not a valid value for ${flag}. Must be one of the following: ${enumFieldChoices
             .map((option) => option.value)
-            .join(', ')}`
+            .join(', ')}`,
         );
       }
     }
@@ -131,14 +131,14 @@ class RegisterCommand extends ZapierBaseCommand {
       if (this.flags.yes) {
         console.info(
           colors.yellow(
-            `-y/--yes flag passed, updating current integration (ID: ${linkedAppId}).`
-          )
+            `-y/--yes flag passed, updating current integration (ID: ${linkedAppId}).`,
+          ),
         );
         action = actionChoices[0].value;
       } else {
         action = await this.promptWithList(
           `Would you like to update your current integration (ID: ${linkedAppId})?`,
-          actionChoices
+          actionChoices,
         );
       }
     }
@@ -151,7 +151,7 @@ class RegisterCommand extends ZapierBaseCommand {
       // Block published apps from updating settings
       if (this.app?.status && isPublished(this.app.status)) {
         throw new Error(
-          "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com."
+          "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com.",
         );
       }
     }
@@ -164,7 +164,7 @@ class RegisterCommand extends ZapierBaseCommand {
           required: true,
           charMinimum: MIN_TITLE_LENGTH,
           default: this.app?.title,
-        }
+        },
       );
     }
 
@@ -176,7 +176,7 @@ class RegisterCommand extends ZapierBaseCommand {
           required: true,
           charLimit: MAX_DESCRIPTION_LENGTH,
           default: this.app?.description,
-        }
+        },
       );
     }
 
@@ -184,7 +184,7 @@ class RegisterCommand extends ZapierBaseCommand {
     if (!appMeta.homepage_url) {
       appMeta.homepage_url = await this.prompt(
         'What is the homepage URL of your app? (optional)',
-        { default: this.app?.homepage_url }
+        { default: this.app?.homepage_url },
       );
     }
 
@@ -193,7 +193,7 @@ class RegisterCommand extends ZapierBaseCommand {
       appMeta.intention = await this.promptWithList(
         'Are you building a public or private integration?',
         this.config.enumFieldChoices.intention,
-        { default: this.app?.intention }
+        { default: this.app?.intention },
       );
     }
 
@@ -203,9 +203,9 @@ class RegisterCommand extends ZapierBaseCommand {
         "What is your relationship with the app you're integrating with Zapier?",
         this._getRoleChoicesWithAppTitle(
           appMeta.title,
-          this.config.enumFieldChoices.role
+          this.config.enumFieldChoices.role,
         ),
-        { default: this.app?.role }
+        { default: this.app?.role },
       );
     }
 
@@ -214,7 +214,7 @@ class RegisterCommand extends ZapierBaseCommand {
       appMeta.app_category = await this.promptWithList(
         'How would you categorize your app?',
         this.config.enumFieldChoices.app_category,
-        { default: this.app?.app_category }
+        { default: this.app?.app_category },
       );
     }
 
@@ -229,7 +229,7 @@ class RegisterCommand extends ZapierBaseCommand {
           [
             { name: 'Yes', value: true },
             { name: 'No', value: false },
-          ]
+          ],
         );
       }
     }
@@ -252,45 +252,44 @@ class RegisterCommand extends ZapierBaseCommand {
 }
 
 RegisterCommand.skipValidInstallCheck = true;
-RegisterCommand.args = [
-  {
-    name: 'title',
+RegisterCommand.args = {
+  title: Args.string({
     description:
       "Your integration's public title. Asked interactively if not present.",
-  },
-];
+  }),
+};
 
 RegisterCommand.flags = buildFlags({
   commandFlags: {
-    desc: flags.string({
+    desc: Flags.string({
       char: 'D',
       description: `A sentence describing your app in ${MAX_DESCRIPTION_LENGTH} characters or less, e.g. "Trello is a team collaboration tool to organize tasks and keep projects on track."`,
     }),
-    url: flags.string({
+    url: Flags.string({
       char: 'u',
       description: 'The homepage URL of your app, e.g., https://example.com.',
     }),
-    audience: flags.string({
+    audience: Flags.string({
       char: 'a',
       description: 'Are you building a public or private integration?',
     }),
-    role: flags.string({
+    role: Flags.string({
       char: 'r',
       description:
         "What is your relationship with the app you're integrating with Zapier?",
     }),
-    category: flags.string({
+    category: Flags.string({
       char: 'c',
       description:
         "How would you categorize your app? Choose the most appropriate option for your app's core features.",
     }),
-    subscribe: flags.boolean({
+    subscribe: Flags.boolean({
       char: 's',
       description:
         'Get tips and recommendations about this integration along with our monthly newsletter that details the performance of your integration and the latest Zapier news.',
       allowNo: true,
     }),
-    yes: flags.boolean({
+    yes: Flags.boolean({
       char: 'y',
       description:
         'Assume yes for all yes/no prompts. This flag will also update an existing integration (as opposed to registering a new one) if a .zapierapprc file is found.',

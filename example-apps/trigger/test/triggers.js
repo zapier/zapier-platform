@@ -18,7 +18,7 @@ describe('triggers', () => {
 
       const results = await appTester(
         App.triggers.recipe.operation.perform,
-        bundle
+        bundle,
       );
 
       results.length.should.above(0);
@@ -33,7 +33,7 @@ describe('triggers', () => {
 
       const results = await appTester(
         App.triggers.recipe.operation.perform,
-        bundle
+        bundle,
       );
 
       results.length.should.above(1);

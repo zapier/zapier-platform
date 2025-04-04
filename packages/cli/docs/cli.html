@@ -234,6 +234,9 @@ a code {
 <li><a href="#commands">Commands</a><ul>
 <li><a href="#analytics">analytics</a></li>
 <li><a href="#build">build</a></li>
+<li><a href="#canarycreate">canary:create</a></li>
+<li><a href="#canarydelete">canary:delete</a></li>
+<li><a href="#canarylist">canary:list</a></li>
 <li><a href="#convert">convert</a></li>
 <li><a href="#deleteintegration">delete:integration</a></li>
 <li><a href="#deleteversion">delete:version</a></li>
@@ -245,6 +248,7 @@ a code {
 <li><a href="#history">history</a></li>
 <li><a href="#init">init</a></li>
 <li><a href="#integrations">integrations</a></li>
+<li><a href="#invoke">invoke</a></li>
 <li><a href="#jobs">jobs</a></li>
 <li><a href="#link">link</a></li>
 <li><a href="#login">login</a></li>
@@ -252,6 +256,7 @@ a code {
 <li><a href="#logs">logs</a></li>
 <li><a href="#migrate">migrate</a></li>
 <li><a href="#promote">promote</a></li>
+<li><a href="#pull">pull</a></li>
 <li><a href="#push">push</a></li>
 <li><a href="#register">register</a></li>
 <li><a href="#scaffold">scaffold</a></li>
@@ -343,23 +348,96 @@ a code {
       <blockquote>
 <p>Build a pushable zip from the current directory.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier build</code></p><p>This command does the following:</p><ul>
-<li><p>Creates a temporary folder</p>
-</li>
-<li><p>Copies all code into the temporary folder</p>
-</li>
-<li><p>Adds an entry point: <code>zapierwrapper.js</code></p>
-</li>
-<li><p>Generates and validates app definition.</p>
-</li>
-<li><p>Detects dependencies via browserify (optional, on by default)</p>
-</li>
-<li><p>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</p>
-</li>
-<li><p>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code> and deletes the temp folder</p>
-</li>
+<li>Creates a temporary folder</li>
+<li>Copies all code into the temporary folder</li>
+<li>Adds an entry point: <code>zapierwrapper.js</code></li>
+<li>Generates and validates app definition.</li>
+<li>Detects dependencies via esbuild (optional, on by default)</li>
+<li>Zips up all needed <code>.js</code> files. If you want to include more files, add a &quot;includeInBuild&quot; property (array with strings of regexp paths) to your <code>.zapierapprc</code>.</li>
+<li>Moves the zip to <code>build/build.zip</code> and <code>build/source.zip</code> and deletes the temp folder</li>
 </ul><p>This command is typically followed by <code>zapier upload</code>.</p><p><strong>Flags</strong></p><ul>
 <li><code>--disable-dependency-detection</code> | Disable &quot;smart&quot; file inclusion. By default, Zapier only includes files that are required by <code>index.js</code>. If you (or your dependencies) require files dynamically (such as with <code>require(someVar)</code>), then you may see &quot;Cannot find module&quot; errors. Disabling this may make your <code>build.zip</code> too large. If that&apos;s the case, try using the <code>includeInBuild</code> option in your <code>.zapierapprc</code>. See the docs about <code>includeInBuild</code> for more info.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="canarycreate">canary:create</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier canary:create VERSIONFROM VERSIONTO</code></p><p>Only one canary can be active at the same time. You can run <code>zapier canary:list</code> to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using <code>zapier canary:delete a.b.c x.y.z</code>.</p><p>Note: this is similar to <code>zapier migrate</code> but different in that this is temporary and will &quot;revert&quot; the changes once the specified duration is expired.</p><p><strong>Only use this command to canary traffic between non-breaking versions!</strong></p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>versionFrom</code> | Version to route traffic from</li>
+<li>(required) <code>versionTo</code> | Version to canary traffic to</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li>(required) <code>-p, --percent</code> | Percent of traffic to route to new version</li>
+<li>(required) <code>-d, --duration</code> | Duration of the canary in seconds</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier canary:create 1.0.0 1.1.0 -p 25 -d 720</code></li>
+<li><code>zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="canarydelete">canary:delete</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Delete an active canary deployment</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier canary:delete VERSIONFROM VERSIONTO</code></p><p><strong>Arguments</strong></p><ul>
+<li>(required) <code>versionFrom</code> | Version to route traffic from</li>
+<li>(required) <code>versionTo</code> | Version canary traffic is routed to</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier canary:delete 1.0.0 1.1.0</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="canarylist">canary:list</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>List all active canary deployments</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier canary:list</code></p><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier canary:list</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -481,18 +559,16 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Describe the current integration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier describe</code></p><p>This command prints a human readable enumeration of your integrations&apos;s</p><p>triggers, searches, and creates as seen by Zapier. Useful to understand how your</p><p>resources convert and relate to different actions.</p><ul>
-<li><p><strong>Noun</strong>: your action&apos;s noun</p>
-</li>
-<li><p><strong>Label</strong>: your action&apos;s label</p>
-</li>
-<li><p><strong>Resource</strong>: the resource (if any) this action is tied to</p>
-</li>
-<li><p><strong>Available Methods</strong>: testable methods for this action</p>
-</li>
+</blockquote><p><strong>Usage</strong>: <code>zapier describe</code></p><p>This command prints a human readable enumeration of your integrations&apos;s
+triggers, searches, and creates as seen by Zapier. Useful to understand how your
+resources convert and relate to different actions.</p><ul>
+<li><strong>Noun</strong>: your action&apos;s noun</li>
+<li><strong>Label</strong>: your action&apos;s label</li>
+<li><strong>Resource</strong>: the resource (if any) this action is tied to</li>
+<li><strong>Available Methods</strong>: testable methods for this action</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -516,8 +592,8 @@ a code {
 </blockquote><p><strong>Usage</strong>: <code>zapier env:get VERSION</code></p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | The version to get the environment for.</li>
 </ul><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier env:get 1.2.3</code></li>
 </ul>
@@ -595,8 +671,8 @@ a code {
       <blockquote>
 <p>Get the history of your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier history</code></p><p>History includes all the changes made over the lifetime of your integration. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -646,10 +722,105 @@ a code {
       <blockquote>
 <p>List integrations you have admin access to.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier integrations</code></p><p>This command also checks the current directory for a linked integration.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>apps</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="invoke">invoke</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Invoke an auth operation, a trigger, or a create/search action locally.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier invoke [ACTIONTYPE] [ACTIONKEY]</code></p><p>This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.</p><p>This command loads environment variables and <code>authData</code> from the <code>.env</code> file in the current directory. If you don&apos;t have a <code>.env</code> file yet, you can use the <code>zapier invoke auth start</code> command to help you initialize it, or you can manually create it.</p><p>The <code>zapier invoke auth start</code> subcommand will prompt you for the necessary auth fields and save them to the <code>.env</code> file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.</p><p>Each line in the <code>.env</code> file should follow one of these formats:</p><ul>
+<li><code>VAR_NAME=VALUE</code> for environment variables</li>
+<li><code>authData_FIELD_KEY=VALUE</code> for auth data fields</li>
+</ul><p>For example, a <code>.env</code> file for an OAuth2 integration might look like this:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>CLIENT_ID=&apos;your_client_id&apos;
+CLIENT_SECRET=&apos;your_client_secret&apos;
+authData_access_token=&apos;1234567890&apos;
+authData_refresh_token=&apos;abcdefg&apos;
+authData_account_name=&apos;zapier&apos;
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To test if the auth data is correct, run either one of these:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>zapier invoke auth test   # invokes authentication.test method
+zapier invoke auth label  # invokes authentication.test and renders connection label
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To refresh stale auth data for OAuth2 or session auth, run <code>zapier invoke auth refresh</code>.</p><p>Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here&apos;s how you invoke a trigger with the key <code>new_recipe</code>:</p>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height  docs-code">
+      <pre><code>zapier invoke trigger new_recipe
+</code></pre>
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <p>To add input data, use the <code>--inputData</code> flag. The input data can come from the command directly, a file, or stdin. See <strong>EXAMPLES</strong> below.</p><p>When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don&apos;t want to get interactive prompts, use the <code>--non-interactive</code> flag.</p><p>The <code>--debug</code> flag will show you the HTTP request logs and any console logs you have in your code.</p><p>The following is a non-exhaustive list of current limitations and may be supported in the future:</p><ul>
+<li>Hook triggers, including REST hook subscribe/unsubscribe</li>
+<li>Line items</li>
+<li>Output hydration</li>
+<li>File upload</li>
+<li>Dynamic dropdown pagination</li>
+<li>Function-based connection label</li>
+<li>Buffered create actions</li>
+<li>Search-or-create actions</li>
+<li>Search-powered fields</li>
+<li>Field choices</li>
+<li>autoRefresh for OAuth2 and session auth</li>
+</ul><p><strong>Arguments</strong></p><ul>
+<li><code>actionType</code> | The action type you want to invoke.</li>
+<li><code>actionKey</code> | The trigger/action key you want to invoke. If ACTIONTYPE is &quot;auth&quot;, this can be &quot;label&quot;, &quot;refresh&quot;, &quot;start&quot;, or &quot;test&quot;.</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-i, --inputData</code> | The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like &apos;{&quot;key&quot;: &quot;value&quot;}&apos;, read from a file like @file.json, or read from stdin like @-.</li>
+<li><code>--isFillingDynamicDropdown</code> | Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.</li>
+<li><code>--isLoadingSample</code> | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.</li>
+<li><code>--isPopulatingDedupe</code> | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.</li>
+<li><code>--limit</code> | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to <code>-1</code>.</li>
+<li><code>-p, --page</code> | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.</li>
+<li><code>--non-interactive</code> | Do not show interactive prompts.</li>
+<li><code>-z, --timezone</code> | Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</a>.  Defaults to <code>America/Chicago</code>.</li>
+<li><code>--redirect-uri</code> | Only used by <code>auth start</code> subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server&apos;s OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.  Defaults to <code>http://localhost:9000</code>.</li>
+<li><code>--local-port</code> | Only used by <code>auth start</code> subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.  Defaults to <code>9000</code>.</li>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
+</ul><p><strong>Examples</strong></p><ul>
+<li><code>zapier invoke</code></li>
+<li><code>zapier invoke auth start</code></li>
+<li><code>zapier invoke auth refresh</code></li>
+<li><code>zapier invoke auth test</code></li>
+<li><code>zapier invoke auth label</code></li>
+<li><code>zapier invoke trigger new_recipe</code></li>
+<li><code>zapier invoke create add_recipe --inputData &apos;{&quot;title&quot;: &quot;Pancakes&quot;}&apos;</code></li>
+<li><code>zapier invoke search find_recipe -i @file.json</code></li>
+<li><code>cat file.json | zapier invoke trigger new_recipe -i @-</code></li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -671,8 +842,8 @@ a code {
       <blockquote>
 <p>Lists ongoing migration or promotion jobs for the current integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier jobs</code></p><p>A job represents a background process that will be queued up when users execute a &quot;migrate&quot; or &quot;promote&quot; command for the current integration.</p><p>Each job will be added to the end of a queue of &quot;promote&quot; and &quot;migration&quot; jobs where the &quot;Job Stage&quot; will then be initialized with &quot;requested&quot;.</p><p>Job stages will then move to &quot;estimating&quot;, &quot;in_progress&quot; and finally one of four &quot;end&quot; stages: &quot;complete&quot;, &quot;aborted&quot;, &quot;errored&quot; or &quot;paused&quot;.</p><p>Job times will vary as it depends on the size of the queue and how many users your integration has.</p><p>Jobs are returned from oldest to newest.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier jobs</code></li>
 </ul>
@@ -769,8 +940,8 @@ a code {
 <li><code>--detailed</code> | See extra info, like request/response body and headers.</li>
 <li><code>-u, --user</code> | Only show logs for this user. Defaults to your account.  Defaults to <code>me</code>.</li>
 <li><code>--limit</code> | Cap the number of logs returned. Max is 50 (also the default)  Defaults to <code>50</code>.</li>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -791,14 +962,11 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Migrate a percentage of users or a single user from one version of your integration to another.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier migrate FROMVERSION TOVERSION [PERCENT]</code></p><p>Start a migration to move users between different versions of your integration. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (i.e. <code>zapier migrate 1.0.1 1.0.0</code>).</p><p><strong>Only use this command to migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</strong></p><p>Migration time varies based on the number of affected Zaps. Be patient and check <code>zapier jobs</code> to track the status. Or use <code>zapier history</code> if you want to see older jobs.</p><p>Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><p>We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p><p>You can migrate a specific user&apos;s Zaps by using <code>--user</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>). This will migrate Zaps in any account the user is a member of where the following criteria is met.</p><ul>
-<li><p>The Zap is owned by the user.</p>
-</li>
-<li><p>The Zap is not shared.</p>
-</li>
-<li><p>The integration auth used is not shared.</p>
-</li>
-</ul><p>Alternatively, you can pass the <code>--account</code> flag, (i.e. <code>zapier migrate 1.0.0 1.0.1 --account=account@example.com</code>). This will migrate all users&apos; Zaps, Private &amp; Shared, within all accounts for which the specified user is a member.</p><p><strong>The <code>--account</code> flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.</strong></p><p>You cannot pass both <code>PERCENT</code> and <code>--user</code> or <code>--account</code>.</p><p>You cannot pass both <code>--user</code> and <code>--account</code>.</p><p><strong>Arguments</strong></p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier migrate FROMVERSION TOVERSION [PERCENT]</code></p><p>Start a migration to move users between different versions of your integration. You may also &quot;revert&quot; by simply swapping the from/to verion strings in the command line arguments (i.e. <code>zapier migrate 1.0.1 1.0.0</code>).</p><p><strong>Only use this command to migrate users between non-breaking versions, use <code>zapier deprecate</code> if you have breaking changes!</strong></p><p>Migration time varies based on the number of affected Zaps. Be patient and check <code>zapier jobs</code> to track the status. Or use <code>zapier history</code> if you want to see older jobs.</p><p>Since a migration is only for non-breaking changes, users are not emailed about the update/migration. It will be a transparent process for them.</p><p>We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.</p><p>You can migrate a specific user&apos;s Zaps by using <code>--user</code> (i.e. <code>zapier migrate 1.0.0 1.0.1 --user=user@example.com</code>). This will migrate Zaps that are private for that user. Zaps that are</p><ul>
+<li><a href="https://help.zapier.com/hc/en-us/articles/8496277647629">shared across the team</a>,</li>
+<li><a href="https://help.zapier.com/hc/en-us/articles/8496326497037-Share-app-connections-with-your-team">shared app connections</a>, or</li>
+<li>in a <a href="https://help.zapier.com/hc/en-us/articles/22330977078157-Collaborate-with-members-of-your-Team-or-Company-account">team/company account</a></li>
+</ul><p>will <strong>not</strong> be migrated.</p><p>Alternatively, you can pass the <code>--account</code> flag, (i.e. <code>zapier migrate 1.0.0 1.0.1 --account=account@example.com</code>). This will migrate all Zaps owned by the user, Private &amp; Shared, within all accounts for which the specified user is a member.</p><p><strong>The <code>--account</code> flag should be used cautiously as it can break shared Zaps for other users in Team or Enterprise accounts.</strong></p><p>You cannot pass both <code>PERCENT</code> and <code>--user</code> or <code>--account</code>.</p><p>You cannot pass both <code>--user</code> and <code>--account</code>.</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>fromVersion</code> | The version FROM which to migrate users.</li>
 <li>(required) <code>toVersion</code> | The version TO which to migrate users.</li>
 <li><code>percent</code> | Percentage (between 1 and 100) of users to migrate.</li>
@@ -832,21 +1000,43 @@ a code {
       <blockquote>
 <p>Promote a specific version to public access.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier promote VERSION</code></p><p>Promote an integration version into production (non-private) rotation, which means new users can use this integration version.</p><ul>
-<li><p>This <strong>does</strong> mark the version as the official public version - all other versions &amp; users are grandfathered.</p>
-</li>
-<li><p>This does <strong>NOT</strong> build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</p>
-</li>
-<li><p>This does <strong>NOT</strong> move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</p>
-</li>
-<li><p>This does <strong>NOT</strong> recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</p>
-</li>
-</ul><p>Promotes are an inherently safe operation for all existing users of your integration.</p><p>If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.</p><p>Check <code>zapier jobs</code> to track the status of the promotion. Or use <code>zapier history</code> if you want to see older jobs.</p><p><strong>Arguments</strong></p><ul>
+<li>This <strong>does</strong> mark the version as the official public version - all other versions &amp; users are grandfathered.</li>
+<li>This does <strong>NOT</strong> build/upload or deploy a version to Zapier - you should <code>zapier push</code> first.</li>
+<li>This does <strong>NOT</strong> move old users over to this version - <code>zapier migrate 1.0.0 1.0.1</code> does that.</li>
+<li>This does <strong>NOT</strong> recommend old users stop using this version - <code>zapier deprecate 1.0.0 2017-01-01</code> does that.</li>
+</ul><p>Promotes are an inherently safe operation for all existing users of your integration.</p><p>After a promotion, go to your developer platform to <a href="https://platform.zapier.com/manage/user-feedback#3-close-resolved-issues">close issues that were resolved</a> in the updated version.</p><p>If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.</p><p>Check <code>zapier jobs</code> to track the status of the promotion. Or use <code>zapier history</code> if you want to see older jobs.</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>version</code> | The version you want to promote.</li>
 </ul><p><strong>Flags</strong></p><ul>
 <li><code>-y, --yes</code> | Automatically answer &quot;yes&quot; to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier promote 1.0.0</code></li>
+</ul>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <h2 id="pull">pull</h2>
+    </div>
+    <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
+      
+    </div>
+  </div>
+</div><div class="row">
+  <div class="row-height">
+    <div class="col-md-5 col-sm-12 col-height  docs-primary">
+      <blockquote>
+<p>Retrieve and update your local integration files with the latest version.</p>
+</blockquote><p><strong>Usage</strong>: <code>zapier pull</code></p><p>This command updates your local integration files with the latest version. You will be prompted with a confirmation dialog before continuing if there any destructive file changes.</p><p>Zapier may release new versions of your integration with bug fixes or new features. In the event this occurs, you will be unable to do the following until your local files are updated by running <code>zapier pull</code>:</p><ul>
+<li>push to the promoted version</li>
+<li>promote a new version</li>
+<li>migrate users from one version to another</li>
+</ul><p><strong>Flags</strong></p><ul>
+<li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -928,10 +1118,8 @@ a code {
       <blockquote>
 <p>Add a starting trigger, create, search, or resource to your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier scaffold ACTIONTYPE NOUN</code></p><p>The first argument should be one of <code>trigger|search|create|resource</code> followed by the noun that this will act on (something like &quot;contact&quot; or &quot;deal&quot;).</p><p>The scaffold command does two general things:</p><ul>
-<li><p>Creates a new file (such as <code>triggers/contact.js</code>)</p>
-</li>
-<li><p>Imports and registers it inside your <code>index.js</code></p>
-</li>
+<li>Creates a new file (such as <code>triggers/contact.js</code>)</li>
+<li>Imports and registers it inside your <code>index.js</code></li>
 </ul><p>You can mix and match several options to customize the created scaffold for your project.</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>actionType</code> | undefined</li>
 <li>(required) <code>noun</code> | undefined</li>
@@ -968,12 +1156,9 @@ a code {
       <blockquote>
 <p>Add a team member to your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier team:add EMAIL ROLE [MESSAGE]</code></p><p>These users come in three levels:</p><ul>
-<li><p><code>admin</code>, who can edit everything about the integration</p>
-</li>
-<li><p><code>collaborator</code>, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.</p>
-</li>
-<li><p><code>subscriber</code>, who can&apos;t directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.</p>
-</li>
+<li><code>admin</code>, who can edit everything about the integration</li>
+<li><code>collaborator</code>, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.</li>
+<li><code>subscriber</code>, who can&apos;t directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.</li>
 </ul><p>Team members can be freely added and removed.</p><p><strong>Arguments</strong></p><ul>
 <li>(required) <code>email</code> | The user to be invited. If they don&apos;t have a Zapier account, they&apos;ll be prompted to create one.</li>
 <li>(required) <code>role</code> | The level the invited team member should be at. Admins can edit everything and get email updates. Collaborators have read-access to the app and get email updates. Subscribers only get email updates.</li>
@@ -1007,15 +1192,12 @@ a code {
       <blockquote>
 <p>Get team members involved with your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier team:get</code></p><p>These users come in three levels:</p><ul>
-<li><p><code>admin</code>, who can edit everything about the integration</p>
-</li>
-<li><p><code>collaborator</code>, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.</p>
-</li>
-<li><p><code>subscriber</code>, who can&apos;t directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.</p>
-</li>
+<li><code>admin</code>, who can edit everything about the integration</li>
+<li><code>collaborator</code>, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.</li>
+<li><code>subscriber</code>, who can&apos;t directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.</li>
 </ul><p>Use the <code>zapier team:add</code> and <code>zapier team:remove</code> commands to modify your team.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>team:list</code></li>
 </ul>
@@ -1038,7 +1220,9 @@ a code {
     <div class="col-md-5 col-sm-12 col-height  docs-primary">
       <blockquote>
 <p>Remove a team member from all versions of your integration.</p>
-</blockquote><p><strong>Usage</strong>: <code>zapier team:remove</code></p><p>Admins will immediately lose write access to the integration.</p><p>Collaborators will immediately lose read access to the integration.</p><p>Subscribers won&apos;t receive future email updates.</p><p><strong>Flags</strong></p><ul>
+</blockquote><p><strong>Usage</strong>: <code>zapier team:remove</code></p><p>Admins will immediately lose write access to the integration.
+Collaborators will immediately lose read access to the integration.
+Subscribers won&apos;t receive future email updates.</p><p><strong>Flags</strong></p><ul>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>team:delete</code></li>
@@ -1145,8 +1329,8 @@ a code {
       <blockquote>
 <p>Get a list of users who have been invited to your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier users:get</code></p><p>Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the <code>zapier users:add</code> command or the web UI). Users who joined by clicking links generated using the <code>zapier user:links</code> command won&apos;t show up here.</p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Aliases</strong></p><ul>
 <li><code>users:list</code></li>
 </ul>
@@ -1170,8 +1354,8 @@ a code {
       <blockquote>
 <p>Get a list of links that are used to invite users to your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier users:links</code></p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">
@@ -1221,8 +1405,8 @@ a code {
 <p>Validate your integration.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier validate</code></p><p>Run the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during <code>zapier build</code>, <code>zapier upload</code>, <code>zapier push</code> or even as a test in <code>zapier test</code>.</p><p><strong>Flags</strong></p><ul>
 <li><code>--without-style</code> | Forgo pinging the Zapier server to run further checks.</li>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul><p><strong>Examples</strong></p><ul>
 <li><code>zapier validate</code></li>
 <li><code>zapier validate --without-style</code></li>
@@ -1248,8 +1432,8 @@ a code {
       <blockquote>
 <p>List the versions of your integration available for use in the Zapier editor.</p>
 </blockquote><p><strong>Usage</strong>: <code>zapier versions</code></p><p><strong>Flags</strong></p><ul>
-<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 <li><code>-d, --debug</code> | Show extra debugging output.</li>
+<li><code>-f, --format</code> | Change the way structured data is presented. If &quot;json&quot; or &quot;raw&quot;, you can pipe the output of the command into other tools, such as jq. One of <code>[plain | json | raw | row | table]</code>. Defaults to <code>table</code>.</li>
 </ul>
     </div>
     <div class="col-md-7 col-sm-12 col-height is-empty docs-code">

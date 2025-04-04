@@ -1,4 +1,5 @@
 const BaseCommand = require('../ZapierBaseCommand');
+const { Args } = require('@oclif/core');
 const { buildFlags } = require('../buildFlags');
 
 const { callAPI } = require('../../utils/api');
@@ -8,7 +9,7 @@ class DeprecateCommand extends BaseCommand {
     const app = await this.getWritableApp();
     const { version, date } = this.args;
     this.log(
-      `Preparing to deprecate version ${version} your app "${app.title}".\n`
+      `Preparing to deprecate version ${version} your app "${app.title}".\n`,
     );
     const url = `/apps/${app.id}/versions/${version}/deprecate`;
     this.startSpinner(`Deprecating ${version}`);
@@ -20,25 +21,23 @@ class DeprecateCommand extends BaseCommand {
     });
     this.stopSpinner();
     this.log(
-      `\nWe'll let users know that this version is no longer recommended and will cease to work on ${date}.`
+      `\nWe'll let users know that this version is no longer recommended and will cease to work on ${date}.`,
     );
   }
 }
 
 DeprecateCommand.flags = buildFlags();
-DeprecateCommand.args = [
-  {
-    name: 'version',
+DeprecateCommand.args = {
+  version: Args.string({
     description: 'The version to deprecate.',
     required: true,
-  },
-  {
-    name: 'date',
-    required: true,
+  }),
+  date: Args.string({
     description:
       'The date (YYYY-MM-DD) when Zapier will make the specified version unavailable.',
-  },
-];
+    required: true,
+  }),
+};
 DeprecateCommand.examples = ['zapier deprecate 1.2.3 2011-10-01'];
 DeprecateCommand.description = `Mark a non-production version of your integration as deprecated, with removal by a certain date.
 

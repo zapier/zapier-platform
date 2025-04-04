@@ -16,13 +16,13 @@ const collectErrors = (inputFields, path) => {
             '/FieldSchema',
             `instance.${path}.inputFields[${index}].children`,
             'empty',
-            'inputFields'
-          )
+            'inputFields',
+          ),
         );
       } else {
         const hasDeeplyNestedChildren = _.some(
           inputField.children,
-          (child) => child.children
+          (child) => child.children,
         );
 
         if (hasDeeplyNestedChildren) {
@@ -33,8 +33,8 @@ const collectErrors = (inputFields, path) => {
               '/FieldSchema',
               `instance.${path}.inputFields[${index}]`,
               'deepNesting',
-              'inputFields'
-            )
+              'inputFields',
+            ),
           );
         }
       }
@@ -54,8 +54,8 @@ const validateFieldNesting = (definition) => {
           errors = errors.concat(
             collectErrors(
               actionDef.operation.inputFields,
-              `${typeOf}.${actionDef.key}`
-            )
+              `${typeOf}.${actionDef.key}`,
+            ),
           );
         }
       });

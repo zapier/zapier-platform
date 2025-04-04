@@ -7,19 +7,20 @@ const prettier = require('gulp-prettier');
 
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 const authFilesCodegen = require('../utils/auth-files-codegen');
+const { PullGenerator } = require('./pull');
 
 const writeGenericReadme = (gen) => {
   gen.fs.copyTpl(
     gen.templatePath('README.template.md'),
     gen.destinationPath('README.md'),
-    { name: gen.options.packageName }
+    { name: gen.options.packageName },
   );
 };
 
 const appendReadme = (gen) => {
   const content = gen.fs.read(
     gen.templatePath(gen.options.template, 'README.md'),
-    { defaults: '' }
+    { defaults: '' },
   );
   if (content) {
     gen.fs.append(gen.destinationPath('README.md'), '\n' + content);
@@ -31,6 +32,18 @@ const writeGitignore = (gen) => {
 };
 
 const writeGenericPackageJson = (gen, packageJsonExtension) => {
+  const moduleExtension =
+    gen.options.module === 'esm'
+      ? {
+          exports: './index.js',
+          type: 'module',
+        }
+      : {
+          main: 'index.js',
+        };
+
+  const fullExtension = merge(moduleExtension, packageJsonExtension);
+
   gen.fs.writeJSON(
     gen.destinationPath('package.json'),
     merge(
@@ -38,7 +51,6 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
         name: gen.options.packageName,
         version: '1.0.0',
         description: '',
-        main: 'index.js',
         scripts: {
           test: 'jest --testTimeout 10000',
         },
@@ -50,17 +62,74 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
         },
         private: true,
       },
-      packageJsonExtension
-    )
+      fullExtension,
+    ),
+  );
+};
+
+const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
+  const moduleExtension =
+    gen.options.module === 'esm'
+      ? {
+          exports: './dist/index.js',
+          type: 'module',
+        }
+      : {
+          main: 'index.js',
+        };
+
+  const fullExtension = merge(moduleExtension, packageJsonExtension);
+
+  gen.fs.writeJSON(
+    gen.destinationPath('package.json'),
+    merge(
+      {
+        name: gen.options.packageName,
+        version: '1.0.0',
+        description: '',
+        scripts: {
+          test: 'vitest',
+        },
+        dependencies: {
+          [PLATFORM_PACKAGE]: PACKAGE_VERSION,
+        },
+        devDependencies: {
+          vitest: '^2.1.2',
+        },
+        private: true,
+      },
+      fullExtension,
+    ),
   );
 };
 
 const writeGenericIndex = (gen, hasAuth) => {
+  const templatePath =
+    gen.options.module === 'esm'
+      ? 'index-esm.template.js'
+      : 'index.template.js';
   gen.fs.copyTpl(
-    gen.templatePath('index.template.js'),
+    gen.templatePath(templatePath),
     gen.destinationPath('index.js'),
-    { corePackageName: PLATFORM_PACKAGE, hasAuth }
+    { corePackageName: PLATFORM_PACKAGE, hasAuth },
   );
+};
+
+const writeTypeScriptIndex = (gen) => {
+  const templatePath =
+    gen.options.module === 'esm'
+      ? 'index-esm.template.ts'
+      : 'index.template.ts';
+  gen.fs.copyTpl(
+    gen.templatePath(templatePath),
+    gen.destinationPath('src/index.ts'),
+  );
+
+  // create root directory index.js if it's commonjs
+  if (gen.options.module === 'commonjs') {
+    const content = `module.exports = require('./dist').default;`;
+    gen.fs.write(gen.destinationPath('index.js'), content);
+  }
 };
 
 const authTypes = {
@@ -82,14 +151,14 @@ const writeGenericAuthTest = (gen) => {
   const authType = authTypes[gen.options.template];
   gen.fs.copyTpl(
     gen.templatePath(`authTests/${authType || 'generic'}.test.js`),
-    gen.destinationPath('test/authentication.test.js')
+    gen.destinationPath('test/authentication.test.js'),
   );
 };
 
 const writeGenericTest = (gen) => {
   gen.fs.copyTpl(
     gen.templatePath('authTests/generic.test.js'),
-    gen.destinationPath('test/example.test.js')
+    gen.destinationPath('test/example.test.js'),
   );
 };
 
@@ -115,7 +184,6 @@ const writeForMinimalTemplate = (gen) => {
 // example directory
 const writeForStandaloneTemplate = (gen) => {
   writeGitignore(gen);
-
   writeGenericReadme(gen);
   appendReadme(gen);
 
@@ -127,28 +195,44 @@ const writeForStandaloneTemplate = (gen) => {
         'form-data': '4.0.0',
       },
     },
-    typescript: {
-      scripts: {
-        build: 'npm run clean && tsc',
-        clean: 'rimraf ./lib ./build',
-        watch: 'npm run clean && tsc --watch',
-        test: 'npm run build && jest --testTimeout 10000 --rootDir ./lib/test',
-      },
-      devDependencies: {
-        '@types/jest': '^26.0.23',
-        '@types/node': '^14',
-        rimraf: '^3.0.2',
-        typescript: '^4.9.4',
-      },
-    },
   }[gen.options.template];
 
   writeGenericPackageJson(gen, packageJsonExtension);
 
   gen.fs.copy(
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
-    gen.destinationPath()
+    gen.destinationPath(),
   );
+};
+
+const writeForStandaloneTypeScriptTemplate = (gen) => {
+  writeGitignore(gen);
+  writeGenericReadme(gen);
+  appendReadme(gen);
+
+  const packageJsonExtension = {
+    typescript: {
+      scripts: {
+        test: 'vitest --run',
+        clean: 'rimraf ./dist ./build',
+        build: 'npm run clean && tsc',
+        '_zapier-build': 'npm run build',
+      },
+      devDependencies: {
+        rimraf: '^5.0.10',
+        typescript: '5.6.2',
+        vitest: '^2.1.2',
+      },
+    },
+  }[gen.options.template];
+
+  writeTypeScriptPackageJson(gen, packageJsonExtension);
+
+  gen.fs.copy(
+    gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
+    gen.destinationPath(),
+  );
+  writeTypeScriptIndex(gen);
 };
 
 const TEMPLATE_ROUTES = {
@@ -161,10 +245,13 @@ const TEMPLATE_ROUTES = {
   minimal: writeForMinimalTemplate,
   'oauth1-trello': writeForAuthTemplate,
   oauth2: writeForAuthTemplate,
+  openai: writeForStandaloneTemplate,
   'search-or-create': writeForStandaloneTemplate,
   'session-auth': writeForAuthTemplate,
-  typescript: writeForStandaloneTemplate,
+  typescript: writeForStandaloneTypeScriptTemplate,
 };
+
+const ESM_SUPPORTED_TEMPLATES = ['minimal', 'typescript'];
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
 
@@ -194,6 +281,31 @@ class ProjectGenerator extends Generator {
       ]);
       this.options.template = this.answers.template;
     }
+
+    if (
+      ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
+      !this.options.module
+    ) {
+      this.answers = await this.prompt([
+        {
+          type: 'list',
+          name: 'module',
+          choices: ['commonjs', 'esm'],
+          message: 'Choose module type:',
+          default: 'commonjs',
+        },
+      ]);
+      this.options.module = this.answers.module;
+    }
+
+    if (
+      !ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
+      this.options.module === 'esm'
+    ) {
+      throw new Error(
+        'ESM is not supported for this template, please use a different template or set the module to commonjs',
+      );
+    }
   }
 
   writing() {
@@ -206,5 +318,6 @@ class ProjectGenerator extends Generator {
 
 module.exports = {
   TEMPLATE_CHOICES,
+  PullGenerator,
   ProjectGenerator,
 };

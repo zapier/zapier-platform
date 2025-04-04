@@ -12,7 +12,7 @@ describe('package manager utils', () => {
         {
           createCwd: true,
           createTmp: true,
-        }
+        },
       );
 
       const man = await getPackageManager({
@@ -36,7 +36,7 @@ describe('package manager utils', () => {
         {
           createCwd: true,
           createTmp: true,
-        }
+        },
       );
 
       const man = await getPackageManager({
@@ -60,7 +60,7 @@ describe('package manager utils', () => {
         {
           createCwd: true,
           createTmp: true,
-        }
+        },
       );
 
       const man = await getPackageManager({
@@ -84,7 +84,7 @@ describe('package manager utils', () => {
         {
           createCwd: true,
           createTmp: true,
-        }
+        },
       );
 
       const man = await getPackageManager({
@@ -108,7 +108,7 @@ describe('package manager utils', () => {
         {
           createCwd: true,
           createTmp: true,
-        }
+        },
       );
 
       const man = await getPackageManager({
@@ -132,7 +132,7 @@ describe('package manager utils', () => {
         {
           createCwd: true,
           createTmp: true,
-        }
+        },
       );
 
       const man = await getPackageManager({

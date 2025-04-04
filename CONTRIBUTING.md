@@ -28,7 +28,7 @@ That's it! Now you have a local environment for development.
 
 ## Running Tests
 
-You can run all tests for all packages with yarn test:
+You can run all tests for all packages and configured tooling with yarn test:
 
 ```bash
 yarn test
@@ -44,6 +44,15 @@ For example, this is how you run all the tests for the cli package:
 
 ```bash
 cd packages/cli
+yarn test
+```
+
+### Running All schema-to-ts Tests
+
+The `schema-to-ts` tool also has its own suite of tests which use `vitest` to run. To run only these tests, do the following:
+
+```bash
+cd schema-to-ts
 yarn test
 ```
 

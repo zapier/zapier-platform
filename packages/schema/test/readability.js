@@ -33,7 +33,7 @@ describe('readability', () => {
     results.errors.should.have.length(1);
     should(results.errors[0].property.endsWith('instance')).be.false();
     results.errors[0].stack.should.eql(
-      'instance.display.label does not meet minimum length of 2'
+      'instance.display.label does not meet minimum length of 2',
     );
   });
 
@@ -92,7 +92,7 @@ describe('readability', () => {
     results.errors.should.have.length(1);
     should(results.errors[0].property.endsWith('instance')).be.false();
     results.errors[0].property.should.eql(
-      'instance.operation.inputFields[0].default'
+      'instance.operation.inputFields[0].default',
     );
     results.errors[0].message.should.eql('does not meet minimum length of 1');
   });
@@ -116,7 +116,7 @@ describe('readability', () => {
     results.errors.should.have.length(1);
     results.errors[0].property.should.eql('instance.operation.perform.body');
     should(
-      results.errors[0].message.includes('null,string,object,array')
+      results.errors[0].message.includes('null,string,object,array'),
     ).be.true();
     should(results.errors[0].property.endsWith('instance')).be.false();
     results.errors[0].docLinks.length.should.eql(0);
@@ -144,10 +144,10 @@ describe('readability', () => {
     });
     results.errors.should.have.length(1);
     results.errors[0].property.should.eql(
-      'instance.operation.inputFields[0].choices'
+      'instance.operation.inputFields[0].choices',
     );
     should(
-      results.errors[0].docLinks[0].includes('schema#fieldchoicesschema')
+      results.errors[0].docLinks[0].includes('schema#fieldchoicesschema'),
     ).be.true();
     should(results.errors[0].property.endsWith('instance')).be.false();
   });

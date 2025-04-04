@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-
+/* eslint-disable array-callback-return */
 const fs = require('fs');
 const path = require('path');
 
@@ -29,7 +29,7 @@ const PACKAGE_ORIG_VERSIONS = [
     REPO_DIR,
     'packages',
     packageName,
-    'package.json'
+    'package.json',
   );
   const packageJson = readJson(packageJsonPath);
   return { ...result, [packageName]: packageJson.version };
@@ -44,7 +44,7 @@ const ensureMainPackageVersionsAreSame = () => {
   ) {
     throw new Error(
       'Packages must have the same version number.\nInstead, we got ' +
-        JSON.stringify(PACKAGE_ORIG_VERSIONS)
+        JSON.stringify(PACKAGE_ORIG_VERSIONS),
     );
   }
 };
@@ -75,7 +75,7 @@ const ensureNoUncommittedChanges = () => {
   const result = spawnSync(
     'git',
     ['status', '--untracked-files=no', '--porcelain'],
-    { encoding: 'utf8' }
+    { encoding: 'utf8' },
   );
   const lines = result.stdout
     .split(/\r?\n/)
@@ -84,7 +84,7 @@ const ensureNoUncommittedChanges = () => {
   if (lines.length > 0) {
     throw new Error(
       `${bold.underline('git status')} shows you have uncommitted changes. ` +
-        'Commit or discard those before you try again.'
+        'Commit or discard those before you try again.',
     );
   }
 };
@@ -145,7 +145,7 @@ const bumpMainPackagesForExampleApps = (versionToBump) => {
           const depVersion = packageJson.dependencies[packageFullName];
           if (depVersion) {
             console.log(
-              `${item.name}'s dependency ${packageName} ${depVersion} -> ${versionToBump}`
+              `${item.name}'s dependency ${packageName} ${depVersion} -> ${versionToBump}`,
             );
             packageJson.dependencies[packageFullName] = versionToBump;
           }
@@ -166,12 +166,12 @@ const bumpMainPackages = (versionToBump) => {
       REPO_DIR,
       'packages',
       packageName,
-      'package.json'
+      'package.json',
     );
     const packageJson = readJson(packageJsonPath);
 
     console.log(
-      `${packageName} ${PACKAGE_ORIG_VERSIONS[packageName]} -> ${versionToBump}`
+      `${packageName} ${PACKAGE_ORIG_VERSIONS[packageName]} -> ${versionToBump}`,
     );
     packageJson.version = versionToBump;
 
@@ -180,7 +180,7 @@ const bumpMainPackages = (versionToBump) => {
       const depVersion = packageJson.dependencies[depFullName];
       if (depVersion) {
         console.log(
-          `${packageName}'s dependency ${depName} ${depVersion} -> ${versionToBump}`
+          `${packageName}'s dependency ${depName} ${depVersion} -> ${versionToBump}`,
         );
         packageJson.dependencies[depFullName] = versionToBump;
       }
@@ -196,7 +196,7 @@ const bumpExtensionPackage = (packageName, versionToBump) => {
     REPO_DIR,
     'packages',
     packageName,
-    'package.json'
+    'package.json',
   );
   const packageJson = readJson(packageJsonPath);
 
@@ -220,7 +220,7 @@ const gitAdd = () => {
     ['add', 'packages/*/package.json', 'example-apps/*/package.json'],
     {
       stdio: [0, 1, 2],
-    }
+    },
   );
 
   if (result.status !== 0) {
@@ -258,7 +258,7 @@ const gitTag = (versionsToBump) => {
       }
       return result;
     },
-    {}
+    {},
   );
 
   Object.keys(toVersions).map((packageName) => {
@@ -312,15 +312,15 @@ const main = async () => {
     console.error(err.message);
     console.error(
       `Now you may have to use ${bold.underline('git restore')} and ` +
-        `${bold.underline('git tag -d')} to roll back the changes.`
+        `${bold.underline('git tag -d')} to roll back the changes.`,
     );
     return 1;
   }
 
   console.log(
     `\nDone! Review the change with ${bold.underline(
-      'git diff HEAD~1..HEAD'
-    )} then ${bold.underline('git push origin HEAD --tags')}.`
+      'git diff HEAD~1..HEAD',
+    )} then ${bold.underline('git push origin HEAD --tags')}.`,
   );
   return 0;
 };

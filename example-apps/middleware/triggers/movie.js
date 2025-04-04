@@ -4,7 +4,7 @@ module.exports = {
   noun: 'Movie',
   display: {
     label: 'New Movie',
-    description: 'Trigger when a new movie is added.'
+    description: 'Trigger when a new movie is added.',
   },
 
   operation: {
@@ -12,9 +12,9 @@ module.exports = {
       url: 'https://auth-json-server.zapier-staging.com/movies',
       params: {
         // Just a demo, this is NOT how you normally do authentication.
-        // Refer to https://zapier.github.io/zapier-platform-cli/#authentication
-        api_key: 'secret'
-      }
+        // Refer to https://docs.zapier.com/platform/reference/cli-docs#authentication
+        api_key: 'secret',
+      },
     },
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
@@ -24,7 +24,7 @@ module.exports = {
       id: 1,
       releaseDate: 1472069465,
       title: 'Test Title',
-      genre: 'Sci-Fi'
+      genre: 'Sci-Fi',
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -35,7 +35,7 @@ module.exports = {
       { key: 'id', label: 'ID' },
       { key: 'releaseDate', label: 'Release Date' },
       { key: 'title', label: 'Title' },
-      { key: 'genre', label: 'Genre' }
-    ]
-  }
+      { key: 'genre', label: 'Genre' },
+    ],
+  },
 };

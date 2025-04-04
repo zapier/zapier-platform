@@ -56,7 +56,7 @@ const injectEnvironmentFile = (filename) => {
           '\nWARNING: `.environment` files will no longer be read by default in the next major version.',
           'Either rename your file to `.env` or explicitly call this function with a filename:',
           '\n    zapier.tools.env.inject(".environment");\n\n',
-        ].join('\n')
+        ].join('\n'),
       );
     }
   }

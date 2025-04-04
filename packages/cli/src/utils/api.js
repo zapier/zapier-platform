@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const colors = require('colors/safe');
 const debug = require('debug')('zapier:api');
+const { pipeline } = require('stream/promises');
 
 const constants = require('../constants');
 
@@ -31,7 +32,7 @@ const readCredentials = (explodeIfMissing = true) => {
     return Promise.resolve(
       readFile(
         constants.AUTH_LOCATION,
-        `Please run \`${colors.cyan('zapier login')}\`.`
+        `Please run \`${colors.cyan('zapier login')}\`.`,
       )
         .then((buf) => {
           return JSON.parse(buf.toString());
@@ -42,17 +43,18 @@ const readCredentials = (explodeIfMissing = true) => {
           } else {
             return {};
           }
-        })
+        }),
     );
   }
 };
 
 // Calls the underlying platform REST API with proper authentication.
-const callAPI = (
+const callAPI = async (
   route,
   options,
   rawError = false,
-  credentialsRequired = true
+  credentialsRequired = true,
+  returnStreamBody = false,
 ) => {
   // temp manual enable while we're not all the way moved over
   if (_.get(global, ['argOpts', 'debug'])) {
@@ -64,82 +66,74 @@ const callAPI = (
 
   const requestOptions = {
     method: options.method || 'GET',
-    url,
     body: options.body ? JSON.stringify(options.body) : null,
     headers: {
+      ...options.extraHeaders, // extra headers first so they don't override defaults
       Accept: 'application/json',
       'Content-Type': 'application/json; charset=utf-8',
       'User-Agent': `${constants.PACKAGE_NAME}/${constants.PACKAGE_VERSION}`,
       'X-Requested-With': 'XMLHttpRequest',
     },
   };
-  return Promise.resolve(requestOptions)
-    .then((_requestOptions) => {
-      // requestOptions === _requestOptions side step for linting
-      if (options.skipDeployKey) {
-        return _requestOptions;
+
+  if (!options.skipDeployKey) {
+    const credentials = await readCredentials(credentialsRequired);
+    requestOptions.headers['X-Deploy-Key'] = credentials[constants.AUTH_KEY];
+  }
+
+  const res = await fetch(url, requestOptions);
+
+  let errorMessage = '';
+  let text = '';
+  const hitError = res.status >= 400;
+  if (hitError) {
+    try {
+      text = await res.text();
+      errorMessage = JSON.parse(text).errors.join(', ');
+    } catch (err) {
+      console.log('text', text);
+      errorMessage = (text || 'Unknown error').slice(0, 250);
+    }
+  }
+
+  debug(`>> ${requestOptions.method} ${requestOptions.url || res.url}`);
+
+  if (requestOptions.body) {
+    const replacementStr = 'raw zip removed in logs';
+    const requestBody = JSON.parse(requestOptions.body);
+    const cleanedBody = {};
+    for (const k in requestBody) {
+      if (k.includes('zip_file')) {
+        cleanedBody[k] = replacementStr;
       } else {
-        return readCredentials(credentialsRequired).then((credentials) => {
-          _requestOptions.headers['X-Deploy-Key'] =
-            credentials[constants.AUTH_KEY];
-          return _requestOptions;
-        });
+        cleanedBody[k] = requestBody[k];
       }
-    })
-    .then((_requestOptions) => {
-      return fetch(_requestOptions.url, _requestOptions);
-    })
-    .then((res) => {
-      return Promise.all([res, res.text()]);
-    })
-    .then(([res, text]) => {
-      let errors;
-      const hitError = res.status >= 400;
-      if (hitError) {
-        try {
-          errors = JSON.parse(text).errors.join(', ');
-        } catch (err) {
-          errors = (text || 'Unknown error').slice(0, 250);
-        }
+    }
+    debug(`>> ${JSON.stringify(cleanedBody)}`);
+  }
+
+  debug(`<< ${res.status}`);
+  debug(`<< ${(text || '').substring(0, 2500)}`);
+  debug('------------'); // to help differentiate request from each other
+
+  if (hitError) {
+    const niceMessage = `"${url}" returned "${res.status}" saying "${errorMessage}"`;
+
+    if (rawError) {
+      res.text = text;
+      try {
+        res.json = JSON.parse(text);
+      } catch (e) {
+        res.json = {};
       }
+      res.errText = niceMessage;
+      throw res;
+    } else {
+      throw new Error(niceMessage);
+    }
+  }
 
-      debug(`>> ${requestOptions.method} ${requestOptions.url}`);
-      if (requestOptions.body) {
-        const replacementStr = 'raw zip removed in logs';
-        const requestBody = JSON.parse(requestOptions.body);
-        const cleanedBody = {};
-        for (const k in requestBody) {
-          if (k.includes('zip_file')) {
-            cleanedBody[k] = replacementStr;
-          } else {
-            cleanedBody[k] = requestBody[k];
-          }
-        }
-        debug(`>> ${JSON.stringify(cleanedBody)}`);
-      }
-      debug(`<< ${res.status}`);
-      debug(`<< ${(text || '').substring(0, 2500)}`);
-      debug('------------'); // to help differentiate request from each other
-
-      if (hitError) {
-        const niceMessage = `"${requestOptions.url}" returned "${res.status}" saying "${errors}"`;
-
-        if (rawError) {
-          res.text = text;
-          try {
-            res.json = JSON.parse(text);
-          } catch (e) {
-            res.json = {};
-          }
-          res.errText = niceMessage;
-          return Promise.reject(res);
-        } else {
-          throw new Error(niceMessage);
-        }
-      }
-
-      return JSON.parse(text);
-    });
+  return returnStreamBody ? res.body : res.json();
 };
 
 // Given a valid username and password - create a new deploy key.
@@ -156,7 +150,41 @@ const createCredentials = (username, password, totpCode) => {
       },
     },
     // if totp is empty, we want a raw request so we can supress an error. If it's here, we want it to be "non-raw"
-    !totpCode
+    !totpCode,
+  );
+};
+
+const createCanary = async (versionFrom, versionTo, percent, duration) => {
+  const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
+
+  return callAPI(
+    `/apps/${linkedAppId}/versions/${versionFrom}/canary-to/${versionTo}`,
+    {
+      method: 'POST',
+      body: {
+        percent,
+        duration,
+      },
+    },
+  );
+};
+
+const listCanaries = async () => {
+  const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
+
+  return callAPI(`/apps/${linkedAppId}/canaries`, {
+    method: 'GET',
+  });
+};
+
+const deleteCanary = async (versionFrom, versionTo) => {
+  const linkedAppId = (await getLinkedAppConfig(undefined, true))?.id;
+
+  return callAPI(
+    `/apps/${linkedAppId}/versions/${versionFrom}/canary-to/${versionTo}`,
+    {
+      method: 'DELETE',
+    },
   );
 };
 
@@ -212,10 +240,10 @@ const getWritableApp = async () => {
   if (!linkedAppConfig.id) {
     throw new Error(
       `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
-        'zapier register'
+        'zapier register',
       )}\`.\n\nIf this project already exists in your Zapier account, run \`${colors.cyan(
-        'zapier link'
-      )}\` instead.`
+        'zapier link',
+      )}\` instead.`,
     );
   }
 
@@ -231,7 +259,7 @@ const getWritableApp = async () => {
       throw new Error(
         `Your credentials are present, but invalid${
           process.env.ZAPIER_BASE_ENDPOINT ? ' in this environment' : ''
-        }. Please run \`${colors.cyan('zapier login')}\` to resolve.`
+        }. Please run \`${colors.cyan('zapier login')}\` to resolve.`,
       );
     } else if (errOrRejectedResponse.status === 404) {
       // if this fails, we know the issue is they can't see this app
@@ -242,9 +270,9 @@ const getWritableApp = async () => {
       }). Try running \`${colors.cyan('zapier link')}\` to correct that.${
         process.env.ZAPIER_BASE_ENDPOINT
           ? `\n\nFor local dev: make sure you've run  \`${colors.cyan(
-              'zapier login'
+              'zapier login',
             )}\` and \`${colors.cyan(
-              'zapier register'
+              'zapier register',
             )}\` while providing ZAPIER_BASE_ENDPOINT.`
           : ''
       }`;
@@ -364,7 +392,40 @@ const validateApp = async (definition) => {
   });
 };
 
-const upload = async (app, { skipValidation = false } = {}) => {
+const downloadSourceZip = async (dst) => {
+  const linkedAppConfig = await getLinkedAppConfig(undefined, false);
+  if (!linkedAppConfig.id) {
+    throw new Error(
+      `This project hasn't yet been associated with an existing Zapier integration.\n\nIf it's a brand new integration, run \`${colors.cyan(
+        'zapier register',
+      )}\`.\n\nIf this project already exists in your Zapier account, run \`${colors.cyan(
+        'zapier link',
+      )}\` instead.`,
+    );
+  }
+
+  const url = `/apps/${linkedAppConfig.id}/latest/pull`;
+
+  try {
+    const resBody = await callAPI(url, undefined, true, true, true);
+
+    const writeStream = fs.createWriteStream(dst);
+
+    startSpinner('Downloading most recent source.zip file...');
+
+    // use pipeline to handle the download stream
+    await pipeline(resBody, writeStream);
+  } catch (err) {
+    throw new Error(`Failed to download source.zip: ${err.errText}`);
+  } finally {
+    endSpinner();
+  }
+};
+
+const upload = async (
+  app,
+  { skipValidation = false, overwritePartnerChanges = false } = {},
+) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
   const appDir = process.cwd();
@@ -374,7 +435,7 @@ const upload = async (app, { skipValidation = false } = {}) => {
 
   if (!fs.existsSync(fullZipPath)) {
     throw new Error(
-      'Missing a built integration. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.'
+      'Missing a built integration. Try running `zapier build` first.\nAlternatively, run `zapier push`, which will build and upload in one command.',
     );
   }
 
@@ -391,28 +452,57 @@ const upload = async (app, { skipValidation = false } = {}) => {
   const binarySourceZip = fs.readFileSync(fullSourceZipPath);
   const sourceBuffer = Buffer.from(binarySourceZip).toString('base64');
 
-  startSpinner(`Uploading version ${definition.version}`);
-  await callAPI(`/apps/${app.id}/versions/${definition.version}`, {
-    method: 'PUT',
-    body: {
-      zip_file: buffer,
-      source_zip_file: sourceBuffer,
-      skip_validation: skipValidation,
-    },
-  });
+  const headers = {};
+  if (overwritePartnerChanges) {
+    headers['X-Overwrite-Partner-Changes'] = 'true';
+  }
 
-  endSpinner();
+  startSpinner(`Uploading version ${definition.version}`);
+  try {
+    await callAPI(
+      `/apps/${app.id}/versions/${definition.version}`,
+      {
+        method: 'PUT',
+        body: {
+          zip_file: buffer,
+          source_zip_file: sourceBuffer,
+          skip_validation: skipValidation,
+        },
+        extraHeaders: headers,
+      },
+      true,
+    );
+  } catch (err) {
+    endSpinner({ success: false });
+    // 409 from the backend specifically signals that the last changes were from a partner
+    // and this is a staff user which could unintentionally overwrite those changes
+    if (err.status === 409) {
+      throw new Error(
+        `The latest integration changes appear to be from a partner. OK to overwrite?` +
+          ` If so, run this command again using the '--overwrite-partner-changes' flag.`,
+      );
+    }
+
+    // Don't ignore other errors, re-throw them with a user-friendly message
+    throw new Error(err.errText);
+  } finally {
+    endSpinner();
+  }
 };
 
 module.exports = {
   callAPI,
+  createCanary,
   checkCredentials,
   createCredentials,
+  deleteCanary,
+  downloadSourceZip,
   getLinkedAppConfig,
   getWritableApp,
   getVersionInfo,
   isPublished,
   listApps,
+  listCanaries,
   listEndpoint,
   listEndpointMulti,
   listEnv,

@@ -72,5 +72,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [BasicDisplaySchema, BasicPollingOperationSchema]
+  [BasicDisplaySchema, BasicPollingOperationSchema],
 );

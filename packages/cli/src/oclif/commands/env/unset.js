@@ -1,3 +1,4 @@
+const { Args, Flags } = require('@oclif/core');
 const { cyan } = require('colors/safe');
 
 const BaseCommand = require('../../ZapierBaseCommand');
@@ -6,7 +7,7 @@ const { callAPI } = require('../../../utils/api');
 
 const successMessage = (version) =>
   `Successfully unset the following keys in the environment of version ${cyan(
-    version
+    version,
   )} (if they existed):`;
 
 class UnsetEnvCommand extends BaseCommand {
@@ -36,36 +37,58 @@ class UnsetEnvCommand extends BaseCommand {
     const app = await this.getWritableApp();
     if (!app.all_versions.includes(version)) {
       this.error(
-        `Version ${version} doesn't exist on integration "${app.title}"`
+        `Version ${version} doesn't exist on integration "${app.title}"`,
       );
     }
 
     const url = `/apps/${app.id}/versions/${version}/multi-environment`;
-
-    // currently, this returns nothing
-    // also, no need to cath errors here, since invalid keys don't get tripped over if the env var didn't exist in the first place
-    await callAPI(url, {
+    const requestOptions = {
       body: payload,
       method: 'POST',
-    });
+    };
+
+    if (this.flags.force) {
+      requestOptions.extraHeaders = {
+        'X-Force-Env-Var-Update': 'true',
+      };
+    }
+
+    try {
+      await callAPI(url, requestOptions, true);
+    } catch (e) {
+      if (e.status === 409) {
+        this.error(
+          `App version ${version} is the production version. Are you sure you want to unset potentially live environment variables?` +
+            ` If so, run this command again with the --force flag.`,
+        );
+      } else {
+        throw e;
+      }
+    }
 
     this.log(successMessage(version));
     this.logJSON(keysToUnset);
   }
 }
 
-UnsetEnvCommand.args = [
-  {
-    name: 'version',
+UnsetEnvCommand.args = {
+  version: Args.string({
     description: 'The version to set the environment for.',
     required: true,
-  },
-  {
-    name: 'keys...',
+  }),
+  'keys...': Args.string({
     description: 'The keys to unset. Keys are case-insensitive.',
+  }),
+};
+UnsetEnvCommand.flags = buildFlags({
+  commandFlags: {
+    force: Flags.boolean({
+      char: 'f',
+      description:
+        'Force the update of environment variables regardless if the app version is production or not. Use with caution.',
+    }),
   },
-];
-UnsetEnvCommand.flags = buildFlags();
+});
 UnsetEnvCommand.description = `Unset environment variables for a version.`;
 UnsetEnvCommand.examples = [`zapier env:unset 1.2.3 SECRET OTHER`];
 UnsetEnvCommand.strict = false;

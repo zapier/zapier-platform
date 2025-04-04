@@ -22,7 +22,7 @@ const createStoreKeyTool = (input) => {
 
       if (!_.isString(cursor)) {
         return ZapierPromise.reject(
-          new TypeError('cursor value must be a string')
+          new TypeError('cursor value must be a string'),
         );
       }
 

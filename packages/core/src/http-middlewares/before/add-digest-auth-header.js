@@ -9,7 +9,7 @@ const { parseDictHeader } = require('../../tools/http');
 const buildDigestHeader = (username, password, url, method, creds) => {
   if (creds.algorithm && creds.algorithm.toUpperCase() !== 'MD5') {
     throw new NotImplementedError(
-      "algorithm 'MD5-SESS' and 'SHA' are not implemented yet"
+      "algorithm 'MD5-SESS' and 'SHA' are not implemented yet",
     );
   }
 
@@ -29,7 +29,7 @@ const buildDigestHeader = (username, password, url, method, creds) => {
     response = md5(`${HA1}:${creds.nonce}:00000001:${cnonce}:auth:${HA2}`);
   } else {
     throw new NotImplementedError(
-      "qop other than 'auth' is not implemented yet"
+      "qop other than 'auth' is not implemented yet",
     );
   }
 
@@ -71,7 +71,7 @@ const addDigestAuthHeader = async (request, z, bundle) => {
         bundle.authData.password,
         request.url,
         method,
-        creds
+        creds,
       );
 
       const cookie = res.headers.get('set-cookie');

@@ -1,5 +1,5 @@
 const ZapierBaseCommand = require('../../ZapierBaseCommand');
-const { flags } = require('@oclif/command');
+const { Args, Flags } = require('@oclif/core');
 const { cyan } = require('colors/safe');
 const { buildFlags } = require('../../buildFlags');
 const { callAPI } = require('../../../utils/api');
@@ -10,9 +10,9 @@ class UsersRemoveCommand extends ZapierBaseCommand {
       !this.flags.force &&
       !(await this.confirm(
         `About to revoke access to ${cyan(
-          this.args.email
+          this.args.email,
         )}. They won't be able to see your app in the editor and their Zaps will stop working. Are you sure?`,
-        true
+        true,
       ))
     ) {
       this.log('\ncancelled');
@@ -27,16 +27,15 @@ class UsersRemoveCommand extends ZapierBaseCommand {
   }
 }
 
-UsersRemoveCommand.args = [
-  {
-    name: 'email',
+UsersRemoveCommand.args = {
+  email: Args.string({
     description: 'The user to be removed.',
     required: true,
-  },
-];
+  }),
+};
 UsersRemoveCommand.flags = buildFlags({
   commandFlags: {
-    force: flags.boolean({
+    force: Flags.boolean({
       char: 'f',
       description: 'Skips confirmation. Useful for running programatically.',
     }),

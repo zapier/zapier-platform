@@ -3,22 +3,21 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const { pipeline } = require('stream');
+const { pipeline, Readable } = require('stream');
 const { promisify } = require('util');
 const { randomBytes } = require('crypto');
 
 const _ = require('lodash');
 const contentDisposition = require('content-disposition');
-const FormData = require('form-data');
+
 const mime = require('mime-types');
 
-const request = require('./request-client-internal');
-
-const UPLOAD_MAX_SIZE = 1000 * 1000 * 150; // 150mb, in zapier backend too
-
-const LENGTH_ERR_MESSAGE =
-  'We could not calculate the length of your file - please ' +
-  'pass a knownLength like z.stashFile(f, knownLength)';
+const {
+  ENCODED_FILENAME_MAX_LENGTH,
+  UPLOAD_MAX_SIZE,
+  NON_STREAM_UPLOAD_MAX_SIZE,
+} = require('../constants');
+const uploader = require('./uploader');
 
 const DEFAULT_FILE_NAME = 'unnamedfile';
 const DEFAULT_CONTENT_TYPE = 'application/octet-stream';
@@ -54,7 +53,7 @@ const resolveRemoteStream = async (stream) => {
   // https://github.com/node-fetch/node-fetch#streams
   const tmpFilePath = path.join(
     os.tmpdir(),
-    'stash-' + randomBytes(16).toString('hex')
+    'stash-' + randomBytes(16).toString('hex'),
   );
 
   try {
@@ -172,69 +171,41 @@ const resolveToBufferStringStream = async (responseOrData) => {
 
   throw new TypeError(
     `z.stashFile() cannot stash type '${typeof responseOrData}'. ` +
-      'Pass it a request, readable stream, string, or Buffer.'
+      'Pass it a request, readable stream, string, or Buffer.',
   );
 };
 
-const uploader = async (
-  signedPostData,
-  bufferStringStream,
-  knownLength,
-  filename,
-  contentType
-) => {
-  if (knownLength && knownLength > UPLOAD_MAX_SIZE) {
-    throw new Error(`${knownLength} is too big, ${UPLOAD_MAX_SIZE} is the max`);
-  }
-  filename = path.basename(filename).replace('"', '');
-
-  const fields = {
-    ...signedPostData.fields,
-    'Content-Disposition': contentDisposition(filename),
-    'Content-Type': contentType,
-  };
-
-  const form = new FormData();
-
-  Object.entries(fields).forEach(([key, value]) => {
-    form.append(key, value);
-  });
-
-  form.append('file', bufferStringStream, {
-    knownLength,
-    contentType,
-    filename,
-  });
-
-  // Try to catch the missing length early, before upload to S3 fails.
-  try {
-    form.getLengthSync();
-  } catch (err) {
-    throw new Error(LENGTH_ERR_MESSAGE);
+const ensureUploadMaxSizeNotExceeded = (streamOrData, length) => {
+  let uploadMaxSize = NON_STREAM_UPLOAD_MAX_SIZE;
+  let uploadMethod = 'non-streaming';
+  if (streamOrData instanceof Readable) {
+    uploadMaxSize = UPLOAD_MAX_SIZE;
+    uploadMethod = 'streaming';
   }
 
-  // Send to S3 with presigned request.
-  const response = await request({
-    url: signedPostData.url,
-    method: 'POST',
-    body: form,
-  });
-
-  if (response.status === 204) {
-    return new URL(signedPostData.fields.key, signedPostData.url).href;
+  if (length && length > uploadMaxSize) {
+    throw new Error(
+      `${length} bytes is too big, ${uploadMaxSize} is the max for ${uploadMethod} data.`,
+    );
   }
+};
 
-  if (
-    response.content &&
-    response.content.includes &&
-    response.content.includes(
-      'You must provide the Content-Length HTTP header.'
-    )
-  ) {
-    throw new Error(LENGTH_ERR_MESSAGE);
+// S3's max metadata size is 2KB
+// If the filename needs to be encoded, both the filename
+// and encoded filename are included in the Content-Disposition header
+const ensureMetadataMaxSizeNotExceeded = (filename) => {
+  const filenameMaxSize = ENCODED_FILENAME_MAX_LENGTH;
+  if (filename) {
+    const encodedFilename = encodeURIComponent(filename);
+    if (
+      encodedFilename !== filename &&
+      encodedFilename.length > filenameMaxSize
+    ) {
+      throw new Error(
+        `URI-Encoded Filename is too long at ${encodedFilename.length}, ${ENCODED_FILENAME_MAX_LENGTH} is the max.`,
+      );
+    }
   }
-
-  throw new Error(`Got ${response.status} - ${response.content}`);
 };
 
 // Designed to be some user provided function/api.
@@ -251,17 +222,17 @@ const createFileStasher = (input) => {
     const isRunningOnHydrator = _.get(
       input,
       '_zapier.event.method',
-      ''
+      '',
     ).startsWith('hydrators.');
     const isRunningOnCreate = _.get(
       input,
       '_zapier.event.method',
-      ''
+      '',
     ).startsWith('creates.');
 
     if (!isRunningOnHydrator && !isRunningOnCreate) {
       throw new Error(
-        'Files can only be stashed within a create or hydration function/method.'
+        'Files can only be stashed within a create or hydration function/method.',
       );
     }
 
@@ -295,12 +266,17 @@ const createFileStasher = (input) => {
       filename: _filename,
     } = await resolveToBufferStringStream(responseOrData);
 
+    const finalLength = knownLength || length;
+    ensureUploadMaxSizeNotExceeded(streamOrData, finalLength);
+
+    ensureMetadataMaxSizeNotExceeded(filename || _filename);
+
     return uploader(
       signedPostData,
       streamOrData,
-      knownLength || length,
+      finalLength,
       filename || _filename,
-      contentType || _contentType
+      contentType || _contentType,
     );
   };
 };

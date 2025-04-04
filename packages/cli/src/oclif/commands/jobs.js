@@ -22,7 +22,7 @@ class JobsCommand extends BaseCommand {
     const jobs = chain(migrations)
       .filter(
         (migration) =>
-          migration.job_kind === 'migrate' || migration.job_kind === 'promote'
+          migration.job_kind === 'migrate' || migration.job_kind === 'promote',
       )
       .map((migration) => {
         const job = {

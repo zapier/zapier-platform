@@ -29,9 +29,9 @@ class LinkCommand extends BaseCommand {
           short: app.title,
           value: { id: app.id, key: app.key },
         })),
-        (app) => app.name.toLowerCase()
+        (app) => app.name.toLowerCase(),
       ),
-      { pageSize: 15 }
+      { pageSize: 15 },
     );
 
     this.startSpinner(`Setting up ${CURRENT_APP_FILE}`);

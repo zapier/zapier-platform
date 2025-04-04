@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-legacy-scripting-runner",
-  "version": "3.8.11",
+  "version": "3.8.14",
   "description": "Zapier's Legacy Scripting Runner, used by Web Builder apps converted to CLI.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -13,6 +13,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "CLIENT_ID=1234 CLIENT_SECRET=asdf AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake mocha --recursive -t 20s --exit",
+    "test:debug": "CLIENT_ID=1234 CLIENT_SECRET=asdf AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake mocha inspect --recursive -t 20s --exit",
     "preversion": "git pull",
     "postversion": "git push && git push --tags",
     "ci-test": "yarn test && ./ci-test.js",
@@ -25,7 +26,7 @@
   "dependencies": {
     "async": "2.6.4",
     "flat": "5.0.2",
-    "jquery": "2.1.4",
+    "jquery": "3.5.0",
     "jsdom": "7.0.0",
     "lodash": "4.17.21",
     "moment-timezone": "0.5.43",

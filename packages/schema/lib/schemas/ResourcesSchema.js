@@ -91,5 +91,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [ResourceSchema]
+  [ResourceSchema],
 );

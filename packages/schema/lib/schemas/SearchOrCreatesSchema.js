@@ -18,6 +18,7 @@ module.exports = makeSchema(
         $ref: SearchOrCreateSchema.id,
       },
     },
+    additionalProperties: false,
     examples: [
       {
         searchOrCreateWidgets: {
@@ -68,5 +69,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [SearchOrCreateSchema]
+  [SearchOrCreateSchema],
 );

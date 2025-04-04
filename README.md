@@ -13,15 +13,16 @@ It consists of a few main packages:
 - [`zapier-platform-schema`](packages/schema): The source of truth for what's allowed in the structure a Zapier app; not typically installed directly
 - [`zapier-platform-legacy-scripting-runner`](packages/legacy-scripting-runner): If your app started as a Legacy Web Builder app, this provides a shim that keeps your app running seamlessly
 - [`example-apps/*`](example-apps): A varied set of example apps to help you get started
+- [`schema-to-ts`](schema-to-ts): Custom tooling to generate TypeScript declarations for `zapier-platform-core` using `zapier-platform-schema`'s output schemas
 
 ## Docs
 
 * Public-facing docs:
-  - [Latest CLI developer guide](packages/cli/README.md)
-  - [Latest CLI command reference](packages/cli/docs/cli.md)
-  - [Latest schema docs](packages/schema/docs/build/schema.md)
-  - The :point_up: docs are also hosted at https://platform.zapier.com
+  - [Platform Docs](https://docs.zapier.com/platform)
+  - [CLI Reference](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md)
+  - [Schema Reference](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md)
   - [CHANGELOG.md](CHANGELOG.md)
 * Internal-facing docs:
+  - Testing out new features that haven't been released to npm yet? See [INSTALL_DEV.md](INSTALL_DEV.md)
   - Learn about how this repo is structured in [ARCHITECTURE.md](ARCHITECTURE.md)
   - Looking to contribute to this repo? See [CONTRIBUTING.md](CONTRIBUTING.md)

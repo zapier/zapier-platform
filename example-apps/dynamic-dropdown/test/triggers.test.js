@@ -15,7 +15,7 @@ describe('triggers', () => {
 
     const results = await appTester(
       App.triggers.species.operation.perform,
-      bundle
+      bundle,
     );
     expect(results.length).toBeGreaterThan(1);
 
@@ -33,7 +33,7 @@ describe('triggers', () => {
 
     const results = await appTester(
       App.triggers.people.operation.perform,
-      bundle
+      bundle,
     );
     expect(results.length).toBeGreaterThan(1);
 

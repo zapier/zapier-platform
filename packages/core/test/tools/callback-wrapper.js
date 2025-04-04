@@ -25,7 +25,7 @@ describe('callbackwrapper', () => {
       should.not.exist(input._zapier.event.callbackUsed);
     });
     it('should set the isUsed property', () => {
-      wrapper(); // eslint-disable-line no-unused-expressions
+      wrapper();
       input._zapier.event.callbackUsed.should.eql(true);
     });
   });

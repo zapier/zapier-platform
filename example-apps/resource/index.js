@@ -19,7 +19,7 @@ const App = {
 
   // If you want your resource to show up, you better include it here!
   resources: {
-    [Recipe.key]: Recipe
+    [Recipe.key]: Recipe,
   },
 
   // If you want your trigger to show up, you better include it here!
@@ -29,7 +29,7 @@ const App = {
   searches: {},
 
   // If you want your creates to show up, you better include it here!
-  creates: {}
+  creates: {},
 };
 
 // Finally, export the app.

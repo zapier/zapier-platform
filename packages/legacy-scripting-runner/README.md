@@ -1,12 +1,10 @@
-[![Build Status](https://travis-ci.org/zapier/zapier-platform-legacy-scripting-runner.svg?branch=main)](https://travis-ci.org/zapier/zapier-platform-legacy-scripting-runner)
+# Zapier Platform Legacy Runner
 
-# zapier-platform-legacy-scripting-runner
-
-This is Zapier's Legacy Scripting Runner, used by Web Builder apps converted to [CLI](https://zapier.github.io/zapier-platform-cli/).
+This is Zapier's Legacy Scripting Runner, used by Web Builder apps converted to [CLI](https://docs.zapier.com/platform).
 
 This allows you to run methods from existing Scripting code in CLI, and handles the bundle conversion and method availability automatically for you.
 
-You shouldn't have to install anything. This package will be required and installed by your app automatically, if necessary, after running `zapier convert`. You only need [CLI installed](https://zapier.github.io/zapier-platform-cli/) (i.e. `npm i -g zapier-platform-cli`).
+You shouldn't have to install anything. This package will be required and installed by your app automatically, if necessary, after running `zapier convert`. You only need [CLI installed](https://docs.zapier.com/platform) (i.e. `npm i -g zapier-platform-cli`).
 
 ## Steps
 
@@ -43,9 +41,11 @@ Note this section is intended for Zapier engineers, not for App Developers.
 Some repos might be private. They might have more instructions in their own READMEs.
 
 This is the "full test" for the legacy-scripting-runner:
+
 - [Full Test](https://github.com/zapier/zapier-platform-app-converted-full-test)
 
 A few converted sample apps (proofs of concept):
+
 - [Google Maps](https://github.com/zapier/zapier-platform-app-converted-google-maps)
 - [Instapaper](https://github.com/zapier/zapier-platform-app-converted-instapaper)
 - [Remember The Milk](https://github.com/zapier/zapier-platform-app-converted-remember-the-milk)

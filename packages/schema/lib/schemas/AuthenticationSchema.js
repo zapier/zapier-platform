@@ -8,9 +8,9 @@ const AuthenticationDigestConfigSchema = require('./AuthenticationDigestConfigSc
 const AuthenticationOAuth1ConfigSchema = require('./AuthenticationOAuth1ConfigSchema.js');
 const AuthenticationOAuth2ConfigSchema = require('./AuthenticationOAuth2ConfigSchema.js');
 const AuthenticationSessionConfigSchema = require('./AuthenticationSessionConfigSchema.js');
-const FieldsSchema = require('./FieldsSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RequestSchema = require('./RequestSchema');
+const AuthFieldsSchema = require('./AuthFieldsSchema');
 
 module.exports = makeSchema(
   {
@@ -32,7 +32,7 @@ module.exports = makeSchema(
       fields: {
         description:
           'Fields you can request from the user before they connect your app to Zapier.',
-        $ref: FieldsSchema.id,
+        $ref: AuthFieldsSchema.id,
       },
       connectionLabel: {
         description:
@@ -105,14 +105,14 @@ module.exports = makeSchema(
     ],
   },
   [
-    FieldsSchema,
     FunctionSchema,
     RequestSchema,
+    AuthFieldsSchema,
     AuthenticationBasicConfigSchema,
     AuthenticationCustomConfigSchema,
     AuthenticationDigestConfigSchema,
     AuthenticationOAuth1ConfigSchema,
     AuthenticationOAuth2ConfigSchema,
     AuthenticationSessionConfigSchema,
-  ]
+  ],
 );

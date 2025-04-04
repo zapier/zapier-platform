@@ -3,7 +3,7 @@ const { extractID } = require('../utils');
 // Fetches a list of records from the endpoint
 const perform = async (z, bundle) => {
   const request = {
-    url: 'https://swapi.dev/api/species/',
+    url: 'https://swapi.info/api/species/',
     params: {},
   };
 
@@ -13,7 +13,7 @@ const perform = async (z, bundle) => {
   }
 
   const response = await z.request(request);
-  const speciesArray = response.data.results;
+  const speciesArray = response.data;
   return speciesArray.map((species) => {
     species.id = extractID(species.url);
     return species;

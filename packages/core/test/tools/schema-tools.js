@@ -69,7 +69,7 @@ describe('schema-tools', () => {
       const app = schemaTools.findSourceRequireFunctions(appRaw);
       return app.beforeRequest[0](
         Promise.resolve(123),
-        Promise.resolve(456)
+        Promise.resolve(456),
       ).should.finally.eql(579);
     });
   });

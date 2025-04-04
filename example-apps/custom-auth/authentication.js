@@ -17,7 +17,7 @@ const handleBadResponses = (response, z, bundle) => {
       // This message is surfaced to the user
       'The API Key you supplied is incorrect',
       'AuthenticationError',
-      response.status
+      response.status,
     );
   }
 
@@ -47,7 +47,15 @@ module.exports = {
 
     // Define any input app's auth requires here. The user will be prompted to enter
     // this info when they connect their account.
-    fields: [{ key: 'apiKey', label: 'API Key', required: true }],
+    fields: [
+      {
+        key: 'apiKey',
+        label: 'API Key',
+        required: true,
+        helpText:
+          'Find the API Key in your [app settings page](https://yourapp.com/settings)',
+      },
+    ],
 
     // The test method allows Zapier to verify that the credentials a user provides
     // are valid. We'll execute this method whenever a user connects their account for

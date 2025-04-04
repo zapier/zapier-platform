@@ -4,12 +4,12 @@ module.exports = {
 
   display: {
     label: 'New Like',
-    description: 'Triggers when you like a tweet.'
+    description: 'Triggers when you like a tweet.',
   },
 
   operation: {
     perform: {
-      url: 'https://api.twitter.com/1.1/favorites/list.json'
+      url: 'https://api.twitter.com/1.1/favorites/list.json',
     },
     sample: {
       coordinates: null,
@@ -21,10 +21,9 @@ module.exports = {
       entities: {
         urls: [],
         hashtags: [],
-        user_mentions: []
+        user_mentions: [],
       },
-      text:
-        "Note to self:  don't die during off-peak hours on a holiday weekend.",
+      text: "Note to self:  don't die during off-peak hours on a holiday weekend.",
       contributors: null,
       id: 243014525132091400,
       retweet_count: 0,
@@ -49,8 +48,8 @@ module.exports = {
         profile_link_color: '2FC2EF',
         entities: {
           description: {
-            urls: []
-          }
+            urls: [],
+          },
         },
         favourites_count: 594,
         url: null,
@@ -82,7 +81,7 @@ module.exports = {
         statuses_count: 2629,
         following: true,
         screen_name: 'theSeanCook',
-        show_all_inline_media: true
+        show_all_inline_media: true,
       },
       place: {
         name: 'San Francisco',
@@ -97,15 +96,15 @@ module.exports = {
               [-122.51368188, 37.70813196],
               [-122.35845384, 37.70813196],
               [-122.35845384, 37.83245301],
-              [-122.51368188, 37.83245301]
-            ]
+              [-122.51368188, 37.83245301],
+            ],
           ],
-          type: 'Polygon'
+          type: 'Polygon',
         },
         full_name: 'San Francisco, CA',
-        place_type: 'city'
+        place_type: 'city',
       },
-      in_reply_to_status_id: null
-    }
-  }
+      in_reply_to_status_id: null,
+    },
+  },
 };

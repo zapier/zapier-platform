@@ -15,6 +15,7 @@ const checkOutput = (output) => {
   const input = output.input || {};
   const _zapier = input._zapier || {};
   const event = _zapier.event || {};
+  const compiledApp = _zapier.app || {};
 
   const runChecks =
     event.method && event.command === 'execute' && !_zapier.skipChecks;
@@ -26,12 +27,12 @@ const checkOutput = (output) => {
       .filter((check) => {
         return (
           !bundleSkipChecks.includes(check.name) &&
-          check.shouldRun(event.method, event.bundle)
+          check.shouldRun(event.method, event.bundle, compiledApp)
         );
       })
       .map((check) => {
         return check
-          .run(event.method, output.results)
+          .run(event.method, output.results, compiledApp, event.bundle)
           .map((err) => ({ name: check.name, error: err }));
       });
     const checkResults = _.flatten(rawResults);
@@ -40,11 +41,11 @@ const checkOutput = (output) => {
       if (constants.IS_TESTING || event.isDeveloper || event.calledFromCli) {
         const shortMsgs = checkResults.map((info) => `  - ${info.error}`);
         throw new errors.CheckError(
-          'Invalid API Response:\n' + shortMsgs.join('\n')
+          'Invalid API Response:\n' + shortMsgs.join('\n'),
         );
       } else {
         const longMsgs = checkResults.map(
-          (info) => `Zapier check "${info.name}" failed: ${info.error}`
+          (info) => `Zapier check "${info.name}" failed: ${info.error}`,
         );
         longMsgs.forEach((err) => input.z.console.error(err));
       }

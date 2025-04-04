@@ -80,5 +80,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [BasicDisplaySchema, BasicActionOperationSchema, KeySchema]
+  [BasicDisplaySchema, BasicActionOperationSchema, KeySchema],
 );

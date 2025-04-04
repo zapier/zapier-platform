@@ -1,26 +1,28 @@
 {
   "name": "zapier-platform-core",
-  "version": "15.5.1",
+  "version": "16.3.1",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
   "author": "Zapier Engineering <contact@zapier.com>",
   "license": "SEE LICENSE IN LICENSE",
   "main": "index.js",
-  "typings": "index.d.ts",
+  "types": "types/index.d.ts",
   "files": [
     "/include/",
-    "/index.d.ts",
     "/index.js",
-    "/src/"
+    "/src/",
+    "/types/"
   ],
   "scripts": {
     "preversion": "git pull && yarn test",
     "version": "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
     "postversion": "git push && git push --tags",
     "main-tests": "mocha -t 20s --recursive test --exit",
+    "type-tests": "tsd",
     "solo-test": "test $(OPT_OUT_PATCH_TEST_ONLY=yes mocha --recursive test -g 'should be able to opt out of patch' -R json | jq '.stats.passes') -eq 1 && echo 'Ran 1 test and it passed!'",
-    "test": "yarn main-tests && yarn solo-test",
+    "test": "yarn main-tests && yarn solo-test && yarn type-tests",
+    "test:debug": "mocha inspect -t 10s --recursive test",
     "debug": "mocha -t 10s --inspect-brk --recursive test",
     "test:w": "mocha -t 10s --recursive test --watch",
     "integration-test": "mocha -t 20s integration-test",
@@ -40,25 +42,28 @@
   },
   "engineStrict": true,
   "dependencies": {
-    "@zapier/secret-scrubber": "^1.0.8",
+    "@zapier/secret-scrubber": "^1.1.2",
     "bluebird": "3.7.2",
     "content-disposition": "0.5.4",
-    "dotenv": "12.0.4 ",
-    "form-data": "4.0.0",
+    "dotenv": "16.4.6",
+    "form-data": "4.0.1",
     "lodash": "4.17.21",
     "mime-types": "2.1.35",
     "node-abort-controller": "3.1.1",
-    "node-fetch": "2.6.7",
+    "node-fetch": "2.7.0",
     "oauth-sign": "0.9.0",
-    "semver": "7.5.2",
-    "zapier-platform-schema": "15.5.1"
+    "semver": "7.6.3",
+    "zapier-platform-schema": "16.3.1"
   },
   "devDependencies": {
-    "adm-zip": "0.5.10",
+    "@types/node-fetch": "^2.6.11",
+    "adm-zip": "0.5.16",
     "aws-sdk": "^2.1397.0",
     "dicer": "^0.3.1",
     "fs-extra": "^11.1.1",
-    "mock-fs": "^5.2.0"
+    "mock-fs": "^5.3.0",
+    "nock": "^13.5.4",
+    "tsd": "^0.31.1"
   },
   "optionalDependencies": {
     "@types/node": "^20.3.1"

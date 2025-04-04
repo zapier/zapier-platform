@@ -16,7 +16,7 @@ const addAppContext = (input) => {
 
   input._addContext(
     `Executing ${methodName} with bundle`,
-    JSON.stringify(logSafeBundle(bundle))
+    JSON.stringify(logSafeBundle(bundle)),
   );
   return input;
 };

@@ -1,5 +1,5 @@
 const colors = require('colors/safe');
-const { flags } = require('@oclif/command');
+const { Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
@@ -29,7 +29,7 @@ class ValidateCommand extends BaseCommand {
 
     if (newErrors.length) {
       this.log(
-        'Your integration is structurally invalid. Address concerns and run this command again.'
+        'Your integration is structurally invalid. Address concerns and run this command again.',
       );
       process.exitCode = 1;
     } else {
@@ -41,8 +41,8 @@ class ValidateCommand extends BaseCommand {
       if (process.exitCode === 1) {
         this.log(
           colors.grey(
-            '\nSkipping integration checks because schema did not validate.'
-          )
+            '\nSkipping integration checks because schema did not validate.',
+          ),
         );
       }
       return;
@@ -85,24 +85,32 @@ class ValidateCommand extends BaseCommand {
     const suggestionDisplay = checkResult.suggestions.display_label;
 
     if (checkIssues.length) {
-      this.logList([
-        [
-          `- ${colors.bold(errorDisplay)}`,
-          'Issues that will prevent your integration from functioning ' +
-            'properly. They block you from pushing.',
+      this.logTable({
+        headers: [
+          ['', 'type'],
+          ['', 'description'],
         ],
-        [
-          `- ${colors.bold(warningDisplay)}`,
-          'To-dos that must be addressed before your integration can be ' +
-            'included in the App Directory. They block you from promoting and ' +
-            'publishing.',
+        rows: [
+          {
+            type: `- ${colors.bold(errorDisplay)}`,
+            description:
+              'Issues that will prevent your integration from functioning properly. They block you from pushing.',
+          },
+          {
+            type: `- ${colors.bold(warningDisplay)}`,
+            description:
+              'To-dos that must be addressed before your integration can be included in the App Directory. They block you from promoting and publishing.',
+          },
+          {
+            type: `- ${colors.bold(suggestionDisplay)}`,
+            description:
+              "Issues and recommendations that need human reviews by Zapier before publishing your integration. They don't block.",
+          },
         ],
-        [
-          `- ${colors.bold(suggestionDisplay)}`,
-          'Issues and recommendations that need human reviews by Zapier before ' +
-            "publishing your integration. They don't block.",
-        ],
-      ]);
+        hasBorder: false,
+        showHeaders: false,
+        style: { head: [], 'padding-left': 0, 'padding-right': 0 },
+      });
     }
     this.log();
   }
@@ -110,7 +118,7 @@ class ValidateCommand extends BaseCommand {
 
 ValidateCommand.flags = buildFlags({
   commandFlags: {
-    'without-style': flags.boolean({
+    'without-style': Flags.boolean({
       description: 'Forgo pinging the Zapier server to run further checks.',
     }),
   },

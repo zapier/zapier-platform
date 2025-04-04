@@ -1,6 +1,7 @@
 const path = require('path');
 
 const _ = require('lodash');
+const chalk = require('chalk');
 const prettier = require('prettier');
 const semver = require('semver');
 const traverse = require('traverse');
@@ -39,19 +40,21 @@ const createFile = async (content, filename, dir) => {
   endSpinner();
 };
 
-const prettifyJs = (code) =>
-  prettier.format(code, { singleQuote: true, parser: 'babel' });
+const prettifyJs = async (code) => {
+  return prettier.format(code, { singleQuote: true, parser: 'babel' });
+};
+
 const prettifyJSON = (origString) => JSON.stringify(origString, null, 2);
 
 const renderTemplate = async (
   templateFile,
   templateContext,
-  prettify = true
+  prettify = true,
 ) => {
   const templateBuf = await readFile(templateFile);
   const template = templateBuf.toString();
   let content = _.template(template, { interpolate: /<%=([\s\S]+?)%>/g })(
-    templateContext
+    templateContext,
   );
 
   if (prettify) {
@@ -98,7 +101,7 @@ const getAuthFieldKeys = (appDefinition) => {
 
 const renderPackageJson = async (appInfo, appDefinition) => {
   const name = _.kebabCase(
-    appInfo.title || _.get(appInfo, ['general', 'title'])
+    appInfo.title || _.get(appInfo, ['general', 'title']),
   );
 
   // Not using escapeSpecialChars because we don't want to escape single quotes (not
@@ -157,6 +160,15 @@ const renderPackageJson = async (appInfo, appDefinition) => {
 const renderSource = (definition, functions = {}) => {
   traverse(definition).forEach(function (source) {
     if (this.key === 'source') {
+      if (
+        this.path.length >= 2 &&
+        this.path[0] === 'operation' &&
+        this.path[1] === 'sample'
+      ) {
+        // Don't replace 'source' if it's in sample
+        return;
+      }
+
       const args = this.parent.node.args || ['z', 'bundle'];
       // Find first parent that is not an array (applies to inputFields)
       const funcNameBase = this.path
@@ -170,7 +182,7 @@ const renderSource = (definition, functions = {}) => {
         funcName = `${funcNameBase}${funcNum}`;
       }
       functions[funcName] = `const ${funcName} = async (${args.join(
-        ', '
+        ', ',
       )}) => {\n${source}\n};`;
 
       this.parent.update(makePlaceholder(funcName));
@@ -178,19 +190,31 @@ const renderSource = (definition, functions = {}) => {
   });
 };
 
-const renderDefinitionSlice = (definitionSlice) => {
+const renderDefinitionSlice = async (definitionSlice, filename) => {
   let exportBlock = _.cloneDeep(definitionSlice);
   let functionBlock = {};
 
   renderSource(exportBlock, functionBlock);
 
   exportBlock = `module.exports = ${replacePlaceholders(
-    JSON.stringify(exportBlock)
+    JSON.stringify(exportBlock),
   )};\n`;
 
   functionBlock = Object.values(functionBlock).join('\n\n');
 
-  return prettifyJs(functionBlock + '\n\n' + exportBlock);
+  const uglyCode = functionBlock + '\n\n' + exportBlock;
+  try {
+    const prettyCode = await prettifyJs(uglyCode);
+    return prettyCode;
+  } catch (err) {
+    console.warn(
+      `Warning: Your code has syntax error in ${chalk.underline.bold(
+        filename,
+      )}. ` +
+        `It will be left as is and won't be prettified.\n\n${err.message}`,
+    );
+    return uglyCode;
+  }
 };
 
 const renderStepTest = async (stepType, definition) => {
@@ -205,10 +229,10 @@ const renderStepTest = async (stepType, definition) => {
 };
 
 const renderAuth = async (appDefinition) =>
-  renderDefinitionSlice(appDefinition.authentication);
+  renderDefinitionSlice(appDefinition.authentication, 'authentication.js');
 
 const renderHydrators = async (appDefinition) =>
-  renderDefinitionSlice(appDefinition.hydrators);
+  renderDefinitionSlice(appDefinition.hydrators, 'hydrators.js');
 
 const renderIndex = async (appDefinition) => {
   let exportBlock = _.cloneDeep(appDefinition);
@@ -218,7 +242,7 @@ const renderIndex = async (appDefinition) => {
   // replace version and platformVersion with dynamic reference
   exportBlock.version = makePlaceholder("require('./package.json').version");
   exportBlock.platformVersion = makePlaceholder(
-    "require('zapier-platform-core').version"
+    "require('zapier-platform-core').version",
   );
 
   if (appDefinition.authentication) {
@@ -231,10 +255,16 @@ const renderIndex = async (appDefinition) => {
       triggers: 'Trigger',
       creates: 'Create',
       searches: 'Search',
+      bulkReads: 'BulkRead',
     },
     (importNameSuffix, stepType) => {
       _.each(appDefinition[stepType], (definition, key) => {
-        const importName = _.camelCase(key) + importNameSuffix;
+        let importName = _.camelCase(key) + importNameSuffix;
+
+        if (importName[0].match(/[0-9]/)) {
+          importName = `cannotStartWithNumber${importName}`;
+        }
+
         const filepath = `./${stepType}/${_.snakeCase(key)}.js`;
 
         importBlock.push(`const ${importName} = require('${filepath}');`);
@@ -243,7 +273,7 @@ const renderIndex = async (appDefinition) => {
         exportBlock[stepType][makePlaceholder(`[${importName}.key]`)] =
           makePlaceholder(importName);
       });
-    }
+    },
   );
 
   if (!_.isEmpty(appDefinition.hydrators)) {
@@ -256,21 +286,23 @@ const renderIndex = async (appDefinition) => {
   if (appDefinition.legacy && appDefinition.legacy.scriptingSource) {
     importBlock.push("\nconst fs = require('fs');");
     importBlock.push(
-      "const scriptingSource = fs.readFileSync('./scripting.js', { encoding: 'utf8' });"
+      "const scriptingSource = fs.readFileSync('./scripting.js', { encoding: 'utf8' });",
     );
     exportBlock.legacy.scriptingSource = makePlaceholder('scriptingSource');
   }
 
   exportBlock = `module.exports = ${replacePlaceholders(
-    JSON.stringify(exportBlock)
+    JSON.stringify(exportBlock),
   )};`;
 
   importBlock = importBlock.join('\n');
   functionBlock = Object.values(functionBlock).join('\n\n');
 
-  return prettifyJs(
-    importBlock + '\n\n' + functionBlock + '\n\n' + exportBlock
+  const prettyCode = await prettifyJs(
+    importBlock + '\n\n' + functionBlock + '\n\n' + exportBlock,
   );
+
+  return prettyCode;
 };
 
 const renderEnvironment = (appDefinition) => {
@@ -284,7 +316,7 @@ const renderEnvironment = (appDefinition) => {
 
 const writeStep = async (stepType, definition, key, newAppDir) => {
   const filename = `${stepType}/${snakeCase(key)}.js`;
-  const content = await renderDefinitionSlice(definition);
+  const content = await renderDefinitionSlice(definition, filename);
   await createFile(content, filename, newAppDir);
 };
 
@@ -313,7 +345,7 @@ const writeScripting = async (appDefinition, newAppDir) => {
   await createFile(
     appDefinition.legacy.scriptingSource,
     'scripting.js',
-    newAppDir
+    newAppDir,
   );
 };
 
@@ -355,11 +387,11 @@ const convertApp = async (appInfo, appDefinition, newAppDir) => {
 
   const promises = [];
 
-  ['triggers', 'creates', 'searches'].forEach((stepType) => {
+  ['triggers', 'creates', 'searches', 'bulkReads'].forEach((stepType) => {
     _.each(appDefinition[stepType], (definition, key) => {
       promises.push(
         writeStep(stepType, definition, key, newAppDir),
-        writeStepTest(stepType, definition, key, newAppDir)
+        writeStepTest(stepType, definition, key, newAppDir),
       );
     });
   });
@@ -379,7 +411,7 @@ const convertApp = async (appInfo, appDefinition, newAppDir) => {
     writeIndex(appDefinition, newAppDir),
     writeEnvironment(appDefinition, newAppDir),
     writeGitIgnore(newAppDir),
-    writeZapierAppRc(appInfo, appDefinition, newAppDir)
+    writeZapierAppRc(appInfo, appDefinition, newAppDir),
   );
 
   return Promise.all(promises);

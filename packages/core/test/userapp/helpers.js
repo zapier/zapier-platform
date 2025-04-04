@@ -5,10 +5,7 @@ module.exports = {
   getCustomFields: async (z, bundle) => {
     const expensiveCustomFieldsRequestMock = async () => {
       return {
-        data: [
-          { key: 'custom-field-1' },
-          { key: 'custom-field-2' },
-        ],
+        data: [{ key: 'custom-field-1' }, { key: 'custom-field-2' }],
       };
     };
 

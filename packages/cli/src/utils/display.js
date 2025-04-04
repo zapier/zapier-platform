@@ -61,16 +61,33 @@ const ansiTrim = (s) =>
     // '\u001b[90m',
   ]);
 
-const CHARS = {
+const TABLE_CHARS_DEFAULT = {
   // 'top': '', 'top-mid': '', 'top-left': '', 'top-right': '',
   // 'bottom': ' ', 'bottom-mid': ' ', 'bottom-left': ' ', 'bottom-right': ' '
+};
+const TABLE_CHARS_NONE = {
+  top: '',
+  'top-mid': '',
+  'top-left': '',
+  'top-right': '',
+  bottom: '',
+  'bottom-mid': '',
+  'bottom-left': '',
+  'bottom-right': '',
+  left: '',
+  'left-mid': '',
+  mid: '',
+  'mid-mid': '',
+  right: '',
+  'right-mid': '',
+  middle: '  ',
 };
 
 // Similar to makeTable, but prints the column headings in the left-hand column
 // and the values in the right-hand column, in rows
 const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
   const tableOptions = {
-    chars: CHARS,
+    chars: TABLE_CHARS_DEFAULT,
     style: {
       compact: true,
     },
@@ -85,7 +102,7 @@ const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
       }
       return maxLength;
     },
-    1
+    1,
   );
   const widthForValue = process.stdout.columns - maxLabelLength - 15; // The last bit accounts for some padding and borders
   if (widthForValue < 1) {
@@ -141,13 +158,19 @@ const makeRowBasedTable = (rows, columnDefs, { includeIndex = true } = {}) => {
   return strTable;
 };
 
-// Wraps the cli-table3 library. Rows is an array of objects, columnDefs
+// Wraps the cli-table3 library. Rows is an array of objects, headers
 // an ordered sub-array [[label, key, (optional_default)], ...].
-const makeTable = (rows, columnDefs) => {
+const makeTable = (
+  rows,
+  columnDefs,
+  showHeaders = true,
+  hasBorder = true,
+  style = undefined,
+) => {
   const tableOptions = {
-    head: columnDefs.map(([label]) => label),
-    chars: CHARS,
-    style: {
+    head: showHeaders ? columnDefs.map(([label]) => label) : undefined,
+    chars: hasBorder ? TABLE_CHARS_DEFAULT : TABLE_CHARS_NONE,
+    style: style ?? {
       compact: true,
       head: ['bold'],
     },

@@ -1,5 +1,0 @@
-# this needs to combine all other eslintignore files so that lint-staged knows what to ignore
-packages/cli/snippets/dynamic-dropdowns-*.js
-packages/cli/scaffold/*.js
-packages/cli/src/generators/templates/**/*.template.js
-.yarn

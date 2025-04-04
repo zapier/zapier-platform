@@ -2,6 +2,7 @@ const { callAPI } = require('./api');
 // const { readFile } = require('./files');
 const debug = require('debug')('zapier:analytics');
 const pkg = require('../../package.json');
+const { getLinkedAppConfig } = require('../utils/api');
 const { ANALYTICS_KEY, ANALYTICS_MODES, IS_TESTING } = require('../constants');
 const { readUserConfig, writeUserConfig } = require('./userConfig');
 
@@ -27,18 +28,30 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     debug('skipping analytics');
     return;
   }
-
+  const argKeys = Object.keys(args);
+  const flagKeys = Object.keys(flags);
   const shouldRecordAnonymously = analyticsMode === ANALYTICS_MODES.anonymous;
+
+  const integrationIDKey = argKeys.find(
+    (key) => key.toLowerCase() === 'integrationid',
+  );
+  const integrationID = integrationIDKey ? args[integrationIDKey] : undefined;
+
+  // Some commands ( like "zapier convert" ) won't have an app directory when called.
+  // Instead, having the app ID in the arguments.
+  // In this case, we fallback to using "integrationid" in arguments ( if it's there )
+  // and don't want to "explode" if appID is missing
+  const linkedAppId =
+    (await getLinkedAppConfig(undefined, false))?.id || integrationID;
 
   // to make this more testable, we should split this out into its own function
   const analyticsBody = {
     command,
     isValidCommand,
-    numArgs: args.length,
-    flags: {
-      ...flags,
-      ...(command === 'help' ? { helpCommand: args[0] } : {}), // include the beginning of args so we know what they want help on
-    },
+    numArgs: argKeys.length,
+    appId: linkedAppId,
+    argsKeys: argKeys,
+    flagKeys: flagKeys,
     cliVersion: pkg.version,
     os: shouldRecordAnonymously ? undefined : process.platform,
   };
@@ -54,7 +67,7 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
       skipDeployKey: shouldRecordAnonymously,
     },
     true,
-    false
+    false,
   )
     .then(({ success }) => debug('success:', success))
     .catch(({ errText }) => debug('err:', errText));

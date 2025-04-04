@@ -60,21 +60,21 @@ describe('schema', () => {
       compiledApp.triggers.fooList.operation.outputFields.should.have.length(2);
       compiledApp.triggers.fooList.operation.sample.should.have.keys(
         'id',
-        'name'
+        'name',
       );
       compiledApp.searches.fooSearch.operation.outputFields.should.have.length(
-        2
+        2,
       );
       compiledApp.searches.fooSearch.operation.sample.should.have.keys(
         'id',
-        'name'
+        'name',
       );
       compiledApp.creates.fooCreate.operation.outputFields.should.have.length(
-        2
+        2,
       );
       compiledApp.creates.fooCreate.operation.sample.should.have.keys(
         'id',
-        'name'
+        'name',
       );
     });
 
@@ -426,7 +426,7 @@ describe('schema', () => {
       compiledApp.searches.findFoo.operation.outputFields.should.have.length(2);
       compiledApp.searches.findFoo.operation.sample.should.have.keys(
         'id',
-        'name'
+        'name',
       );
     });
 
@@ -467,7 +467,7 @@ describe('schema', () => {
       compiledApp.creates.makeFoo.operation.outputFields.should.have.length(2);
       compiledApp.creates.makeFoo.operation.sample.should.have.keys(
         'id',
-        'name'
+        'name',
       );
     });
 

@@ -33,17 +33,11 @@ $ npm install -g zapier-platform-cli
 This command does the following:
 
 * Creates a temporary folder
-
 * Copies all code into the temporary folder
-
 * Adds an entry point: `zapierwrapper.js`
-
 * Generates and validates app definition.
-
 * Detects dependencies via browserify (optional, on by default)
-
 * Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
-
 * Moves the zip to `build/build.zip` and `build/source.zip` and deletes the temp folder
 
 This command is typically followed by `zapier upload`.
@@ -51,6 +45,60 @@ This command is typically followed by `zapier upload`.
 **Flags**
 * `--disable-dependency-detection` | Disable "smart" file inclusion. By default, Zapier only includes files that are required by `index.js`. If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. See the docs about `includeInBuild` for more info.
 * `-d, --debug` | Show extra debugging output.
+
+
+## canary:create
+
+> Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.
+
+**Usage**: `zapier canary:create VERSIONFROM VERSIONTO`
+
+Only one canary can be active at the same time. You can run `zapier canary:list` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using `zapier canary:delete a.b.c x.y.z`.
+
+Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
+
+**Only use this command to canary traffic between non-breaking versions!**
+
+**Arguments**
+* (required) `versionFrom` | Version to route traffic from
+* (required) `versionTo` | Version to canary traffic to
+
+**Flags**
+* (required) `-p, --percent` | Percent of traffic to route to new version
+* (required) `-d, --duration` | Duration of the canary in seconds
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier canary:create 1.0.0 1.1.0 -p 25 -d 720`
+* `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300`
+
+
+## canary:delete
+
+> Delete an active canary deployment
+
+**Usage**: `zapier canary:delete VERSIONFROM VERSIONTO`
+
+**Arguments**
+* (required) `versionFrom` | Version to route traffic from
+* (required) `versionTo` | Version canary traffic is routed to
+
+**Examples**
+* `zapier canary:delete 1.0.0 1.1.0`
+
+
+## canary:list
+
+> List all active canary deployments
+
+**Usage**: `zapier canary:list`
+
+**Flags**
+* `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
+
+**Examples**
+* `zapier canary:list`
 
 
 ## convert
@@ -136,22 +184,17 @@ Do not use this if you have non-breaking changes, such as fixing help text.
 **Usage**: `zapier describe`
 
 This command prints a human readable enumeration of your integrations's
-
 triggers, searches, and creates as seen by Zapier. Useful to understand how your
-
 resources convert and relate to different actions.
 
 * **Noun**: your action's noun
-
 * **Label**: your action's label
-
 * **Resource**: the resource (if any) this action is tied to
-
 * **Available Methods**: testable methods for this action
 
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 
 ## env:get
@@ -164,8 +207,8 @@ resources convert and relate to different actions.
 * (required) `version` | The version to get the environment for.
 
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Examples**
 * `zapier env:get 1.2.3`
@@ -214,8 +257,8 @@ resources convert and relate to different actions.
 History includes all the changes made over the lifetime of your integration. This includes everything from creation, updates, migrations, admins, and invitee changes, as well as who made the change and when.
 
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 
 ## init
@@ -249,11 +292,103 @@ This doesn't register or deploy the integration with Zapier - try the `zapier re
 This command also checks the current directory for a linked integration.
 
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Aliases**
 * `apps`
+
+
+## invoke
+
+> Invoke an auth operation, a trigger, or a create/search action locally.
+
+**Usage**: `zapier invoke [ACTIONTYPE] [ACTIONKEY]`
+
+This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
+
+This command loads environment variables and `authData` from the `.env` file in the current directory. If you don't have a `.env` file yet, you can use the `zapier invoke auth start` command to help you initialize it, or you can manually create it.
+
+The `zapier invoke auth start` subcommand will prompt you for the necessary auth fields and save them to the `.env` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
+
+Each line in the `.env` file should follow one of these formats:
+
+* `VAR_NAME=VALUE` for environment variables
+* `authData_FIELD_KEY=VALUE` for auth data fields
+
+For example, a `.env` file for an OAuth2 integration might look like this:
+
+```
+CLIENT_ID='your_client_id'
+CLIENT_SECRET='your_client_secret'
+authData_access_token='1234567890'
+authData_refresh_token='abcdefg'
+authData_account_name='zapier'
+```
+
+To test if the auth data is correct, run either one of these:
+
+```
+zapier invoke auth test   # invokes authentication.test method
+zapier invoke auth label  # invokes authentication.test and renders connection label
+```
+
+To refresh stale auth data for OAuth2 or session auth, run `zapier invoke auth refresh`.
+
+Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key `new_recipe`:
+
+```
+zapier invoke trigger new_recipe
+```
+
+To add input data, use the `--inputData` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
+
+When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don't want to get interactive prompts, use the `--non-interactive` flag.
+
+The `--debug` flag will show you the HTTP request logs and any console logs you have in your code.
+
+The following is a non-exhaustive list of current limitations and may be supported in the future:
+
+- Hook triggers, including REST hook subscribe/unsubscribe
+- Line items
+- Output hydration
+- File upload
+- Dynamic dropdown pagination
+- Function-based connection label
+- Buffered create actions
+- Search-or-create actions
+- Search-powered fields
+- Field choices
+- autoRefresh for OAuth2 and session auth
+
+
+**Arguments**
+* `actionType` | The action type you want to invoke.
+* `actionKey` | The trigger/action key you want to invoke. If ACTIONTYPE is "auth", this can be "label", "refresh", "start", or "test".
+
+**Flags**
+* `-i, --inputData` | The input data to pass to the action. Must be a JSON-encoded object. The data can be passed from the command directly like '{"key": "value"}', read from a file like @file.json, or read from stdin like @-.
+* `--isFillingDynamicDropdown` | Set bundle.meta.isFillingDynamicDropdown to true. Only makes sense for a polling trigger. When true in production, this poll is being used to populate a dynamic dropdown.
+* `--isLoadingSample` | Set bundle.meta.isLoadingSample to true. When true in production, this run is initiated by the user in the Zap editor trying to pull a sample.
+* `--isPopulatingDedupe` | Set bundle.meta.isPopulatingDedupe to true. Only makes sense for a polling trigger. When true in production, the results of this poll will be used initialize the deduplication list rather than trigger a Zap. This happens when a user enables a Zap.
+* `--limit` | Set bundle.meta.limit. Only makes sense for a trigger. When used in production, this indicates the number of items you should fetch. -1 means no limit.  Defaults to `-1`.
+* `-p, --page` | Set bundle.meta.page. Only makes sense for a trigger. When used in production, this indicates which page of items you should fetch. First page is 0.
+* `--non-interactive` | Do not show interactive prompts.
+* `-z, --timezone` | Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.  Defaults to `America/Chicago`.
+* `--redirect-uri` | Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.  Defaults to `http://localhost:9000`.
+* `--local-port` | Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.  Defaults to `9000`.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier invoke`
+* `zapier invoke auth start`
+* `zapier invoke auth refresh`
+* `zapier invoke auth test`
+* `zapier invoke auth label`
+* `zapier invoke trigger new_recipe`
+* `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
+* `zapier invoke search find_recipe -i @file.json`
+* `cat file.json | zapier invoke trigger new_recipe -i @-`
 
 
 ## jobs
@@ -272,9 +407,10 @@ Job times will vary as it depends on the size of the queue and how many users yo
 
 Jobs are returned from oldest to newest.
 
+
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Examples**
 * `zapier jobs`
@@ -332,8 +468,8 @@ This won't show logs from running locally with `zapier test`, since those never 
 * `--detailed` | See extra info, like request/response body and headers.
 * `-u, --user` | Only show logs for this user. Defaults to your account.  Defaults to `me`.
 * `--limit` | Cap the number of logs returned. Max is 50 (also the default)  Defaults to `50`.
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 
 ## migrate
@@ -352,17 +488,17 @@ Since a migration is only for non-breaking changes, users are not emailed about 
 
 We recommend migrating a small subset of users first, via the percent argument, then watching error logs of the new version for any sort of odd behavior. When you feel confident there are no bugs, go ahead and migrate everyone. If you see unexpected errors, you can revert.
 
-You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`). This will migrate Zaps in any account the user is a member of where the following criteria is met.
+You can migrate a specific user's Zaps by using `--user` (i.e. `zapier migrate 1.0.0 1.0.1 --user=user@example.com`). This will migrate Zaps that are private for that user. Zaps that are
 
-  - The Zap is owned by the user.
+  - [shared across the team](https://help.zapier.com/hc/en-us/articles/8496277647629),
+  - [shared app connections](https://help.zapier.com/hc/en-us/articles/8496326497037-Share-app-connections-with-your-team), or
+  - in a [team/company account](https://help.zapier.com/hc/en-us/articles/22330977078157-Collaborate-with-members-of-your-Team-or-Company-account)
 
-  - The Zap is not shared.
+will **not** be migrated.
 
-  - The integration auth used is not shared.
+Alternatively, you can pass the `--account` flag, (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`). This will migrate all Zaps owned by the user, Private & Shared, within all accounts for which the specified user is a member.
 
-Alternatively, you can pass the `--account` flag, (i.e. `zapier migrate 1.0.0 1.0.1 --account=account@example.com`). This will migrate all users' Zaps, Private & Shared, within all accounts for which the specified user is a member.
-
-**The `--account` flag should be used cautiously as it can break shared Zaps for other users in Team or Company accounts.**
+**The `--account` flag should be used cautiously as it can break shared Zaps for other users in Team or Enterprise accounts.**
 
 You cannot pass both `PERCENT` and `--user` or `--account`.
 
@@ -394,14 +530,13 @@ You cannot pass both `--user` and `--account`.
 Promote an integration version into production (non-private) rotation, which means new users can use this integration version.
 
 * This **does** mark the version as the official public version - all other versions & users are grandfathered.
-
 * This does **NOT** build/upload or deploy a version to Zapier - you should `zapier push` first.
-
 * This does **NOT** move old users over to this version - `zapier migrate 1.0.0 1.0.1` does that.
-
 * This does **NOT** recommend old users stop using this version - `zapier deprecate 1.0.0 2017-01-01` does that.
 
 Promotes are an inherently safe operation for all existing users of your integration.
+
+After a promotion, go to your developer platform to [close issues that were resolved](https://platform.zapier.com/manage/user-feedback#3-close-resolved-issues) in the updated version.
 
 If your integration is private and passes our integration checks, this will give you a URL to a form where you can fill in additional information for your integration to go public. After reviewing, the Zapier team will approve to make it public if there are no issues or decline with feedback.
 
@@ -416,6 +551,24 @@ Check `zapier jobs` to track the status of the promotion. Or use `zapier history
 
 **Examples**
 * `zapier promote 1.0.0`
+
+
+## pull
+
+> Retrieve and update your local integration files with the latest version.
+
+**Usage**: `zapier pull`
+
+This command updates your local integration files with the latest version. You will be prompted with a confirmation dialog before continuing if there any destructive file changes.
+
+Zapier may release new versions of your integration with bug fixes or new features. In the event this occurs, you will be unable to do the following until your local files are updated by running `zapier pull`:
+
+* push to the promoted version
+* promote a new version
+* migrate users from one version to another
+
+**Flags**
+* `-d, --debug` | Show extra debugging output.
 
 
 ## push
@@ -473,7 +626,6 @@ The first argument should be one of `trigger|search|create|resource` followed by
 The scaffold command does two general things:
 
 * Creates a new file (such as `triggers/contact.js`)
-
 * Imports and registers it inside your `index.js`
 
 You can mix and match several options to customize the created scaffold for your project.
@@ -506,9 +658,7 @@ You can mix and match several options to customize the created scaffold for your
 These users come in three levels:
 
   * `admin`, who can edit everything about the integration
-
   * `collaborator`, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.
-
   * `subscriber`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
 Team members can be freely added and removed.
@@ -539,16 +689,15 @@ Team members can be freely added and removed.
 These users come in three levels:
 
   * `admin`, who can edit everything about the integration
-
   * `collaborator`, who has read-only access for the app, and will receive periodic email updates. These updates include quarterly health scores and more.
-
   * `subscriber`, who can't directly access the app, but will receive periodic email updates. These updates include quarterly health scores and more.
 
 Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 
+
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Aliases**
 * `team:list`
@@ -561,9 +710,7 @@ Use the `zapier team:add` and `zapier team:remove` commands to modify your team.
 **Usage**: `zapier team:remove`
 
 Admins will immediately lose write access to the integration.
-
 Collaborators will immediately lose read access to the integration.
-
 Subscribers won't receive future email updates.
 
 **Flags**
@@ -605,6 +752,7 @@ This command sends both build/build.zip and build/source.zip to Zapier for use.
 
 Typically we recommend using `zapier push`, which does a build and upload, rather than `upload` by itself.
 
+
 **Flags**
 * `-d, --debug` | Show extra debugging output.
 
@@ -644,8 +792,8 @@ Invited users will be able to see your integration's name, logo, and description
 Note that this list of users is NOT a comprehensive list of everyone who is using your integration. It only includes users who were invited directly by email (using the `zapier users:add` command or the web UI). Users who joined by clicking links generated using the `zapier user:links` command won't show up here.
 
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Aliases**
 * `users:list`
@@ -658,8 +806,8 @@ Note that this list of users is NOT a comprehensive list of everyone who is usin
 **Usage**: `zapier users:links`
 
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 
 ## users:remove
@@ -691,8 +839,8 @@ Run the standard validation routine powered by json-schema that checks your inte
 
 **Flags**
 * `--without-style` | Forgo pinging the Zapier server to run further checks.
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Examples**
 * `zapier validate`
@@ -707,5 +855,5 @@ Run the standard validation routine powered by json-schema that checks your inte
 **Usage**: `zapier versions`
 
 **Flags**
-* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 * `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.

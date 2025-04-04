@@ -1,14 +1,10 @@
-import { Bundle, ZObject } from 'zapier-platform-core';
+import type { Create, PerformFunction } from 'zapier-platform-core';
+import { API_URL } from '../constants.js';
 
-// You can optionally add add the shape of the inputData in bundle, which will pass that
-// info down into the function and tests
-const perform = async (
-  z: ZObject,
-  bundle: Bundle<{ title: string; year: number }>
-) => {
+const perform: PerformFunction = async (z, bundle) => {
   const response = await z.request({
     method: 'POST',
-    url: 'https://auth-json-server.zapier-staging.com/movies',
+    url: `${API_URL}/movies`,
     body: {
       title: bundle.inputData.title,
       year: bundle.inputData.year,
@@ -37,4 +33,4 @@ export default {
       title: 'example',
     },
   },
-};
+} satisfies Create;

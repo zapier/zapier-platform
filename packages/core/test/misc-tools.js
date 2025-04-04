@@ -95,7 +95,7 @@ describe('Tools', () => {
 
     tests.forEach((test) => {
       should(
-        dataTools.simpleTruncate(test.value, test.length, test.suffix)
+        dataTools.simpleTruncate(test.value, test.length, test.suffix),
       ).eql(test.expected);
     });
   });
@@ -232,7 +232,7 @@ describe('Tools', () => {
           h: 5,
           i: undefined,
         },
-        { preserve: { 'a.d': true } }
+        { preserve: { 'a.d': true } },
       );
 
       output.should.eql({
@@ -397,7 +397,7 @@ describe('Tools', () => {
         {
           name: 'TypeError',
           message: "Type 'undefined' is not JSON-encodable (path: '')",
-        }
+        },
       );
       assert.throws(
         () => {
@@ -406,7 +406,7 @@ describe('Tools', () => {
         {
           name: 'TypeError',
           message: "Type 'object' is not JSON-encodable (path: '')",
-        }
+        },
       );
       assert.throws(
         () => {
@@ -415,7 +415,7 @@ describe('Tools', () => {
         {
           name: 'TypeError',
           message: "Type 'object' is not JSON-encodable (path: '')",
-        }
+        },
       );
       assert.throws(
         () => {
@@ -424,7 +424,7 @@ describe('Tools', () => {
         {
           name: 'TypeError',
           message: "Type 'undefined' is not JSON-encodable (path: 'foo.1.xyz')",
-        }
+        },
       );
       assert.throws(
         () => {
@@ -433,7 +433,7 @@ describe('Tools', () => {
         {
           name: 'TypeError',
           message: "Type 'function' is not JSON-encodable (path: '')",
-        }
+        },
       );
       assert.throws(
         () => {
@@ -441,8 +441,9 @@ describe('Tools', () => {
         },
         {
           name: 'TypeError',
-          message: "Type 'function' is not JSON-encodable (path: 'foo.1.hello')",
-        }
+          message:
+            "Type 'function' is not JSON-encodable (path: 'foo.1.hello')",
+        },
       );
       assert.throws(
         () => {
@@ -454,7 +455,7 @@ describe('Tools', () => {
           name: 'TypeError',
           message:
             "Circular structure is not JSON-encodable (path: 'items.0.self')",
-        }
+        },
       );
     });
   });

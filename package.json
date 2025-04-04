@@ -2,49 +2,53 @@
   "name": "root",
   "private": true,
   "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.16.0",
     "chalk": "^4.1.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.32.0",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint": "^9.16.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-mocha": "^9.0.0",
-    "eslint-plugin-n": "^15.6.1",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-standard": "^5.0.0",
-    "husky": "^7.0.4",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-mocha": "^10.5.0",
+    "eslint-plugin-n": "^17.14.0",
+    "eslint-plugin-promise": "^7.2.1",
+    "globals": "^15.13.0",
+    "husky": "^9.1.7",
     "inquirer": "^8.0.0",
-    "lerna": "^6.4.1",
+    "lerna": "^8.0.2",
     "lint-staged": "^11.2.6",
-    "mocha": "^10.2.0",
-    "prettier": "^2.8.3",
+    "mocha": "^11.0.1",
+    "prettier": "^3.4.1",
     "semver": "^7.3.8",
     "should": "^13"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "schema-to-ts"
   ],
   "scripts": {
-    "test": "yarn workspaces run test",
+    "test": "yarn workspaces run test && (cd schema-to-ts && yarn test)",
     "smoke-test": "yarn workspace zapier-platform-cli run smoke-test && yarn workspace zapier-platform-core run smoke-test && yarn workspace zapier-platform-schema run smoke-test",
     "lint": "lerna run lint",
     "lint:fix": "lerna run lint:fix",
     "lint-examples": "eslint examples",
     "validate": "lerna run validate",
     "bump": "./scripts/bump.js",
-    "prepare": "husky install"
+    "prepare": "husky",
+    "generate-types": "cd schema-to-ts && yarn generate-types:build"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lerna run --stream precommit && lint-staged"
+      "pre-commit": "lerna run --stream precommit && yarn generate-types && lint-staged"
     }
   },
   "lint-staged": {
-    "*.{js}": [
+    "*.js": [
       "eslint --fix --quiet"
     ],
     "*.{js,json}": [
-      "prettier --write"
+      "prettier --write --ignore-path=.prettierignore"
     ]
   },
   "prettier": {
