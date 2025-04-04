@@ -715,15 +715,16 @@ export interface InputField {
   helpText?: string;
 
   /**
-   * A reference to a trigger that will power a dynamic dropdown.
-   */
-  dynamic?: RefResource;
-
-  /**
    * A reference to a search that will guide the user to add a search
    * step to populate this field when creating a Zap.
    */
   search?: RefResource;
+
+  /**
+   * A reference to a trigger, request, or function that will power a
+   * dynamic dropdown.
+   */
+  dynamic?: RefResource | Request | Function;
 
   /**
    * An object of machine keys and human values to populate a static

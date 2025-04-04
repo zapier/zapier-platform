@@ -1,6 +1,8 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
+const RequestSchema = require('./RequestSchema');
+const FunctionSchema = require('./FunctionSchema');
 const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 const FieldSchema = require('./FieldSchema');
@@ -28,15 +30,19 @@ module.exports = makeSchema(
         minLength: 1,
         maxLength: 1000,
       },
-      dynamic: {
-        description:
-          'A reference to a trigger that will power a dynamic dropdown.',
-        $ref: RefResourceSchema.id,
-      },
       search: {
         description:
           'A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.',
         $ref: RefResourceSchema.id,
+      },
+      dynamic: {
+        description:
+          'A reference to a trigger, request, or function that will power a dynamic dropdown.',
+        oneOf: [
+          { $ref: RefResourceSchema.id },
+          { $ref: RequestSchema.id },
+          { $ref: FunctionSchema.id },
+        ],
       },
       choices: {
         description:
@@ -127,5 +133,12 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema, FieldSchema],
+  [
+    RefResourceSchema,
+    FieldChoicesSchema,
+    FieldMetaSchema,
+    FieldSchema,
+    RequestSchema,
+    FunctionSchema,
+  ],
 );

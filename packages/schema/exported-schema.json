@@ -732,13 +732,23 @@
           "minLength": 1,
           "maxLength": 1000
         },
-        "dynamic": {
-          "description": "A reference to a trigger that will power a dynamic dropdown.",
-          "$ref": "/RefResourceSchema"
-        },
         "search": {
           "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
           "$ref": "/RefResourceSchema"
+        },
+        "dynamic": {
+          "description": "A reference to a trigger, request, or function that will power a dynamic dropdown.",
+          "oneOf": [
+            {
+              "$ref": "/RefResourceSchema"
+            },
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
         },
         "choices": {
           "description": "An object of machine keys and human values to populate a static dropdown.",
