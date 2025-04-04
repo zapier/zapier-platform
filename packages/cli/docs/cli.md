@@ -320,6 +320,12 @@ Why use this command?
 * Step-by-step debugging: Running locally means you can use a debugger to step through your code
 * Untruncated logs: View complete logs and errors in your terminal
 
+## Authentication
+
+You can supply the authentcation data in two ways: Load from the local `.env` file or use the (experimental) `--authentication-id` flag.
+
+### The local `.env` file
+
 This command loads environment variables and `authData` from the `.env` file in the current directory. If you don't have a `.env` file yet, you can use the `zapier invoke auth start` command to help you initialize it, or you can manually create it.
 
 The `zapier invoke auth start` subcommand will prompt you for the necessary auth fields and save them to the `.env` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
@@ -339,6 +345,19 @@ authData_refresh_token='abcdefg'
 authData_account_name='zapier'
 ```
 
+
+### The `--authentication-id` flag (EXPERIMENTAL)
+
+Setting up local auth data can be troublesome. You'd have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
+
+The `--authentication-id` flag (`-a` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use `-a` to specify an existing production authentication/connection. The available authentication IDs can be found at https://zapier.com/app/connections.
+
+When `-a -` is specified, such as `zapier invoke auth test -a -`, the command will interactively prompt you to select one of your available authentications.
+
+If you know your authentication ID, you can specify it directly, such as `zapier invoke auth test -a 123456`.
+
+### Testing authentication
+
 To test if the auth data is correct, run either one of these:
 
 ```
@@ -346,7 +365,9 @@ zapier invoke auth test   # invokes authentication.test method
 zapier invoke auth label  # invokes authentication.test and renders connection label
 ```
 
-To refresh stale auth data for OAuth2 or session auth, run `zapier invoke auth refresh`.
+To refresh stale auth data for OAuth2 or session auth, run `zapier invoke auth refresh`. Note that refreshing is only applicable for local auth data in the `.env` file.
+
+## Invoking a trigger or an action
 
 Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key `new_recipe`:
 
@@ -354,13 +375,13 @@ Once you have the correct auth data, you can test an trigger, a search, or a cre
 zapier invoke trigger new_recipe
 ```
 
-To add input data, use the `--inputData` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
+To add input data, use the `--inputData` flag (`-i` for short). The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
 
 When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don't want to get interactive prompts, use the `--non-interactive` flag.
 
 The `--debug` flag will show you the HTTP request logs and any console logs you have in your code.
 
-EXPERIMENTAL: Apart from providing auth data via the `.env` file, you can also use the `--authentication-id` flag to specify which production authentication/connection to use. You can find authentication IDs at https://zapier.com/app/connections.
+## Limitations
 
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
