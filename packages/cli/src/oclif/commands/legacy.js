@@ -1,7 +1,6 @@
 const BaseCommand = require('../ZapierBaseCommand');
 const { Args, Flags } = require('@oclif/core');
 const { buildFlags } = require('../buildFlags');
-const colors = require('colors/safe');
 
 const { callAPI } = require('../../utils/api');
 
@@ -10,15 +9,10 @@ class LegacyCommand extends BaseCommand {
     const app = await this.getWritableApp();
     const { version } = this.args;
 
-    this.log(
-      `${colors.yellow('Warning: .')}\n` +
-        `${colors.yellow('If all your changes are non-breaking, use `zapier migrate` instead to move users over to a newer version.')}\n`,
-    );
-
     if (
       !this.flags.force &&
       !(await this.confirm(
-        'Are you sure you want to make this version legacy? Existing Zaps and automations will continue to work, but users may not be able to create new Zaps or automations with this version.',
+        'Are you sure you want to mark this version as legacy? Existing Zaps and automations will continue to work, but users may not be able to create new Zaps or automations with this version.',
       ))
     ) {
       this.log('\nCancelled, version is not marked as legacy.');
@@ -26,7 +20,7 @@ class LegacyCommand extends BaseCommand {
     }
 
     this.log(
-      `\nPreparing to make version ${version} your app "${app.title}" legacy.\n`,
+      `\nPreparing to mark version ${version} your app "${app.title}" as legacy.\n`,
     );
     const url = `/apps/${app.id}/versions/${version}/legacy`;
     this.startSpinner(`Making ${version} legacy`);
