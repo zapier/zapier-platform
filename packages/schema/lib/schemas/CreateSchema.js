@@ -49,19 +49,6 @@ module.exports = makeSchema(
         display: {
           label: 'Create Recipe',
           description: 'Creates a new recipe.',
-        },
-        operation: {
-          perform: '$func$2$f$',
-          sample: { id: 1 },
-          shouldLock: true,
-        },
-      },
-      {
-        key: 'recipe',
-        noun: 'Recipe',
-        display: {
-          label: 'Create Recipe',
-          description: 'Creates a new recipe.',
           hidden: true,
         },
         operation: {
@@ -73,18 +60,6 @@ module.exports = makeSchema(
       {
         example: 'abc',
         reason: 'Must be an object',
-      },
-      {
-        example: {
-          key: 'recipe',
-          noun: 'Recipe',
-          display: {
-            label: 'Create Recipe',
-            description: 'Creates a new recipe.',
-          },
-          operation: { perform: '$func$2$f$', shouldLock: 'yes' },
-        },
-        reason: 'Invalid value for key on operation: shouldLock',
       },
       {
         example: {

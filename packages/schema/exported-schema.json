@@ -904,7 +904,7 @@
     },
     "LockObjectSchema": {
       "id": "/LockObjectSchema",
-      "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+      "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -1067,7 +1067,7 @@
           }
         },
         "lock": {
-          "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
           "$ref": "/LockObjectSchema"
         },
         "throttle": {
@@ -1292,7 +1292,7 @@
           }
         },
         "lock": {
-          "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
           "$ref": "/LockObjectSchema"
         },
         "throttle": {
@@ -1686,16 +1686,12 @@
           }
         },
         "lock": {
-          "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
           "$ref": "/LockObjectSchema"
         },
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
-        },
-        "shouldLock": {
-          "description": "Should this action be performed one at a time (avoid concurrency)?",
-          "type": "boolean"
         },
         "buffer": {
           "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",

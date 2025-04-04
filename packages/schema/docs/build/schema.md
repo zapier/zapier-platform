@@ -485,7 +485,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicInputFieldsSchema](#dynamicinputfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicOutputFieldsSchema](#dynamicoutputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+`lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
 
 #### Examples
@@ -518,9 +518,8 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicInputFieldsSchema](#dynamicinputfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicOutputFieldsSchema](#dynamicoutputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+`lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
-`shouldLock` | no | `boolean` | Should this action be performed one at a time (avoid concurrency)?
 `buffer` | no (with exceptions, see description) | [/BufferConfigSchema](#bufferconfigschema) | Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.
 `performBuffer` | no (with exceptions, see description) | [/FunctionSchema](#functionschema) | Currently an **internal-only** feature. A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.
 
@@ -642,7 +641,7 @@ Key | Required | Type | Description
 `inputFields` | no | [/DynamicInputFieldsSchema](#dynamicinputfieldsschema) | What should the form a user sees and configures look like?
 `outputFields` | no | [/DynamicOutputFieldsSchema](#dynamicoutputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`lock` | no | [/LockObjectSchema](#lockobjectschema) | **INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+`lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
 
 #### Examples
@@ -841,14 +840,6 @@ Key | Required | Type | Description
   {
     key: 'recipe',
     noun: 'Recipe',
-    display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', sample: { id: 1 }, shouldLock: true }
-  }
-  ```
-* ```
-  {
-    key: 'recipe',
-    noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.', hidden: true },
     operation: { perform: '$func$2$f$' }
   }
@@ -857,15 +848,6 @@ Key | Required | Type | Description
 #### Anti-Examples
 
 * `'abc'` - _Must be an object_
-* ```
-  {
-    key: 'recipe',
-    noun: 'Recipe',
-    display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
-    operation: { perform: '$func$2$f$', shouldLock: 'yes' }
-  }
-  ```
-  _Invalid value for key on operation: shouldLock_
 * ```
   {
     key: 'recipe',
@@ -1298,7 +1280,7 @@ A unique identifier for this item.
 
 ## /LockObjectSchema
 
-**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.
+Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 
 #### Details
 

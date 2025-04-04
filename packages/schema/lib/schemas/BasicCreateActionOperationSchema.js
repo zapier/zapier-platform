@@ -17,12 +17,6 @@ BasicCreateActionOperationSchema.id = '/BasicCreateActionOperationSchema';
 BasicCreateActionOperationSchema.description =
   'Represents the fundamental mechanics of a create.';
 
-BasicCreateActionOperationSchema.properties.shouldLock = {
-  description:
-    'Should this action be performed one at a time (avoid concurrency)?',
-  type: 'boolean',
-};
-
 BasicCreateActionOperationSchema.properties.perform = {
   description:
     "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of `perform` or `performBuffer` must be defined. If you choose to define `buffer` and `performBuffer`, you must omit `perform`.",
