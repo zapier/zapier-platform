@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 16.3.1
+ * zapier-platform-schema version: 16.4.0
  *  schema-to-ts compiler version: 0.1.0
  */
 
