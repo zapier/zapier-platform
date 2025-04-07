@@ -350,7 +350,7 @@ authData_account_name='zapier'
 
 Setting up local auth data can be troublesome. You'd have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
 
-The `--authentication-id` flag (`-a` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use `-a` to specify an existing production authentication/connection. The available authentications can be found at https://zapier.com/app/connections.
+The `--authentication-id` flag (`-a` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use `-a` to specify an existing production authentication/connection. The available authentications can be found at https://zapier.com/app/assets/connections. Check https://zpr.io/z8SjFTdnTFZ2 for more instructions.
 
 When `-a -` is specified, such as `zapier invoke auth test -a -`, the command will interactively prompt you to select one of your available authentications.
 
@@ -413,7 +413,7 @@ The following is a non-exhaustive list of current limitations and may be support
 * `-z, --timezone` | Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.  Defaults to `America/Chicago`.
 * `--redirect-uri` | Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.  Defaults to `http://localhost:9000`.
 * `--local-port` | Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.  Defaults to `9000`.
-* `-a, --authentication-id` | EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify '-' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.
+* `-a, --authentication-id` | EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/assets/connections (https://zpr.io/z8SjFTdnTFZ2 for instructions) or specify '-' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**

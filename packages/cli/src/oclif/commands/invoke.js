@@ -1047,7 +1047,7 @@ class InvokeCommand extends BaseCommand {
     if (!auths || auths.length === 0) {
       throw new Error(
         'No authentications/connections found for your integration. ' +
-          'Add a new connection at https://zapier.com/app/connections ' +
+          'Add a new connection at https://zapier.com/app/assets/connections ' +
           'or use local auth data by removing the `--authentication-id` flag.',
       );
     }
@@ -1380,7 +1380,7 @@ InvokeCommand.flags = buildFlags({
     'authentication-id': Flags.string({
       char: 'a',
       description:
-        'EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/connections or specify \'-\' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
+        'EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/assets/connections (https://zpr.io/z8SjFTdnTFZ2 for instructions) or specify \'-\' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
     }),
   },
 });
@@ -1449,7 +1449,7 @@ authData_account_name='zapier'
 
 Setting up local auth data can be troublesome. You'd have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
 
-The \`--authentication-id\` flag (\`-a\` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use \`-a\` to specify an existing production authentication/connection. The available authentications can be found at https://zapier.com/app/connections.
+The \`--authentication-id\` flag (\`-a\` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use \`-a\` to specify an existing production authentication/connection. The available authentications can be found at https://zapier.com/app/assets/connections. Check https://zpr.io/z8SjFTdnTFZ2 for more instructions.
 
 When \`-a -\` is specified, such as \`zapier invoke auth test -a -\`, the command will interactively prompt you to select one of your available authentications.
 
