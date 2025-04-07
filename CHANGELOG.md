@@ -1,3 +1,23 @@
+## 16.4.0
+
+_released `2025-04-08`_
+
+The main improvement in this release is the new `--authentication-id` flag for the `zapier invoke` command. This flag enables what's known as "relay mode," where you provide an authentication ID (aka an "app connection" at https://zapier.com/app/assets/connections), and `zapier invoke` will proxy outgoing requests through Zapier—while your integration code continues to run locally. Learn more about this feature in the [`zapier invoke --help`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md#invoke) documentation.
+
+### cli
+
+- :test_tube: Add `--authentication-id` flag to `zapier invoke` command ([#968](https://github.com/zapier/zapier-platform/pull/968), [#989](https://github.com/zapier/zapier-platform/pull/989))
+- :nail_care: Add warning to `zapier deprecate` command ([#985](https://github.com/zapier/zapier-platform/pull/985))
+- :bug: Fix bug where location of `SyntaxError` isn't showing even when `--debug` is enabled ([#983](https://github.com/zapier/zapier-platform/pull/983))
+
+### core
+
+None!
+
+### schema
+
+- :bug: Update schema URL used in `zapier validate` [#984](https://github.com/zapier/zapier-platform/pull/984)
+
 ## 16.3.1
 
 _released `2025-02-26`_
