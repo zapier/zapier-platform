@@ -455,6 +455,30 @@ Jobs are returned from oldest to newest.
 * `zapier jobs`
 
 
+## legacy
+
+> Mark a non-production version of your integration as legacy.
+
+**Usage**: `zapier legacy VERSION`
+
+Use this when an integration version is no longer recommended for new users, but you don't want to block existing users from using it.
+
+Reasons why you might want to mark a version as legacy:
+- this version may be discontinued in the future
+- this version has bugs
+- a newer version has been released and you want to encourage users to upgrade
+
+**Arguments**
+* (required) `version` | The version to mark as legacy.
+
+**Flags**
+* `-f, --force` | Skip confirmation prompt. Use with caution.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier legacy 1.2.3`
+
+
 ## link
 
 > Link the current directory with an existing integration.

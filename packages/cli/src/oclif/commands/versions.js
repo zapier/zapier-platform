@@ -18,6 +18,7 @@ class VersionCommand extends BaseCommand {
         ['Platform', 'platform_version'],
         ['Users', 'user_count'],
         ['Deployment', 'deployment'],
+        ['Legacy Date', 'legacy_date'],
         ['Deprecation Date', 'deprecation_date'],
         ['Timestamp', 'date'],
       ],
