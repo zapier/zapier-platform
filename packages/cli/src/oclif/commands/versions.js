@@ -5,19 +5,42 @@ const { buildFlags } = require('../buildFlags');
 
 const { listVersions } = require('../../utils/api');
 
+const deploymentToLifecycleState = (deployment) => {
+  switch (deployment) {
+    case 'non-production':
+      return 'private';
+    case 'production':
+      return 'promoted';
+    case 'demoted':
+      return 'available';
+    case 'legacy':
+      return 'legacy';
+    case 'deprecating':
+      return 'deprecating';
+    case 'deprecated':
+      return 'deprecated';
+    default:
+      return deployment;
+  }
+};
+
 class VersionCommand extends BaseCommand {
   async perform() {
     this.startSpinner('Loading versions');
     const { versions } = await listVersions();
     this.stopSpinner();
+    const rows = versions.map((v) => ({
+      ...v,
+      state: deploymentToLifecycleState(v.lifecycle.status),
+    }));
 
     this.logTable({
-      rows: versions,
+      rows,
       headers: [
         ['Version', 'version'],
         ['Platform', 'platform_version'],
-        ['Users', 'user_count'],
-        ['Deployment', 'deployment'],
+        ['Zap Users', 'user_count'],
+        ['State', 'state'],
         ['Legacy Date', 'legacy_date'],
         ['Deprecation Date', 'deprecation_date'],
         ['Timestamp', 'date'],
@@ -59,6 +82,6 @@ class VersionCommand extends BaseCommand {
 
 VersionCommand.skipValidInstallCheck = true;
 VersionCommand.flags = buildFlags({ opts: { format: true } });
-VersionCommand.description = `List the versions of your integration available for use in the Zapier editor.`;
+VersionCommand.description = `List the versions of your integration available for use in Zapier automations.`;
 
 module.exports = VersionCommand;

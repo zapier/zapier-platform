@@ -914,7 +914,7 @@ Run the standard validation routine powered by json-schema that checks your inte
 
 ## versions
 
-> List the versions of your integration available for use in the Zapier editor.
+> List the versions of your integration available for use in Zapier automations.
 
 **Usage**: `zapier versions`
 
