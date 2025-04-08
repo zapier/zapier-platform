@@ -41,6 +41,7 @@ class VersionCommand extends BaseCommand {
         ['Platform', 'platform_version'],
         ['Zap Users', 'user_count'],
         ['State', 'state'],
+        ['Legacy Date', 'legacy_date'],
         ['Deprecation Date', 'deprecation_date'],
         ['Timestamp', 'date'],
       ],
