@@ -87,6 +87,7 @@ VersionCommand.skipValidInstallCheck = true;
 VersionCommand.flags = buildFlags({
   commandFlags: {
     all: Flags.boolean({
+      char: 'a',
       description: `List all versions, including deprecated versions.`,
     }),
   },
