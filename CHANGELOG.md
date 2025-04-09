@@ -2,6 +2,8 @@
 
 _released `2025-04-10`_
 
+For this release, we're introducing a new state for versions, "legacy", and surfacing lifecycle state displayed in `zapier versions`. For more information about lifecycle states, check out this page: https://docs.zapier.com/platform/manage/version-lifecycle-states.
+
 ### cli
 
 - :nail_care: Render lifecycle state instead of deployment in `zapier versions` ([#991](https://github.com/zapier/zapier-platform/pull/991))
