@@ -22,9 +22,12 @@
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "prettier": "^3.5.3",
+    "ts-morph": "^25.0.1",
+    "tsx": "^4.19.3",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
+    "@types/json-schema": "^7.0.15",
     "@types/node": "^20.17.30",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",

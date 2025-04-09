@@ -18,7 +18,7 @@ export const commentToTsDocString = (comment: string): string => {
 
   const tokens = lexer(stripped);
   const lines = reflowLines(tokens);
-  if (lines.length === 1 && lines[0].length < SINGLE_LINE_CONTENT_WIDTH) {
+  if (lines.length === 1 && lines[0]!.length < SINGLE_LINE_CONTENT_WIDTH) {
     return `/** ${stripped} */\n`;
   }
   const docsLines = lines.map((line) => ` * ${line}`).join('\n');
@@ -47,4 +47,4 @@ const isSolitaryLink = (
 ): token is Tokens.Paragraph & { tokens: [Tokens.Link] } =>
   token.type === 'paragraph' &&
   token.tokens?.length === 1 &&
-  token.tokens[0].type === 'link';
+  token.tokens[0]?.type === 'link';

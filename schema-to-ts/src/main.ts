@@ -2,6 +2,7 @@ import { Command, Option } from '@commander-js/extra-typings';
 import { compile, loadExportedSchemas } from './compiler.js';
 
 import type { CompilerOptions } from './types.js';
+import { compileV2 } from './sc2ts2/compiler.js';
 import { logger } from './utils.js';
 import { writeFileSync } from 'fs';
 
@@ -34,7 +35,8 @@ const program = new Command()
     '--platform-core-custom-import <path>',
     'What import path to use for the custom `PerformFunction` tpe. Defaults to its sibling custom types module in platform-core, but can be overridden to `zapier-platform-core` for example.',
     './custom',
-  );
+  )
+  .option('--v2', 'Use experimental compiler');
 
 const main = async () => {
   program.parse();
@@ -55,6 +57,12 @@ const main = async () => {
     platformVersion: version,
   };
   logger.debug({ compilerOptions }, 'Finalised compiler options');
+
+  if (options.v2) {
+    logger.info('Using experimental compiler');
+    await compileV2(compilerOptions);
+    return;
+  }
 
   // Actually compile the schemas into TypeScript!
   const typescript = await compile(schemas, compilerOptions);
