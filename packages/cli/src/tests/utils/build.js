@@ -315,14 +315,22 @@ describe('build (runs slowly)', function () {
 });
 
 describe('build in workspaces', function () {
-  let tmpDir, origCwd, corePackage;
+  let tmpDir, origCwd, coreVersion;
 
   before(async () => {
     tmpDir = getNewTempDirPath();
 
-    // The core version the example apps point to may not
-    // exist yet. Let's make sure it points to the local one.
-    corePackage = await npmPackCore();
+    // Get absolute paths to local packages
+    const corePath = path.resolve(__dirname, '../../../../core');
+    const corePackageJsonPath = path.join(corePath, 'package.json');
+
+    const originalPackageJsonText = fs.readFileSync(corePackageJsonPath, {
+      encoding: 'utf8',
+    });
+    const corePackageJson = JSON.parse(originalPackageJsonText);
+
+    // Get the actual version from the local core package
+    coreVersion = corePackageJson.version;
 
     // Set up a monorepo project structure with two integrations as npm
     // workspaces:
@@ -365,7 +373,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '8.3.2',
-          'zapier-platform-core': corePackage.path,
+          'zapier-platform-core': `file:${corePath}`,
         },
         private: true,
       }),
@@ -384,7 +392,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '9.0.1',
-          'zapier-platform-core': corePackage.path,
+          'zapier-platform-core': `file:${corePath}`,
         },
         private: true,
       }),
@@ -395,7 +403,6 @@ describe('build in workspaces', function () {
 
   after(() => {
     fs.removeSync(tmpDir);
-    corePackage.cleanup();
   });
 
   beforeEach(() => {
@@ -445,7 +452,7 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal('16.3.1');
+    corePackageJson.version.should.equal(coreVersion);
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
@@ -503,7 +510,7 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal('16.3.1');
+    corePackageJson.version.should.equal(coreVersion);
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(

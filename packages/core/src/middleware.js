@@ -69,11 +69,12 @@ const applyMiddleware = (befores, afters, app, options) => {
       let newInput = beforeInput;
       for (const func of befores) {
         const args = [newInput].concat(options.extraArgs);
-        const result = func.apply(undefined, args);
-        if (typeof result !== 'object') {
+        const maybePromise = func.apply(undefined, args);
+        // legacy scripting runner returns a Promise for beforeRequest
+        if (typeof maybePromise !== 'object') {
           throw new Error('Middleware should return an object.');
         }
-        newInput = result;
+        newInput = await Promise.resolve(maybePromise);
       }
       return newInput;
     };
