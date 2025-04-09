@@ -1,5 +1,5 @@
 const colors = require('colors/safe');
-
+const { Flags } = require('@oclif/core');
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 
@@ -34,8 +34,12 @@ class VersionCommand extends BaseCommand {
       state: deploymentToLifecycleState(v.lifecycle.status),
     }));
 
+    const visibleVersions = this.flags.all
+      ? rows
+      : rows.filter((v) => v.state !== 'deprecated');
+
     this.logTable({
-      rows,
+      rows: visibleVersions,
       headers: [
         ['Version', 'version'],
         ['Platform', 'platform_version'],
@@ -80,7 +84,14 @@ class VersionCommand extends BaseCommand {
 }
 
 VersionCommand.skipValidInstallCheck = true;
-VersionCommand.flags = buildFlags({ opts: { format: true } });
+VersionCommand.flags = buildFlags({
+  commandFlags: {
+    all: Flags.boolean({
+      description: `List all versions, including deprecated versions.`,
+    }),
+  },
+  opts: { format: true },
+});
 VersionCommand.description = `List the versions of your integration available for use in Zapier automations.`;
 
 module.exports = VersionCommand;
