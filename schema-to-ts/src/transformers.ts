@@ -1,9 +1,9 @@
-import {
+import type {
   TArray,
   TInterface,
   TUnion,
 } from 'json-schema-to-typescript/dist/src/types/AST.js';
-import { CompilerOptions, NamedAst, NodeMap } from './types.js';
+import type { CompilerOptions, NamedAst, NodeMap } from './types.js';
 import { insertAtFront, logger } from './utils.js';
 
 /**
