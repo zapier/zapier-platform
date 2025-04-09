@@ -3,7 +3,7 @@ import {
   DEFAULT_OPTIONS,
   type Options as JsttOptions,
 } from 'json-schema-to-typescript';
-import { AST } from 'json-schema-to-typescript/dist/src/types/AST.js';
+import type { AST } from 'json-schema-to-typescript/dist/src/types/AST.js';
 import { dereference } from 'json-schema-to-typescript/dist/src/resolver.js';
 import { link } from 'json-schema-to-typescript/dist/src/linker.js';
 import { normalize } from 'json-schema-to-typescript/dist/src/normalizer.js';
