@@ -76,7 +76,7 @@ function addTopLevelType(ctx: CompilerContext, schemaName: SchemaPath) {
         schemaName,
         compiler.constructor.name,
       );
-      compiler.compile(ctx, schema as any);
+      compiler.compile(ctx, schema as any); // Will be narrowed by the type test.
       logger.debug(
         'Compiled %s with %s',
         schemaName,

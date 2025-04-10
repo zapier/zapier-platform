@@ -2,7 +2,6 @@ import type { InterfaceDeclaration } from 'ts-morph';
 import {
   docStringLines,
   idToTypeName,
-  isSchemaRef,
   type CompilerContext,
   type SchemaPath,
   type TopLevelSchema,
@@ -10,8 +9,9 @@ import {
 } from '../helpers.ts';
 
 import type { JSONSchema4 } from 'json-schema';
-import { EnumPropertyCompiler } from './genPropEnum.ts';
-import { RefPropertyCompiler } from './genPropRef.ts';
+import EnumPropertyCompiler from './genPropEnum.ts';
+import RefPropertyCompiler from './genPropRef.ts';
+import FallbackObjectPropertyCompiler from './genPropFallbackObject.ts';
 
 type InterfaceSchema = JSONSchema4 & {
   id: SchemaPath;
@@ -19,10 +19,18 @@ type InterfaceSchema = JSONSchema4 & {
   properties: Record<string, JSONSchema4>;
 };
 
+/**
+ * Generates a TypeScript interface from a JSON Schema object.
+ *
+ * This is the most common, and most advanced top-level schema compiler.
+ * Contained within this module is a self-similar compiler-matching
+ * system just for the properties of the generated interface.
+ */
 export class InterfaceCompiler extends SchemaCompiler<InterfaceSchema> {
   private propertyCompilers = [
     new RefPropertyCompiler(),
     new EnumPropertyCompiler(),
+    new FallbackObjectPropertyCompiler(),
   ];
 
   test(schema: TopLevelSchema): schema is InterfaceSchema {
@@ -74,7 +82,13 @@ export class InterfaceCompiler extends SchemaCompiler<InterfaceSchema> {
           key,
           compiler.constructor.name,
         );
-        compiler.compile(ctx, iface, key, value as any, required);
+        compiler.compile({
+          ctx,
+          iface,
+          key,
+          value: value as never, // Will be narrowed by the type test.
+          required,
+        });
         return;
       }
     }
