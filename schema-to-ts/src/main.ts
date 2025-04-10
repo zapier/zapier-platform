@@ -2,7 +2,7 @@ import { Command, Option } from '@commander-js/extra-typings';
 import { compile, loadExportedSchemas } from './compiler.js';
 
 import type { CompilerOptions } from './types.js';
-import { compileV2 } from './v2/compiler.js';
+import { compileV2 } from './v2/compiler.ts';
 import { logger } from './utils.js';
 import { writeFileSync } from 'fs';
 

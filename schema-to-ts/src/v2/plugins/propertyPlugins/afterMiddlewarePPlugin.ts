@@ -1,6 +1,10 @@
 import { PropertyPlugin, type PropertyPluginContext } from '../../types.ts';
 import { docStringLines } from '../../helpers.ts';
 
+/**
+ * Injects the correct types for the `afterResponse` middleware function
+ * of the App Type.
+ */
 export default class AfterMiddlewarePPlugin extends PropertyPlugin {
   test({ interfaceName, key }: PropertyPluginContext): boolean {
     return interfaceName === 'App' && key === 'afterResponse';
