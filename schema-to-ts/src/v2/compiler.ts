@@ -88,21 +88,14 @@ function addTopLevelType(ctx: CompilerContext, schemaPath: SchemaPath) {
     ...ctx,
     schema,
     schemaPath,
+    schemaTypeName: idToTypeName(schemaPath),
   };
 
   for (const plugin of TOP_LEVEL_PLUGINS) {
     if (plugin.test(pluginContext)) {
-      logger.info(
-        'Using plugin %s to render %s',
-        plugin.constructor.name,
-        schemaPath,
-      );
+      logger.info('Using %s to render %s', plugin.constructor.name, schemaPath);
       plugin.render(pluginContext);
-      logger.debug(
-        'Finished rendering %s with %s',
-        schemaPath,
-        plugin.constructor.name,
-      );
+      logger.debug('Rendered %s with %s', schemaPath, plugin.constructor.name);
       return;
     }
   }

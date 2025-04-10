@@ -32,6 +32,12 @@ export interface TopLevelPluginContext extends CompilerContext {
   schemaPath: SchemaPath;
 
   /**
+   * The friendly TS-exported name of the schema that is being rendered.
+   * E.g. 'Xyx' (from /XyzSchema)
+   */
+  schemaTypeName: string;
+
+  /**
    * The schema that is being rendered.
    */
   schema: TopLevelSchema;
