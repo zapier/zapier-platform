@@ -2,7 +2,8 @@ import { PropertyPlugin, type PropertyPluginContext } from '../../types.ts';
 import { docStringLines } from '../../helpers.ts';
 
 /**
- * Injects the correct types for the `beforeRequest` property, custom functions.
+ * Injects the correct types for the `beforeRequest` middleware function
+ * of the App Type.
  */
 export default class BeforeMiddlewarePPlugin extends PropertyPlugin {
   test({ interfaceName, key }: PropertyPluginContext): boolean {
