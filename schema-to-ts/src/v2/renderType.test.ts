@@ -6,6 +6,14 @@ import renderType from './renderType.ts';
 
 describe('type rendering', () => {
   it.each<[JSONSchema4, string]>([
+    [{ type: 'string' }, 'string'],
+    [{ type: 'string', enum: ['foo', 'bar'] }, "'foo' | 'bar'"],
+  ])('renders string type from %s', (schema, expected) => {
+    const result = renderType(schema);
+    expect(result.rawType).toBe(expected);
+  });
+
+  it.each<[JSONSchema4, string]>([
     [{ $ref: '/FoobarSchema' }, 'Foobar'],
     [{ type: 'string' }, 'string'],
     [{ type: 'number' }, 'number'],
