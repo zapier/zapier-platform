@@ -1,19 +1,16 @@
-import type { InterfaceDeclaration } from 'ts-morph';
 import type { JSONSchema4 } from 'json-schema';
+import { type SchemaPath, isSchemaRef, idToTypeName } from '../helpers.ts';
 import {
-  type CompilerContext,
-  type SchemaPath,
-  isSchemaRef,
-  idToTypeName,
-} from '../helpers.ts';
-import { PropertyCompiler } from './propertyCompiler.ts';
+  PropertyCompiler,
+  type CompilePropertyArgs,
+} from './propertyCompiler.ts';
 
 type RefSchema = JSONSchema4 & {
   $ref: SchemaPath;
   type?: string;
 };
 
-export class RefPropertyCompiler extends PropertyCompiler<RefSchema> {
+export default class RefPropertyCompiler extends PropertyCompiler<RefSchema> {
   test(value: unknown): value is RefSchema {
     return (
       typeof value === 'object' &&
@@ -23,18 +20,19 @@ export class RefPropertyCompiler extends PropertyCompiler<RefSchema> {
     );
   }
 
-  compile(
-    ctx: CompilerContext,
-    iface: InterfaceDeclaration,
-    key: string,
-    value: RefSchema,
-    required: boolean,
-  ): void {
-    iface.addProperty({
-      leadingTrivia: '\n',
-      hasQuestionToken: !required,
-      name: key,
+  compile({
+    ctx,
+    iface,
+    key,
+    value,
+    required,
+  }: CompilePropertyArgs<RefSchema>): void {
+    this.addPlainProperty({
+      iface,
+      key,
+      required,
       type: idToTypeName(value.$ref),
+      docs: value.description,
     });
     ctx.schemasToRender.push(value.$ref);
   }

@@ -58,5 +58,5 @@ export function docStringLines(
     return undefined;
   }
   const tokens = lexer(comment);
-  return reflowLines(tokens);
+  return [reflowLines(tokens).join('\n')];
 }

@@ -1,15 +1,16 @@
-import type { InterfaceDeclaration } from 'ts-morph';
 import type { JSONSchema4 } from 'json-schema';
-import { type CompilerContext, type SchemaPath } from '../helpers.ts';
-import { PropertyCompiler } from './propertyCompiler.ts';
+
+import {
+  PropertyCompiler,
+  type CompilePropertyArgs,
+} from './propertyCompiler.ts';
 
 type EnumSchema = JSONSchema4 & {
-  id: SchemaPath;
   type: 'string';
   enum: string[];
 };
 
-export class EnumPropertyCompiler extends PropertyCompiler<EnumSchema> {
+export default class EnumPropertyCompiler extends PropertyCompiler<EnumSchema> {
   test(value: unknown): value is EnumSchema {
     return (
       typeof value === 'object' &&
@@ -21,19 +22,19 @@ export class EnumPropertyCompiler extends PropertyCompiler<EnumSchema> {
     );
   }
 
-  compile(
-    ctx: CompilerContext,
-    iface: InterfaceDeclaration,
-    key: string,
-    value: EnumSchema,
-    required: boolean,
-  ): void {
+  compile({
+    iface,
+    key,
+    value,
+    required,
+  }: CompilePropertyArgs<EnumSchema>): void {
     const union = value.enum.map((e) => `'${e}'`).join(' | ');
-    iface.addProperty({
-      name: key,
+    this.addPlainProperty({
+      iface,
+      key,
+      required,
       type: union,
-      leadingTrivia: '\n',
-      hasQuestionToken: !required,
+      docs: value.description,
     });
   }
 }

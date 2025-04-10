@@ -30,12 +30,12 @@ export class RecordCompiler extends SchemaCompiler<RecordSchema> {
     const [innerSchema] = Object.values(schema.patternProperties);
 
     if (!innerSchema) {
-      console.warn('Record schema must have a pattern property');
+      this.logger.warn('Record schema must have a pattern property');
       return;
     }
 
     if (!isSchemaRef(innerSchema.$ref)) {
-      console.warn('Record schema must have a $ref');
+      this.logger.warn('Record schema must have a $ref');
       return;
     }
 
