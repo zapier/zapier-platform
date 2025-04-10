@@ -27,27 +27,20 @@ const getLocalAppHandler = async (appDir, shouldDeleteWrapper) => {
     }
   }
 
-  return (event, ctx, callback) => {
+  return async (event, ctx) => {
     event = {
       ...event,
       calledFromCli: true,
     };
-    app.handler(event, ctx, callback);
+    return await app.handler(event, ctx);
   };
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
 const localAppCommand = async (event, appDir, shouldDeleteWrapper = true) => {
   const handler = await getLocalAppHandler(appDir, shouldDeleteWrapper);
-  return new Promise((resolve, reject) => {
-    handler(event, {}, (err, resp) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(resp.results);
-      }
-    });
-  });
+  const response = await handler(event);
+  return response.results;
 };
 
 module.exports = {
