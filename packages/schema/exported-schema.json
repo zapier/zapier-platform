@@ -1,5 +1,5 @@
 {
-  "version": "16.4.0",
+  "version": "16.5.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
