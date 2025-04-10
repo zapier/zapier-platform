@@ -5,15 +5,11 @@ import {
   type CompilerContext,
   type SchemaPath,
   type TopLevelSchema,
-  SchemaCompiler,
 } from '../helpers.ts';
+import renderType from '../renderType.ts';
+import { TopLevelPlugin } from './base.ts';
 
 import type { JSONSchema4 } from 'json-schema';
-import EnumPropertyCompiler from './genPropEnum.ts';
-import RefPropertyCompiler from './genPropRef.ts';
-import FallbackObjectPropertyCompiler from './genPropFallbackObject.ts';
-import OneOfPropertyCompiler from './genPropOneOf.ts';
-import AnyOfPropertyCompiler from './genPropAnyOf.ts';
 
 type InterfaceSchema = JSONSchema4 & {
   id: SchemaPath;
@@ -22,21 +18,14 @@ type InterfaceSchema = JSONSchema4 & {
 };
 
 /**
- * Generates a TypeScript interface from a JSON Schema object.
+ * Generates a TypeScript interface from a JSON Schema object, instead
+ * of the default type alias.
  *
- * This is the most common, and most advanced top-level schema compiler.
+ * This is the most common, and most advanced top-level schema plugin.
  * Contained within this module is a self-similar compiler-matching
  * system just for the properties of the generated interface.
  */
-export class InterfaceCompiler extends SchemaCompiler<InterfaceSchema> {
-  private propertyCompilers = [
-    new RefPropertyCompiler(),
-    new EnumPropertyCompiler(),
-    new OneOfPropertyCompiler(),
-    new AnyOfPropertyCompiler(),
-    new FallbackObjectPropertyCompiler(),
-  ];
-
+export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
   test(schema: TopLevelSchema): schema is InterfaceSchema {
     return (
       typeof schema === 'object' &&
@@ -78,32 +67,25 @@ export class InterfaceCompiler extends SchemaCompiler<InterfaceSchema> {
     value: JSONSchema4,
     required: boolean,
   ) {
-    for (const compiler of this.propertyCompilers) {
-      if (compiler.test(value)) {
-        this.logger.debug(
-          { key, value },
-          'Compiling property %s with %s',
-          key,
-          compiler.constructor.name,
-        );
-        compiler.compile({
-          ctx,
-          iface,
-          key,
-          value: value as never, // Will be narrowed by the type test.
-          required,
-        });
-        return;
-      }
+    // Property compilers MAY override the default behavior.
+    // for (const compiler of this.propertyOverrideCompilers) {
+    //   if (compiler.test(value)) {
+    //     compiler.compile({ ctx, iface, key, value: value as never, required });
+    //     return;
+    //   }
+    // }
+
+    // Otherwise, render the property as normal member of the interface.
+    const { rawType, referencedTypes } = renderType(value);
+    if (referencedTypes) {
+      ctx.schemasToRender.push(...referencedTypes);
     }
-
-    this.logger.error({ value }, "Unhandled interface property '%s'", key);
-
     iface.addProperty({
       leadingTrivia: '\n',
       hasQuestionToken: !required,
       name: key,
-      type: '__UNIMPLEMENTED__',
+      type: rawType,
+      docs: docStringLines(value.description),
     });
   }
 }
