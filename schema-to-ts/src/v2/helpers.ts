@@ -1,6 +1,6 @@
 import type { JSONSchema4 } from 'json-schema';
 import type { Logger } from 'pino';
-import { SourceFile } from 'ts-morph';
+import { SourceFile, type CompilerOptions } from 'ts-morph';
 import { lexer } from 'marked';
 import { logger } from '../utils.ts';
 import { reflowLines } from '../comments.ts';
