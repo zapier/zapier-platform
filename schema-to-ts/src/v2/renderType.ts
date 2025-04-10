@@ -30,7 +30,7 @@ export default function renderType(schema: JSONSchema4): RenderResult {
     };
   }
   if (schema.type === 'string') {
-    return { rawType: 'string' };
+    return renderStringType(schema);
   }
   if (schema.type === 'number' || schema.type === 'integer') {
     return { rawType: 'number' };
@@ -64,6 +64,13 @@ export default function renderType(schema: JSONSchema4): RenderResult {
     `Schema not supported, add support to renderType(): ${JSON.stringify(schema)}`,
   );
 }
+
+const renderStringType = (schema: JSONSchema4): RenderResult => {
+  if (schema.enum) {
+    return { rawType: `'${schema.enum.join("' | '")}'` };
+  }
+  return { rawType: 'string' };
+};
 
 /**
  * Renders the type for an object schema.
