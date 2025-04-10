@@ -129,6 +129,10 @@ export const renderObjectType = (schema: JSONSchema4): RenderResult => {
 const renderArrayType = (schema: JSONSchema4): RenderResult => {
   if (schema.items) {
     const { rawType, referencedTypes } = renderType(schema.items);
+    if (rawType.includes('|')) {
+      // Parentheses preserve the union inside the array.
+      return { rawType: `(${rawType})[]`, referencedTypes };
+    }
     return { rawType: `${rawType}[]`, referencedTypes };
   }
   return { rawType: 'unknown[]' };

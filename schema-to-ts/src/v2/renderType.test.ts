@@ -28,6 +28,13 @@ describe('type rendering', () => {
   it.each<[JSONSchema4, string]>([
     [{ type: 'array' }, 'unknown[]'],
     [{ type: 'array', items: { type: 'string' } }, 'string[]'],
+    [
+      {
+        type: 'array',
+        items: { oneOf: [{ type: 'string' }, { type: 'number' }] },
+      },
+      '(string | number)[]',
+    ],
   ])('renders array type of %s', (schema, expected) => {
     const result = renderType(schema);
     expect(result.rawType).toBe(expected);
