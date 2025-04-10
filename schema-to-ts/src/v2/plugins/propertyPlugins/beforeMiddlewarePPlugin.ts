@@ -1,15 +1,15 @@
-import { PropertyPlugin, type PropertyPluginContext } from '../base.ts';
+import { PropertyPlugin, type PropertyPluginContext } from '../../types.ts';
 import { docStringLines } from '../../helpers.ts';
 
 /**
  * Injects the correct types for the `beforeRequest` property, custom functions.
  */
-export default class BeforeMiddlewarePlugin extends PropertyPlugin {
+export default class BeforeMiddlewarePPlugin extends PropertyPlugin {
   test({ interfaceName, key }: PropertyPluginContext): boolean {
     return interfaceName === 'App' && key === 'beforeRequest';
   }
 
-  compile({ iface, key, value, required }: PropertyPluginContext) {
+  render({ iface, key, value, required }: PropertyPluginContext) {
     // TODO: Move Middleware plugin types to the Functions module.
     iface.addProperty({
       name: key,

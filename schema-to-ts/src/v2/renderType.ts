@@ -1,5 +1,6 @@
 import type { JSONSchema4 } from 'json-schema';
-import { idToTypeName, type SchemaPath } from './helpers.ts';
+import type { SchemaPath } from './types.ts';
+import { idToTypeName } from './helpers.ts';
 import { logger } from '../utils.ts';
 
 type RenderResult = {

@@ -1,19 +1,17 @@
-import {
-  docStringLines,
-  idToTypeName,
-  refToSchemaName,
-  type CompilerContext,
-  type SchemaPath,
-} from './helpers.ts';
+import type {
+  CompilerContext,
+  SchemaPath,
+  TopLevelPluginContext,
+} from './types.ts';
+import { Project, SourceFile } from 'ts-morph';
+import { docStringLines, idToTypeName, refToSchemaName } from './helpers.ts';
 
 import type { CompilerOptions } from '../types.ts';
-import { Project, SourceFile } from 'ts-morph';
+import { TOP_LEVEL_PLUGINS } from './plugins/index.ts';
 import { format } from '../formatter.ts';
 import fs from 'node:fs';
 import { logger } from '../utils.ts';
-import InterfacePlugin from './plugins/interface.ts';
 import renderType from './renderType.ts';
-import type { TopLevelPlugin } from './plugins/base.ts';
 
 /**
  * The top-level interface for compiling the zapier-platform-schema
@@ -35,7 +33,7 @@ export async function compileV2(options: CompilerOptions) {
   const ctx: CompilerContext = {
     file,
     schemas,
-    schemasToRender: ['/AppSchema'], // Root level "entrypoint" schema.
+    schemasToRender: ['/AppSchema'], // "Entrypoint" schema. More will get added.
     renderedSchemas: new Set(),
   };
 
@@ -46,6 +44,7 @@ export async function compileV2(options: CompilerOptions) {
     addTopLevelType(ctx, schemaName);
   }
 
+  // Sanity check that we've rendered all of the schemas that should be.
   const allSchemas = Object.keys(schemas).map(
     (k): SchemaPath => `/${k}` as SchemaPath,
   );
@@ -67,51 +66,54 @@ export async function compileV2(options: CompilerOptions) {
   logger.info({ output: options.output }, 'Wrote generated TypeScript to file');
 }
 
-const TOP_LEVEL_PLUGINS = [
-  new InterfacePlugin(),
-] as const satisfies TopLevelPlugin<any>[];
-
-function addTopLevelType(ctx: CompilerContext, schemaName: SchemaPath) {
-  const schema = ctx.schemas[refToSchemaName(schemaName)];
+function addTopLevelType(ctx: CompilerContext, schemaPath: SchemaPath) {
+  const schema = ctx.schemas[refToSchemaName(schemaPath)];
   if (!schema) {
-    logger.fatal({ schemaName }, 'Top-level schema not found');
-    throw new Error(`Top-level schema not found: ${schemaName}`);
+    logger.fatal({ schemaPath }, 'Top-level schema not found');
+    throw new Error(`Top-level schema not found: ${schemaPath}`);
   }
 
   // Skip if we've already added this type.
-  if (ctx.renderedSchemas.has(schemaName)) {
-    logger.trace('Skipping already rendered top-level type %s', schemaName);
+  if (ctx.renderedSchemas.has(schemaPath)) {
+    logger.trace('Skipping already rendered top-level type %s', schemaPath);
     return;
   }
-  ctx.renderedSchemas.add(schemaName);
+  ctx.renderedSchemas.add(schemaPath);
 
   // Work through the plugins in order of priority, running them if they
   // match the schema. Otherwise, we'll fall back to the default type.
-  logger.trace('Beginning plugin search for top-level type %s', schemaName);
+  logger.trace('Beginning plugin search for top-level type %s', schemaPath);
+
+  const pluginContext: TopLevelPluginContext = {
+    ...ctx,
+    schema,
+    schemaPath,
+  };
+
   for (const plugin of TOP_LEVEL_PLUGINS) {
-    if (plugin.test(schema)) {
+    if (plugin.test(pluginContext)) {
       logger.info(
         'Using plugin %s to render %s',
         plugin.constructor.name,
-        schemaName,
+        schemaPath,
       );
-      plugin.compile(ctx, schema as any); // Will be narrowed by the type test.
+      plugin.render(pluginContext);
       logger.debug(
         'Finished rendering %s with %s',
-        schemaName,
+        schemaPath,
         plugin.constructor.name,
       );
       return;
     }
   }
 
-  logger.info('Using default type renderer for %s', schemaName);
+  logger.info('Using default type renderer for %s', schemaPath);
   const { rawType, referencedTypes } = renderType(schema);
   if (referencedTypes) {
     ctx.schemasToRender.push(...referencedTypes);
   }
   ctx.file.addTypeAlias({
-    name: idToTypeName(schemaName),
+    name: idToTypeName(schemaPath),
     docs: docStringLines(schema.description),
     isExported: true,
     type: rawType,
@@ -127,7 +129,7 @@ function addPreamble(file: SourceFile, options: CompilerOptions) {
 * these typings.
 * 
 * zapier-platform-schema version: ${options.platformVersion}
-* schema-to-ts compiler version:  ${options.compilerVersion}
+*  schema-to-ts compiler version: ${options.compilerVersion}
 */`;
   file.insertText(0, (writer) => writer.writeLine(preamble));
 }
@@ -141,5 +143,6 @@ function addImports(file: SourceFile) {
     ],
     moduleSpecifier: './custom',
     leadingTrivia: '\n',
+    isTypeOnly: true,
   });
 }
