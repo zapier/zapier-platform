@@ -15,7 +15,7 @@ const addAppContext = (input) => {
   input._zapier.whatHappened.push(`Executing ${methodName} with bundle`);
 
   const bundle = _.get(input, '_zapier.event.bundle', {});
-  if (bundle.length > 0) {
+  if (Object.keys(bundle).length > 0) {
     input._zapier.whatHappened.push(JSON.stringify(logSafeBundle(bundle)));
   }
 
