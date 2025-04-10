@@ -1,4 +1,3 @@
-import type { InterfaceDeclaration } from 'ts-morph';
 import {
   docStringLines,
   idToTypeName,
@@ -7,9 +6,20 @@ import {
   type TopLevelSchema,
 } from '../helpers.ts';
 import renderType from '../renderType.ts';
-import { TopLevelPlugin } from './base.ts';
+import {
+  TopLevelPlugin,
+  PropertyPlugin,
+  type PropertyPluginContext,
+} from './base.ts';
 
 import type { JSONSchema4 } from 'json-schema';
+import BeforeMiddlewarePlugin from './propertyPlugins/beforeMiddleware.ts';
+import AfterMiddlewarePlugin from './propertyPlugins/afterMiddleware.ts';
+
+const PROPERTY_PLUGINS: PropertyPlugin[] = [
+  new BeforeMiddlewarePlugin(),
+  new AfterMiddlewarePlugin(),
+];
 
 type InterfaceSchema = JSONSchema4 & {
   id: SchemaPath;
@@ -21,9 +31,8 @@ type InterfaceSchema = JSONSchema4 & {
  * Generates a TypeScript interface from a JSON Schema object, instead
  * of the default type alias.
  *
- * This is the most common, and most advanced top-level schema plugin.
- * Contained within this module is a self-similar compiler-matching
- * system just for the properties of the generated interface.
+ * This is the most commonly used plugin that will convert most schemas
+ * into interfaces.
  */
 export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
   test(schema: TopLevelSchema): schema is InterfaceSchema {
@@ -37,10 +46,10 @@ export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
   }
 
   compile(ctx: CompilerContext, schema: InterfaceSchema) {
-    const newName = idToTypeName(schema.id);
+    const name = idToTypeName(schema.id);
 
     const iface = ctx.file.addInterface({
-      name: newName,
+      name: name,
       isExported: true,
       docs: docStringLines(schema.description),
       leadingTrivia: '\n',
@@ -50,42 +59,41 @@ export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
       ? schema.required
       : [];
     for (const [key, value] of Object.entries(schema.properties)) {
-      this.compileProperty(
-        ctx,
+      this.compileProperty({
+        ...ctx,
         iface,
+        interfaceName: name,
         key,
         value,
-        requiredProperties.includes(key),
-      );
+        required: requiredProperties.includes(key),
+      });
     }
   }
 
-  private compileProperty(
-    ctx: CompilerContext,
-    iface: InterfaceDeclaration,
-    key: string,
-    value: JSONSchema4,
-    required: boolean,
-  ) {
-    // Property compilers MAY override the default behavior.
-    // for (const compiler of this.propertyOverrideCompilers) {
-    //   if (compiler.test(value)) {
-    //     compiler.compile({ ctx, iface, key, value: value as never, required });
-    //     return;
-    //   }
-    // }
+  private compileProperty(ctx: PropertyPluginContext) {
+    // Property plugins MAY override the default behavior.
+    for (const propertyPlugin of PROPERTY_PLUGINS) {
+      if (propertyPlugin.test(ctx)) {
+        this.logger.debug(
+          'Rendering property with %s plugin',
+          propertyPlugin.constructor.name,
+        );
+        propertyPlugin.compile(ctx);
+        return;
+      }
+    }
 
     // Otherwise, render the property as normal member of the interface.
-    const { rawType, referencedTypes } = renderType(value);
+    const { rawType, referencedTypes } = renderType(ctx.value);
     if (referencedTypes) {
       ctx.schemasToRender.push(...referencedTypes);
     }
-    iface.addProperty({
+    ctx.iface.addProperty({
       leadingTrivia: '\n',
-      hasQuestionToken: !required,
-      name: key,
+      hasQuestionToken: !ctx.required,
+      name: ctx.key,
       type: rawType,
-      docs: docStringLines(value.description),
+      docs: docStringLines(ctx.value.description),
     });
   }
 }
