@@ -19,8 +19,8 @@ export interface CliOptions {
   logLevel?: LevelWithSilent;
 
   /**
-   * The `exported-schema.json` file from zapier-platform-schema to
-   * compile from. Typically the latest built output from
+   * Path to the `exported-schema.json` file from zapier-platform-schema
+   * to compile from. Typically the latest built output from
    * zapier-platform-schema.
    *
    * @default "../schema/exported-schema.json"
