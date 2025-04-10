@@ -1,31 +1,11 @@
-import {
-  docStringLines,
-  idToTypeName,
-  type CompilerContext,
-  type SchemaPath,
-  type TopLevelSchema,
-} from '../helpers.ts';
+import { docStringLines, idToTypeName } from '../helpers.ts';
 import renderType from '../renderType.ts';
 import {
   TopLevelPlugin,
-  PropertyPlugin,
   type PropertyPluginContext,
-} from './base.ts';
-
-import type { JSONSchema4 } from 'json-schema';
-import BeforeMiddlewarePlugin from './propertyPlugins/beforeMiddleware.ts';
-import AfterMiddlewarePlugin from './propertyPlugins/afterMiddleware.ts';
-
-const PROPERTY_PLUGINS: PropertyPlugin[] = [
-  new BeforeMiddlewarePlugin(),
-  new AfterMiddlewarePlugin(),
-];
-
-type InterfaceSchema = JSONSchema4 & {
-  id: SchemaPath;
-  type: 'object';
-  properties: Record<string, JSONSchema4>;
-};
+  type TopLevelPluginContext,
+} from '../types.ts';
+import { INTERFACE_PROPERTY_PLUGINS } from './index.ts';
 
 /**
  * Generates a TypeScript interface from a JSON Schema object, instead
@@ -33,9 +13,13 @@ type InterfaceSchema = JSONSchema4 & {
  *
  * This is the most commonly used plugin that will convert most schemas
  * into interfaces.
+ *
+ * Contained within is a self-similar system for property plugins to
+ * optionally modify the output of the rendered properties inside the
+ * interface.
  */
-export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
-  test(schema: TopLevelSchema): schema is InterfaceSchema {
+export default class InterfacePlugin extends TopLevelPlugin {
+  test({ schema }: TopLevelPluginContext): boolean {
     return (
       typeof schema === 'object' &&
       schema !== null &&
@@ -45,10 +29,11 @@ export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
     );
   }
 
-  compile(ctx: CompilerContext, schema: InterfaceSchema) {
+  render(ctx: TopLevelPluginContext) {
+    const { schema, file } = ctx;
     const name = idToTypeName(schema.id);
 
-    const iface = ctx.file.addInterface({
+    const iface = file.addInterface({
       name: name,
       isExported: true,
       docs: docStringLines(schema.description),
@@ -58,7 +43,7 @@ export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
     const requiredProperties = Array.isArray(schema.required)
       ? schema.required
       : [];
-    for (const [key, value] of Object.entries(schema.properties)) {
+    for (const [key, value] of Object.entries(schema.properties ?? {})) {
       this.compileProperty({
         ...ctx,
         iface,
@@ -72,13 +57,13 @@ export default class InterfacePlugin extends TopLevelPlugin<InterfaceSchema> {
 
   private compileProperty(ctx: PropertyPluginContext) {
     // Property plugins MAY override the default behavior.
-    for (const propertyPlugin of PROPERTY_PLUGINS) {
+    for (const propertyPlugin of INTERFACE_PROPERTY_PLUGINS) {
       if (propertyPlugin.test(ctx)) {
         this.logger.debug(
           'Rendering property with %s plugin',
           propertyPlugin.constructor.name,
         );
-        propertyPlugin.compile(ctx);
+        propertyPlugin.render(ctx);
         return;
       }
     }

@@ -1,12 +1,12 @@
-import { PropertyPlugin, type PropertyPluginContext } from '../base.ts';
+import { PropertyPlugin, type PropertyPluginContext } from '../../types.ts';
 import { docStringLines } from '../../helpers.ts';
 
-export default class AfterMiddlewarePlugin extends PropertyPlugin {
+export default class AfterMiddlewarePPlugin extends PropertyPlugin {
   test({ interfaceName, key }: PropertyPluginContext): boolean {
     return interfaceName === 'App' && key === 'afterResponse';
   }
 
-  compile({ iface, key, value, required }: PropertyPluginContext) {
+  render({ iface, key, value, required }: PropertyPluginContext) {
     // TODO: Move Middleware plugin types to the Functions module.
     iface.addProperty({
       name: key,

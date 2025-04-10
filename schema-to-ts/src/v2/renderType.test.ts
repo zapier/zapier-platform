@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { JSONSchema4 } from 'json-schema';
-import type { SchemaPath } from './helpers.ts';
+import type { SchemaPath } from './types.ts';
 import renderType from './renderType.ts';
 
 describe('type rendering', () => {
