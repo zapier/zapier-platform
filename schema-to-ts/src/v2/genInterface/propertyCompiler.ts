@@ -1,8 +1,17 @@
 import { docStringLines, type CompilerContext } from '../helpers.ts';
 import type { InterfaceDeclaration } from 'ts-morph';
 import type { JSONSchema4 } from 'json-schema';
+import type { Logger } from 'pino';
+import { logger } from '../../utils.ts';
 
 export abstract class PropertyCompiler<$Property extends JSONSchema4> {
+  protected logger: Logger;
+  constructor() {
+    this.logger = logger.child({
+      propertyCompiler: this.constructor.name,
+    });
+  }
+
   abstract test(value: unknown): value is $Property;
 
   abstract compile(args: CompilePropertyArgs<$Property>): void;

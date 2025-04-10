@@ -6,11 +6,11 @@ import {
   type SchemaPath,
   type TopLevelSchema,
   SchemaCompiler,
+  renderRawType,
 } from './helpers.ts';
 
 import type { JSONSchema4 } from 'json-schema';
 import { logger } from '../utils.ts';
-import { getUnionMemberType } from './genOneOfUnion.ts';
 
 type AnyOfUnionSchema = JSONSchema4 & {
   id: SchemaPath;
@@ -36,7 +36,9 @@ export class AnyOfUnionCompiler extends SchemaCompiler<AnyOfUnionSchema> {
         ctx.schemasToRender.push(member.$ref);
       }
     });
-    const memberTypes = schema.anyOf.map(getUnionMemberType).join(' | ');
+    const memberTypes = schema.anyOf
+      .map((m) => renderRawType(m).rawType)
+      .join(' | ');
 
     ctx.file.addTypeAlias({
       name: newName,

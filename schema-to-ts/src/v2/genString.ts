@@ -23,10 +23,10 @@ export class StringCompiler extends SchemaCompiler<StringSchema> {
   }
 
   compile(ctx: CompilerContext, schema: StringSchema) {
-    const newName = idToTypeName(schema.id);
+    const name = idToTypeName(schema.id);
     ctx.file.addTypeAlias({
       leadingTrivia: '\n',
-      name: newName,
+      name,
       isExported: true,
       type: 'string',
       docs: docStringLines(schema.description),

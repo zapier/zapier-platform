@@ -60,3 +60,52 @@ export function docStringLines(
   const tokens = lexer(comment);
   return [reflowLines(tokens).join('\n')];
 }
+
+/**
+ * Used to render the type for a Schema object. Returns a string of the
+ * rawType that can be inserted into a TypeScript type, and an optional
+ * set of /XyxSchema references that were referenced and will need to be
+ * rendered.
+ */
+export function renderRawType(schema: JSONSchema4): {
+  rawType: string;
+  referencedTypes?: Set<string>;
+} {
+  if (schema.$ref) {
+    return {
+      rawType: idToTypeName(schema.$ref),
+      referencedTypes: new Set([schema.$ref]),
+    };
+  }
+  if (schema.type === 'string') {
+    return { rawType: 'string' };
+  }
+  if (schema.type === 'number' || schema.type === 'integer') {
+    return { rawType: 'number' };
+  }
+  if (schema.type === 'boolean') {
+    return { rawType: 'boolean' };
+  }
+  if (schema.type === 'null') {
+    return { rawType: 'null' };
+  }
+  if (schema.type === 'object' && schema.additionalProperties !== false) {
+    return { rawType: 'Record<string, unknown>' };
+  }
+
+  if (schema.type === 'array') {
+    if (schema.items && !Array.isArray(schema.items) && schema.items.$ref) {
+      const { rawType, referencedTypes } = renderRawType(schema.items);
+      return { rawType: `${rawType}[]`, referencedTypes };
+    } else {
+      return { rawType: 'unknown[]' };
+    }
+  }
+
+  logger.error(
+    { schema },
+    'Unknown union member type: %s',
+    JSON.stringify(schema),
+  );
+  throw new Error(`Unknown union member type: ${JSON.stringify(schema)}`);
+}
