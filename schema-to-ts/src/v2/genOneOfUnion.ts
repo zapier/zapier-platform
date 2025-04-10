@@ -6,6 +6,7 @@ import {
   SchemaCompiler,
   type SchemaPath,
   type TopLevelSchema,
+  renderRawType,
 } from './helpers.ts';
 
 import type { JSONSchema4 } from 'json-schema';
@@ -35,7 +36,9 @@ export class OneOfUnionCompiler extends SchemaCompiler<OneOfUnionSchema> {
         ctx.schemasToRender.push(member.$ref);
       }
     });
-    const memberTypes = schema.oneOf.map(getUnionMemberType).join(' | ');
+    const memberTypes = schema.oneOf
+      .map((m) => renderRawType(m).rawType)
+      .join(' | ');
 
     ctx.file.addTypeAlias({
       name: newName,
@@ -46,34 +49,4 @@ export class OneOfUnionCompiler extends SchemaCompiler<OneOfUnionSchema> {
     });
     logger.debug({ newName, memberTypes }, 'Added union type %s', newName);
   }
-}
-
-/**
- * Used to render the type of a single union member. Used for `oneOf`
- * and `anyOf` union members.
- */
-export function getUnionMemberType(schema: JSONSchema4): string {
-  if (schema.$ref) {
-    return idToTypeName(schema.$ref);
-  }
-  if (schema.type === 'string') {
-    return 'string';
-  }
-  if (schema.type === 'number') {
-    return 'number';
-  }
-  if (schema.type === 'boolean') {
-    return 'boolean';
-  }
-
-  if (
-    schema.type === 'array' &&
-    schema.items &&
-    !Array.isArray(schema.items) &&
-    schema.items.$ref
-  ) {
-    const name = getUnionMemberType(schema.items);
-    return `${name}[]`;
-  }
-  throw new Error(`Unknown union member type: ${JSON.stringify(schema)}`);
 }

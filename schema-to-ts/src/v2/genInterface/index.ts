@@ -12,6 +12,8 @@ import type { JSONSchema4 } from 'json-schema';
 import EnumPropertyCompiler from './genPropEnum.ts';
 import RefPropertyCompiler from './genPropRef.ts';
 import FallbackObjectPropertyCompiler from './genPropFallbackObject.ts';
+import OneOfPropertyCompiler from './genPropOneOf.ts';
+import AnyOfPropertyCompiler from './genPropAnyOf.ts';
 
 type InterfaceSchema = JSONSchema4 & {
   id: SchemaPath;
@@ -30,6 +32,8 @@ export class InterfaceCompiler extends SchemaCompiler<InterfaceSchema> {
   private propertyCompilers = [
     new RefPropertyCompiler(),
     new EnumPropertyCompiler(),
+    new OneOfPropertyCompiler(),
+    new AnyOfPropertyCompiler(),
     new FallbackObjectPropertyCompiler(),
   ];
 
