@@ -31,10 +31,9 @@ export default class InterfacePlugin extends TopLevelPlugin {
 
   render(ctx: TopLevelPluginContext) {
     const { schema, file } = ctx;
-    const name = idToTypeName(schema.id);
 
     const iface = file.addInterface({
-      name: name,
+      name: ctx.schemaTypeName,
       isExported: true,
       docs: docStringLines(schema.description),
       leadingTrivia: '\n',
@@ -47,7 +46,7 @@ export default class InterfacePlugin extends TopLevelPlugin {
       this.compileProperty({
         ...ctx,
         iface,
-        interfaceName: name,
+        interfaceName: ctx.schemaTypeName,
         key,
         value,
         required: requiredProperties.includes(key),
@@ -55,7 +54,7 @@ export default class InterfacePlugin extends TopLevelPlugin {
     }
   }
 
-  private compileProperty(ctx: PropertyPluginContext) {
+  protected compileProperty(ctx: PropertyPluginContext) {
     // Property plugins MAY override the default behavior.
     for (const propertyPlugin of INTERFACE_PROPERTY_PLUGINS) {
       if (propertyPlugin.test(ctx)) {

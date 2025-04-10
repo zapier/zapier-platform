@@ -1,4 +1,5 @@
 import AfterMiddlewarePPlugin from './propertyPlugins/afterMiddlewarePPlugin.ts';
+import BasicPollingOperationTypeArgsPlugin from './BasicPollingOperationTypeArgsPlugin.ts';
 import BeforeMiddlewarePPlugin from './propertyPlugins/beforeMiddlewarePPlugin.ts';
 import InterfacePlugin from './interfacePlugin.ts';
 import PerformFunctionPlugin from './performFunctionPlugin.ts';
@@ -7,6 +8,7 @@ import PerformFunctionPlugin from './performFunctionPlugin.ts';
 // them here.
 
 export const TOP_LEVEL_PLUGINS = [
+  new BasicPollingOperationTypeArgsPlugin(),
   new InterfacePlugin(),
   new PerformFunctionPlugin(),
 ];
