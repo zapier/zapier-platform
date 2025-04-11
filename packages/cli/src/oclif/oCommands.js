@@ -26,6 +26,7 @@ module.exports = {
   integrations: require('./commands/integrations'),
   invoke: require('./commands/invoke'),
   link: require('./commands/link'),
+  legacy: require('./commands/legacy'),
   login: require('./commands/login'),
   logs: require('./commands/logs'),
   logout: require('./commands/logout'),
