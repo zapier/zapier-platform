@@ -293,6 +293,11 @@ const getVersionInfo = () => {
   });
 };
 
+const getSpecificVersionInfo = async (version) => {
+  const app = await getWritableApp();
+  return callAPI(`/apps/${app.id}/versions/${version}`);
+};
+
 // Intended to match logic of https://gitlab.com/zapier/team-developer-platform/dev-platform/-/blob/9fa28d8bacd04ebdad5937bd039c71aede4ede47/web/frontend/assets/app/entities/CliApp/CliApp.ts#L96
 const isPublished = (appStatus) => {
   const publishedStatuses = ['public', 'beta'];
@@ -362,6 +367,8 @@ const listEnv = (version) =>
   listEndpoint(`versions/${version}/environment`, 'env');
 
 const listMigrations = () => listEndpoint('migrations');
+
+const listAuthentications = () => listEndpoint('authentications');
 
 // the goal of this is to call `/check` with as much info as possible
 // if the app is registered and auth is available, then we can send app id
@@ -500,8 +507,10 @@ module.exports = {
   getLinkedAppConfig,
   getWritableApp,
   getVersionInfo,
+  getSpecificVersionInfo,
   isPublished,
   listApps,
+  listAuthentications,
   listCanaries,
   listEndpoint,
   listEndpointMulti,

@@ -27,7 +27,7 @@ const writeCliDocs = ({ markdownPath } = {}) => {
   fs.writeFileSync(
     markdownPath,
     `\
-# Zapier CLI Reference
+# Zapier CLI Command Reference
 
 These are the generated docs for all Zapier platform CLI commands.
 
