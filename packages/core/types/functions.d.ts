@@ -48,6 +48,32 @@ export type WebhookTriggerPerformUnsubscribe<
 // type HookToPollTriggerPerformList = () => {}; // Same as Webhook
 
 /**
+ * Pull data from the API service, same as a polling trigger.
+ */
+export type HookToPollTriggerPerformList<
+  $Input extends Record<string, any>,
+  $Return extends {} = {},
+> = (z: ZObject, bundle: Bundle<$Input>) => $Return[] | Promise<$Return[]>;
+
+/**
+ * Return must be an object of subscription data. It will be passed as
+ * `bundle.subscribeData` in the performUnsubscribe function.
+ */
+export type HookToPollTriggerPerformSubscribe<
+  $Input extends Record<string, any>,
+  $Return extends {} = {},
+> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+
+/**
+ * Unsubscribe from the HookToPoll.
+ * Data from the subscribe function is provided in `bundle.subscribeData`.
+ */
+export type HookToPollTriggerPerformUnsubscribe<
+  $Input extends Record<string, any>,
+  $Return extends {} = {},
+> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+
+/**
  * Create an item on a partner API.
  *
  * Usually returns the created object, but `performGet` can also be used
@@ -75,7 +101,7 @@ export type CreatePerform<
 export type CreatePerformResume<
   $Input extends Record<string, any>,
   // TODO: Type cleanedRequest & outputData on Bundle interface
-  $Return extends {},
+  $Return extends {} = {},
 > = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
 
 /**
@@ -83,7 +109,7 @@ export type CreatePerformResume<
  */
 export type CreatePerformGet<
   $Input extends Record<string, any>,
-  $Return extends {},
+  $Return extends {} = {},
 > = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
 
 /**
@@ -98,7 +124,7 @@ export type CreatePerformGet<
  */
 export type SearchPerform<
   $Input extends Record<string, any>,
-  $Return extends {},
+  $Return extends {} = {},
 > = (z: ZObject, bundle: Bundle<$Input>) => [$Return] | Promise<[$Return]>;
 
 /**
@@ -110,7 +136,7 @@ export type SearchPerform<
  */
 export type SearchPerformGet<
   $Input extends Record<string, any>,
-  $Return extends {},
+  $Return extends {} = {},
 > = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
 
 /**
