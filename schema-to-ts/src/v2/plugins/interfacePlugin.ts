@@ -1,4 +1,5 @@
-import { docStringLines, idToTypeName } from '../helpers.ts';
+import type { InterfaceDeclaration } from 'ts-morph';
+import { docStringLines } from '../helpers.ts';
 import renderType from '../renderType.ts';
 import {
   TopLevelPlugin,
@@ -39,11 +40,25 @@ export default class InterfacePlugin extends TopLevelPlugin {
       leadingTrivia: '\n',
     });
 
+    this.renderProperties(ctx, iface);
+  }
+
+  /**
+   * Render all properties of the interface. Convenient to just override
+   * the renderProperty method in subclasses if looking to patch
+   * individual properties.
+   */
+  protected renderProperties(
+    ctx: TopLevelPluginContext,
+    iface: InterfaceDeclaration,
+  ) {
+    const { schema } = ctx;
+
     const requiredProperties = Array.isArray(schema.required)
       ? schema.required
       : [];
     for (const [key, value] of Object.entries(schema.properties ?? {})) {
-      this.compileProperty({
+      this.renderProperty({
         ...ctx,
         iface,
         interfaceName: ctx.schemaTypeName,
@@ -54,17 +69,10 @@ export default class InterfacePlugin extends TopLevelPlugin {
     }
   }
 
-  protected compileProperty(ctx: PropertyPluginContext) {
+  protected renderProperty(ctx: PropertyPluginContext) {
     // Property plugins MAY override the default behavior.
-    for (const propertyPlugin of INTERFACE_PROPERTY_PLUGINS) {
-      if (propertyPlugin.test(ctx)) {
-        this.logger.debug(
-          'Rendering property with %s plugin',
-          propertyPlugin.constructor.name,
-        );
-        propertyPlugin.render(ctx);
-        return;
-      }
+    if (this.maybeRenderWithPropertyPlugin(ctx)) {
+      return;
     }
 
     // Otherwise, render the property as normal member of the interface.
@@ -79,5 +87,19 @@ export default class InterfacePlugin extends TopLevelPlugin {
       type: rawType,
       docs: docStringLines(ctx.value.description),
     });
+  }
+
+  protected maybeRenderWithPropertyPlugin(ctx: PropertyPluginContext) {
+    for (const propertyPlugin of INTERFACE_PROPERTY_PLUGINS) {
+      if (propertyPlugin.test(ctx)) {
+        this.logger.debug(
+          'Rendering property with %s plugin',
+          propertyPlugin.constructor.name,
+        );
+        propertyPlugin.render(ctx);
+        return true;
+      }
+    }
+    return false;
   }
 }

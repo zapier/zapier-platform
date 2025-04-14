@@ -302,13 +302,16 @@ export interface ZObject {
 }
 
 /**
- * A function that performs the action.
+ * A function that takes (z, bundle) and does something. The specific
+ * Perform types from the functions module are now preferred.
  *
  * @template $InputData The shape of data in the `bundle.inputData` object.
  * @template $Return The return type of the function.
+ *
+ * @deprecated Use the relevant perform functions from the functions module.
  */
 export type PerformFunction<
-  $InputData extends Record<string, any> = {},
+  $InputData extends Record<string, any> = Record<string, any>,
   $Return = any,
 > = (z: ZObject, bundle: Bundle<$InputData>) => Promise<$Return>;
 

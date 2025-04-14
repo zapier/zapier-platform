@@ -1,4 +1,4 @@
-import type { InputField as PlainInputField } from './schemas.generated';
+import type { InputField } from './schemas.generated';
 import type { ZObject, Bundle } from './custom';
 
 // #region UTILITIES
@@ -84,8 +84,8 @@ type Flatten<S extends unknown[], T extends unknown[] = []> = S extends [
 
 /**
  * Merge an array (tuple) of object types into a single type. This is
- * the critical step in going from list of field definitions to a bundle
- * input object.
+ * the critical step in going from list of field definitions to a
+ * bundle's inputData object.
  *
  * @example
  * type result = Merge<[{ a: string }, { b: boolean }]>
@@ -100,13 +100,11 @@ type Merge<T extends object[]> = T extends [infer F, ...infer R]
 // MAIN BITS
 // =========
 
-export type { PlainInputField };
-
 /**
  * All of the field types a Zapier field can have, as defined by
  * zapier-platform-schema.
  */
-type SchemaFieldTypes = NonNullable<PlainInputField['type']>;
+type SchemaFieldTypes = NonNullable<InputField['type']>;
 
 /**
  * Lookup of zapier field types (as defined by zapier-platform-schema)
@@ -133,8 +131,8 @@ type FieldResultTypes = {
  * Get the TypeScript type that corresponds to the zapier field type. If
  * `type` is not set, the field defaults to `string`.
  */
-type FieldResultType<F extends PlainInputField> = F extends {
-  type: infer $T extends PlainInputField['type'];
+type FieldResultType<F extends InputField> = F extends {
+  type: infer $T extends InputField['type'];
 }
   ? $T extends string
     ? FieldResultTypes[$T]
@@ -145,17 +143,19 @@ type FieldResultType<F extends PlainInputField> = F extends {
  * A function that returns a list of plain fields, sync or async.
  * Can be used as a member of an array of input fields itself.
  */
-export type InputFieldFunction = (
+export type InputFieldFunction<
+  $InputData extends Record<string, unknown> = never,
+> = (
   z: ZObject,
-  bundle: Bundle<never>,
-) => PlainInputField[] | Promise<PlainInputField[]>;
+  bundle: Bundle<$InputData>,
+) => InputField[] | Promise<InputField[]>;
 
 /**
  * Input fields can be plain fields, or functions that return plain
  * fields, async or not.
  */
-export type InputField = PlainInputField | InputFieldFunction;
-export type InputFieldArray = InputField[];
+export type DynamicInputField = InputField | InputFieldFunction;
+export type DynamicInputFields = DynamicInputField[];
 
 /**
  * Extract the "contribution" of a plain field to the bundle. Just the
@@ -174,7 +174,7 @@ export type InputFieldArray = InputField[];
  * type result3 = PlainFieldContribution<{ key: "c"; type: "boolean" }>;
  * // { c?: boolean | undefined }
  */
-type PlainFieldContribution<$Field extends PlainInputField> = $Field extends {
+type PlainFieldContribution<$Field extends InputField> = $Field extends {
   required: true;
 }
   ? FieldResultType<$Field> extends never
@@ -195,7 +195,7 @@ type PlainFieldContribution<$Field extends PlainInputField> = $Field extends {
  * ]>;
  * // { a: string, b?: number | undefined }
  */
-type PlainFieldArrayContribution<$Fields extends PlainInputField[]> = Simplify<
+type PlainFieldArrayContribution<$Fields extends InputField[]> = Simplify<
   Merge<{
     [K in keyof $Fields]: PlainFieldContribution<$Fields[K]>;
   }>
@@ -210,9 +210,9 @@ type PlainFieldArrayContribution<$Fields extends PlainInputField[]> = Simplify<
  * unknown>`, because the field IDs can't be known ahead of time.
  */
 type FieldFunction<
-  $Inputs extends Record<string, unknown> = {},
-  $Output extends PlainInputField[] = PlainInputField[],
-> = (z: ZObject, bundle: Bundle<$Inputs>) => $Output | Promise<$Output>;
+  $InputData extends Record<string, unknown> = {},
+  $Output extends InputField[] = InputField[],
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Output | Promise<$Output>;
 
 /**
  * Get all possible fields a field function MAY return. This is the
@@ -220,9 +220,7 @@ type FieldFunction<
  * that can be normalised into a bundle contribution object.
  */
 type FieldFunctionResult<
-  $Func extends (
-    ...args: never
-  ) => PlainInputField[] | Promise<PlainInputField[]>,
+  $Func extends (...args: never) => InputField[] | Promise<InputField[]>,
 > = Flatten<UnionToTuple<Awaited<ReturnType<$Func>>>>;
 
 /**
@@ -245,11 +243,9 @@ type FieldFunctionResult<
  * // }
  */
 type KnownFieldFunctionContribution<
-  $Func extends (
-    ...args: never
-  ) => PlainInputField[] | Promise<PlainInputField[]>,
+  $Func extends (...args: never) => InputField[] | Promise<InputField[]>,
 > =
-  FieldFunctionResult<$Func> extends PlainInputField[]
+  FieldFunctionResult<$Func> extends InputField[]
     ? Partial<PlainFieldArrayContribution<FieldFunctionResult<$Func>>>
     : never;
 
@@ -280,8 +276,8 @@ type KnownFieldFunctionContribution<
  */
 type FieldFunctionContribution<$F> = $F extends (
   ...args: never
-) => PlainInputField[] | Promise<PlainInputField[]>
-  ? Awaited<ReturnType<$F>> extends PlainInputField[]
+) => InputField[] | Promise<InputField[]>
+  ? Awaited<ReturnType<$F>> extends InputField[]
     ? JustArray<Awaited<ReturnType<$F>>> extends true
       ? Record<string, unknown> // Unknown fields
       : KnownFieldFunctionContribution<$F> // Known fields
@@ -301,28 +297,37 @@ type FieldFunctionContribution<$F> = $F extends (
  * Get the bundle contribution of a single field. This is either a plain
  * field, or a field function.
  */
-type InputShape<$Input extends InputField> = $Input extends PlainInputField
-  ? PlainFieldContribution<$Input>
-  : $Input extends (
-        ...args: never
-      ) => PlainInputField[] | Promise<PlainInputField[]> // Conditional field function
-    ? FieldFunctionContribution<$Input>
-    : never;
+type InputInputDataContribution<$Input extends DynamicInputField> =
+  $Input extends InputField
+    ? PlainFieldContribution<$Input>
+    : $Input extends (...args: never) => InputField[] | Promise<InputField[]> // Conditional field function
+      ? FieldFunctionContribution<$Input>
+      : never;
 
 /**
- * Get the bundle contributions of every field in an array, be it plain
- * or function inputs.
+ * Get the shape of bundle.inputData, given the array of input fields.
+ * This array can contain plain fields and field functions.
  */
-export type InputsShape<$Input extends readonly InputField[]> = Simplify<
-  Merge<[...{ [K in keyof $Input]: InputShape<$Input[K]> }]>
->;
+export type InferInputData<$InputFields extends readonly DynamicInputField[]> =
+  Simplify<
+    Merge<
+      [
+        ...{
+          [K in keyof $InputFields]: InputInputDataContribution<
+            $InputFields[K]
+          >;
+        },
+      ]
+    >
+  >;
 
 /**
  * Helper function to simplify declaring a function with a set of
  * existing input fields.
  */
-export type InputFieldFunctionWithInputs<$Inputs extends InputFieldArray = []> =
-  (
-    z: ZObject,
-    bundle: Bundle<InputsShape<$Inputs>>,
-  ) => PlainInputField[] | Promise<PlainInputField[]>;
+export type InputFieldFunctionWithInputs<
+  $Inputs extends DynamicInputFields = [],
+> = (
+  z: ZObject,
+  bundle: Bundle<InferInputData<$Inputs>>,
+) => InputField[] | Promise<InputField[]>;
