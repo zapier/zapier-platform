@@ -128,14 +128,39 @@ function addPreamble(file: SourceFile, options: CompilerOptions) {
 }
 
 function addImports(file: SourceFile) {
-  file.addImportDeclaration({
-    namedImports: [
-      'AfterResponseMiddleware',
-      'BeforeRequestMiddleware',
-      'PerformFunction',
-    ],
-    moduleSpecifier: './custom',
-    leadingTrivia: '\n',
-    isTypeOnly: true,
-  });
+  file.addImportDeclarations([
+    {
+      namedImports: [
+        'AfterResponseMiddleware',
+        'BeforeRequestMiddleware',
+        'PerformFunction',
+      ],
+      moduleSpecifier: './custom',
+      leadingTrivia: '\n',
+      isTypeOnly: true,
+    },
+    {
+      moduleSpecifier: './functions',
+      isTypeOnly: true,
+      namedImports: [
+        'PollingTriggerPerform',
+        'WebhookTriggerPerform',
+        'WebhookTriggerPerformList',
+        'WebhookTriggerPerformSubscribe',
+        'WebhookTriggerPerformUnsubscribe',
+        'HookToPollTriggerPerformList',
+        'HookToPollTriggerPerformSubscribe',
+        'HookToPollTriggerPerformUnsubscribe',
+        'CreatePerform',
+        'CreatePerformResume',
+        'CreatePerformGet',
+        'SearchPerform',
+        'SearchPerformGet',
+        'SearchPerformResume',
+        'OAuth2AuthorizeUrl',
+        'OAuth2GetAccessToken',
+        'OAuth2RefreshAccessToken',
+      ],
+    },
+  ]);
 }
