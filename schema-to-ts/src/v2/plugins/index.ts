@@ -3,15 +3,15 @@ import BeforeMiddlewarePPlugin from './propertyPlugins/beforeMiddlewarePPlugin.t
 import DynamicInputsPlugin from './dynamicInputsPlugin.ts';
 import InterfacePlugin from './interfacePlugin.ts';
 import PerformFunctionPlugin from './performFunctionPlugin.ts';
-import TypeArgsBasicPollingOperationPlugin from './TypeArgsBasicPollingOperationPlugin.ts';
-import TypeArgsTriggerPlugin from './TypeArgsAndSplitTriggersPlugin.ts';
+import TypeArgsOperationsPlugin from './TypeArgsOperationsPlugin.ts';
+import TypeArgsTriggerPlugin from './TypeArgsTriggerPlugin.ts';
 
 // Create new Top Level or Property plugins in this directory, and register
 // them here.
 
 export const TOP_LEVEL_PLUGINS = [
-  new TypeArgsBasicPollingOperationPlugin(),
   new TypeArgsTriggerPlugin(),
+  new TypeArgsOperationsPlugin(),
   new DynamicInputsPlugin(),
   new InterfacePlugin(),
   new PerformFunctionPlugin(),

@@ -78,6 +78,12 @@ export interface PropertyPluginContext extends CompilerContext {
    */
   iface: InterfaceDeclaration;
 
+  /**
+   * The path of the (parent interface) schema that is being rendered.
+   * In the format "/XyzSchema".
+   */
+  schemaPath: SchemaPath;
+
   /** Name of the parent interface that is being rendered. */
   interfaceName: string;
 
