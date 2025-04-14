@@ -218,19 +218,12 @@ function wrapFetchWithRelay(fetchFunc, relayUrl, relayHeaders) {
   };
 }
 
-const getLocalAppHandler = async ({
-  reload = false,
-  baseEvent = {},
-  appDir = null,
-  appId = null,
-  deployKey = null,
-  relayAuthenticationId = null,
-  beforeRequest = null,
-  afterResponse = null,
-  shouldDeleteWrapper = true,
-} = {}) => {
-  appDir = appDir || process.cwd();
-  const corePackageDir = findCorePackageDir();
+const loadAppRawESM = async (
+  appDir,
+  corePackageDir,
+  reload,
+  shouldDeleteWrapper,
+) => {
   const wrapperPath = await copyZapierWrapper(corePackageDir, appDir);
 
   // TODO: reload can't be done with import()?
@@ -238,7 +231,9 @@ const getLocalAppHandler = async ({
 
   let appRaw;
   try {
-    appRaw = await import(wrapperPath);
+    // zapierwrapper.mjs is only available since zapier-platform-core v17.
+    // And only zapierwrapper.mjs exposes appRaw just for this use case.
+    appRaw = (await import(wrapperPath)).appRaw;
   } catch (err) {
     if (err.name === 'SyntaxError') {
       // Run a separate process to print the line number of the SyntaxError.
@@ -254,6 +249,50 @@ const getLocalAppHandler = async ({
   } finally {
     if (shouldDeleteWrapper) {
       await deleteZapierWrapper(appDir);
+    }
+  }
+
+  return appRaw;
+};
+
+const loadAppRawCommonJs = (appDir, reload) => {
+  if (reload) {
+    for (const k of Object.keys(require.cache)) {
+      if (k.startsWith(appDir)) {
+        delete require.cache[k];
+      }
+    }
+  }
+  return require(appDir);
+};
+
+const getLocalAppHandler = async ({
+  reload = false,
+  appDir = null,
+  appId = null,
+  deployKey = null,
+  relayAuthenticationId = null,
+  beforeRequest = null,
+  afterResponse = null,
+  shouldDeleteWrapper = true,
+} = {}) => {
+  appDir = path.resolve(appDir || process.cwd());
+
+  const corePackageDir = findCorePackageDir();
+  let appRaw;
+  try {
+    appRaw = loadAppRawCommonJs(appDir, reload);
+  } catch (err) {
+    if (err.code === 'MODULE_NOT_FOUND' || err.code === 'ERR_REQUIRE_ESM') {
+      appRaw = await loadAppRawESM(
+        appDir,
+        corePackageDir,
+        reload,
+        shouldDeleteWrapper,
+      );
+    } else {
+      // err.name === 'SyntaxError' or others
+      throw err;
     }
   }
 
@@ -291,13 +330,13 @@ const getLocalAppHandler = async ({
     global.fetch = wrapFetchWithRelay(global.fetch, relayUrl, relayHeaders);
   }
 
+  // Assumes the entry point of zapier-platform-core is index.js
   const coreEntryPoint = path.join(corePackageDir, 'index.js');
   const zapier = (await import(coreEntryPoint)).default;
 
   const handler = zapier.createAppHandler(appRaw);
   return async (event, ctx) => {
     event = {
-      ...baseEvent, // TODO: Check if baseEvent is needed
       ...event,
       calledFromCli: true,
     };
