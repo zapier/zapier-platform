@@ -335,13 +335,25 @@ const getLocalAppHandler = async ({
   const zapier = (await import(coreEntryPoint)).default;
 
   const handler = zapier.createAppHandler(appRaw);
-  return async (event, ctx) => {
-    event = {
-      ...event,
-      calledFromCli: true,
+  if (handler.length === 3) {
+    // < v17: function handler(event, ctx, callback)
+    return (event, ctx, callback) => {
+      event = {
+        ...event,
+        calledFromCli: true,
+      };
+      return handler(event, ctx, callback);
     };
-    return await handler(event, ctx);
-  };
+  } else {
+    // >= v17: async function handler(event, ctx = {})
+    return async (event, ctx = {}) => {
+      event = {
+        ...event,
+        calledFromCli: true,
+      };
+      return await handler(event, ctx);
+    };
+  }
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
@@ -355,8 +367,26 @@ const localAppCommand = async (event, appDir, shouldDeleteWrapper = true) => {
     appDir,
     shouldDeleteWrapper,
   });
-  const response = await handler(event);
-  return response.results;
+  if (handler.length === 3) {
+    // < 17: function handler(event, ctx, callback)
+    return new Promise((resolve, reject) => {
+      event = {
+        ...event,
+        calledFromCli: true,
+      };
+      handler(event, {}, (err, response) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(response.results);
+        }
+      });
+    });
+  } else {
+    // >= 17: async function handler(event, ctx = {})
+    const response = await handler(event);
+    return response.results;
+  }
 };
 
 module.exports = {
