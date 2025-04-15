@@ -669,9 +669,9 @@
         }
       }
     },
-    "InputFieldSchema": {
+    "PlainInputFieldSchema": {
       "description": "Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
-      "id": "/InputFieldSchema",
+      "id": "/PlainInputFieldSchema",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -717,7 +717,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/InputFieldSchema"
+            "$ref": "/PlainInputFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -872,7 +872,7 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "/InputFieldSchema"
+            "$ref": "/PlainInputFieldSchema"
           },
           {
             "$ref": "/FunctionSchema"

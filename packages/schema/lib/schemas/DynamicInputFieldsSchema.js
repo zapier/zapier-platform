@@ -2,7 +2,7 @@
 
 const makeSchema = require('../utils/makeSchema');
 
-const InputFieldSchema = require('./InputFieldSchema');
+const PlainInputFieldSchema = require('./PlainInputFieldSchema');
 const FunctionSchema = require('./FunctionSchema');
 
 module.exports = makeSchema(
@@ -11,10 +11,10 @@ module.exports = makeSchema(
     description: 'An array or collection of input fields.',
     type: 'array',
     items: {
-      oneOf: [{ $ref: InputFieldSchema.id }, { $ref: FunctionSchema.id }],
+      oneOf: [{ $ref: PlainInputFieldSchema.id }, { $ref: FunctionSchema.id }],
     },
     examples: [[{ key: 'abc' }]],
     antiExamples: [{ example: {}, reason: 'Must be an array' }],
   },
-  [InputFieldSchema, FunctionSchema],
+  [PlainInputFieldSchema, FunctionSchema],
 );
