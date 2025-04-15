@@ -1580,6 +1580,72 @@
       },
       "additionalProperties": false
     },
+    "BasicSearchOperationSchema": {
+      "id": "/BasicSearchOperationSchema",
+      "description": "Represents the fundamental mechanics of a search.",
+      "type": "object",
+      "required": ["perform"],
+      "properties": {
+        "resource": {
+          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "$ref": "/KeySchema"
+        },
+        "perform": {
+          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "performResume": {
+          "description": "A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.",
+          "$ref": "/FunctionSchema"
+        },
+        "performGet": {
+          "description": "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "inputFields": {
+          "description": "What should the form a user sees and configures look like?",
+          "$ref": "/InputFieldsSchema"
+        },
+        "outputFields": {
+          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "$ref": "/OutputFieldsSchema"
+        },
+        "sample": {
+          "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
+          "type": "object",
+          "minProperties": 1,
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "**yes** (with exceptions, see description)"
+            }
+          }
+        },
+        "lock": {
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
+          "$ref": "/LockObjectSchema"
+        },
+        "throttle": {
+          "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+          "$ref": "/ThrottleObjectSchema"
+        }
+      },
+      "additionalProperties": false
+    },
     "SearchSchema": {
       "id": "/SearchSchema",
       "description": "How will Zapier search for existing objects?",
@@ -1602,7 +1668,7 @@
         },
         "operation": {
           "description": "Powers the functionality for this search.",
-          "$ref": "/BasicActionOperationSchema"
+          "$ref": "/BasicSearchOperationSchema"
         }
       },
       "additionalProperties": false
