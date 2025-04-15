@@ -1,7 +1,7 @@
+import { idToTypeName, logger } from './utils.ts';
+
 import type { JSONSchema4 } from 'json-schema';
 import type { SchemaPath } from './types.ts';
-import { idToTypeName } from './helpers.ts';
-import { logger } from '../utils.ts';
 
 type RenderResult = {
   /**
@@ -44,11 +44,9 @@ export default function renderType(schema: JSONSchema4): RenderResult {
   if (schema.type === 'object') {
     return renderObjectType(schema);
   }
-
   if (schema.type === 'array') {
     return renderArrayType(schema);
   }
-
   if (schema.oneOf) {
     return renderOneOfType(schema);
   }

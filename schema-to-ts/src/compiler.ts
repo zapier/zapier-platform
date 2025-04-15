@@ -1,95 +1,263 @@
 import type {
+  AddPropertyContext,
+  CompilerContext,
   CompilerOptions,
-  RawSchemaLookup,
-  ZapierSchemaDocument,
-} from './types.js';
-import { existsSync, readFileSync } from 'fs';
+  SchemaPath,
+  VersionInfo,
+} from './types.ts';
+import { IMPORTS, INTERFACE_OVERRIDES, TYPE_OVERRIDES } from './constants.ts';
+import { Project, SourceFile } from 'ts-morph';
+import { idToTypeName, refToSchemaName } from './utils.ts';
 
-import { applyAllTransformations } from './transformers.js';
-import { compileNodesFromSchemas } from './precompile.js';
-import { format } from './formatter.js';
-import { generateTypeScript } from './generation.js';
-import { logger } from './utils.js';
+import type { JSONSchema4 } from 'json-schema';
+import Statistics from './statistics.ts';
+import { docStringLines } from './comments.ts';
+import { format } from './formatter.ts';
+import fs from 'node:fs';
+import { logger } from './utils.ts';
+import renderType from './renderType.ts';
 
-/**
- * The top-level interface for converting a collection of schemas into
- * TypeScript code.
- *
- * @remarks
- * This function does not handle reading the schemas from
- * `exported-schema.json`, nor does it output to a file on disk. Other
- * functions and the CLI code itself handles that.
- */
-export const compile = async (
-  schemas: RawSchemaLookup,
-  options: CompilerOptions,
-): Promise<string> => {
-  // Compile the schemas into a collection of AST nodes to work with.
-  // There is one node for each schema at this stage, and they are in a
-  // format that we still want to improve, as the
-  // json-schema-to-typescript library does most of the work but has
-  // some undesirable results.
-  logger.debug('Generating pre-compiled node map');
-  const nodeMap = await compileNodesFromSchemas(schemas);
-  logger.info({ nodes: nodeMap.size }, 'Generated pre-compiled node map');
-
-  // "Transform" the compiled schemas from a raw AST format into more
-  // usable nodes. This is where we cleanup comments, add links to the
-  // public docs, and add references to the pre-existing
-  // zapier-platform-core types.
-  logger.debug('Applying transformations to node map');
-  const improvedNodeMap = applyAllTransformations(nodeMap, options);
-  logger.info(
-    { nodes: improvedNodeMap.size },
-    'Applied all transformations to node map',
+export async function compileV3(options: CompilerOptions) {
+  const { version, schemas } = JSON.parse(
+    fs.readFileSync(options.schemaJson!, 'utf8'),
   );
+  logger.info({ version }, 'Loaded %d schemas', Object.keys(schemas).length);
 
-  // Convert the nodes into a string containing real TypeScript code.
-  logger.debug('Generating TypeScript from transformed node map');
-  const rawTypeScript = generateTypeScript(improvedNodeMap);
-  logger.info({ length: rawTypeScript.length }, 'Generated raw TypeScript');
+  const project = new Project();
+  const file = project.createSourceFile('dummy-value.ts');
 
-  // Format the TypeScript with Prettier before writing it to a file.
-  // Necessary because the code-generation step is rather messy.
-  logger.debug('Formatting generated TypeScript with Prettier');
-  const typescript = await format(rawTypeScript);
-  logger.info(
-    { length: typescript.length },
-    'Formatted generated TypeScript with Prettier',
-  );
+  addPreamble(file, {
+    compilerVersion: options.compilerVersion,
+    platformVersion: version,
+  });
+  addImports(file);
 
-  return typescript;
-};
+  const ctx: CompilerContext = {
+    file,
+    schemas,
+    schemasToRender: ['/AppSchema'], // "Entrypoint" schema. More will get added.
+    renderedSchemas: new Set(),
+    stats: new Statistics(),
+  };
 
-export const loadExportedSchemas = (
-  schemaJsonPath: string,
-): ZapierSchemaDocument => {
-  if (!existsSync(schemaJsonPath)) {
-    logger.fatal(
-      { schemaJsonPath },
-      'Schema-json file does not exist, aborting',
-    );
-    throw new Error(`Schema-json file does not exist: ${schemaJsonPath}`);
-  } else {
-    logger.info(
-      { schemaJsonPath },
-      'Successfully found schema-json file to compile.',
-    );
+  while (ctx.schemasToRender.length > 0) {
+    const schemaName = ctx.schemasToRender.shift()!;
+    addTopLevelType(ctx, schemaName);
   }
 
-  const { version, schemas } = JSON.parse(
-    readFileSync(schemaJsonPath, 'utf-8'),
+  // Done! Format it with prettier and write it to the output file.
+  const rawTypeScript = file.getFullText();
+  const formatted = await format(rawTypeScript);
+  fs.writeFileSync(options.output!, formatted);
+  logger.info({ output: options.output }, 'Wrote generated TypeScript to file');
+  reportStatistics(ctx);
+}
+
+function reportStatistics(ctx: CompilerContext) {
+  const unusedTypeOverrides = ctx.stats.findUnusedTypeOverrides(TYPE_OVERRIDES);
+  if (unusedTypeOverrides.length > 0) {
+    logger.warn({ unused: unusedTypeOverrides }, 'Unused type overrides');
+  } else {
+    logger.info('All type overrides were used');
+  }
+
+  const unusedInterfaceSelfOverrides =
+    ctx.stats.findUnusedInterfaceSelfOverrides(INTERFACE_OVERRIDES);
+  if (unusedInterfaceSelfOverrides.length > 0) {
+    logger.warn(
+      { unused: unusedInterfaceSelfOverrides },
+      'Unused interface signature overrides',
+    );
+  } else {
+    logger.info('All interface signature overrides were used');
+  }
+
+  const unusedInterfacePropertyOverrides =
+    ctx.stats.findUnusedInterfacePropertyOverrides(INTERFACE_OVERRIDES);
+  if (unusedInterfacePropertyOverrides.length > 0) {
+    logger.warn(
+      { unused: unusedInterfacePropertyOverrides },
+      'Unused interface property overrides',
+    );
+  } else {
+    logger.info('All interface property overrides were used');
+  }
+}
+
+function addPreamble(file: SourceFile, options: VersionInfo) {
+  logger.debug({ options }, 'Adding preamble to file');
+  const preamble = `/**
+* This file was automatically generated by Zapier's schema-to-ts tool.
+* DO NOT MODIFY IT BY HAND. Instead, modify the source JSON Schema
+* files, and/or the schema-to-ts tool and run its CLI to regenerate
+* these typings.
+* 
+* zapier-platform-schema version: ${options.platformVersion}
+*  schema-to-ts compiler version: ${options.compilerVersion}
+*/`;
+  file.insertText(0, (writer) => writer.writeLine(preamble));
+}
+
+function addImports(file: SourceFile) {
+  logger.debug(
+    { modules: IMPORTS.map((i) => i.moduleSpecifier) },
+    'Adding %d import sections to file',
+    IMPORTS.length,
   );
-  logger.info(
-    {
-      schemaJsonPath,
-      version,
-      numRawSchemas: Object.keys(schemas).length,
-    },
-    'Loaded %d raw JsonSchemas from zapier-platform-schemas v%s to compile',
-    Object.keys(schemas).length,
-    version,
+  file.addImportDeclarations(IMPORTS);
+}
+
+function addTopLevelType(ctx: CompilerContext, schemaPath: SchemaPath) {
+  const schema = ctx.schemas[refToSchemaName(schemaPath)];
+  if (!schema) {
+    logger.fatal({ schemaPath }, 'Top-level schema not found');
+    throw new Error(`Top-level schema not found: ${schemaPath}`);
+  }
+
+  // Skip if we've already added this type.
+  if (ctx.renderedSchemas.has(schemaPath)) {
+    logger.trace('Skipping already rendered top-level type %s', schemaPath);
+    return;
+  }
+  ctx.renderedSchemas.add(schemaPath);
+
+  if (isInterface(schema)) {
+    addInterface(ctx, schemaPath);
+  } else {
+    addType(ctx, schemaPath);
+  }
+}
+
+/**
+ * Detect if a schema should be rendered as an interface. Otherwise a
+ * plain type will be created.
+ */
+function isInterface(schema: JSONSchema4) {
+  return (
+    typeof schema === 'object' &&
+    schema !== null &&
+    'type' in schema &&
+    schema.type === 'object' &&
+    'properties' in schema
+  );
+}
+
+function addType(ctx: CompilerContext, schemaPath: SchemaPath) {
+  const typeName = idToTypeName(schemaPath);
+  const schema = ctx.schemas[refToSchemaName(schemaPath)];
+  if (!schema) {
+    logger.fatal({ schemaPath }, 'Top-level schema not found');
+    throw new Error(`Top-level schema not found: ${schemaPath}`);
+  }
+
+  const override = TYPE_OVERRIDES[schemaPath];
+  if (override) {
+    ctx.stats.incTypeOverride(schemaPath);
+  }
+
+  if (typeof override === 'function') {
+    logger.debug({ typeName }, "Type '%s': using override function", typeName);
+    override({
+      compilerCtx: ctx,
+      file: ctx.file,
+      typeName,
+      schemaPath,
+      schema,
+    });
+    return;
+  }
+  logger.debug(
+    { typeName, override },
+    "Adding default type '%s' %s",
+    typeName,
+    override ? 'WITH OVERRIDES' : '',
   );
 
-  return { version, schemas };
-};
+  const { rawType, referencedTypes } = renderType(schema);
+  if (referencedTypes) {
+    ctx.schemasToRender.push(...referencedTypes);
+  }
+
+  ctx.file.addTypeAlias({
+    name: typeName,
+    isExported: true,
+    docs: docStringLines(schema.description),
+    type: rawType,
+    leadingTrivia: '\n',
+    ...override,
+  });
+}
+
+function addInterface(ctx: CompilerContext, schemaPath: SchemaPath) {
+  const schema = ctx.schemas[refToSchemaName(schemaPath)];
+  if (!schema) {
+    logger.fatal({ schemaPath }, 'Top-level schema not found');
+    throw new Error(`Top-level schema not found: ${schemaPath}`);
+  }
+
+  const overrides = INTERFACE_OVERRIDES[schemaPath]?.self;
+  if (overrides) {
+    ctx.stats.incInterfaceSelfOverride(schemaPath);
+  }
+
+  logger.debug(
+    { schemaPath, overrides },
+    "Adding interface '%s' %s",
+    schemaPath,
+    overrides ? 'WITH OVERRIDES' : '',
+  );
+
+  const iface = ctx.file.addInterface({
+    name: idToTypeName(schemaPath),
+    isExported: true,
+    docs: docStringLines(schema.description),
+    ...overrides,
+  });
+
+  const requiredProperties = Array.isArray(schema.required)
+    ? schema.required
+    : [];
+
+  Object.entries(schema.properties ?? {}).forEach(([key, value]) => {
+    addInterfaceProperty({
+      compilerCtx: ctx,
+      iface,
+      schemaPath,
+      key,
+      value,
+      isRequired: requiredProperties.includes(key),
+    });
+  });
+}
+
+function addInterfaceProperty(ctx: AddPropertyContext) {
+  const { compilerCtx, iface, schemaPath, key, value, isRequired } = ctx;
+  let override = INTERFACE_OVERRIDES[schemaPath]?.properties?.[key];
+
+  if (override) {
+    compilerCtx.stats.incInterfacePropertyOverride(schemaPath, key);
+  }
+
+  if (typeof override === 'function') {
+    override(ctx);
+    return;
+  }
+
+  if (typeof override === 'string') {
+    override = { type: override };
+  }
+
+  const { rawType, referencedTypes } = renderType(value);
+  if (referencedTypes) {
+    compilerCtx.schemasToRender.push(...referencedTypes);
+  }
+
+  iface.addProperty({
+    name: key,
+    type: rawType,
+    docs: docStringLines(value.description),
+    hasQuestionToken: !isRequired,
+    leadingTrivia: '\n',
+    ...override,
+  });
+}

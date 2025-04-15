@@ -6,23 +6,20 @@
 // "plain" fields, or functions that return arrays of plain fields, sync
 // or async.
 
-import type {
-  InputsShape,
-  InputFieldArray,
-  PlainInputField,
-  InputFieldFunctionWithInputs,
-} from './inputs';
+import type { InferInputData, InputFieldFunctionWithInputs } from './inputs';
+import type { DynamicInputFields } from './schemas.generated';
+
 import { expectAssignable, expectType } from 'tsd';
 
 //
 // Test for when `type` is not set, the field defaults to `string`.
 const defaultStringInputs = [
   { key: 'default_string' },
-] as const satisfies InputFieldArray;
-const defaultStringResult1: InputsShape<typeof defaultStringInputs> = {
+] as const satisfies DynamicInputFields;
+const defaultStringResult1: InferInputData<typeof defaultStringInputs> = {
   default_string: 'a',
 };
-const defaultStringResult2: InputsShape<typeof defaultStringInputs> = {
+const defaultStringResult2: InferInputData<typeof defaultStringInputs> = {
   default_string: undefined,
 };
 expectAssignable<{ default_string?: string }>(defaultStringResult1);
@@ -34,9 +31,9 @@ const requiredComboInputs = [
   { key: 'required_true', required: true },
   { key: 'required_false', required: false },
   { key: 'required_omitted' }, // Will also be optional.
-] as const satisfies InputFieldArray;
+] as const satisfies DynamicInputFields;
 
-const requiredComboResult1: InputsShape<typeof requiredComboInputs> = {
+const requiredComboResult1: InferInputData<typeof requiredComboInputs> = {
   required_true: 'a',
   required_omitted: 'b',
 };
@@ -58,8 +55,8 @@ const typeComboInputs = [
   { key: 'boolean_type', type: 'boolean', required: true },
   { key: 'datetime_type', type: 'datetime', required: true },
   { key: 'file_type', type: 'file', required: true },
-] as const satisfies InputFieldArray;
-const typeComboResult: InputsShape<typeof typeComboInputs> = {
+] as const satisfies DynamicInputFields;
+const typeComboResult: InferInputData<typeof typeComboInputs> = {
   string_type: 'a',
   text_type: 'b',
   password_type: 'c',
@@ -88,8 +85,8 @@ const copyComboInputs = [
   { key: 'copy_type', type: 'copy' },
   { key: 'copy_type_required', type: 'copy', required: true },
   { key: 'copy_type_not_required', type: 'copy', required: false },
-] as const satisfies InputFieldArray;
-const copyComboResult: InputsShape<typeof copyComboInputs> = {};
+] as const satisfies DynamicInputFields;
+const copyComboResult: InferInputData<typeof copyComboInputs> = {};
 expectType<{}>(copyComboResult);
 
 //
@@ -104,9 +101,9 @@ const knownFieldFunctionInputs = [
       { key: 'ff_required', type: 'string', required: true },
       { key: 'ff_optional', type: 'string', required: false },
       { key: 'ff_omitted', type: 'string' },
-    ] as const satisfies InputFieldArray,
-] as const satisfies InputFieldArray;
-const fieldFunctionResult: InputsShape<typeof knownFieldFunctionInputs> = {
+    ] as const satisfies DynamicInputFields,
+] as const satisfies DynamicInputFields;
+const fieldFunctionResult: InferInputData<typeof knownFieldFunctionInputs> = {
   ff_required: 'a',
   ff_optional: 'b',
   ff_omitted: 'c',
@@ -125,9 +122,9 @@ const knownFieldFunctionAsyncInputs = [
       { key: 'ff_required', type: 'string', required: true },
       { key: 'ff_optional', type: 'string', required: false },
       { key: 'ff_omitted', type: 'string' },
-    ] as const satisfies InputFieldArray,
-] as const satisfies InputFieldArray;
-const knownFieldFunctionAsyncResult: InputsShape<
+    ] as const satisfies DynamicInputFields,
+] as const satisfies DynamicInputFields;
+const knownFieldFunctionAsyncResult: InferInputData<
   typeof knownFieldFunctionAsyncInputs
 > = {
   ff_required: 'a',
@@ -148,14 +145,14 @@ const unionOfFunctionResultInputs = [
     if (Math.random() > 0.5) {
       return [
         { key: 'ff_a', type: 'string', required: true },
-      ] as const satisfies InputFieldArray;
+      ] as const satisfies DynamicInputFields;
     }
     return [
       { key: 'ff_b', type: 'string', required: false },
-    ] as const satisfies InputFieldArray;
+    ] as const satisfies DynamicInputFields;
   },
-] as const satisfies InputFieldArray;
-const unionOfFunctionResultInputsResult: InputsShape<
+] as const satisfies DynamicInputFields;
+const unionOfFunctionResultInputsResult: InferInputData<
   typeof unionOfFunctionResultInputs
 > = {
   ff_a: 'a',
@@ -173,14 +170,14 @@ const unionOfFunctionResultAsyncInputs = [
     if (Math.random() > 0.5) {
       return [
         { key: 'ff_a', type: 'string', required: true },
-      ] as const satisfies InputFieldArray;
+      ] as const satisfies DynamicInputFields;
     }
     return [
       { key: 'ff_b', type: 'string', required: false },
-    ] as const satisfies InputFieldArray;
+    ] as const satisfies DynamicInputFields;
   },
-] as const satisfies InputFieldArray;
-const unionOfFunctionResultAsyncResult: InputsShape<
+] as const satisfies DynamicInputFields;
+const unionOfFunctionResultAsyncResult: InferInputData<
   typeof unionOfFunctionResultAsyncInputs
 > = {
   ff_a: 'a',
@@ -197,10 +194,10 @@ expectType<{
 const unknownFieldFunctionInputs = [
   () => {
     // E.g. Fetch fields from an API
-    return [] as PlainInputField[];
+    return [] as Input[];
   },
-] as const satisfies InputFieldArray;
-const unknownFieldFunctionResult: InputsShape<
+] as const satisfies DynamicInputFields;
+const unknownFieldFunctionResult: InferInputData<
   typeof unknownFieldFunctionInputs
 > = {};
 expectType<Record<string, unknown>>(unknownFieldFunctionResult);
@@ -210,10 +207,10 @@ expectType<Record<string, unknown>>(unknownFieldFunctionResult);
 const unknownFieldFunctionAsyncInputs = [
   async () => {
     // E.g. Fetch fields from an API
-    return [] as PlainInputField[];
+    return [] as Input[];
   },
-] as const satisfies InputFieldArray;
-const unknownFieldFunctionAsyncResult: InputsShape<
+] as const satisfies DynamicInputFields;
+const unknownFieldFunctionAsyncResult: InferInputData<
   typeof unknownFieldFunctionAsyncInputs
 > = {};
 expectType<Record<string, unknown>>(unknownFieldFunctionAsyncResult);
@@ -229,7 +226,7 @@ const basicFields = [
   { key: 'boolean_field', type: 'boolean', required: true },
   { key: 'optional_field', type: 'string', required: false },
   { key: 'omitted_field', type: 'string' },
-] as const satisfies InputFieldArray;
+] as const satisfies DynamicInputFields;
 
 const dynamicField = ((z, bundle) => {
   expectType<{
@@ -241,15 +238,15 @@ const dynamicField = ((z, bundle) => {
   }>(bundle.inputData);
   return [
     { key: 'dynamic_field', type: 'string', required: true },
-  ] as const satisfies InputFieldArray;
+  ] as const satisfies DynamicInputFields;
 }) satisfies InputFieldFunctionWithInputs<typeof basicFields>;
 
 const allFields = [
   ...basicFields,
   dynamicField,
-] as const satisfies InputFieldArray;
+] as const satisfies DynamicInputFields;
 
-const allFieldsResult: InputsShape<typeof allFields> = {
+const allFieldsResult: InferInputData<typeof allFields> = {
   string_field: 'a',
   number_field: 1,
   boolean_field: true,

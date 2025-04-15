@@ -1,6 +1,17 @@
+import type { SchemaPath, ZapierSchemaDocument } from './types.ts';
+
+import { existsSync } from 'fs';
 import { pino } from 'pino';
+import { readFileSync } from 'fs';
 
 const logLevel = process.env.LOG_LEVEL?.toLowerCase() ?? 'info';
+
+export function idToTypeName(name: string) {
+  return name.replace(/^\/?/, '').replace(/Schema$/, '');
+}
+export function refToSchemaName(name: SchemaPath) {
+  return name.replace(/^\/?/, '');
+}
 
 export const logger = pino({
   level: logLevel,
@@ -13,19 +24,35 @@ export const logger = pino({
   },
 });
 
-/**
- * Convert a raw schemas name to a pretty version, dropping suffix
- * numbers and the "Schema" suffix.
- */
-export const prettyName = (name: string) =>
-  name.replace(/\d+$/, '').replace(/Schema$/, '');
+export const loadExportedSchemas = (
+  schemaJsonPath: string,
+): ZapierSchemaDocument => {
+  if (!existsSync(schemaJsonPath)) {
+    logger.fatal(
+      { schemaJsonPath },
+      'Schema-json file does not exist, aborting',
+    );
+    throw new Error(`Schema-json file does not exist: ${schemaJsonPath}`);
+  } else {
+    logger.info(
+      { schemaJsonPath },
+      'Successfully found schema-json file to compile.',
+    );
+  }
 
-/**
- * Maps in JS are ordered, but you can't insert at the start. This is a
- * helper that cheats by creating a new map with the new item first.
- */
-export const insertAtFront = <K, V>(
-  map: Map<K, V>,
-  key: K,
-  value: V,
-): Map<K, V> => new Map([[key, value], ...Array.from(map.entries())]);
+  const { version, schemas } = JSON.parse(
+    readFileSync(schemaJsonPath, 'utf-8'),
+  );
+  logger.info(
+    {
+      schemaJsonPath,
+      version,
+      numRawSchemas: Object.keys(schemas).length,
+    },
+    'Loaded %d raw JsonSchemas from zapier-platform-schemas v%s to compile',
+    Object.keys(schemas).length,
+    version,
+  );
+
+  return { version, schemas };
+};

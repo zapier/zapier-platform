@@ -1,15 +1,13 @@
 import { Command, Option } from '@commander-js/extra-typings';
-import { compile, loadExportedSchemas } from './compiler.js';
 
 import type { CompilerOptions } from './types.js';
-import { compileV2 } from './v2/compiler.ts';
+import { compileV3 } from './compiler.ts';
 import { logger } from './utils.js';
-import { writeFileSync } from 'fs';
 
 const program = new Command()
-  .name(process.env.npm_package_name!)
-  .version(process.env.npm_package_version!)
-  .description(process.env.npm_package_description!)
+  .name(process.env.npm_package_name ?? 'unknown')
+  .version(process.env.npm_package_version ?? 'unknown')
+  .description(process.env.npm_package_description ?? 'unknown')
   .addOption(
     new Option('-l, --log-level <level>')
       .choices(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
@@ -25,20 +23,10 @@ const program = new Command()
     '-o, --output <file>',
     'The file to write the generated TypeScript to. Typically intended to be put in ../core/types as a generated module.',
     '../core/types/schemas.generated.d.ts',
-  )
-  .option(
-    '--skip-patch-perform-function',
-    'If to skip augmenting the `Function` type with an actual function signature, because raw JSON schema cannot provide the code-level function details. If true, outputs are close 1-1 interfaces for each schema.',
-    false,
-  )
-  .option(
-    '--platform-core-custom-import <path>',
-    'What import path to use for the custom `PerformFunction` tpe. Defaults to its sibling custom types module in platform-core, but can be overridden to `zapier-platform-core` for example.',
-    './custom',
-  )
-  .option('--v2', 'Use experimental compiler');
+  );
 
 const main = async () => {
+  const startTime = performance.now();
   program.parse();
   const options = program.opts();
   if (options.logLevel) {
@@ -46,33 +34,17 @@ const main = async () => {
   }
   logger.debug({ options }, 'Parsed CLI options');
 
-  // Load the schema JSON file. The `zapier-platform-schema` package
-  // has an `exported-schema.json` file of all the schemas we want to
-  // compile.
-  const { version, schemas } = loadExportedSchemas(options.schemaJson);
-
   const compilerOptions: CompilerOptions = {
     ...options,
     compilerVersion: process.env.npm_package_version!,
-    platformVersion: version,
   };
   logger.debug({ compilerOptions }, 'Finalised compiler options');
 
-  if (options.v2) {
-    logger.info('Using experimental compiler');
-    await compileV2(compilerOptions);
-    return;
-  }
-
-  // Actually compile the schemas into TypeScript!
-  const typescript = await compile(schemas, compilerOptions);
-
-  // Write it to a real file. Defaults to writing it straight to the
-  // ../core/types/ directory as `schemas.generated.d.ts`.
-  writeFileSync(options.output!, typescript);
-  logger.info({ output: options.output }, 'Wrote generated TypeScript to file');
-
-  logger.info('Done!');
+  logger.info('Using V3 compiler');
+  await compileV3(compilerOptions);
+  const endTime = performance.now();
+  logger.info('Compilation took %d ms', Math.round(endTime - startTime));
+  return;
 };
 
 await main();

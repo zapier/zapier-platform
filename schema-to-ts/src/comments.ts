@@ -48,3 +48,14 @@ const isSolitaryLink = (
   token.type === 'paragraph' &&
   token.tokens?.length === 1 &&
   token.tokens[0]?.type === 'link';
+
+export function docStringLines(
+  comment: string | undefined,
+  trailingContent?: string,
+): string[] | undefined {
+  if (comment === undefined) {
+    return undefined;
+  }
+  const tokens = lexer(comment);
+  return [reflowLines(tokens).join('\n') + (trailingContent ?? '')];
+}
