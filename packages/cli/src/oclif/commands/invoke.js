@@ -13,7 +13,7 @@ const { DateTime, IANAZone } = require('luxon');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { localAppCommand, getLocalAppHandler } = require('../../utils/local');
+const { localAppCommand } = require('../../utils/local');
 const { startSpinner, endSpinner } = require('../../utils/display');
 const {
   getLinkedAppConfig,
@@ -510,10 +510,6 @@ class InvokeCommand extends BaseCommand {
     }
 
     if (!_.isEmpty(env)) {
-      // process.env changed, so we need to reload the modules that have loaded
-      // the old values of process.env
-      await getLocalAppHandler({ reload: true });
-
       // Save envs so the user won't have to re-enter them if the command fails
       await appendEnv(env);
       console.warn('CLIENT_ID and CLIENT_SECRET saved to .env file.');

@@ -218,17 +218,12 @@ function wrapFetchWithRelay(fetchFunc, relayUrl, relayHeaders) {
   };
 }
 
-const loadAppRawESM = async (
+const loadAppRawUsingImport = async (
   appDir,
   corePackageDir,
-  reload,
   shouldDeleteWrapper,
 ) => {
   const wrapperPath = await copyZapierWrapper(corePackageDir, appDir);
-
-  // TODO: reload can't be done with import()?
-  // https://github.com/nodejs/node/issues/49442
-
   let appRaw;
   try {
     // zapierwrapper.mjs is only available since zapier-platform-core v17.
@@ -255,19 +250,18 @@ const loadAppRawESM = async (
   return appRaw;
 };
 
-const loadAppRawCommonJs = (appDir, reload) => {
-  if (reload) {
-    for (const k of Object.keys(require.cache)) {
-      if (k.startsWith(appDir)) {
-        delete require.cache[k];
-      }
-    }
+const loadAppRawUsingRequire = (appDir) => {
+  let appRaw = require(appDir);
+  if (appRaw && appRaw.default) {
+    // Node.js 22+ supports using require() to import ESM.
+    // For Node.js < 20.17.0, require() will throw an error on ESM.
+    // https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require
+    appRaw = appRaw.default;
   }
-  return require(appDir);
+  return appRaw;
 };
 
 const getLocalAppHandler = async ({
-  reload = false,
   appDir = null,
   appId = null,
   deployKey = null,
@@ -281,13 +275,12 @@ const getLocalAppHandler = async ({
   const corePackageDir = findCorePackageDir();
   let appRaw;
   try {
-    appRaw = loadAppRawCommonJs(appDir, reload);
+    appRaw = loadAppRawUsingRequire(appDir);
   } catch (err) {
     if (err.code === 'MODULE_NOT_FOUND' || err.code === 'ERR_REQUIRE_ESM') {
-      appRaw = await loadAppRawESM(
+      appRaw = await loadAppRawUsingImport(
         appDir,
         corePackageDir,
-        reload,
         shouldDeleteWrapper,
       );
     } else {
@@ -390,6 +383,5 @@ const localAppCommand = async (event, appDir, shouldDeleteWrapper = true) => {
 };
 
 module.exports = {
-  getLocalAppHandler,
   localAppCommand,
 };
