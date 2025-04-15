@@ -220,8 +220,8 @@
         }
       ]
     },
-    "FieldSchema": {
-      "id": "/FieldSchema",
+    "PlainFieldSchema": {
+      "id": "/PlainFieldSchema",
       "description": "In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "type": "object",
       "required": ["key"],
@@ -271,7 +271,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/FieldSchema"
+            "$ref": "/PlainFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -775,9 +775,9 @@
       },
       "additionalProperties": false
     },
-    "OutputFieldSchema": {
+    "PlainOutputFieldSchema": {
       "description": "Field schema specialized for output fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
-      "id": "/OutputFieldSchema",
+      "id": "/PlainOutputFieldSchema",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -819,7 +819,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/OutputFieldSchema"
+            "$ref": "/PlainOutputFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -887,7 +887,7 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "/OutputFieldSchema"
+            "$ref": "/PlainOutputFieldSchema"
           },
           {
             "$ref": "/FunctionSchema"

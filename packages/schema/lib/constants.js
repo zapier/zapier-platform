@@ -4,7 +4,7 @@ module.exports = {
   DOC_URL_TEMPLATE:
     'https://platform.zapier.com/cli_docs/schema<%= anchor %>@<%= version %>',
   SKIP_KEY: '_skipTest',
-  // the following pairs of keys can't be used together in FieldSchema
+  // the following pairs of keys can't be used together in PlainFieldSchema
   // they're stored here because they're used in a few places
   INCOMPATIBLE_FIELD_SCHEMA_KEYS: [
     ['children', 'list'], // This is actually a Feature Request (https://github.com/zapier/zapier-platform-cli/issues/115)

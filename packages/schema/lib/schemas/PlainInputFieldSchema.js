@@ -5,17 +5,17 @@ const RequestSchema = require('./RequestSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
-const FieldSchema = require('./FieldSchema');
+const PlainFieldSchema = require('./PlainFieldSchema');
 const FieldMetaSchema = require('./FieldMetaSchema');
 
 module.exports = makeSchema(
   {
-    description: `Field schema specialized for input fields. ${FieldSchema.schema.description}`,
+    description: `Field schema specialized for input fields. ${PlainFieldSchema.schema.description}`,
     id: '/PlainInputFieldSchema',
     type: 'object',
     required: ['key'],
     properties: {
-      ...FieldSchema.schema.properties,
+      ...PlainFieldSchema.schema.properties,
       children: {
         type: 'array',
         items: { $ref: '/PlainInputFieldSchema' },
@@ -137,7 +137,7 @@ module.exports = makeSchema(
     RefResourceSchema,
     FieldChoicesSchema,
     FieldMetaSchema,
-    FieldSchema,
+    PlainFieldSchema,
     RequestSchema,
     FunctionSchema,
   ],

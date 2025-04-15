@@ -14,7 +14,7 @@ const incompatibleFieldsList =
   INCOMPATIBLE_FIELD_SCHEMA_KEYS.map(formatBullet).join('\n');
 
 module.exports = makeSchema({
-  id: '/FieldSchema',
+  id: '/PlainFieldSchema',
   description: `In addition to the requirements below, the following keys are mutually exclusive:\n\n${incompatibleFieldsList}`,
   type: 'object',
   required: ['key'],
@@ -69,7 +69,7 @@ module.exports = makeSchema({
     },
     children: {
       type: 'array',
-      items: { $ref: '/FieldSchema' },
+      items: { $ref: '/PlainFieldSchema' },
       description:
         'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
       minItems: 1,
@@ -92,7 +92,7 @@ module.exports = makeSchema({
     // 4. Has a default
     { key: 'abc_default', default: 'some default' },
 
-    // 5. Children array referencing FieldSchema
+    // 5. Children array referencing PlainFieldSchema
     { key: 'parent', children: [{ key: 'child' }] },
 
     // 6. A field with type=integer
@@ -129,10 +129,10 @@ module.exports = makeSchema({
         'Invalid value for key: children (array must have at least 1 item)',
     },
     {
-      // children must be objects that match the FieldSchema
+      // children must be objects that match the PlainFieldSchema
       example: { key: 'abc', children: ['$func$2$f$'] },
       reason:
-        'Invalid value for key: children (each item must be a valid FieldSchema object)',
+        'Invalid value for key: children (each item must be a valid PlainFieldSchema object)',
     },
     {
       // Another example of an invalid extra property
