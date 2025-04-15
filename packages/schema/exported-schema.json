@@ -880,8 +880,8 @@
         ]
       }
     },
-    "DynamicOutputFieldsSchema": {
-      "id": "/DynamicOutputFieldsSchema",
+    "OutputFieldsSchema": {
+      "id": "/OutputFieldsSchema",
       "description": "An array or collection of output fields.",
       "type": "array",
       "items": {
@@ -1053,7 +1053,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1163,7 +1163,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1216,7 +1216,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1278,7 +1278,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1425,7 +1425,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return?",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like?",
@@ -1520,7 +1520,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1672,7 +1672,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",

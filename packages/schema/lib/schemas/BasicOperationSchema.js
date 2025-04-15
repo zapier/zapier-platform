@@ -10,7 +10,7 @@ const KeySchema = require('./KeySchema');
 const LockObjectSchema = require('./LockObjectSchema');
 const ThrottleObjectSchema = require('./ThrottleObjectSchema');
 const InputFieldsSchema = require('./InputFieldsSchema');
-const DynamicOutputFieldsSchema = require('./DynamicOutputFieldsSchema');
+const OutputFieldsSchema = require('./OutputFieldsSchema');
 
 module.exports = makeSchema(
   {
@@ -38,7 +38,7 @@ module.exports = makeSchema(
       outputFields: {
         description:
           'What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.',
-        $ref: DynamicOutputFieldsSchema.id,
+        $ref: OutputFieldsSchema.id,
       },
       sample: {
         description:
@@ -84,7 +84,7 @@ module.exports = makeSchema(
   },
   [
     InputFieldsSchema,
-    DynamicOutputFieldsSchema,
+    OutputFieldsSchema,
     FunctionSchema,
     KeySchema,
     LockObjectSchema,

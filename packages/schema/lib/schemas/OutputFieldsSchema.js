@@ -7,7 +7,7 @@ const FunctionSchema = require('./FunctionSchema');
 
 module.exports = makeSchema(
   {
-    id: '/DynamicOutputFieldsSchema',
+    id: '/OutputFieldsSchema',
     description: 'An array or collection of output fields.',
     type: 'array',
     items: {
