@@ -865,8 +865,8 @@
       },
       "additionalProperties": false
     },
-    "DynamicInputFieldsSchema": {
-      "id": "/DynamicInputFieldsSchema",
+    "InputFieldsSchema": {
+      "id": "/InputFieldsSchema",
       "description": "An array or collection of input fields.",
       "type": "array",
       "items": {
@@ -1049,7 +1049,7 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1159,7 +1159,7 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1212,7 +1212,7 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1274,7 +1274,7 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1516,7 +1516,7 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1668,7 +1668,7 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",

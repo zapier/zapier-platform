@@ -9,7 +9,7 @@ const ResultsSchema = require('./ResultsSchema');
 const KeySchema = require('./KeySchema');
 const LockObjectSchema = require('./LockObjectSchema');
 const ThrottleObjectSchema = require('./ThrottleObjectSchema');
-const DynamicInputFieldsSchema = require('./DynamicInputFieldsSchema');
+const InputFieldsSchema = require('./InputFieldsSchema');
 const DynamicOutputFieldsSchema = require('./DynamicOutputFieldsSchema');
 
 module.exports = makeSchema(
@@ -33,7 +33,7 @@ module.exports = makeSchema(
       inputFields: {
         description:
           'What should the form a user sees and configures look like?',
-        $ref: DynamicInputFieldsSchema.id,
+        $ref: InputFieldsSchema.id,
       },
       outputFields: {
         description:
@@ -83,7 +83,7 @@ module.exports = makeSchema(
     additionalProperties: false,
   },
   [
-    DynamicInputFieldsSchema,
+    InputFieldsSchema,
     DynamicOutputFieldsSchema,
     FunctionSchema,
     KeySchema,
