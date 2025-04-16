@@ -142,7 +142,10 @@ export type SearchPerformGet<
 /**
  *
  */
-export type SearchPerformResume = () => {};
+export type SearchPerformResume<
+  $Input extends Record<string, any>,
+  $Return extends {} = {},
+> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
 
 /**
  * Produce the URL to send the user to authorise with the OAuth2 provider.

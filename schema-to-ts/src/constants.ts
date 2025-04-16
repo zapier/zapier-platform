@@ -16,7 +16,7 @@ export const IMPORTS: OptionalKind<ImportDeclarationStructure>[] = [
   {
     isTypeOnly: true,
     moduleSpecifier: './inputs',
-    namedImports: ['InputFields'],
+    namedImports: ['InputFields', 'InferInputData'],
   },
   {
     isTypeOnly: true,
@@ -46,7 +46,7 @@ export const IMPORTS: OptionalKind<ImportDeclarationStructure>[] = [
 const InputFieldsTypeParam = {
   name: '$InputFields',
   constraint: 'InputFields',
-  default: 'never',
+  default: 'InputFields',
 };
 
 export const INTERFACE_OVERRIDES: InterfaceOverridesMap = {
@@ -63,43 +63,66 @@ export const INTERFACE_OVERRIDES: InterfaceOverridesMap = {
         'BasicPollingOperation<$InputFields> | BasicHookOperation<$InputFields> | BasicHookToPollOperation<$InputFields>',
     },
   },
+  '/CreateSchema': {
+    self: { typeParameters: [InputFieldsTypeParam] },
+    properties: {
+      operation: 'BasicCreateOperation<$InputFields>',
+    },
+  },
+  '/SearchSchema': {
+    self: { typeParameters: [InputFieldsTypeParam] },
+    properties: {
+      operation: 'BasicSearchOperation<$InputFields>',
+    },
+  },
   '/BasicPollingOperationSchema': {
     self: { typeParameters: [InputFieldsTypeParam] },
     properties: {
       inputFields: '$InputFields',
-      perform: 'Request | PollingTriggerPerform<$InputFields>',
+      perform: 'Request | PollingTriggerPerform<InferInputData<$InputFields>>',
     },
   },
   '/BasicHookOperationSchema': {
     self: { typeParameters: [InputFieldsTypeParam] },
     properties: {
       inputFields: '$InputFields',
-      perform: 'WebhookTriggerPerform<$InputFields>',
-      performList: 'Request | WebhookTriggerPerformList<$InputFields>',
+      perform: 'WebhookTriggerPerform<InferInputData<$InputFields>>',
+      performList:
+        'Request | WebhookTriggerPerformList<InferInputData<$InputFields>>',
       performSubscribe:
-        'Request | WebhookTriggerPerformSubscribe<$InputFields>',
+        'Request | WebhookTriggerPerformSubscribe<InferInputData<$InputFields>>',
       performUnsubscribe:
-        'Request | WebhookTriggerPerformUnsubscribe<$InputFields>',
+        'Request | WebhookTriggerPerformUnsubscribe<InferInputData<$InputFields>>',
     },
   },
   '/BasicHookToPollOperationSchema': {
     self: { typeParameters: [InputFieldsTypeParam] },
     properties: {
       inputFields: '$InputFields',
-      performList: 'Request | HookToPollTriggerPerformList<$InputFields>',
+      performList:
+        'Request | HookToPollTriggerPerformList<InferInputData<$InputFields>>',
       performSubscribe:
-        'Request | HookToPollTriggerPerformSubscribe<$InputFields>',
+        'Request | HookToPollTriggerPerformSubscribe<InferInputData<$InputFields>>',
       performUnsubscribe:
-        'Request | HookToPollTriggerPerformUnsubscribe<$InputFields>',
+        'Request | HookToPollTriggerPerformUnsubscribe<InferInputData<$InputFields>>',
     },
   },
   '/BasicCreateOperationSchema': {
     self: { typeParameters: [InputFieldsTypeParam] },
     properties: {
       inputFields: '$InputFields',
-      perform: 'Request | CreatePerform<$InputFields>',
-      performResume: 'CreatePerformResume<$InputFields>',
-      performGet: 'Request | CreatePerformGet<$InputFields>',
+      perform: 'Request | CreatePerform<InferInputData<$InputFields>>',
+      performResume: 'CreatePerformResume<InferInputData<$InputFields>>',
+      performGet: 'Request | CreatePerformGet<InferInputData<$InputFields>>',
+    },
+  },
+  '/BasicSearchOperationSchema': {
+    self: { typeParameters: [InputFieldsTypeParam] },
+    properties: {
+      inputFields: '$InputFields',
+      perform: 'Request | SearchPerform<InferInputData<$InputFields>>',
+      performGet: 'Request | SearchPerformGet<InferInputData<$InputFields>>',
+      performResume: 'SearchPerformResume<InferInputData<$InputFields>>',
     },
   },
 };
