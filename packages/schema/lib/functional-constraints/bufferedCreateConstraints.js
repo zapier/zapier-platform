@@ -15,7 +15,7 @@ const bufferedCreateConstraints = (definition) => {
             new jsonschema.ValidationError(
               'must contain property "performBuffer" because property "buffer" is present.',
               actionDef.operation,
-              '/BasicCreateActionOperationSchema',
+              '/BasicCreateOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'missing',
               'performBuffer',
@@ -28,7 +28,7 @@ const bufferedCreateConstraints = (definition) => {
             new jsonschema.ValidationError(
               'must not contain property "perform" because it is mutually exclusive with property "buffer".',
               actionDef.operation,
-              '/BasicCreateActionOperationSchema',
+              '/BasicCreateOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'invalid',
               'perform',
@@ -72,7 +72,7 @@ const bufferedCreateConstraints = (definition) => {
             new jsonschema.ValidationError(
               'must contain property "buffer" because property "performBuffer" is present.',
               actionDef.operation,
-              '/BasicCreateActionOperationSchema',
+              '/BasicCreateOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'missing',
               'buffer',
@@ -85,7 +85,7 @@ const bufferedCreateConstraints = (definition) => {
             new jsonschema.ValidationError(
               'must not contain property "perform" because it is mutually exclusive with property "performBuffer".',
               actionDef.operation,
-              '/BasicCreateActionOperationSchema',
+              '/BasicCreateOperationSchema',
               `instance.${actionType}.${actionDef.key}.operation`,
               'invalid',
               'perform',

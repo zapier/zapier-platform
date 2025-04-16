@@ -5,20 +5,20 @@ const RequestSchema = require('./RequestSchema');
 const FunctionSchema = require('./FunctionSchema');
 const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
-const FieldSchema = require('./FieldSchema');
+const PlainFieldSchema = require('./PlainFieldSchema');
 const FieldMetaSchema = require('./FieldMetaSchema');
 
 module.exports = makeSchema(
   {
-    description: `Field schema specialized for input fields. ${FieldSchema.schema.description}`,
-    id: '/InputFieldSchema',
+    description: `Field schema specialized for input fields. ${PlainFieldSchema.schema.description}`,
+    id: '/PlainInputFieldSchema',
     type: 'object',
     required: ['key'],
     properties: {
-      ...FieldSchema.schema.properties,
+      ...PlainFieldSchema.schema.properties,
       children: {
         type: 'array',
-        items: { $ref: '/InputFieldSchema' },
+        items: { $ref: '/PlainInputFieldSchema' },
         description:
           'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
         minItems: 1,
@@ -128,7 +128,7 @@ module.exports = makeSchema(
       {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:
-          'Invalid value for key: children (must be array of InputFieldSchema)',
+          'Invalid value for key: children (must be array of PlainInputFieldSchema)',
       },
     ],
     additionalProperties: false,
@@ -137,7 +137,7 @@ module.exports = makeSchema(
     RefResourceSchema,
     FieldChoicesSchema,
     FieldMetaSchema,
-    FieldSchema,
+    PlainFieldSchema,
     RequestSchema,
     FunctionSchema,
   ],

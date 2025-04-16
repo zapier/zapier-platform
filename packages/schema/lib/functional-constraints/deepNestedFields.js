@@ -13,7 +13,7 @@ const collectErrors = (inputFields, path) => {
           new jsonschema.ValidationError(
             'must not be empty.',
             inputField,
-            '/FieldSchema',
+            '/PlainFieldSchema',
             `instance.${path}.inputFields[${index}].children`,
             'empty',
             'inputFields',
@@ -30,7 +30,7 @@ const collectErrors = (inputFields, path) => {
             new jsonschema.ValidationError(
               'must not contain deeply nested child fields. One level max.',
               inputField,
-              '/FieldSchema',
+              '/PlainFieldSchema',
               `instance.${path}.inputFields[${index}]`,
               'deepNesting',
               'inputFields',
