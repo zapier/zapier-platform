@@ -218,6 +218,10 @@ const createLambdaHandler = (appRawOrPath) => {
         // Notice this one starts with "Uncaught error" while the other one starts
         // with "Unhandled error". You can use this to distinguish between them in
         // the logs.
+        // This "Uncaught error" handler doesn't always get called. The behavior
+        // is a bit unpredictable based on my testing. Say, for example, if the
+        // Lambda handler returns before the error is thrown, this handler won't
+        // be executed.
         const logMsg = `Uncaught error: ${err}\n${
           (err && err.stack) || '<stack>'
         }`;
