@@ -16,7 +16,7 @@ export const IMPORTS: OptionalKind<ImportDeclarationStructure>[] = [
   {
     isTypeOnly: true,
     moduleSpecifier: './inputs',
-    namedImports: ['DynamicInputFields'],
+    namedImports: ['InputFields'],
   },
   {
     isTypeOnly: true,
@@ -45,7 +45,7 @@ export const IMPORTS: OptionalKind<ImportDeclarationStructure>[] = [
 
 const InputFieldsTypeParam = {
   name: '$InputFields',
-  constraint: 'DynamicInputFields',
+  constraint: 'InputFields',
   default: 'never',
 };
 
@@ -93,7 +93,7 @@ export const INTERFACE_OVERRIDES: InterfaceOverridesMap = {
         'Request | HookToPollTriggerPerformUnsubscribe<$InputFields>',
     },
   },
-  '/BasicCreateActionOperationSchema': {
+  '/BasicCreateOperationSchema': {
     self: { typeParameters: [InputFieldsTypeParam] },
     properties: {
       inputFields: '$InputFields',
@@ -117,5 +117,9 @@ export const TYPE_OVERRIDES: TypeOverrideMap = {
       leadingTrivia: '\n',
     });
   },
-  '/DynamicInputFieldsSchema': () => {}, // Do nothing. Replaced by import from ./inputs.
+  '/InputFieldsSchema': ({ compilerCtx, schema }) => {
+    // Don't render this type as it's replaced by an import. We do want
+    // the plain input field type it references to be rendered, though.
+    compilerCtx.schemasToRender.push('/PlainInputFieldSchema');
+  },
 };
