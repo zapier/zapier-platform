@@ -37,6 +37,7 @@ export async function compileV3(options: CompilerOptions) {
     schemas,
     schemasToRender: ['/AppSchema'], // "Entrypoint" schema. More will get added.
     renderedSchemas: new Set(),
+    ignoreUnusedOverrides: options.ignoreUnusedOverrides,
     stats: new Statistics(),
   };
 
@@ -56,7 +57,7 @@ export async function compileV3(options: CompilerOptions) {
 function reportStatistics(ctx: CompilerContext) {
   const unusedTypeOverrides = ctx.stats.findUnusedTypeOverrides(TYPE_OVERRIDES);
   if (unusedTypeOverrides.length > 0) {
-    logger.warn({ unused: unusedTypeOverrides }, 'Unused type overrides');
+    logger.error({ unused: unusedTypeOverrides }, 'Unused type overrides');
   } else {
     logger.info('All type overrides were used');
   }
@@ -64,7 +65,7 @@ function reportStatistics(ctx: CompilerContext) {
   const unusedInterfaceSelfOverrides =
     ctx.stats.findUnusedInterfaceSelfOverrides(INTERFACE_OVERRIDES);
   if (unusedInterfaceSelfOverrides.length > 0) {
-    logger.warn(
+    logger.error(
       { unused: unusedInterfaceSelfOverrides },
       'Unused interface signature overrides',
     );
@@ -75,12 +76,25 @@ function reportStatistics(ctx: CompilerContext) {
   const unusedInterfacePropertyOverrides =
     ctx.stats.findUnusedInterfacePropertyOverrides(INTERFACE_OVERRIDES);
   if (unusedInterfacePropertyOverrides.length > 0) {
-    logger.warn(
+    logger.error(
       { unused: unusedInterfacePropertyOverrides },
       'Unused interface property overrides',
     );
   } else {
     logger.info('All interface property overrides were used');
+  }
+
+  if (
+    unusedTypeOverrides.length > 0 ||
+    unusedInterfaceSelfOverrides.length > 0 ||
+    unusedInterfacePropertyOverrides.length > 0
+  ) {
+    if (ctx.ignoreUnusedOverrides !== true) {
+      throw new Error(
+        'Please make sure all type overrides are invoked, or ignore with --ignore-unused-overrides',
+      );
+    }
+    logger.warn('Ignoring unused overrides');
   }
 }
 

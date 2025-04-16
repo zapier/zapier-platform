@@ -23,6 +23,10 @@ const program = new Command()
     '-o, --output <file>',
     'The file to write the generated TypeScript to. Typically intended to be put in ../core/types as a generated module.',
     '../core/types/schemas.generated.d.ts',
+  )
+  .option(
+    '-i, --ignore-unused-overrides',
+    'Ignore unused type overrides. This is useful when you are migrating from zapier-platform-schema to schema-to-ts.',
   );
 
 const main = async () => {

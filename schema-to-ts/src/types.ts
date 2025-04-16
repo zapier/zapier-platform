@@ -36,6 +36,13 @@ export interface CliOptions {
    * @default "../core/types/schemas.generated.d.ts"
    */
   output?: string;
+
+  /**
+   * Whether to ignore unused type overrides.
+   *
+   * @default false
+   */
+  ignoreUnusedOverrides?: boolean;
 }
 
 export interface CompilerOptions extends CliOptions {
@@ -71,6 +78,11 @@ export type CompilerContext = {
    * Schemas that have already been rendered.
    */
   renderedSchemas: Set<SchemaPath>;
+
+  /**
+   * Whether to ignore unused type overrides.
+   */
+  ignoreUnusedOverrides?: boolean;
 
   stats: Statistics;
 };
