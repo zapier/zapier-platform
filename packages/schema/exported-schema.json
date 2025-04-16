@@ -1691,8 +1691,8 @@
       },
       "additionalProperties": false
     },
-    "BasicCreateActionOperationSchema": {
-      "id": "/BasicCreateActionOperationSchema",
+    "BasicCreateOperationSchema": {
+      "id": "/BasicCreateOperationSchema",
       "description": "Represents the fundamental mechanics of a create.",
       "type": "object",
       "properties": {
@@ -1804,7 +1804,7 @@
         },
         "operation": {
           "description": "Powers the functionality for this create.",
-          "$ref": "/BasicCreateActionOperationSchema"
+          "$ref": "/BasicCreateOperationSchema"
         }
       },
       "additionalProperties": false

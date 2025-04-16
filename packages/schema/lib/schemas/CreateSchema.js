@@ -3,7 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
-const BasicCreateActionOperationSchema = require('./BasicCreateActionOperationSchema');
+const BasicCreateOperationSchema = require('./BasicCreateOperationSchema');
 const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema(
@@ -30,7 +30,7 @@ module.exports = makeSchema(
       },
       operation: {
         description: 'Powers the functionality for this create.',
-        $ref: BasicCreateActionOperationSchema.id,
+        $ref: BasicCreateOperationSchema.id,
       },
     },
     examples: [
@@ -79,5 +79,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [BasicDisplaySchema, BasicCreateActionOperationSchema, KeySchema],
+  [BasicDisplaySchema, BasicCreateOperationSchema, KeySchema],
 );
