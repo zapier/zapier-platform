@@ -506,7 +506,7 @@ Represents the fundamental mechanics of a create.
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/BasicCreateActionOperationSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/BasicCreateOperationSchema.js)
 
 #### Properties
 
@@ -694,7 +694,7 @@ Represents the fundamental mechanics of a search.
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.3.1/packages/schema/lib/schemas/BasicSearchOperationSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/BasicSearchOperationSchema.js)
 
 #### Properties
 
@@ -959,46 +959,6 @@ Key | Required | Type | Description
 
 -----
 
-## /DynamicInputFieldsSchema
-
-An array or collection of input fields.
-
-#### Details
-
-* **Type** - `array`[oneOf([/InputFieldSchema](#inputfieldschema), [/FunctionSchema](#functionschema))]
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/DynamicInputFieldsSchema.js)
-
-
-#### Examples
-
-* `[ { key: 'abc' } ]`
-
-#### Anti-Examples
-
-* `{}` - _Must be an array_
-
------
-
-## /DynamicOutputFieldsSchema
-
-An array or collection of output fields.
-
-#### Details
-
-* **Type** - `array`[oneOf([/OutputFieldSchema](#outputfieldschema), [/FunctionSchema](#functionschema))]
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/DynamicOutputFieldsSchema.js)
-
-
-#### Examples
-
-* `[ { key: 'abc' } ]`
-
-#### Anti-Examples
-
-* `{}` - _Must be an array_
-
------
-
 ## /FieldChoiceWithLabelSchema
 
 An object describing a labeled choice in a static dropdown. Useful if the value a user picks isn't exactly what the zap uses. For instance, when they click on a nickname, but the zap uses the user's full name ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).
@@ -1222,8 +1182,8 @@ An array or collection of input fields.
 
 #### Details
 
-* **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/InputFieldSchema.js)
+* **Type** - `array`[oneOf([/PlainInputFieldSchema](#plaininputfieldschema), [/FunctionSchema](#functionschema))]
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/InputFieldsSchema.js)
 
 
 #### Examples
@@ -1320,7 +1280,7 @@ An array or collection of output fields.
 #### Details
 
 * **Type** - `array`[oneOf([/PlainOutputFieldSchema](#plainoutputfieldschema), [/FunctionSchema](#functionschema))]
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.3.1/packages/schema/lib/schemas/OutputFieldsSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/OutputFieldsSchema.js)
 
 
 #### Examples
@@ -1350,7 +1310,7 @@ Field schema specialized for input fields. In addition to the requirements below
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.3.1/packages/schema/lib/schemas/PlainInputFieldSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/PlainInputFieldSchema.js)
 
 #### Properties
 
@@ -1419,7 +1379,7 @@ Field schema specialized for output fields. In addition to the requirements belo
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/OutputFieldSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@16.5.0/packages/schema/lib/schemas/PlainOutputFieldSchema.js)
 
 #### Properties
 
