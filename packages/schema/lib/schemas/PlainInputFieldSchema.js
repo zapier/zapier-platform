@@ -1,22 +1,24 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
+const RequestSchema = require('./RequestSchema');
+const FunctionSchema = require('./FunctionSchema');
 const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
-const FieldSchema = require('./FieldSchema');
+const PlainFieldSchema = require('./PlainFieldSchema');
 const FieldMetaSchema = require('./FieldMetaSchema');
 
 module.exports = makeSchema(
   {
-    description: `Field schema specialized for input fields. ${FieldSchema.schema.description}`,
-    id: '/InputFieldSchema',
+    description: `Field schema specialized for input fields. ${PlainFieldSchema.schema.description}`,
+    id: '/PlainInputFieldSchema',
     type: 'object',
     required: ['key'],
     properties: {
-      ...FieldSchema.schema.properties,
+      ...PlainFieldSchema.schema.properties,
       children: {
         type: 'array',
-        items: { $ref: '/InputFieldSchema' },
+        items: { $ref: '/PlainInputFieldSchema' },
         description:
           'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
         minItems: 1,
@@ -28,15 +30,19 @@ module.exports = makeSchema(
         minLength: 1,
         maxLength: 1000,
       },
-      dynamic: {
-        description:
-          'A reference to a trigger that will power a dynamic dropdown.',
-        $ref: RefResourceSchema.id,
-      },
       search: {
         description:
           'A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.',
         $ref: RefResourceSchema.id,
+      },
+      dynamic: {
+        description:
+          'A reference to a trigger, request, or function that will power a dynamic dropdown.',
+        oneOf: [
+          { $ref: RefResourceSchema.id },
+          { $ref: RequestSchema.id },
+          { $ref: FunctionSchema.id },
+        ],
       },
       choices: {
         description:
@@ -122,10 +128,17 @@ module.exports = makeSchema(
       {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:
-          'Invalid value for key: children (must be array of InputFieldSchema)',
+          'Invalid value for key: children (must be array of PlainInputFieldSchema)',
       },
     ],
     additionalProperties: false,
   },
-  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema, FieldSchema],
+  [
+    RefResourceSchema,
+    FieldChoicesSchema,
+    FieldMetaSchema,
+    PlainFieldSchema,
+    RequestSchema,
+    FunctionSchema,
+  ],
 );

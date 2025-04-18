@@ -715,15 +715,16 @@ export interface InputField {
   helpText?: string;
 
   /**
-   * A reference to a trigger that will power a dynamic dropdown.
-   */
-  dynamic?: RefResource;
-
-  /**
    * A reference to a search that will guide the user to add a search
    * step to populate this field when creating a Zap.
    */
   search?: RefResource;
+
+  /**
+   * A reference to a trigger, request, or function that will power a
+   * dynamic dropdown.
+   */
+  dynamic?: RefResource | Request | Function;
 
   /**
    * An object of machine keys and human values to populate a static
@@ -896,8 +897,8 @@ export type DynamicOutputFields = (OutputField | Function)[];
 export type Key = string;
 
 /**
- * **INTERNAL USE ONLY**. Zapier uses this configuration for
- * internal operation locking.
+ * Zapier uses this configuration to ensure this action is performed
+ * one at a time per scope (avoid concurrency).
  *
  * [Docs: LockObjectSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#LockObjectSchema)
  */
@@ -1084,8 +1085,8 @@ export interface BasicOperation {
   sample?: { [k: string]: unknown };
 
   /**
-   * **INTERNAL USE ONLY**. Zapier uses this configuration for
-   * internal operation locking.
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
    */
   lock?: LockObject;
 
@@ -1287,8 +1288,8 @@ export interface BasicActionOperation {
   sample?: { [k: string]: unknown };
 
   /**
-   * **INTERNAL USE ONLY**. Zapier uses this configuration for
-   * internal operation locking.
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
    */
   lock?: LockObject;
 
@@ -1633,8 +1634,8 @@ export interface BasicCreateActionOperation {
   sample?: { [k: string]: unknown };
 
   /**
-   * **INTERNAL USE ONLY**. Zapier uses this configuration for
-   * internal operation locking.
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
    */
   lock?: LockObject;
 
@@ -1643,12 +1644,6 @@ export interface BasicCreateActionOperation {
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
-
-  /**
-   * Should this action be performed one at a time (avoid
-   * concurrency)?
-   */
-  shouldLock?: boolean;
 
   /**
    * Currently an **internal-only** feature. Zapier uses this
