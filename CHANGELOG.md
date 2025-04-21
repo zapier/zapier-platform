@@ -1,3 +1,36 @@
+# 16.5.0
+
+_released `2025-04-10`_
+
+For this release, we're introducing a new state for versions, "legacy", and surfacing lifecycle state displayed in `zapier versions`. For more information about lifecycle states, check out this page: https://docs.zapier.com/platform/manage/version-lifecycle-states.
+
+### cli
+
+- :nail_care: Render lifecycle state instead of deployment in `zapier versions` ([#991](https://github.com/zapier/zapier-platform/pull/991))
+- :test_tube: Added new `zapier legacy` command ([#987](https://github.com/zapier/zapier-platform/pull/987))
+
+## 16.4.0
+
+_released `2025-04-08`_
+
+The main improvement in this release is the new `--authentication-id` flag for the `zapier invoke` command. This flag enables what's known as "relay mode," where you provide an authentication ID (aka an "app connection" at https://zapier.com/app/assets/connections), and `zapier invoke` will proxy outgoing requests through Zapier—while your integration code continues to run locally. Learn more about this feature in the [`zapier invoke --help`](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md#invoke) documentation.
+
+:exclamation: We've also added a confirmation prompt to the `zapier deprecate` command. If you have any automations or scripts in place that perform `zapier deprecate`, these will now break. You can use the `--force` (`-f`) flag to skip the prompt.
+
+### cli
+
+- :test_tube: Add `--authentication-id` flag to `zapier invoke` command ([#968](https://github.com/zapier/zapier-platform/pull/968), [#989](https://github.com/zapier/zapier-platform/pull/989))
+- :nail_care: Add warning and confirmation prompt to `zapier deprecate` command ([#985](https://github.com/zapier/zapier-platform/pull/985))
+- :bug: Fix bug where location of `SyntaxError` isn't showing even when `--debug` is enabled ([#983](https://github.com/zapier/zapier-platform/pull/983))
+
+### core
+
+None!
+
+### schema
+
+- :bug: Update schema URL used in `zapier validate` [#984](https://github.com/zapier/zapier-platform/pull/984)
+
 ## 16.3.1
 
 _released `2025-02-26`_
@@ -30,7 +63,6 @@ _released `2025-01-30`_
 - :scroll: Update `pull` command help text to clarify `ynarxdeiH` options if file conflicts detected [#959](https://github.com/zapier/zapier-platform/pull/959)
 - :tada: Add `--overwrite-partner-changes` flag in `push` command to help reduce partner integration clobbering (currently only supported for **internal** use) [#960](https://github.com/zapier/zapier-platform/pull/960)
 
-
 ## 16.2.0
 
 _released `2025-01-21`_
@@ -39,7 +71,6 @@ _released `2025-01-21`_
 
 - :tada: Require `--force` flag when updating production integration version environment variables via `env:set` or `env:unset` [#942](https://github.com/zapier/zapier-platform/pull/942)
 - :tada: Run environment variable soft checks (which require user confirmation to proceed) during `promote` and `migrate` [#951](https://github.com/zapier/zapier-platform/pull/951)
-
 
 ## 16.1.1
 
@@ -74,7 +105,6 @@ None!
 
 None!
 
-
 ## 16.0.0
 
 _released `2024-12-16`_
@@ -83,7 +113,7 @@ Version `16.0.0` is a breaking change release that contains some important house
 
 **1. The minimum supported version of Node.js is now v18.18.** We’ve officially dropped support for Node.js v16.x, which has been designated [end-of-life since September 2023](https://nodejs.org/en/blog/announcements/nodejs16-eol).
 
-**2. Integrations using `zapier-platform-core@16.0.0` and onwards will default to running on the ARM architecture in AWS Lambda.**  Note: If you believe your integrations have run into runtime incompatibilities due to this change, please [reach out to our support team](https://developer.zapier.com/contact) and we may be able to opt your integration out of running on ARM.
+**2. Integrations using `zapier-platform-core@16.0.0` and onwards will default to running on the ARM architecture in AWS Lambda.** Note: If you believe your integrations have run into runtime incompatibilities due to this change, please [reach out to our support team](https://developer.zapier.com/contact) and we may be able to opt your integration out of running on ARM.
 
 Here are the detailed release notes for this release (**note that ❗ denotes a breaking change**):
 
@@ -98,19 +128,21 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
 - **:exclamation: Integrations running on `zapier-platform-core` v16 and onwards will run on the ARM architecture by default.** This means means they will run on AWS Graviton2 processors (previously, the AWS Lambda runtime was based on x86 architecture). For more details on what this means on a technical level, please check out: [AWS Lambda on Graviton 2](https://github.com/aws/aws-graviton-getting-started/blob/main/aws-lambda/README.md#aws-lambda-on-graviton2).
 
 - **:exclamation: Due to changes in the underlying `dotenv` library ([see changelog](https://github.com/motdotla/dotenv/blob/master/CHANGELOG.md)) ([#926](https://github.com/zapier/zapier-platform/pull/926)), when using `zapier.tools.env.inject()`, we always recommend "double quoting" your environment variable values.** Please make sure to consider if the following cases would apply to your `.env` files:
-  * ```SECRET_HASH=something-with-a-#-hash```: change it to ```SECRET_HASH="something-with-a-#-hash"```
-  * ```SECRET_BACKTICK=something-with-a-`-backtick```: change it to ```SECRET_BACKTICK="something-with-a-`-backtick"```
+  - `SECRET_HASH=something-with-a-#-hash`: change it to `SECRET_HASH="something-with-a-#-hash"`
+  - ``SECRET_BACKTICK=something-with-a-`-backtick``: change it to ``SECRET_BACKTICK="something-with-a-`-backtick"``
+
 * Add `skipEncodingChars` property typing for z.request object ([#928](https://github.com/zapier/zapier-platform/pull/928))
 
 ### schema
 
-* N/A
+- N/A
 
 ### schema-to-ts
 
 - :wrench: The `schema-to-ts` package is now part of the repository root "yarn workspaces" ([#913](https://github.com/zapier/zapier-platform/pull/913))
 
 ### misc
+
 - :hammer: Dependency updates ([#890](https://github.com/zapier/zapier-platform/pull/890), [#926](https://github.com/zapier/zapier-platform/pull/926), [#927](https://github.com/zapier/zapier-platform/pull/927))
   - repo root
     - Add `@eslint/eslintrc@^3.2.0`
@@ -155,7 +187,6 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
     - Update `form-data` from 4.0.0 to 4.0.1
   - schema-to-ts
     - Update `prettier` from 3.2.5 to 3.4.1
-
 
 ## 15.19.0
 
@@ -236,7 +267,6 @@ None!
 - :scroll: Add docs explaining why hidden triggers for dynamic dropdowns need to declare input fields ([#887](https://github.com/zapier/zapier-platform/pull/887))
 - :scroll: Migrate docs out of this monorepo ([#893](https://github.com/zapier/zapier-platform/pull/893))
 - :scroll: Updating doc links in `CHANGELOG` ([#898](https://github.com/zapier/zapier-platform/pull/898))
-
 
 ## 15.17.0
 
@@ -403,9 +433,11 @@ None!
 None!
 
 ### schema
+
 - :nail_care: Add configurable poll delay for HookToPoll ([#844](https://github.com/zapier/zapier-platform/pull/844))
 
 ### misc
+
 - :hammer: Bump elliptic from 6.5.4 to 6.5.7 ([#842](https://github.com/zapier/zapier-platform/pull/842))
 - :hammer: Bump axios from 1.6.1 to 1.7.4 ([#843](https://github.com/zapier/zapier-platform/pull/843))
 
@@ -414,18 +446,22 @@ None!
 _released `2024-08-16`_
 
 ### cli
+
 - :nail_care: Introduce `zapier pull` command ([#838](https://github.com/zapier/zapier-platform/pull/838))
 - :nail_care: Handle subheadings when interpreting the changelog ([#827](https://github.com/zapier/zapier-platform/pull/827))
 
 ### core
+
 - :bug: Properly type HTTP Options, replacing generic `object` types ([#840](https://github.com/zapier/zapier-platform/pull/840))
 - :bug: Allow Async Middleware Functions Types ([#826](https://github.com/zapier/zapier-platform/pull/826))
 
 ### schema
+
 - :bug: Correct casing on `bulk reads` action type ([#831](https://github.com/zapier/zapier-platform/pull/831))
 - :bug: Display the `bulk_reads` functional constraint ([#829](https://github.com/zapier/zapier-platform/pull/829))
 
 ### schema-to-ts
+
 - :bug: Simplify and correct Array types in Schema to TS conversion ([#835](https://github.com/zapier/zapier-platform/pull/835))
 
 ### misc
@@ -439,6 +475,7 @@ _released `2024-08-16`_
 _released `2024-07-19`_
 
 ### core
+
 - :bug: Add base64 encoding before autostashing large payloads ([#824](https://github.com/zapier/zapier-platform/pull/824))
 
 ### cli
@@ -454,19 +491,22 @@ None!
 _released `2024-07-16`_
 
 ### core
+
 - :bug: Fixed issue preventing standalone 'creates' in `extension` from colliding with resource keys in `base` ([#819](https://github.com/zapier/zapier-platform/pull/819))
 - :nail_care: Bundle new TypeScript type declarations provided by the `schema-to-ts` tool ([#818](https://github.com/zapier/zapier-platform/pull/818))
 
 ### cli
+
 None!
 
 ### schema
+
 None!
 
 ### schema-to-ts
+
 - :nail_care: Introduced the Schema-to-TS compiler tool ([#818](https://github.com/zapier/zapier-platform/pull/818))
 - :scroll: Updated documentation to reference the schema-to-ts tool ([#821](https://github.com/zapier/zapier-platform/pull/821))
-
 
 ## 15.10.0
 

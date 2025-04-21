@@ -2,7 +2,7 @@ module.exports = {
   ROOT_GITHUB: 'https://github.com/zapier/zapier-platform',
   DOCS_PATH: 'docs/build/schema.md',
   DOC_URL_TEMPLATE:
-    'https://platform.zapier.com/cli_docs/schema<%= anchor %>@<%= version %>',
+    'https://github.com/zapier/zapier-platform/blob/zapier-platform-cli%40<%= version %>/packages/schema/docs/build/schema.md<%= anchor %>',
   SKIP_KEY: '_skipTest',
   // the following pairs of keys can't be used together in PlainFieldSchema
   // they're stored here because they're used in a few places

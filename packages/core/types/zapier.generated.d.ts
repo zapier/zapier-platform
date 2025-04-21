@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 16.3.1
+ * zapier-platform-schema version: 16.5.0
  *  schema-to-ts compiler version: 0.1.0
  */
 
@@ -255,9 +255,9 @@ export type FieldChoices =
  * * `dynamic` & `dict`
  * * `dynamic` & `choices`
  *
- * [Docs: FieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldSchema)
+ * [Docs: PlainFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#PlainFieldSchema)
  */
-export interface Field {
+export interface PlainField {
   /** A unique machine readable key for this value (IE: "fname"). */
   key: string;
 
@@ -306,7 +306,7 @@ export interface Field {
    *
    * @minItems 1
    */
-  children?: Field[];
+  children?: PlainField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
@@ -652,9 +652,9 @@ export interface FieldMeta {
  * * `dynamic` & `dict`
  * * `dynamic` & `choices`
  *
- * [Docs: InputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#InputFieldSchema)
+ * [Docs: PlainInputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#PlainInputFieldSchema)
  */
-export interface InputField {
+export interface PlainInputField {
   /** A unique machine readable key for this value (IE: "fname"). */
   key: string;
 
@@ -703,7 +703,7 @@ export interface InputField {
    *
    * @minItems 1
    */
-  children?: InputField[];
+  children?: PlainInputField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
@@ -769,9 +769,9 @@ export interface InputField {
  * * `dynamic` & `dict`
  * * `dynamic` & `choices`
  *
- * [Docs: OutputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#OutputFieldSchema)
+ * [Docs: PlainOutputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#PlainOutputFieldSchema)
  */
-export interface OutputField {
+export interface PlainOutputField {
   /** A unique machine readable key for this value (IE: "fname"). */
   key: string;
 
@@ -808,7 +808,7 @@ export interface OutputField {
    *
    * @minItems 1
    */
-  children?: OutputField[];
+  children?: PlainOutputField[];
 
   /** Is this field a key/value input? */
   dict?: boolean;
@@ -878,16 +878,16 @@ export interface ThrottleOverrideObject {
 /**
  * An array or collection of input fields.
  *
- * [Docs: DynamicInputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#DynamicInputFieldsSchema)
+ * [Docs: InputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#InputFieldsSchema)
  */
-export type DynamicInputFields = (InputField | Function)[];
+export type InputFields = (PlainInputField | Function)[];
 
 /**
  * An array or collection of output fields.
  *
- * [Docs: DynamicOutputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#DynamicOutputFieldsSchema)
+ * [Docs: OutputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#OutputFieldsSchema)
  */
-export type DynamicOutputFields = (OutputField | Function)[];
+export type OutputFields = (PlainOutputField | Function)[];
 
 /**
  * A unique identifier for this item.
@@ -1069,13 +1069,13 @@ export interface BasicOperation {
   perform: Request | Function;
 
   /** What should the form a user sees and configures look like? */
-  inputFields?: DynamicInputFields;
+  inputFields?: InputFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
-  outputFields?: DynamicOutputFields;
+  outputFields?: OutputFields;
 
   /**
    * What does a sample of data look like? Will use resource sample if
@@ -1164,13 +1164,13 @@ export interface BasicHookOperation {
   performUnsubscribe?: Request | Function;
 
   /** What should the form a user sees and configures look like? */
-  inputFields?: DynamicInputFields;
+  inputFields?: InputFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
-  outputFields?: DynamicOutputFields;
+  outputFields?: OutputFields;
 
   /**
    * What does a sample of data look like? Will use resource sample if
@@ -1213,13 +1213,13 @@ export interface BasicPollingOperation {
   canPaginate?: boolean;
 
   /** What should the form a user sees and configures look like? */
-  inputFields?: DynamicInputFields;
+  inputFields?: InputFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
-  outputFields?: DynamicOutputFields;
+  outputFields?: OutputFields;
 
   /**
    * What does a sample of data look like? Will use resource sample if
@@ -1272,13 +1272,13 @@ export interface BasicActionOperation {
   performGet?: Request | Function;
 
   /** What should the form a user sees and configures look like? */
-  inputFields?: DynamicInputFields;
+  inputFields?: InputFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
-  outputFields?: DynamicOutputFields;
+  outputFields?: OutputFields;
 
   /**
    * What does a sample of data look like? Will use resource sample if
@@ -1419,7 +1419,7 @@ export interface Resource {
   create?: ResourceMethodCreate;
 
   /** What fields of data will this return? */
-  outputFields?: DynamicOutputFields;
+  outputFields?: OutputFields;
 
   /** What does a sample of data look like? */
   sample?: { [k: string]: unknown };
@@ -1481,13 +1481,13 @@ export interface BasicHookToPollOperation {
   performUnsubscribe: Request | Function;
 
   /** What should the form a user sees and configures look like? */
-  inputFields?: DynamicInputFields;
+  inputFields?: InputFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
-  outputFields?: DynamicOutputFields;
+  outputFields?: OutputFields;
 
   /**
    * What does a sample of data look like? Will use resource sample if
@@ -1530,6 +1530,71 @@ export interface Trigger {
 }
 
 /**
+ * Represents the fundamental mechanics of a search.
+ *
+ * [Docs: BasicSearchOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicSearchOperationSchema)
+ */
+export interface BasicSearchOperation {
+  /**
+   * Optionally reference and extends a resource. Allows Zapier to
+   * automatically tie together samples, lists and hooks, greatly
+   * improving the UX. EG: if you had another trigger reusing a
+   * resource but filtering the results.
+   */
+  resource?: Key;
+
+  /**
+   * How will Zapier get the data? This can be a function like `(z) =>
+   * [{id: 123}]` or a request like `{url: 'http...'}`.
+   */
+  perform: Request | Function;
+
+  /**
+   * Internal pointer to a function from the original source or the
+   * source code itself. Encodes arity and if `arguments` is used in
+   * the body. Note - just write normal functions and the system will
+   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
+   * and the system will wrap in a function for you.
+   */
+  performResume?: Function;
+
+  /**
+   * How will Zapier get a single record? If you find yourself
+   * reaching for this - consider resources and their built-in get
+   * methods.
+   */
+  performGet?: Request | Function;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: { [k: string]: unknown };
+
+  /**
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
+   */
+  lock?: LockObject;
+
+  /**
+   * Zapier uses this configuration to apply throttling when the limit
+   * for the window is exceeded.
+   */
+  throttle?: ThrottleObject;
+}
+
+/**
  * How will Zapier search for existing objects?
  *
  * [Docs: SearchSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#SearchSchema)
@@ -1548,7 +1613,7 @@ export interface Search {
   display: BasicDisplay;
 
   /** Powers the functionality for this search. */
-  operation: BasicActionOperation;
+  operation: BasicSearchOperation;
 }
 
 /**
@@ -1582,9 +1647,9 @@ export interface BufferConfig {
 /**
  * Represents the fundamental mechanics of a create.
  *
- * [Docs: BasicCreateActionOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicCreateActionOperationSchema)
+ * [Docs: BasicCreateOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicCreateOperationSchema)
  */
-export interface BasicCreateActionOperation {
+export interface BasicCreateOperation {
   /**
    * Optionally reference and extends a resource. Allows Zapier to
    * automatically tie together samples, lists and hooks, greatly
@@ -1618,13 +1683,13 @@ export interface BasicCreateActionOperation {
   performGet?: Request | Function;
 
   /** What should the form a user sees and configures look like? */
-  inputFields?: DynamicInputFields;
+  inputFields?: InputFields;
 
   /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
-  outputFields?: DynamicOutputFields;
+  outputFields?: OutputFields;
 
   /**
    * What does a sample of data look like? Will use resource sample if
@@ -1680,7 +1745,7 @@ export interface Create {
   display: BasicDisplay;
 
   /** Powers the functionality for this create. */
-  operation: BasicCreateActionOperation;
+  operation: BasicCreateOperation;
 }
 
 /**

@@ -1,4 +1,4 @@
-# Zapier CLI Reference
+# Zapier CLI Command Reference
 
 These are the generated docs for all Zapier platform CLI commands.
 
@@ -160,17 +160,22 @@ This only works if there are no users or Zaps on that version. You will probably
 
 Use this when an integration version will not be supported or start breaking at a known date.
 
-Zapier will send an email warning users of the deprecation once a date is set, they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
+Zapier will immediately send emails warning users of the deprecation if a date less than 30 days in the future is set, otherwise the emails will be sent exactly 30 days before the configured deprecation date.
 
-After the deprecation date has passed it will be safe to delete that integration version.
+There are other side effects: they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
 
-Do not use this if you have non-breaking changes, such as fixing help text.
+Do not use deprecation if you only have non-breaking changes, such as:
+- Fixing help text
+- Adding new triggers/actions
+- Improving existing functionality
+- other bug fixes that don't break existing automations.
 
 **Arguments**
 * (required) `version` | The version to deprecate.
 * (required) `date` | The date (YYYY-MM-DD) when Zapier will make the specified version unavailable.
 
 **Flags**
+* `-f, --force` | Skip confirmation prompt. Use with caution.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
@@ -311,6 +316,18 @@ This command also checks the current directory for a linked integration.
 
 This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
 
+Why use this command?
+
+* Fast feedback loop: Write code and run this command to verify if it works immediately
+* Step-by-step debugging: Running locally means you can use a debugger to step through your code
+* Untruncated logs: View complete logs and errors in your terminal
+
+### Authentication
+
+You can supply the authentcation data in two ways: Load from the local `.env` file or use the (experimental) `--authentication-id` flag.
+
+#### The local `.env` file
+
 This command loads environment variables and `authData` from the `.env` file in the current directory. If you don't have a `.env` file yet, you can use the `zapier invoke auth start` command to help you initialize it, or you can manually create it.
 
 The `zapier invoke auth start` subcommand will prompt you for the necessary auth fields and save them to the `.env` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
@@ -330,6 +347,19 @@ authData_refresh_token='abcdefg'
 authData_account_name='zapier'
 ```
 
+
+#### The `--authentication-id` flag (EXPERIMENTAL)
+
+Setting up local auth data can be troublesome. You'd have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
+
+The `--authentication-id` flag (`-a` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use `-a` to specify an existing production authentication/connection. The available authentications can be found at https://zapier.com/app/assets/connections. Check https://zpr.io/z8SjFTdnTFZ2 for more instructions.
+
+When `-a -` is specified, such as `zapier invoke auth test -a -`, the command will interactively prompt you to select one of your available authentications.
+
+If you know your authentication ID, you can specify it directly, such as `zapier invoke auth test -a 123456`.
+
+#### Testing authentication
+
 To test if the auth data is correct, run either one of these:
 
 ```
@@ -337,7 +367,9 @@ zapier invoke auth test   # invokes authentication.test method
 zapier invoke auth label  # invokes authentication.test and renders connection label
 ```
 
-To refresh stale auth data for OAuth2 or session auth, run `zapier invoke auth refresh`.
+To refresh stale auth data for OAuth2 or session auth, run `zapier invoke auth refresh`. Note that refreshing is only applicable for local auth data in the `.env` file.
+
+### Invoking a trigger or an action
 
 Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key `new_recipe`:
 
@@ -345,11 +377,13 @@ Once you have the correct auth data, you can test an trigger, a search, or a cre
 zapier invoke trigger new_recipe
 ```
 
-To add input data, use the `--inputData` flag. The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
+To add input data, use the `--inputData` flag (`-i` for short). The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
 
 When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the command will prompt you interactively. If you don't want to get interactive prompts, use the `--non-interactive` flag.
 
 The `--debug` flag will show you the HTTP request logs and any console logs you have in your code.
+
+### Limitations
 
 The following is a non-exhaustive list of current limitations and may be supported in the future:
 
@@ -381,6 +415,7 @@ The following is a non-exhaustive list of current limitations and may be support
 * `-z, --timezone` | Set the default timezone for datetime field interpretation. If not set, defaults to America/Chicago, which matches Zapier production behavior. Find the list timezone names at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones.  Defaults to `America/Chicago`.
 * `--redirect-uri` | Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.  Defaults to `http://localhost:9000`.
 * `--local-port` | Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.  Defaults to `9000`.
+* `-a, --authentication-id` | EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/assets/connections (https://zpr.io/z8SjFTdnTFZ2 for instructions) or specify '-' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
@@ -391,8 +426,10 @@ The following is a non-exhaustive list of current limitations and may be support
 * `zapier invoke auth label`
 * `zapier invoke trigger new_recipe`
 * `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`
-* `zapier invoke search find_recipe -i @file.json`
+* `zapier invoke search find_recipe -i @file.json --non-interactive`
 * `cat file.json | zapier invoke trigger new_recipe -i @-`
+* `zapier invoke search find_ticket --authentication-id 12345`
+* `zapier invoke create add_ticket -a -`
 
 
 ## jobs
@@ -418,6 +455,30 @@ Jobs are returned from oldest to newest.
 
 **Examples**
 * `zapier jobs`
+
+
+## legacy
+
+> Mark a non-production version of your integration as legacy.
+
+**Usage**: `zapier legacy VERSION`
+
+Use this when an integration version is no longer recommended for new users, but you don't want to block existing users from using it.
+
+Reasons why you might want to mark a version as legacy:
+- this version may be discontinued in the future
+- this version has bugs
+- a newer version has been released and you want to encourage users to upgrade
+
+**Arguments**
+* (required) `version` | The version to mark as legacy.
+
+**Flags**
+* `-f, --force` | Skip confirmation prompt. Use with caution.
+* `-d, --debug` | Show extra debugging output.
+
+**Examples**
+* `zapier legacy 1.2.3`
 
 
 ## link
@@ -855,7 +916,7 @@ Run the standard validation routine powered by json-schema that checks your inte
 
 ## versions
 
-> List the versions of your integration available for use in the Zapier editor.
+> List the versions of your integration available for use in Zapier automations.
 
 **Usage**: `zapier versions`
 

@@ -258,11 +258,6 @@ ${metadataPromptHelper}`);
 
     this.stopSpinner();
     this.log('  Promotion successful!');
-    if (!this.flags.invokedFromAnotherCommand) {
-      this.log(
-        'Optionally, run the `zapier migrate` command to move users to this version.',
-      );
-    }
   }
 }
 
