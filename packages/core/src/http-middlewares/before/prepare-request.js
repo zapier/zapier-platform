@@ -136,7 +136,18 @@ const prepareRequest = function (req) {
       input._zapier.event,
       req.serializeValueForCurlies,
     );
-    req = recurseReplaceBank(req, bank);
+
+    const replaceable = {
+      url: req.url,
+      headers: req.headers,
+      params: req.params,
+      body: req.body,
+    };
+    const replaced = recurseReplaceBank(replaceable, bank);
+    req = {
+      ...req,
+      ...replaced,
+    };
   }
 
   req = coerceBody(req);
