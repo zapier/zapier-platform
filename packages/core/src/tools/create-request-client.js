@@ -9,7 +9,6 @@ const applyMiddleware = require('../middleware');
 
 // before middles
 const prepareRequest = require('../http-middlewares/before/prepare-request');
-const sanitizeHeaders = require('../http-middlewares/before/sanatize-headers');
 // after middles
 const prepareResponse = require('../http-middlewares/after/prepare-response');
 
@@ -24,7 +23,6 @@ const createRequestClient = (befores, afters, options) => {
   const httpAfters = [];
 
   if (!options.skipDefaultMiddle) {
-    httpBefores.push(sanitizeHeaders);
     httpBefores.push(prepareRequest);
     httpAfters.push(prepareResponse);
   }
