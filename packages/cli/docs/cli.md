@@ -611,6 +611,7 @@ Check `zapier jobs` to track the status of the promotion. Or use `zapier history
 
 **Flags**
 * `-y, --yes` | Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.
+* `--yesExceptEnv` | Automatically answer 'yes' to all prompts except environment variable changes
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
