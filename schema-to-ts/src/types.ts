@@ -103,6 +103,8 @@ export type TypeOverrideFunction = (ctx: AddTypeContext) => void;
  */
 export type TypeOverrides =
   | TypeOverrideFunction
+  | typeof IGNORE
+  | typeof IGNORE_BUT_FOLLOW_REFS
   | Partial<TypeAliasDeclarationStructure>;
 
 export type TypeOverrideMap = Record<SchemaPath, TypeOverrides>;
@@ -121,6 +123,8 @@ export type AddPropertyContext = {
 export type PropertyOverrides =
   | string
   | Partial<PropertySignatureStructure>
+  | typeof IGNORE
+  | typeof IGNORE_BUT_FOLLOW_REFS
   | ((ctx: AddPropertyContext) => void);
 
 /**
@@ -142,3 +146,20 @@ export type InterfaceOverrides = {
    */
   properties?: Record<string, PropertyOverrides>;
 };
+
+/**
+ * Special symbol that can be used instead of a no-op function for types
+ * and property overrides that will cause the type or property to be
+ * ignored. Any references to other types that would also be included
+ * will also be ignored, though they may be included if they are
+ * referenced by something else that is not ignored.
+ */
+export const IGNORE = Symbol();
+
+/**
+ * Special symbol that can be used instead of a no-op function in the
+ * collection of overrides for properties, that will cause the property
+ * to be ignored, but the references of the original schema to continue
+ * to be followed.
+ */
+export const IGNORE_BUT_FOLLOW_REFS = Symbol();

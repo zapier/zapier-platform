@@ -1,9 +1,11 @@
-import type {
-  AddPropertyContext,
-  CompilerContext,
-  CompilerOptions,
-  SchemaPath,
-  VersionInfo,
+import {
+  IGNORE,
+  IGNORE_BUT_FOLLOW_REFS,
+  type AddPropertyContext,
+  type CompilerContext,
+  type CompilerOptions,
+  type SchemaPath,
+  type VersionInfo,
 } from './types.ts';
 import { IMPORTS, INTERFACE_OVERRIDES, TYPE_OVERRIDES } from './constants.ts';
 import { Project, SourceFile } from 'ts-morph';
@@ -187,9 +189,17 @@ function addType(ctx: CompilerContext, schemaPath: SchemaPath) {
     override ? 'WITH OVERRIDES' : '',
   );
 
+  if (override === IGNORE) {
+    return;
+  }
+
   const { rawType, referencedTypes } = renderType(schema);
   if (referencedTypes) {
     ctx.schemasToRender.push(...referencedTypes);
+  }
+
+  if (override === IGNORE_BUT_FOLLOW_REFS) {
+    return;
   }
 
   ctx.file.addTypeAlias({
@@ -261,9 +271,17 @@ function addInterfaceProperty(ctx: AddPropertyContext) {
     override = { type: override };
   }
 
+  if (override === IGNORE) {
+    return;
+  }
+
   const { rawType, referencedTypes } = renderType(value);
   if (referencedTypes) {
     compilerCtx.schemasToRender.push(...referencedTypes);
+  }
+
+  if (override === IGNORE_BUT_FOLLOW_REFS) {
+    return;
   }
 
   iface.addProperty({
