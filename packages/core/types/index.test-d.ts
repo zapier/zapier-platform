@@ -9,7 +9,7 @@ import type {
   Authentication,
   AuthenticationOAuth2Config,
   BasicActionOperation,
-  BasicCreateActionOperation,
+  BasicCreateOperation,
   BasicDisplay,
   BasicHookOperation,
   BasicPollingOperation,
@@ -42,12 +42,12 @@ const authentication: Authentication = {
 };
 expectType<Authentication>(authentication);
 
-const createOperation: BasicCreateActionOperation = {
+const createOperation: BasicCreateOperation = {
   inputFields: [{ key: 'some-input-key-1', type: 'string', required: true }],
   perform: async (z: ZObject, b: Bundle) => ({ data: true }),
   sample: { id: 'some-id', name: 'some-name' },
 };
-expectType<BasicCreateActionOperation>(createOperation);
+expectType<BasicCreateOperation>(createOperation);
 
 const create: Create = {
   key: 'some_create_key_v1',

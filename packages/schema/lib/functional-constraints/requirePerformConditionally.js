@@ -19,7 +19,7 @@ const requirePerformConditionally = (definition) => {
           new jsonschema.ValidationError(
             'requires property "perform".',
             actionDef.operation,
-            '/BasicCreateActionOperationSchema',
+            '/BasicCreateOperationSchema',
             `instance.${actionType}.${actionDef.key}.operation`,
             'required',
             'perform',

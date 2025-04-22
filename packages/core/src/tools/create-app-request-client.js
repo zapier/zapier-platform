@@ -14,6 +14,7 @@ const createInjectInputMiddleware = require('../http-middlewares/before/inject-i
 const disableSSLCertCheck = require('../http-middlewares/before/disable-ssl-cert-check');
 const oauth1SignRequest = require('../http-middlewares/before/oauth1-sign-request');
 const prepareRequest = require('../http-middlewares/before/prepare-request');
+const sanitizeHeaders = require('../http-middlewares/before/sanatize-headers');
 
 // after middles
 const { logResponse } = require('../http-middlewares/after/log-response');
@@ -45,7 +46,7 @@ const createAppRequestClient = (input, options) => {
       httpBefores.push(oauth1SignRequest);
     }
   }
-
+  httpBefores.push(sanitizeHeaders);
   httpBefores.push(addQueryParams);
 
   const verifySSL = _.get(input, '_zapier.event.verifySSL');
