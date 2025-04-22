@@ -250,10 +250,12 @@ const FailerFuncAsync = {
     },
     operation: {
       /* eslint no-unused-vars: 0 */
-      perform: (z, bundle, cb) => {
+      perform: async (z, bundle) => {
         setTimeout(() => {
-          throw new Error('Failer on async function!');
+          throw new Error('Uncaught failure on async function!');
         }, 0);
+        // Wait to ensure the setTimeout error happens before the function completes
+        await new Promise((resolve) => setTimeout(resolve, 100));
       },
     },
   },

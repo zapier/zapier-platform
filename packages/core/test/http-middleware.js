@@ -17,6 +17,7 @@ const addQueryParams = require('../src/http-middlewares/before/add-query-params'
 const addBasicAuthHeader = require('../src/http-middlewares/before/add-basic-auth-header');
 const addDigestAuthHeader = require('../src/http-middlewares/before/add-digest-auth-header');
 const prepareResponse = require('../src/http-middlewares/after/prepare-response');
+const sanitizeHeaders = require('../src/http-middlewares/before/sanatize-headers');
 const applyMiddleware = require('../src/middleware');
 const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-request');
 const { parseDictHeader } = require('../src/tools/http');
@@ -897,5 +898,39 @@ describe('http prepareResponse', () => {
     should(response.data).match(data);
     should(response.json).be.Undefined(); // DEPRECATED and not forwards compatible
     should(response.getHeader(), 'application/x-www-form-urlencoded');
+  });
+  describe('sanitizeHeaders Middleware', () => {
+    it('should trim whitespace from header keys and values', () => {
+      const req = {
+        headers: {
+          '  Content-Type  ': '  application/json  ',
+          '  Authorization  ': '  Bearer token  ',
+        },
+      };
+
+      const expectedHeaders = {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer token',
+      };
+
+      sanitizeHeaders(req);
+      req.headers.should.deepEqual(expectedHeaders);
+    });
+
+    it('should handle empty headers object', () => {
+      const req = { headers: {} };
+      const expectedHeaders = {};
+
+      sanitizeHeaders(req);
+      req.headers.should.deepEqual(expectedHeaders);
+    });
+
+    it('should handle undefined headers', () => {
+      const req = {};
+      const expectedHeaders = {};
+
+      sanitizeHeaders(req);
+      req.headers.should.deepEqual(expectedHeaders);
+    });
   });
 });

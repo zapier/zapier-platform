@@ -3,7 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
-const BasicCreateActionOperationSchema = require('./BasicCreateActionOperationSchema');
+const BasicCreateOperationSchema = require('./BasicCreateOperationSchema');
 const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema(
@@ -30,7 +30,7 @@ module.exports = makeSchema(
       },
       operation: {
         description: 'Powers the functionality for this create.',
-        $ref: BasicCreateActionOperationSchema.id,
+        $ref: BasicCreateOperationSchema.id,
       },
     },
     examples: [
@@ -42,19 +42,6 @@ module.exports = makeSchema(
           description: 'Creates a new recipe.',
         },
         operation: { perform: '$func$2$f$', sample: { id: 1 } },
-      },
-      {
-        key: 'recipe',
-        noun: 'Recipe',
-        display: {
-          label: 'Create Recipe',
-          description: 'Creates a new recipe.',
-        },
-        operation: {
-          perform: '$func$2$f$',
-          sample: { id: 1 },
-          shouldLock: true,
-        },
       },
       {
         key: 'recipe',
@@ -82,18 +69,6 @@ module.exports = makeSchema(
             label: 'Create Recipe',
             description: 'Creates a new recipe.',
           },
-          operation: { perform: '$func$2$f$', shouldLock: 'yes' },
-        },
-        reason: 'Invalid value for key on operation: shouldLock',
-      },
-      {
-        example: {
-          key: 'recipe',
-          noun: 'Recipe',
-          display: {
-            label: 'Create Recipe',
-            description: 'Creates a new recipe.',
-          },
           operation: {
             perform: '$func$2$f$',
           },
@@ -104,5 +79,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [BasicDisplaySchema, BasicCreateActionOperationSchema, KeySchema],
+  [BasicDisplaySchema, BasicCreateOperationSchema, KeySchema],
 );
