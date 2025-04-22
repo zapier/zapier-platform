@@ -1,5 +1,9 @@
 import type { ImportDeclarationStructure, OptionalKind } from 'ts-morph';
-import type { InterfaceOverridesMap, TypeOverrideMap } from './types.ts';
+import {
+  IGNORE_BUT_FOLLOW_REFS,
+  type InterfaceOverridesMap,
+  type TypeOverrideMap,
+} from './types.ts';
 
 import { docStringLines } from './comments.ts';
 
@@ -43,6 +47,12 @@ export const IMPORTS: OptionalKind<ImportDeclarationStructure>[] = [
   },
 ];
 
+const KeyTypeParam = {
+  name: '$Key',
+  constraint: 'string',
+  default: 'string',
+};
+
 const InputFieldsTypeParam = {
   name: '$InputFields',
   constraint: 'InputFields',
@@ -51,27 +61,34 @@ const InputFieldsTypeParam = {
 
 export const INTERFACE_OVERRIDES: InterfaceOverridesMap = {
   '/AppSchema': {
+    self: { name: 'BaseApp' },
     properties: {
       beforeRequest: 'BeforeRequestMiddleware | BeforeRequestMiddleware[]',
       afterResponse: 'AfterResponseMiddleware | AfterResponseMiddleware[]',
+      creates: IGNORE_BUT_FOLLOW_REFS,
+      triggers: IGNORE_BUT_FOLLOW_REFS,
+      searches: IGNORE_BUT_FOLLOW_REFS,
     },
   },
   '/TriggerSchema': {
-    self: { typeParameters: [InputFieldsTypeParam] },
+    self: { typeParameters: [KeyTypeParam, InputFieldsTypeParam] },
     properties: {
+      key: '$Key',
       operation:
         'BasicPollingOperation<$InputFields> | BasicHookOperation<$InputFields> | BasicHookToPollOperation<$InputFields>',
     },
   },
   '/CreateSchema': {
-    self: { typeParameters: [InputFieldsTypeParam] },
+    self: { typeParameters: [KeyTypeParam, InputFieldsTypeParam] },
     properties: {
+      key: '$Key',
       operation: 'BasicCreateOperation<$InputFields>',
     },
   },
   '/SearchSchema': {
-    self: { typeParameters: [InputFieldsTypeParam] },
+    self: { typeParameters: [KeyTypeParam, InputFieldsTypeParam] },
     properties: {
+      key: '$Key',
       operation: 'BasicSearchOperation<$InputFields>',
     },
   },
@@ -140,9 +157,7 @@ export const TYPE_OVERRIDES: TypeOverrideMap = {
       leadingTrivia: '\n',
     });
   },
-  '/InputFieldsSchema': ({ compilerCtx, schema }) => {
-    // Don't render this type as it's replaced by an import. We do want
-    // the plain input field type it references to be rendered, though.
-    compilerCtx.schemasToRender.push('/PlainInputFieldSchema');
-  },
+  // Don't render this type as it's replaced by an import. We do want
+  // the plain input field type it references to be rendered, though.
+  '/InputFieldsSchema': IGNORE_BUT_FOLLOW_REFS,
 };
