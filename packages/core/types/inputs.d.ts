@@ -144,7 +144,7 @@ type FieldResultType<F extends PlainInputField> = F extends {
  * Can be used as a member of an array of input fields itself.
  */
 export type InputFieldFunction<
-  $InputData extends Record<string, unknown> = never,
+  $InputData extends Record<string, unknown> = Record<string, never>,
 > = (
   z: ZObject,
   bundle: Bundle<$InputData>,

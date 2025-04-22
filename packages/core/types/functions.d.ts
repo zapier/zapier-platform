@@ -1,9 +1,11 @@
 import type { Bundle, ZObject } from './custom';
 
+type DefaultInputData = Record<string, unknown>;
+
 export type PollingTriggerPerform<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends { id: string } = { id: string }, // Primary key stuff later?
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return[] | Promise<$Return[]>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | Promise<$Return[]>;
 
 /**
  * Process the data of a webhook sent to Zapier.
@@ -12,36 +14,36 @@ export type PollingTriggerPerform<
  * in `bundle.cleanedRequest` (and `bundle.rawRequest`).
  */
 export type WebhookTriggerPerform<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return[] | Promise<$Return[]>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | Promise<$Return[]>;
 
 /**
  * Pull sample data from the webhook trigger. Try to make these resemble
  * to data of the hooks as closely as possible.
  */
 export type WebhookTriggerPerformList<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return[] | Promise<$Return[]>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | Promise<$Return[]>;
 
 /**
  * Return must be an object of subscription data. It will be passed as
  * `bundle.subscribeData` in the performUnsubscribe function.
  */
 export type WebhookTriggerPerformSubscribe<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * Unsubscribe from the webhook.
  * Data from the subscribe function is provided in `bundle.subscribeData`.
  */
 export type WebhookTriggerPerformUnsubscribe<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 // type HookToPollTriggerSubscribe = () => {}; // Same as Webhook
 // type HookToPollTriggerUnsubscribe = () => {}; // Same as Webhook
@@ -51,27 +53,27 @@ export type WebhookTriggerPerformUnsubscribe<
  * Pull data from the API service, same as a polling trigger.
  */
 export type HookToPollTriggerPerformList<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return[] | Promise<$Return[]>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | Promise<$Return[]>;
 
 /**
  * Return must be an object of subscription data. It will be passed as
  * `bundle.subscribeData` in the performUnsubscribe function.
  */
 export type HookToPollTriggerPerformSubscribe<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * Unsubscribe from the HookToPoll.
  * Data from the subscribe function is provided in `bundle.subscribeData`.
  */
 export type HookToPollTriggerPerformUnsubscribe<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * Create an item on a partner API.
@@ -80,9 +82,9 @@ export type HookToPollTriggerPerformUnsubscribe<
  * to populate more data.
  */
 export type CreatePerform<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = { _none: number },
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * A `perform` function can setup a partner API to call back to this
@@ -99,18 +101,18 @@ export type CreatePerform<
  * - bundle.outputData: The output data from the original `perform`.
  */
 export type CreatePerformResume<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   // TODO: Type cleanedRequest & outputData on Bundle interface
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * Look up an object to populate it after creation?
  */
 export type CreatePerformGet<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * Search for objects on a partner API.
@@ -123,9 +125,9 @@ export type CreatePerformGet<
  * revisit this?
  */
 export type SearchPerform<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => [$Return] | Promise<[$Return]>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => [$Return] | Promise<[$Return]>;
 
 /**
  * Follow up a search's perform with additional data.
@@ -135,17 +137,17 @@ export type SearchPerform<
  * -> PROBABLY: Just the result of searchPerform, no inputFields.
  */
 export type SearchPerformGet<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  *
  */
 export type SearchPerformResume<
-  $Input extends Record<string, any>,
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * Produce the URL to send the user to authorise with the OAuth2 provider.
@@ -155,10 +157,9 @@ export type SearchPerformResume<
  * The values of the auth input fields will be given as
  * `bundle.inputData`.
  */
-export type OAuth2AuthorizeUrl<$Input extends Record<string, any>> = (
-  z: ZObject,
-  bundle: Bundle<$Input>,
-) => string | Promise<string>;
+export type OAuth2AuthorizeUrl<
+  $InputData extends DefaultInputData = DefaultInputData,
+> = (z: ZObject, bundle: Bundle<$InputData>) => string | Promise<string>;
 
 /**
  * Get an object of Auth data, typically including an access and refresh
@@ -185,9 +186,9 @@ export type OAuth2AuthorizeUrl<$Input extends Record<string, any>> = (
  *                      OAuth2 provider.
  */
 export type OAuth2GetAccessToken<
-  $Input extends Record<string, any>,
-  $Return extends {},
-> = (z: ZObject, bundle: Bundle<$Input>) => $Return | Promise<$Return>;
+  $InputData extends DefaultInputData = DefaultInputData,
+  $Return extends {} = {},
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
  * Refresh the app's auth data.
