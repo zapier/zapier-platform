@@ -784,7 +784,14 @@ export interface PlainOutputField {
    * Zapier will automatically make a GET for that file. Otherwise, a
    * .txt file will be generated.
    */
-  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'file' | 'password';
+  type?:
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'datetime'
+    | 'file'
+    | 'password'
+    | 'integer';
 
   /** If this value is required or not. */
   required?: boolean;
