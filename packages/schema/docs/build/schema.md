@@ -1330,6 +1330,7 @@ Key | Required | Type | Description
 `choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
 `placeholder` | no | `string` | An example value that is not saved.
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
+`computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)? Note: Only OAuth, Session Auth, and certain internal use cases support fields with this key.
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 `meta` | no | [/FieldMetaSchema](#fieldmetaschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
 
