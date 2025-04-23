@@ -24,7 +24,15 @@ module.exports = makeSchema(
         type: 'string',
         // string == unicode
         // number == float
-        enum: ['string', 'number', 'boolean', 'datetime', 'file', 'password'],
+        enum: [
+          'string',
+          'number',
+          'boolean',
+          'datetime',
+          'file',
+          'password',
+          'integer',
+        ],
       },
       primary: {
         description:

@@ -1388,7 +1388,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
-`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
+`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`, `'integer'`) | The type of this value. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
