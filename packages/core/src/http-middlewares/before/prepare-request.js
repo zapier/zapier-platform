@@ -102,6 +102,29 @@ const finalRequest = (req) => {
   }
 };
 
+const throwForCurlies = (value, path) => {
+  path = path || [];
+  if (typeof value === 'string') {
+    if (/{{\s*(bundle|process)\.[^}]*}}/.test(value)) {
+      throw new Error(
+        'z.request() no longer supports {{bundle.*}} or {{process.*}} as of v17 ' +
+          "unless it's used in a shorthand request. " +
+          'Use JavaScript template literals instead. ' +
+          `Value in violation: "${value}" in attribute "${path.join('.')}".`,
+      );
+    }
+  } else if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      const item = value[i];
+      throwForCurlies(item, [...path, String(i)]);
+    }
+  } else if (_.isPlainObject(value)) {
+    for (const [k, v] of Object.entries(value)) {
+      throwForCurlies(v, [...path, k]);
+    }
+  }
+};
+
 const prepareRequest = function (req) {
   const input = req.input || {};
 
@@ -112,7 +135,6 @@ const prepareRequest = function (req) {
       params: false,
       body: false,
     },
-    replace: true, // always replace curlies
     // read default from app flags, but always defer to the request object if the value was set
     skipThrowForStatus: _.get(
       input,
@@ -125,29 +147,31 @@ const prepareRequest = function (req) {
 
   // apply app requestTemplate to request
   if (req.merge) {
-    const requestTemplate = (input._zapier.app || {}).requestTemplate;
+    const requestTemplate = (input._zapier?.app || {}).requestTemplate;
     req = requestMerge(requestTemplate, req);
   }
 
-  // replace {{curlies}} in the request
+  const replaceable = {
+    url: req.url,
+    headers: req.headers,
+    params: req.params,
+    body: req.body,
+  };
+
   if (req.replace) {
+    // replace {{curlies}} in the request
     const bank = createBundleBank(
       input._zapier.app,
       input._zapier.event,
       req.serializeValueForCurlies,
     );
-
-    const replaceable = {
-      url: req.url,
-      headers: req.headers,
-      params: req.params,
-      body: req.body,
-    };
-    const replaced = recurseReplaceBank(replaceable, bank);
     req = {
       ...req,
-      ...replaced,
+      ...recurseReplaceBank(replaceable, bank),
     };
+  } else {
+    // throw if there's {{curlies}} in the request
+    throwForCurlies(replaceable);
   }
 
   req = coerceBody(req);

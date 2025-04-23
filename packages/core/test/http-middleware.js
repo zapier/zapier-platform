@@ -345,8 +345,36 @@ describe('http prepareRequest', () => {
     should(request.skipThrowForStatus).eql(true);
   });
 
+  it('should error on curlies by default', () => {
+    (() => {
+      prepareRequest({
+        url: 'https://example.com/{{bundle.inputData.foo}}',
+      });
+    }).should.throw(
+      /Value in violation: "https:\/\/example.com\/{{bundle.inputData.foo}}" in attribute "url"/,
+    );
+  });
+
+  it('should error on curlies recursively', () => {
+    (() => {
+      prepareRequest({
+        url: 'https://example.com',
+        method: 'POST',
+        body: {
+          files: [
+            'https://example.com/files/1',
+            '{{bundle.inputData.file_url}}',
+          ],
+        },
+      });
+    }).should.throw(
+      /Value in violation: "{{bundle.inputData.file_url}}" in attribute "body.files.1"/,
+    );
+  });
+
   it('should not replace values in input', () => {
     const request = prepareRequest({
+      replace: true,
       url: 'https://{{bundle.authData.subdomain}}.example.com/recipes',
       method: 'POST',
       body: {
