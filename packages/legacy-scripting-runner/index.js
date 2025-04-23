@@ -859,7 +859,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         request = {};
       }
 
-      request = { ...bundle.request, ...request };
+      request = { ...bundle.request, ...request, replace: true };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
       if (!preMethod && !isBodyStream && isAnyFileFieldSet(bundle)) {
