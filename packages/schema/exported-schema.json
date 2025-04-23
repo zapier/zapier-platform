@@ -763,6 +763,10 @@
           "description": "Does the value of this field affect the definitions of other fields in the set?",
           "type": "boolean"
         },
+        "computed": {
+          "description": "Is this field automatically populated (and hidden from the user)? Note: Only OAuth, Session Auth, and certain internal use cases support fields with this key.",
+          "type": "boolean"
+        },
         "inputFormat": {
           "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
           "type": "string",
