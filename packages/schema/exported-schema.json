@@ -800,7 +800,8 @@
             "boolean",
             "datetime",
             "file",
-            "password"
+            "password",
+            "integer"
           ]
         },
         "required": {
