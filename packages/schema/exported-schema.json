@@ -1,5 +1,5 @@
 {
-  "version": "16.3.1",
+  "version": "16.5.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -220,8 +220,8 @@
         }
       ]
     },
-    "FieldSchema": {
-      "id": "/FieldSchema",
+    "PlainFieldSchema": {
+      "id": "/PlainFieldSchema",
       "description": "In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "type": "object",
       "required": ["key"],
@@ -271,7 +271,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/FieldSchema"
+            "$ref": "/PlainFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -669,9 +669,9 @@
         }
       }
     },
-    "InputFieldSchema": {
+    "PlainInputFieldSchema": {
       "description": "Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
-      "id": "/InputFieldSchema",
+      "id": "/PlainInputFieldSchema",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -717,7 +717,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/InputFieldSchema"
+            "$ref": "/PlainInputFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -732,13 +732,23 @@
           "minLength": 1,
           "maxLength": 1000
         },
-        "dynamic": {
-          "description": "A reference to a trigger that will power a dynamic dropdown.",
-          "$ref": "/RefResourceSchema"
-        },
         "search": {
           "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
           "$ref": "/RefResourceSchema"
+        },
+        "dynamic": {
+          "description": "A reference to a trigger, request, or function that will power a dynamic dropdown.",
+          "oneOf": [
+            {
+              "$ref": "/RefResourceSchema"
+            },
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
         },
         "choices": {
           "description": "An object of machine keys and human values to populate a static dropdown.",
@@ -753,6 +763,10 @@
           "description": "Does the value of this field affect the definitions of other fields in the set?",
           "type": "boolean"
         },
+        "computed": {
+          "description": "Is this field automatically populated (and hidden from the user)? Note: Only OAuth, Session Auth, and certain internal use cases support fields with this key.",
+          "type": "boolean"
+        },
         "inputFormat": {
           "description": "Useful when you expect the input to be part of a longer string. Put \"{{input}}\" in place of the user's input (IE: \"https://{{input}}.yourdomain.com\").",
           "type": "string",
@@ -765,9 +779,9 @@
       },
       "additionalProperties": false
     },
-    "OutputFieldSchema": {
+    "PlainOutputFieldSchema": {
       "description": "Field schema specialized for output fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
-      "id": "/OutputFieldSchema",
+      "id": "/PlainOutputFieldSchema",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -790,7 +804,8 @@
             "boolean",
             "datetime",
             "file",
-            "password"
+            "password",
+            "integer"
           ]
         },
         "required": {
@@ -809,7 +824,7 @@
         "children": {
           "type": "array",
           "items": {
-            "$ref": "/OutputFieldSchema"
+            "$ref": "/PlainOutputFieldSchema"
           },
           "description": "An array of child fields that define the structure of a sub-object for this field. Usually used for line items.",
           "minItems": 1
@@ -855,14 +870,14 @@
       },
       "additionalProperties": false
     },
-    "DynamicInputFieldsSchema": {
-      "id": "/DynamicInputFieldsSchema",
+    "InputFieldsSchema": {
+      "id": "/InputFieldsSchema",
       "description": "An array or collection of input fields.",
       "type": "array",
       "items": {
         "oneOf": [
           {
-            "$ref": "/InputFieldSchema"
+            "$ref": "/PlainInputFieldSchema"
           },
           {
             "$ref": "/FunctionSchema"
@@ -870,14 +885,14 @@
         ]
       }
     },
-    "DynamicOutputFieldsSchema": {
-      "id": "/DynamicOutputFieldsSchema",
+    "OutputFieldsSchema": {
+      "id": "/OutputFieldsSchema",
       "description": "An array or collection of output fields.",
       "type": "array",
       "items": {
         "oneOf": [
           {
-            "$ref": "/OutputFieldSchema"
+            "$ref": "/PlainOutputFieldSchema"
           },
           {
             "$ref": "/FunctionSchema"
@@ -894,7 +909,7 @@
     },
     "LockObjectSchema": {
       "id": "/LockObjectSchema",
-      "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+      "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
       "type": "object",
       "required": ["key"],
       "properties": {
@@ -1039,11 +1054,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1057,7 +1072,7 @@
           }
         },
         "lock": {
-          "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
           "$ref": "/LockObjectSchema"
         },
         "throttle": {
@@ -1149,11 +1164,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1202,11 +1217,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1264,11 +1279,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1282,7 +1297,7 @@
           }
         },
         "lock": {
-          "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
           "$ref": "/LockObjectSchema"
         },
         "throttle": {
@@ -1415,7 +1430,7 @@
         },
         "outputFields": {
           "description": "What fields of data will this return?",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like?",
@@ -1506,11 +1521,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1570,6 +1585,72 @@
       },
       "additionalProperties": false
     },
+    "BasicSearchOperationSchema": {
+      "id": "/BasicSearchOperationSchema",
+      "description": "Represents the fundamental mechanics of a search.",
+      "type": "object",
+      "required": ["perform"],
+      "properties": {
+        "resource": {
+          "description": "Optionally reference and extends a resource. Allows Zapier to automatically tie together samples, lists and hooks, greatly improving the UX. EG: if you had another trigger reusing a resource but filtering the results.",
+          "$ref": "/KeySchema"
+        },
+        "perform": {
+          "description": "How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "performResume": {
+          "description": "A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.",
+          "$ref": "/FunctionSchema"
+        },
+        "performGet": {
+          "description": "How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "inputFields": {
+          "description": "What should the form a user sees and configures look like?",
+          "$ref": "/InputFieldsSchema"
+        },
+        "outputFields": {
+          "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
+          "$ref": "/OutputFieldsSchema"
+        },
+        "sample": {
+          "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
+          "type": "object",
+          "minProperties": 1,
+          "docAnnotation": {
+            "required": {
+              "type": "replace",
+              "value": "**yes** (with exceptions, see description)"
+            }
+          }
+        },
+        "lock": {
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
+          "$ref": "/LockObjectSchema"
+        },
+        "throttle": {
+          "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
+          "$ref": "/ThrottleObjectSchema"
+        }
+      },
+      "additionalProperties": false
+    },
     "SearchSchema": {
       "id": "/SearchSchema",
       "description": "How will Zapier search for existing objects?",
@@ -1592,7 +1673,7 @@
         },
         "operation": {
           "description": "Powers the functionality for this search.",
-          "$ref": "/BasicActionOperationSchema"
+          "$ref": "/BasicSearchOperationSchema"
         }
       },
       "additionalProperties": false
@@ -1615,8 +1696,8 @@
       },
       "additionalProperties": false
     },
-    "BasicCreateActionOperationSchema": {
-      "id": "/BasicCreateActionOperationSchema",
+    "BasicCreateOperationSchema": {
+      "id": "/BasicCreateOperationSchema",
       "description": "Represents the fundamental mechanics of a create.",
       "type": "object",
       "properties": {
@@ -1658,11 +1739,11 @@
         },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
-          "$ref": "/DynamicInputFieldsSchema"
+          "$ref": "/InputFieldsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
-          "$ref": "/DynamicOutputFieldsSchema"
+          "$ref": "/OutputFieldsSchema"
         },
         "sample": {
           "description": "What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample",
@@ -1676,16 +1757,12 @@
           }
         },
         "lock": {
-          "description": "**INTERNAL USE ONLY**. Zapier uses this configuration for internal operation locking.",
+          "description": "Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).",
           "$ref": "/LockObjectSchema"
         },
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
-        },
-        "shouldLock": {
-          "description": "Should this action be performed one at a time (avoid concurrency)?",
-          "type": "boolean"
         },
         "buffer": {
           "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
@@ -1732,7 +1809,7 @@
         },
         "operation": {
           "description": "Powers the functionality for this create.",
-          "$ref": "/BasicCreateActionOperationSchema"
+          "$ref": "/BasicCreateOperationSchema"
         }
       },
       "additionalProperties": false

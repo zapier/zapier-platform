@@ -1,19 +1,19 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
-const FieldSchema = require('./FieldSchema');
+const PlainFieldSchema = require('./PlainFieldSchema');
 
 module.exports = makeSchema(
   {
-    description: `Field schema specialized for output fields. ${FieldSchema.schema.description}`,
-    id: '/OutputFieldSchema',
+    description: `Field schema specialized for output fields. ${PlainFieldSchema.schema.description}`,
+    id: '/PlainOutputFieldSchema',
     type: 'object',
     required: ['key'],
     properties: {
-      ...FieldSchema.schema.properties,
+      ...PlainFieldSchema.schema.properties,
       children: {
         type: 'array',
-        items: { $ref: '/OutputFieldSchema' },
+        items: { $ref: '/PlainOutputFieldSchema' },
         description:
           'An array of child fields that define the structure of a sub-object for this field. Usually used for line items.',
         minItems: 1,
@@ -24,7 +24,15 @@ module.exports = makeSchema(
         type: 'string',
         // string == unicode
         // number == float
-        enum: ['string', 'number', 'boolean', 'datetime', 'file', 'password'],
+        enum: [
+          'string',
+          'number',
+          'boolean',
+          'datetime',
+          'file',
+          'password',
+          'integer',
+        ],
       },
       primary: {
         description:
@@ -79,10 +87,10 @@ module.exports = makeSchema(
       {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:
-          'Invalid value for key: children (must be array of OutputFieldSchema)',
+          'Invalid value for key: children (must be array of PlainOutputFieldSchema)',
       },
     ],
     additionalProperties: false,
   },
-  [FieldSchema],
+  [PlainFieldSchema],
 );

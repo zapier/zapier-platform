@@ -1,9 +1,9 @@
 // not intended to be loaded via require() or import() - copied during build step
 import zapier from 'zapier-platform-core';
 
-let appRaw;
+let _appRaw;
 try {
-  appRaw = await import('{REPLACE_ME_PACKAGE_NAME}');
+  _appRaw = await import('{REPLACE_ME_PACKAGE_NAME}');
 } catch (err) {
   if (err.code === 'ERR_MODULE_NOT_FOUND') {
     err.message +=
@@ -13,8 +13,9 @@ try {
 }
 
 // Allows a developer to use named exports or default export in entry point
-if (appRaw && appRaw.default) {
-  appRaw = appRaw.default;
+if (_appRaw && _appRaw.default) {
+  _appRaw = _appRaw.default;
 }
 
-export const handler = zapier.createAppHandler(appRaw);
+export const appRaw = _appRaw;
+export const handler = zapier.createAppHandler(_appRaw);

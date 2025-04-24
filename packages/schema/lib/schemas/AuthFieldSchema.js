@@ -2,16 +2,16 @@
 
 const makeSchema = require('../utils/makeSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
-const FieldSchema = require('./FieldSchema');
+const PlainFieldSchema = require('./PlainFieldSchema');
 
 module.exports = makeSchema(
   {
     id: '/AuthFieldSchema',
-    description: `Field schema specialized for authentication fields. ${FieldSchema.schema.description}`,
+    description: `Field schema specialized for authentication fields. ${PlainFieldSchema.schema.description}`,
     required: ['key'],
     type: 'object',
     properties: {
-      ...FieldSchema.schema.properties,
+      ...PlainFieldSchema.schema.properties,
       children: {
         type: 'array',
         items: { $ref: '/AuthFieldSchema' },
@@ -118,5 +118,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [FieldChoicesSchema, FieldSchema],
+  [FieldChoicesSchema, PlainFieldSchema],
 );

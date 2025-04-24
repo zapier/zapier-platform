@@ -17,6 +17,7 @@ const addQueryParams = require('../src/http-middlewares/before/add-query-params'
 const addBasicAuthHeader = require('../src/http-middlewares/before/add-basic-auth-header');
 const addDigestAuthHeader = require('../src/http-middlewares/before/add-digest-auth-header');
 const prepareResponse = require('../src/http-middlewares/after/prepare-response');
+const sanitizeHeaders = require('../src/http-middlewares/before/sanatize-headers');
 const applyMiddleware = require('../src/middleware');
 const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-request');
 const { parseDictHeader } = require('../src/tools/http');
@@ -342,6 +343,84 @@ describe('http prepareRequest', () => {
       },
     });
     should(request.skipThrowForStatus).eql(true);
+  });
+
+  it('should error on curlies by default', () => {
+    (() => {
+      prepareRequest({
+        url: 'https://example.com/{{bundle.inputData.foo}}',
+      });
+    }).should.throw(
+      /Value in violation: "https:\/\/example.com\/{{bundle.inputData.foo}}" in attribute "url"/,
+    );
+  });
+
+  it('should error on curlies recursively', () => {
+    (() => {
+      prepareRequest({
+        url: 'https://example.com',
+        method: 'POST',
+        body: {
+          files: [
+            'https://example.com/files/1',
+            '{{bundle.inputData.file_url}}',
+          ],
+        },
+      });
+    }).should.throw(
+      /Value in violation: "{{bundle.inputData.file_url}}" in attribute "body.files.1"/,
+    );
+  });
+
+  it('should not replace values in input', () => {
+    const request = prepareRequest({
+      replace: true,
+      url: 'https://{{bundle.authData.subdomain}}.example.com/recipes',
+      method: 'POST',
+      body: {
+        name: '{{bundle.inputData.name}}',
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              authData: {
+                subdomain: 'foo',
+              },
+              inputData: {
+                query: 'bar',
+                name: 'baz qux',
+              },
+            },
+          },
+          app: {
+            searches: {
+              find_recipe: {
+                operation: {
+                  perform: {
+                    url: 'https://{{bundle.authData.subdomain}}.example.com/recipes',
+                    params: {
+                      q: '{{bundle.inputData.query}}',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    should(request.url).eql('https://foo.example.com/recipes');
+    should(request.body).eql('{"name":"baz qux"}');
+    should(
+      request.input._zapier.app.searches.find_recipe.operation.perform,
+    ).deepEqual({
+      url: 'https://{{bundle.authData.subdomain}}.example.com/recipes',
+      params: {
+        q: '{{bundle.inputData.query}}',
+      },
+    });
   });
 });
 
@@ -847,5 +926,39 @@ describe('http prepareResponse', () => {
     should(response.data).match(data);
     should(response.json).be.Undefined(); // DEPRECATED and not forwards compatible
     should(response.getHeader(), 'application/x-www-form-urlencoded');
+  });
+  describe('sanitizeHeaders Middleware', () => {
+    it('should trim whitespace from header keys and values', () => {
+      const req = {
+        headers: {
+          '  Content-Type  ': '  application/json  ',
+          '  Authorization  ': '  Bearer token  ',
+        },
+      };
+
+      const expectedHeaders = {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer token',
+      };
+
+      sanitizeHeaders(req);
+      req.headers.should.deepEqual(expectedHeaders);
+    });
+
+    it('should handle empty headers object', () => {
+      const req = { headers: {} };
+      const expectedHeaders = {};
+
+      sanitizeHeaders(req);
+      req.headers.should.deepEqual(expectedHeaders);
+    });
+
+    it('should handle undefined headers', () => {
+      const req = {};
+      const expectedHeaders = {};
+
+      sanitizeHeaders(req);
+      req.headers.should.deepEqual(expectedHeaders);
+    });
   });
 });

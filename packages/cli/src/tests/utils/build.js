@@ -59,7 +59,7 @@ describe('build (runs slowly)', function () {
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
 
-    smartPaths.length.should.be.within(200, 304);
+    smartPaths.length.should.be.within(200, 305);
   });
 
   it('should list all the files', () => {
@@ -315,10 +315,22 @@ describe('build (runs slowly)', function () {
 });
 
 describe('build in workspaces', function () {
-  let tmpDir, origCwd;
+  let tmpDir, origCwd, coreVersion;
 
   before(async () => {
     tmpDir = getNewTempDirPath();
+
+    // Get absolute paths to local packages
+    const corePath = path.resolve(__dirname, '../../../../core');
+    const corePackageJsonPath = path.join(corePath, 'package.json');
+
+    const originalPackageJsonText = fs.readFileSync(corePackageJsonPath, {
+      encoding: 'utf8',
+    });
+    const corePackageJson = JSON.parse(originalPackageJsonText);
+
+    // Get the actual version from the local core package
+    coreVersion = corePackageJson.version;
 
     // Set up a monorepo project structure with two integrations as npm
     // workspaces:
@@ -361,7 +373,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '8.3.2',
-          'zapier-platform-core': '15.5.1',
+          'zapier-platform-core': `file:${corePath}`,
         },
         private: true,
       }),
@@ -380,7 +392,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '9.0.1',
-          'zapier-platform-core': '15.5.1',
+          'zapier-platform-core': `file:${corePath}`,
         },
         private: true,
       }),
@@ -440,7 +452,7 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal('15.5.1');
+    corePackageJson.version.should.equal(coreVersion);
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
@@ -498,7 +510,7 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal('15.5.1');
+    corePackageJson.version.should.equal(coreVersion);
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
@@ -515,5 +527,150 @@ describe('build in workspaces', function () {
     fs.existsSync(
       path.join(unzipPath, 'node_modules', 'app-2'),
     ).should.be.false();
+  });
+});
+
+describe('build ESM (runs slowly)', function () {
+  let tmpDir, entryPoint, corePackage;
+
+  before(async () => {
+    // basically does what `zapier init` does
+    tmpDir = getNewTempDirPath();
+    await copyDir(
+      path.resolve(__dirname, '../../../../../example-apps/typescript-esm'),
+      tmpDir,
+    );
+
+    // When releasing, the core version the example apps points can be still
+    // non-existent. Let's make sure it points to the local one.
+    corePackage = await npmPackCore();
+    const appPackageJsonPath = path.join(tmpDir, 'package.json');
+    const appPackageJson = JSON.parse(
+      fs.readFileSync(appPackageJsonPath, { encoding: 'utf8' }),
+    );
+    appPackageJson.dependencies[PLATFORM_PACKAGE] = corePackage.path;
+    fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
+
+    runCommand('npm', ['i'], { cwd: tmpDir });
+    // TODO: This test depends on how "typescript" example is set up, which
+    // isn't good. Should refactor not to rely on that.
+    runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], {
+      cwd: tmpDir,
+    });
+    entryPoint = path.resolve(tmpDir, 'dist', 'index.js');
+  });
+
+  after(() => {
+    fs.removeSync(tmpDir);
+    corePackage.cleanup();
+  });
+
+  it('should list only required files', async function () {
+    this.retries(3); // retry up to 3 times
+
+    const smartPaths = await build.requiredFiles({
+      cwd: tmpDir,
+      entryPoints: [entryPoint],
+    });
+    // check that only the required lodash files are grabbed
+    smartPaths.should.containEql('dist/index.js');
+    smartPaths.should.containEql('dist/triggers/movie.js');
+
+    smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
+    smartPaths.should.not.containEql('tsconfig.json');
+
+    smartPaths.length.should.be.within(200, 305);
+  });
+
+  it('should list all the files', () => {
+    return build.listFiles(tmpDir).then((dumbPaths) => {
+      // check that way more than the required package files are grabbed
+      dumbPaths.should.containEql('dist/index.js');
+      dumbPaths.should.containEql('dist/triggers/movie.js');
+
+      dumbPaths.should.containEql('src/index.ts');
+      dumbPaths.should.containEql('src/triggers/movie.ts');
+      dumbPaths.should.containEql('tsconfig.json');
+
+      dumbPaths.length.should.be.within(3000, 10000);
+    });
+  });
+
+  it('list should not include blocklisted files', () => {
+    const tmpProjectDir = getNewTempDirPath();
+
+    [
+      'safe.js',
+      '.env',
+      '.environment',
+      '.git/HEAD',
+      'build/the-build.zip',
+    ].forEach((file) => {
+      const fileDir = file.split(path.sep);
+      fileDir.pop();
+      if (fileDir.length > 0) {
+        fs.ensureDirSync(path.join(tmpProjectDir, fileDir.join(path.sep)));
+      }
+      fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
+    });
+
+    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
+      dumbPaths.should.containEql('safe.js');
+      dumbPaths.should.not.containEql('.env');
+      dumbPaths.should.not.containEql('build/the-build.zip');
+      dumbPaths.should.not.containEql('.environment');
+      dumbPaths.should.not.containEql('.git/HEAD');
+    });
+  });
+
+  it('should make a build.zip', () => {
+    const tmpProjectDir = getNewTempDirPath();
+    const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
+    const tmpUnzipPath = getNewTempDirPath();
+    const tmpIndexPath = path.join(tmpProjectDir, 'index.js');
+
+    fs.outputFileSync(
+      path.join(tmpProjectDir, 'zapierwrapper.js'),
+      "console.log('hello!')",
+    );
+    fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
+    fs.chmodSync(tmpIndexPath, 0o700);
+    fs.outputFileSync(path.join(tmpProjectDir, '.zapierapprc'), '{}');
+    fs.ensureDirSync(path.dirname(tmpZipPath));
+
+    global.argOpts = {};
+
+    return build
+      .makeZip(tmpProjectDir, tmpZipPath)
+      .then(() => decompress(tmpZipPath, tmpUnzipPath))
+      .then((files) => {
+        files.length.should.equal(2);
+
+        const indexFile = files.find(
+          ({ path: filePath }) => filePath === 'index.js',
+        );
+        should.exist(indexFile);
+        (indexFile.mode & 0o400).should.be.above(
+          0,
+          'no read permission for owner',
+        );
+        (indexFile.mode & 0o040).should.be.above(
+          0,
+          'no read permission for group',
+        );
+        (indexFile.mode & 0o004).should.be.above(
+          0,
+          'no read permission for public',
+        );
+      });
+  });
+
+  it('should run the zapier-build script', async () => {
+    runCommand('npm', ['run', 'clean'], { cwd: tmpDir });
+
+    await build.maybeRunBuildScript({ cwd: tmpDir });
+
+    const buildExists = await fs.pathExists(path.join(tmpDir, 'dist'));
+    should.equal(buildExists, true);
   });
 });

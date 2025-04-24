@@ -52,16 +52,14 @@ runLambda.testName = 'runLambda';
 const runLocally = (event) => {
   return new Promise((resolve, reject) => {
     const handler = createLambdaHandler(
-      path.resolve(__dirname, '../test/userapp/index.js'),
+      path.resolve(__dirname, '../test/userapp/'),
     );
 
-    handler(event, {}, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
+    try {
+      resolve(handler(event));
+    } catch (err) {
+      reject(err);
+    }
   });
 };
 runLocally.testName = 'runLocally';
@@ -763,30 +761,64 @@ const doTest = (runner) => {
     });
 
     describe('error handling', () => {
-      const testError = (method, errorMessage) => {
-        it(`should catch errors from ${method}`, () => {
+      let originalEnv;
+
+      before(() => {
+        originalEnv = process.env;
+        process.env = {
+          ...originalEnv,
+          LOGGING_ENDPOINT: `${mocky.FAKE_LOG_URL}/input`,
+          LOGGING_TOKEN: 'fake-token',
+        };
+      });
+
+      after(() => {
+        process.env = originalEnv;
+      });
+
+      beforeEach(() => {
+        mocky.clearLogs();
+        mocky.mockLogServer();
+      });
+
+      afterEach(() => {
+        mocky.clearLogs();
+      });
+
+      const testError = async (method, errorMessage, logMessage) => {
+        it(`should catch errors from ${method}`, async () => {
           const event = {
             command: 'execute',
             method,
           };
-          return runner(event)
-            .then(() => {
-              should(true).eql(false, 'Expected an error!');
-            })
-            .catch((err) => {
-              should.exist(err);
-              err.message.should.startWith(errorMessage);
-            });
+
+          try {
+            await runner(event);
+            should(true).eql(false, 'Expected an error!');
+          } catch (err) {
+            should.exist(err);
+            err.message.should.startWith(errorMessage);
+          }
+
+          if (logMessage) {
+            // wait for the logger to finish
+            await sleep(2000);
+            const logs = mocky.getLogs();
+            const log = logs[0];
+            log.message.should.startWith(logMessage);
+          }
         });
       };
 
       testError(
-        'triggers.failerfuncasyncList.operation.perform',
-        'Failer on async function!',
+        'resources.failerfuncasync.list.operation.perform',
+        'Uncaught failure on async function!',
+        'Uncaught error: Error: Uncaught failure on async function!',
       );
       testError(
         'resources.failerfunc.list.operation.perform',
         'Failer on sync function!',
+        'Unhandled error: Error: Failer on sync function!',
       );
       testError(
         'resources.failerfuncpromise.list.operation.perform',

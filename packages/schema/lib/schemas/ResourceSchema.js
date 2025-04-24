@@ -8,7 +8,7 @@ const ResourceMethodListSchema = require('./ResourceMethodListSchema');
 const ResourceMethodSearchSchema = require('./ResourceMethodSearchSchema');
 const ResourceMethodCreateSchema = require('./ResourceMethodCreateSchema');
 const KeySchema = require('./KeySchema');
-const DynamicOutputFieldsSchema = require('./DynamicOutputFieldsSchema');
+const OutputFieldsSchema = require('./OutputFieldsSchema');
 
 module.exports = makeSchema(
   {
@@ -52,7 +52,7 @@ module.exports = makeSchema(
       },
       outputFields: {
         description: 'What fields of data will this return?',
-        $ref: DynamicOutputFieldsSchema.id,
+        $ref: OutputFieldsSchema.id,
       },
       sample: {
         description: 'What does a sample of data look like?',
@@ -162,7 +162,7 @@ module.exports = makeSchema(
     ResourceMethodListSchema,
     ResourceMethodSearchSchema,
     ResourceMethodCreateSchema,
-    DynamicOutputFieldsSchema,
+    OutputFieldsSchema,
     KeySchema,
   ],
 );
