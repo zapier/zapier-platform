@@ -22,6 +22,7 @@ const checks = [
   require('./requirePerformConditionally'),
   require('./pollingThrottle'),
   require('./AuthFieldisSafe'),
+  require('./canPaginateInputFields'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {
