@@ -15,42 +15,28 @@ describe('request client', function () {
   const testLogger = () => Promise.resolve({});
   const input = createInput({}, {}, testLogger);
 
-  it('should include a user-agent header', (done) => {
+  it('should include a user-agent header', async () => {
     const request = createAppRequestClient(input);
-    request({ url: `${HTTPBIN_URL}/get` })
-      .then((responseBefore) => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
+    const response = await request({ url: `${HTTPBIN_URL}/get` });
 
-        response.request.headers['user-agent'].should.eql('Zapier');
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql(`${HTTPBIN_URL}/get`);
-        done();
-      })
-      .catch(done);
+    response.request.headers['user-agent'].should.eql('Zapier');
+    response.status.should.eql(200);
+    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
-  it('should allow overriding the user-agent header', (done) => {
+  it('should allow overriding the user-agent header', async () => {
     const request = createAppRequestClient(input);
-    request({
+    const response = await request({
       url: `${HTTPBIN_URL}/get`,
       headers: {
         'User-Agent': 'Zapier!',
       },
-    })
-      .then((responseBefore) => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
+    });
 
-        should(response.request.headers['user-agent']).eql(undefined);
-        response.request.headers['User-Agent'].should.eql('Zapier!');
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql(`${HTTPBIN_URL}/get`);
-        done();
-      })
-      .catch(done);
+    should(response.request.headers['user-agent']).eql(undefined);
+    response.request.headers['User-Agent'].should.eql('Zapier!');
+    response.status.should.eql(200);
+    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
   it('should have json serializable response', async () => {
@@ -67,34 +53,24 @@ describe('request client', function () {
     body.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
-  it('should wrap a request entirely', (done) => {
+  it('should wrap a request entirely', async () => {
     const request = createAppRequestClient(input);
-    request({ url: `${HTTPBIN_URL}/get` })
-      .then((response) => {
-        response.status.should.eql(200);
-        const body = JSON.parse(response.content);
-        body.url.should.eql(`${HTTPBIN_URL}/get`);
-        done();
-      })
-      .catch(done);
+    const response = await request({ url: `${HTTPBIN_URL}/get` });
+    response.status.should.eql(200);
+    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
-  it('should support promise bodies', (done) => {
+  it('should support promise bodies', async () => {
     const payload = { hello: 'world is nice' };
     const request = createAppRequestClient(input);
-    request({
+    const response = await request({
       method: 'POST',
       url: `${HTTPBIN_URL}/post`,
       body: Promise.resolve(payload),
-    })
-      .then((response) => {
-        response.status.should.eql(200);
-        response.request.body.should.eql(JSON.stringify(payload));
-        const body = JSON.parse(response.content);
-        body.data.should.eql(JSON.stringify(payload));
-        done();
-      })
-      .catch(done);
+    });
+    response.status.should.eql(200);
+    response.request.body.should.eql(JSON.stringify(payload));
+    response.data.data.should.eql(JSON.stringify(payload));
   });
 
   it('should support streaming another request', async () => {
@@ -137,16 +113,11 @@ describe('request client', function () {
     body.data.should.eql('hello world this is a cat (=^..^=)');
   });
 
-  it('should support single url param', (done) => {
+  it('should support single url param', async () => {
     const request = createAppRequestClient(input);
-    request(`${HTTPBIN_URL}/get`)
-      .then((response) => {
-        response.status.should.eql(200);
-        const body = JSON.parse(response.content);
-        body.url.should.eql(`${HTTPBIN_URL}/get`);
-        done();
-      })
-      .catch(done);
+    const response = await request(`${HTTPBIN_URL}/get`);
+    response.status.should.eql(200);
+    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
   it('should support url param with options', async () => {
@@ -161,75 +132,54 @@ describe('request client', function () {
     body.headers.A.should.deepEqual(['B']);
   });
 
-  it('should support bytes', (done) => {
+  it('should support bytes', async () => {
     const request = createAppRequestClient(input);
-    request(`${HTTPBIN_URL}/bytes/1024`)
-      .then((response) => {
-        response.status.should.eql(200);
-        // it tries to decode the bytes /shrug
-        response.content.length.should.belowOrEqual(1024);
-        done();
-      })
-      .catch(done);
+    const response = await request(`${HTTPBIN_URL}/bytes/1024`);
+    response.status.should.eql(200);
+    // it tries to decode the bytes /shrug
+    response.content.length.should.belowOrEqual(1024);
   });
 
-  it('should support bytes raw', (done) => {
+  it('should support bytes raw', async () => {
     const request = createAppRequestClient(input);
-    request(`${HTTPBIN_URL}/bytes/1024`, { raw: true })
-      .then((response) => {
-        response.status.should.eql(200);
-        should(response.buffer).be.type('function');
-        should(response.text).be.type('function');
-        should(response.body.pipe).be.type('function');
-        done();
-      })
-      .catch(done);
+    const response = await request(`${HTTPBIN_URL}/bytes/1024`, { raw: true });
+    response.status.should.eql(200);
+    should(response.buffer).be.type('function');
+    should(response.text).be.type('function');
+    should(response.body.pipe).be.type('function');
   });
 
-  it('should support streaming bytes', (done) => {
+  it('should support streaming bytes', async () => {
     const request = createAppRequestClient(input);
-    request(`${HTTPBIN_URL}/stream-bytes/1024`)
-      .then((response) => {
-        response.status.should.eql(200);
-        // it tries to decode the bytes /shrug
-        response.content.length.should.belowOrEqual(1024);
-        done();
-      })
-      .catch(done);
+    const response = await request(`${HTTPBIN_URL}/stream-bytes/1024`);
+    response.status.should.eql(200);
+    // it tries to decode the bytes /shrug
+    response.content.length.should.belowOrEqual(1024);
   });
 
-  it('should support streaming bytes raw', (done) => {
+  it('should support streaming bytes raw', async () => {
     const request = createAppRequestClient(input);
-    request(`${HTTPBIN_URL}/stream-bytes/1024`, {
+    const response = await request(`${HTTPBIN_URL}/stream-bytes/1024`, {
       raw: true,
-    })
-      .then((response) => {
-        response.status.should.eql(200);
-        should(response.buffer).be.type('function');
-        should(response.text).be.type('function');
-        should(response.body.pipe).be.type('function');
-        done();
-      })
-      .catch(done);
+    });
+    response.status.should.eql(200);
+    should(response.buffer).be.type('function');
+    should(response.text).be.type('function');
+    should(response.body.pipe).be.type('function');
   });
 
-  it('should support streaming bytes raw as buffer', (done) => {
+  it('should support streaming bytes raw as buffer', async () => {
     const request = createAppRequestClient(input);
-    request(`${HTTPBIN_URL}/stream-bytes/1024`, {
+    const response = await request(`${HTTPBIN_URL}/stream-bytes/1024`, {
       raw: true,
-    })
-      .then((response) => {
-        response.status.should.eql(200);
-        return response.buffer();
-      })
-      .then((buffer) => {
-        buffer.length.should.eql(1024);
-        done();
-      })
-      .catch(done);
+    });
+    response.status.should.eql(200);
+
+    const buffer = await response.buffer();
+    buffer.length.should.eql(1024);
   });
 
-  it('should run any beforeRequest functions', (done) => {
+  it('should run any beforeRequest functions', async () => {
     const inputWithBeforeMiddleware = createInput(
       {
         beforeRequest: [
@@ -243,18 +193,11 @@ describe('request client', function () {
       testLogger,
     );
     const request = createAppRequestClient(inputWithBeforeMiddleware);
-    request({ url: `${HTTPBIN_URL}/get` })
-      .then((responseBefore) => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
+    const response = await request({ url: `${HTTPBIN_URL}/get` });
 
-        response.request.headers['X-Testing-True'].should.eql('Yes');
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql(`${HTTPBIN_URL}/get`);
-        done();
-      })
-      .catch(done);
+    response.request.headers['X-Testing-True'].should.eql('Yes');
+    response.status.should.eql(200);
+    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
   it('should default to run throwForStatus', () => {
@@ -424,30 +367,24 @@ describe('request client', function () {
   });
 
   describe('adds query params', () => {
-    it('should replace remaining curly params with empty string by default', async () => {
+    it('should error on curly params default', async () => {
       const request = createAppRequestClient(input);
-      const responseBefore = await request({
+
+      return request({
         url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
           really: '{{bundle.inputData.really}}',
           cool: 'true',
         },
-      });
-
-      const response = JSON.parse(JSON.stringify(responseBefore));
-      response.data.args.something.should.deepEqual(['']);
-      response.data.args.really.should.deepEqual(['']);
-      response.data.args.cool.should.deepEqual(['true']);
-      response.status.should.eql(200);
-
-      const body = JSON.parse(response.content);
-      body.url.should.eql(`${HTTPBIN_URL}/get?something=&really=&cool=true`);
+      }).should.be.rejectedWith(
+        /Value in violation: "{{bundle.inputData.really}}" in attribute "params.really"/,
+      );
     });
 
     it('should replace remaining curly params with empty string when set as false', async () => {
       const request = createAppRequestClient(input);
-      const responseBefore = await request({
+      const response = await request({
         url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
@@ -457,9 +394,10 @@ describe('request client', function () {
         removeMissingValuesFrom: {
           params: false,
         },
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
 
-      const response = JSON.parse(JSON.stringify(responseBefore));
       response.data.args.something.should.deepEqual(['']);
       response.data.args.really.should.deepEqual(['']);
       response.data.args.cool.should.deepEqual(['true']);
@@ -480,8 +418,7 @@ describe('request client', function () {
       const request = createAppRequestClient(
         createInput({}, event, testLogger),
       );
-
-      const responseBefore = await request({
+      const response = await request({
         url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
@@ -497,9 +434,10 @@ describe('request client', function () {
         removeMissingValuesFrom: {
           params: true,
         },
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
 
-      const response = JSON.parse(JSON.stringify(responseBefore));
       should(response.data.args.something).eql(undefined);
       should(response.data.args.foo).eql(undefined);
       should(response.data.args.bar).eql(undefined);
@@ -519,9 +457,9 @@ describe('request client', function () {
       );
     });
 
-    it('should not include ? if there are no params after cleaning', () => {
+    it('should not include ? if there are no params after cleaning', async () => {
       const request = createAppRequestClient(input);
-      return request({
+      const response = await request({
         url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
@@ -530,16 +468,14 @@ describe('request client', function () {
         removeMissingValuesFrom: {
           params: true,
         },
-      }).then((responseBefore) => {
-        const response = JSON.parse(JSON.stringify(responseBefore));
-
-        should(response.data.args.something).eql(undefined);
-        should(response.data.args.cool).eql(undefined);
-        response.status.should.eql(200);
-
-        const body = JSON.parse(response.content);
-        body.url.should.eql(`${HTTPBIN_URL}/get`);
       });
+
+      should(response.data.args.something).eql(undefined);
+      should(response.data.args.cool).eql(undefined);
+      response.status.should.eql(200);
+
+      const body = JSON.parse(response.content);
+      body.url.should.eql(`${HTTPBIN_URL}/get`);
     });
   });
 
@@ -563,6 +499,8 @@ describe('request client', function () {
           hookUrl: '{{bundle.targetUrl}}',
           zapId: '{{bundle.meta.zap.id}}',
         },
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
 
       const { hookUrl, zapId } = JSON.parse(response.data.data);
@@ -570,30 +508,31 @@ describe('request client', function () {
       zapId.should.eql(987);
     });
 
-    it('should resolve bundle tokens in performUnubscribe', () => {
+    it('should resolve bundle tokens in performUnubscribe', async () => {
       const subscribeData = { id: 123 };
       const event = {
         bundle: { subscribeData },
       };
       const subscribeInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(subscribeInput);
-      return request({
+      const response = await request({
         url: `${HTTPBIN_URL}/delete`,
         method: 'DELETE',
         params: {
           id: '{{bundle.subscribeData.id}}',
         },
-      }).then((response) => {
-        const { url } = JSON.parse(response.content);
-
-        response.data.args.id.should.deepEqual(['123']);
-        url.should.eql(`${HTTPBIN_URL}/delete?id=123`);
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
+
+      const { url } = JSON.parse(response.content);
+      response.data.args.id.should.deepEqual(['123']);
+      url.should.eql(`${HTTPBIN_URL}/delete?id=123`);
     });
   });
 
   describe('resolves curlies', () => {
-    it('should keep valid data types', () => {
+    it('should keep valid data types', async () => {
       const event = {
         bundle: {
           inputData: {
@@ -606,7 +545,7 @@ describe('request client', function () {
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
-      return request({
+      const response = await request({
         url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
@@ -615,18 +554,20 @@ describe('request client', function () {
           float: '{{bundle.inputData.float}}',
           arr: '{{bundle.inputData.arr}}',
         },
-      }).then((response) => {
-        const { json } = response.data;
-
-        should(json.empty).eql(undefined);
-        json.number.should.eql(123);
-        json.bool.should.eql(true);
-        json.float.should.eql(123.456);
-        json.arr.should.eql([1, 2, 3]);
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
+
+      const { json } = response.data;
+
+      should(json.empty).eql(undefined);
+      json.number.should.eql(123);
+      json.bool.should.eql(true);
+      json.float.should.eql(123.456);
+      json.arr.should.eql([1, 2, 3]);
     });
 
-    it('should keep valid data types that are hard-coded', () => {
+    it('should keep valid data types that are hard-coded', async () => {
       // This may seem like an usual case to be in, and for most apps it is.
       // However, converted apps that rely on legacy-scripting-runner can have
       // request bodies that are pure data, no {{}}, so we need to be sure to preserve those to
@@ -643,7 +584,7 @@ describe('request client', function () {
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
-      return request({
+      const response = await request({
         url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
@@ -652,17 +593,19 @@ describe('request client', function () {
           float: 123.456,
           arr: [1, 2, 3],
         },
-      }).then((response) => {
-        const { json } = response.data;
-        should(json.empty).eql(undefined);
-        json.number.should.eql(123);
-        json.bool.should.eql(true);
-        json.float.should.eql(123.456);
-        json.arr.should.eql([1, 2, 3]);
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
+
+      const { json } = response.data;
+      should(json.empty).eql(undefined);
+      json.number.should.eql(123);
+      json.bool.should.eql(true);
+      json.float.should.eql(123.456);
+      json.arr.should.eql([1, 2, 3]);
     });
 
-    it('should remove keys from body for empty values if configured to', () => {
+    it('should remove keys from body for empty values if configured to', async () => {
       const event = {
         bundle: {
           inputData: {
@@ -672,7 +615,7 @@ describe('request client', function () {
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
-      return request({
+      const response = await request({
         url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
@@ -682,17 +625,18 @@ describe('request client', function () {
         removeMissingValuesFrom: {
           body: true,
         },
-      }).then((response) => {
-        const { json } = response.data;
-
-        should(json.empty).eql(undefined);
-        json.name.should.eql('Burgundy');
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
+
+      const { json } = response.data;
+      should(json.empty).eql(undefined);
+      json.name.should.eql('Burgundy');
     });
 
-    it('should replace curlies with an empty string by default', () => {
+    it('should replace curlies with an empty string by default', async () => {
       const request = createAppRequestClient(input);
-      return request({
+      const response = await request({
         url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
@@ -710,24 +654,25 @@ describe('request client', function () {
             value: 'exists',
           },
         },
-      }).then((response) => {
-        const { json } = response.data;
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
+      });
 
-        should(json.empty).eql('');
-        should(json.partial).eql('text ');
-        should(json.value).eql('exists');
+      const { json } = response.data;
+      should(json.empty).eql('');
+      should(json.partial).eql('text ');
+      should(json.value).eql('exists');
 
-        // We don't do recursive replacement
-        should(json.array).eql([
-          '{{bundle.inputData.empty}}',
-          'foo{{bundle.inputData.noMatch}}',
-          'bar',
-        ]);
-        should(json.obj).eql({
-          empty: '{{bundle.inputData.empty}}',
-          partial: 'text {{bundle.inputData.partial}}',
-          value: 'exists',
-        });
+      // We don't do recursive replacement
+      should(json.array).eql([
+        '{{bundle.inputData.empty}}',
+        'foo{{bundle.inputData.noMatch}}',
+        'bar',
+      ]);
+      should(json.obj).eql({
+        empty: '{{bundle.inputData.empty}}',
+        partial: 'text {{bundle.inputData.partial}}',
+        value: 'exists',
       });
     });
 
@@ -753,6 +698,8 @@ describe('request client', function () {
         headers: {
           Authorization: 'Bearer {{bundle.authData.access_token}}',
         },
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
 
       const { json, headers } = response.data;
@@ -760,7 +707,7 @@ describe('request client', function () {
       headers.Authorization.should.deepEqual(['Bearer Let me in']);
     });
 
-    it('should throw when interpolating a string with an array', () => {
+    it('should throw when interpolating a string with an array', async () => {
       const event = {
         bundle: {
           inputData: {
@@ -776,13 +723,15 @@ describe('request client', function () {
         body: {
           message: 'No arrays, thank you: {{bundle.inputData.badData}}',
         },
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       }).should.be.rejectedWith(
         'Cannot reliably interpolate objects or arrays into a string. ' +
           'Variable `bundle.inputData.badData` is an Array:\n"1,2,3"',
       );
     });
 
-    it('should send flatten objects', () => {
+    it('should send flatten objects', async () => {
       const event = {
         bundle: {
           inputData: {
@@ -795,19 +744,20 @@ describe('request client', function () {
       };
       const bodyInput = createInput({}, event, testLogger);
       const request = createAppRequestClient(bodyInput);
-      return request({
+      const response = await request({
         url: `${HTTPBIN_URL}/post`,
         method: 'POST',
         body: {
           streetAddress: '{{bundle.inputData.address.street}}',
           city: '{{bundle.inputData.address.city}}',
         },
-      }).then((response) => {
-        const { json } = response.data;
-
-        json.streetAddress.should.eql('123 Zapier Way');
-        json.city.should.eql('El Mundo');
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
+
+      const { json } = response.data;
+      json.streetAddress.should.eql('123 Zapier Way');
+      json.city.should.eql('El Mundo');
     });
 
     it('should resolve all bundle fields', async () => {
@@ -839,6 +789,8 @@ describe('request client', function () {
           'x-cool': '{{bundle.authData.access_token}}',
           'x-another': '{{bundle.authData.access_token}}',
         },
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
 
       const { headers } = response.data;
@@ -884,6 +836,8 @@ describe('request client', function () {
           }
           return value;
         },
+        // Set `replace` to true to make it act like a shorthand request
+        replace: true,
       });
 
       response.data.json.should.deepEqual({
