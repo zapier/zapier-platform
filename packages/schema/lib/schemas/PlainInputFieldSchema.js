@@ -35,6 +35,11 @@ module.exports = makeSchema(
           'A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.',
         $ref: RefResourceSchema.id,
       },
+      canPaginate: {
+        description:
+          'Does the dynamic dropdown function or request support pagination?',
+        type: 'boolean',
+      },
       dynamic: {
         description:
           'A reference to a trigger, request, or function that will power a dynamic dropdown.',
