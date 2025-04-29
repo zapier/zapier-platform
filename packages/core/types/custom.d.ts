@@ -31,7 +31,9 @@ type HttpMethod =
   | 'OPTIONS'
   | 'HEAD';
 
-export interface Bundle<$InputData extends Record<string, any> = {}> {
+export interface Bundle<
+  $InputData extends Record<string, unknown> = Record<string, unknown>,
+> {
   authData: { [x: string]: string };
   inputData: $InputData;
   inputDataRaw: { [x: string]: string };
