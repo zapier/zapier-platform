@@ -1,20 +1,26 @@
-import { defineApp, defineCreate, defineInputs } from './typeHelpers';
+import {
+  defineApp,
+  defineCreate,
+  defineInputs,
+  defineTrigger,
+} from './typeHelpers';
 
-import { Bundle, ZObject } from './custom';
-import { InferInputData } from './inputs';
+import { InferInputData, InputFields } from './inputs';
 import { expectType } from 'tsd';
-import { BasicCreateOperation } from './schemas.generated';
-import { CreatePerform } from './functions';
+import { Trigger } from './schemas.generated';
+import { CreatePerform, PollingTriggerPerform } from './functions';
+import { Bundle } from './custom';
 
 // #region Input Fields
+// ====================
 
-const inputFields = defineInputs([
+const plainInputFields = defineInputs([
   { key: 'required_string', type: 'string', required: true },
   { key: 'optional_string', type: 'string', required: false },
   { key: 'required_number', type: 'number', required: true },
   { key: 'omitted_number', type: 'number' },
 ]);
-type plainInputFieldsData = InferInputData<typeof inputFields>;
+type plainInputFieldsData = InferInputData<typeof plainInputFields>;
 
 type plainInputFieldsExpected = {
   required_string: string;
@@ -26,72 +32,167 @@ expectType<plainInputFieldsExpected>({} as plainInputFieldsData);
 
 // #endregion
 
-// #region Simple Create
+// #region Create Examples
+// ==============================
 
-const someCreate1 = defineCreate({
-  key: 'someCreate1',
-  noun: 'Some Noun',
-  display: { label: 'Some Display' },
+const basicCreate = defineCreate({
+  key: 'basicCreate',
+  noun: 'Create Basic Noun',
+  display: {
+    label: 'Create Basic Display',
+    description: 'Create action, defined entirely in one defineCreate call',
+  },
   operation: {
-    inputFields,
+    inputFields: plainInputFields,
     perform: async (z, bundle) => {
-      expectType<Bundle<InferInputData<typeof inputFields>>>(bundle);
+      expectType<Bundle<InferInputData<typeof plainInputFields>>>(bundle);
     },
   },
 });
 
-// #endregion
+// "Expanded" create is defined with separate Inputs, Perform, and only
+// then a `defineCreate` call.
 
-// #region Complex Create
-
-const inputFields2 = defineInputs([
-  { key: 'required_string', type: 'string', required: true },
-  { key: 'optional_boolean', type: 'boolean', required: false },
+const expandedCreateInputFields = defineInputs([
+  { key: 'string2', type: 'string', required: true },
+  { key: 'boolean2', type: 'boolean', required: false },
   (z, bundle) => {
-    if (bundle.inputData.optional_boolean) {
+    if (bundle.inputData.boolean2) {
       return defineInputs([
-        { key: 'extra_string', type: 'string', required: true },
-        { key: 'extra_number', type: 'number', required: true },
+        { key: 'extra_string2', type: 'string', required: true },
+        { key: 'extra_number2', type: 'number', required: true },
       ]);
     }
     return [];
   },
 ]);
-type inputFields2Data = InferInputData<typeof inputFields2>;
 
-const perform = (async (z, bundle) => {
-  if (bundle.inputData.optional_boolean) {
+const expandedCreatePerform = (async (z, bundle) => {
+  if (bundle.inputData.boolean2) {
     return {
       extra_string: 'extra_string',
       extra_number: 1,
     };
   }
   return {};
-}) satisfies CreatePerform<InferInputData<typeof inputFields2>>;
+}) satisfies CreatePerform<InferInputData<typeof expandedCreateInputFields>>;
 
-const someCreate2 = defineCreate({
-  key: 'someCreate2',
-  noun: 'Some Noun',
-  display: { label: 'Some Display' },
+const expandedCreate = defineCreate({
+  key: 'expandedCreate',
+  noun: 'Expanded Create Noun',
+  display: { label: 'Expanded Create Display' },
   operation: {
-    inputFields: inputFields2,
-    perform,
+    inputFields: expandedCreateInputFields,
+    perform: expandedCreatePerform,
   },
 });
+
+// #endregion
+
+// #region Trigger Examples
+// ========================
+
+// Simplest trigger defined within one `defineTrigger` call.
+const basicTrigger = defineTrigger({
+  key: 'basicTrigger',
+  noun: 'Basic Trigger Noun',
+  display: { label: 'Basic Trigger Display' },
+  operation: {
+    type: 'polling',
+    inputFields: plainInputFields,
+    perform: async (z, bundle) => {
+      return [{ id: 'abc' }];
+    },
+  },
+});
+
+// "Raw" Trigger uses only raw types and uses no `define` functions,
+// (showing why `define` functions are better).
+const rawInputFields = [
+  { key: 'rawTriggerString', type: 'string', required: true },
+  { key: 'rawTriggerNumber', type: 'number', required: true },
+  { key: 'rawTriggerBoolean', type: 'boolean', required: true },
+  (z, bundle) => {
+    if (bundle.inputData.rawTriggerBoolean) {
+      return [
+        { key: 'rawTriggerString2', type: 'string', required: true },
+        { key: 'rawTriggerNumber2', type: 'number', required: true },
+      ] as const satisfies InputFields;
+    }
+    return [] as const satisfies InputFields;
+  },
+] as const satisfies InputFields;
+
+const rawTriggerPerform = (async (z, bundle) => {
+  return [{ id: 'abc' }];
+}) satisfies PollingTriggerPerform<InferInputData<typeof rawInputFields>>;
+
+const rawTrigger: Trigger<'rawTrigger', typeof rawInputFields> = {
+  key: 'rawTrigger',
+  noun: 'Raw Noun',
+  display: {
+    label: 'Raw Trigger',
+    description:
+      'Raw trigger, defined using raw types and no `define` functions.',
+  },
+  operation: {
+    type: 'polling',
+    inputFields: rawInputFields,
+    perform: rawTriggerPerform,
+  },
+};
+
+// Expanded Trigger uses `defineTrigger` with separate Inputs, Perform,
+// and only then a `defineTrigger` call.
+
+const expandedTriggerInputFields = defineInputs([
+  { key: 'expandedTriggerString', type: 'string', required: true },
+  { key: 'expandedTriggerBoolean', type: 'boolean', required: false },
+  (z, bundle) => {
+    if (bundle.inputData.expandedTriggerBoolean) {
+      return defineInputs([
+        { key: 'dynamicTriggerString', type: 'string', required: true },
+        { key: 'dynamicTriggerNumber', type: 'number', required: true },
+      ]);
+    }
+    return [];
+  },
+]);
+
+const expandedTriggerPerform = (async (z, bundle) => {
+  return [{ id: 'abc' }];
+}) satisfies PollingTriggerPerform<
+  InferInputData<typeof expandedTriggerInputFields>
+>;
+
+const expandedTrigger = defineTrigger({
+  key: 'expandedTrigger',
+  noun: 'Expanded Trigger Noun',
+  display: { label: 'Expanded Trigger Display' },
+  operation: {
+    type: 'polling',
+    inputFields: expandedTriggerInputFields,
+    perform: expandedTriggerPerform,
+  },
+});
+
 // #endregion
 
 // #region App
+// ===========
 
 const app = defineApp({
   version: '1.0.0',
   platformVersion: '1.0.0',
   creates: {
-    [someCreate1.key]: someCreate1,
-    [someCreate2.key]: someCreate2,
+    [basicCreate.key]: basicCreate,
+    [expandedCreate.key]: expandedCreate,
+  },
+  triggers: {
+    [basicTrigger.key]: basicTrigger,
+    [rawTrigger.key]: rawTrigger,
+    [expandedTrigger.key]: expandedTrigger,
   },
 });
-
-app.creates[someCreate1.key].operation.perform;
-app.creates[someCreate2.key].operation.perform;
 
 // #endregion

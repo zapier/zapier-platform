@@ -14,6 +14,7 @@ import type {
 import type { PlainInputField } from './schemas.generated';
 
 import { expectAssignable, expectType } from 'tsd';
+import { defineInput, defineInputs } from './typeHelpers';
 
 //
 // Test for when `type` is not set, the field defaults to `string`.
@@ -245,7 +246,7 @@ const dynamicField = ((z, bundle) => {
   ] as const satisfies InputFields;
 }) satisfies InputFieldFunctionWithInputs<typeof basicFields>;
 
-const allFields = [...basicFields, dynamicField] as const satisfies InputFields;
+const allFields = defineInputs([...basicFields, dynamicField]);
 
 const allFieldsResult: InferInputData<typeof allFields> = {
   string_field: 'a',

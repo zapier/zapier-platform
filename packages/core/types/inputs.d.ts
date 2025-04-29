@@ -100,6 +100,9 @@ type Merge<T extends object[]> = T extends [infer F, ...infer R]
 // MAIN BITS
 // =========
 
+type InputDataConstraint = Record<string, unknown>;
+type InputDataDefault = Record<string, undefined>;
+
 /**
  * All of the field types a Zapier field can have, as defined by
  * zapier-platform-schema.
@@ -144,7 +147,7 @@ type FieldResultType<F extends PlainInputField> = F extends {
  * Can be used as a member of an array of input fields itself.
  */
 export type InputFieldFunction<
-  $InputData extends Record<string, unknown> = Record<string, never>,
+  $InputData extends InputDataConstraint = InputDataDefault,
 > = (
   z: ZObject,
   bundle: Bundle<$InputData>,
@@ -154,7 +157,9 @@ export type InputFieldFunction<
  * Input fields can be plain fields, or functions that return plain
  * fields, async or not.
  */
-export type InputField = PlainInputField | InputFieldFunction;
+export type InputField<
+  $InputData extends InputDataConstraint = InputDataDefault,
+> = PlainInputField | InputFieldFunction<$InputData>;
 export type InputFields = InputField[];
 
 /**
@@ -210,7 +215,7 @@ type PlainFieldArrayContribution<$Fields extends PlainInputField[]> = Simplify<
  * unknown>`, because the field IDs can't be known ahead of time.
  */
 type FieldFunction<
-  $InputData extends Record<string, unknown> = {},
+  $InputData extends InputDataConstraint = InputDataDefault,
   $Output extends PlainInputField[] = PlainInputField[],
 > = (z: ZObject, bundle: Bundle<$InputData>) => $Output | Promise<$Output>;
 
@@ -308,7 +313,7 @@ type InputInputDataContribution<$Input extends InputField> =
  * Get the shape of bundle.inputData, given the array of input fields.
  * This array can contain plain fields and field functions.
  */
-export type InferInputData<$InputFields extends readonly InputField[]> =
+export type InferInputData<$InputFields extends readonly InputField<any>[]> =
   Simplify<
     Merge<
       [
