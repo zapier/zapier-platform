@@ -45,10 +45,6 @@ export type WebhookTriggerPerformUnsubscribe<
   $Return extends {} = {},
 > = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
-// type HookToPollTriggerSubscribe = () => {}; // Same as Webhook
-// type HookToPollTriggerUnsubscribe = () => {}; // Same as Webhook
-// type HookToPollTriggerPerformList = () => {}; // Same as Webhook
-
 /**
  * Pull data from the API service, same as a polling trigger.
  */
@@ -208,13 +204,3 @@ export type OAuth2GetAccessToken<
  * };
  */
 export type OAuth2RefreshAccessToken = () => {};
-
-// Other Auths stuff?
-
-// const DEFAULT_BUNDLE = {
-//   authData: {},
-//   inputData: {},
-//   meta: {},
-//   subscribeData: {},
-//   targetUrl: '',
-// };
