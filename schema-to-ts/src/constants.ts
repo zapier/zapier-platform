@@ -164,4 +164,10 @@ export const TYPE_OVERRIDES: TypeOverrideMap = {
   // Don't render this type as it's replaced by an import. We do want
   // the plain input field type it references to be rendered, though.
   '/InputFieldsSchema': IGNORE_BUT_FOLLOW_REFS,
+
+  // Don't render these types because they're reimplemented by
+  // apps.d.ts in zapier-platform-core
+  '/TriggersSchema': IGNORE_BUT_FOLLOW_REFS,
+  '/CreatesSchema': IGNORE_BUT_FOLLOW_REFS,
+  '/SearchesSchema': IGNORE_BUT_FOLLOW_REFS,
 };
