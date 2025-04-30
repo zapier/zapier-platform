@@ -7,7 +7,7 @@ import {
   type SchemaPath,
   type VersionInfo,
 } from './types.ts';
-import { IMPORTS, INTERFACE_OVERRIDES, TYPE_OVERRIDES } from './constants.ts';
+import { IMPORTS, INTERFACE_OVERRIDES, TYPE_OVERRIDES } from './overrides.ts';
 import { Project, SourceFile } from 'ts-morph';
 import { idToTypeName, refToSchemaName } from './utils.ts';
 
