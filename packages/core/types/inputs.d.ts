@@ -295,14 +295,14 @@ type FieldFunctionContribution<$F> = $F extends (
 // These last types are where everything comes together. Note that in
 // this module, the more precise term "Contribution" is used to describe
 // the fields that a plain field or field function will contribute to
-// the bundle, but the more straightforward term "InputsShape" is
+// the bundle, but the more straightforward term "InputData" is
 // exposed to for the public API.
 
 /**
  * Get the bundle contribution of a single field. This is either a plain
  * field, or a field function.
  */
-type InputInputDataContribution<$Input extends InputField> =
+type InferInputFieldContribution<$Input extends InputField> =
   $Input extends PlainInputField
     ? PlainFieldContribution<$Input>
     : $Input extends (...args: never) => InputField[] | Promise<InputField[]> // Conditional field function
@@ -318,7 +318,7 @@ export type InferInputData<$InputFields extends readonly InputField<any>[]> =
     Merge<
       [
         ...{
-          [K in keyof $InputFields]: InputInputDataContribution<
+          [K in keyof $InputFields]: InferInputFieldContribution<
             $InputFields[K]
           >;
         },
