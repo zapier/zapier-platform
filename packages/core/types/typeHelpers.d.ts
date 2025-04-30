@@ -12,14 +12,14 @@ export declare function defineInputs<
 >(inputFields: $InputFields): $InputFields;
 
 export declare function defineCreate<
-  const $key extends string,
+  const $Key extends string,
   const $InputFields extends InputFields,
->(create: Create<$key, $InputFields>): Create<$key, $InputFields>;
+>(create: Create<$Key, $InputFields>): Create<$Key, $InputFields>;
 
 export declare function defineTrigger<
-  const $key extends string,
+  const $Key extends string,
   const $InputFields extends InputFields,
->(trigger: Trigger<$key, $InputFields>): Trigger<$key, $InputFields>;
+>(trigger: Trigger<$Key, $InputFields>): Trigger<$Key, $InputFields>;
 
 export declare function defineApp<
   const $Triggers extends Record<string, Trigger> | undefined = undefined,

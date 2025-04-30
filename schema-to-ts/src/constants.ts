@@ -60,6 +60,10 @@ const InputFieldsTypeParam = {
 };
 
 export const INTERFACE_OVERRIDES: InterfaceOverridesMap = {
+  // AppSchema is renamed to BaseApp. The Triggers, Creates, and
+  // Searches are deliberately omitted, and separately handled by a the
+  // `App` type from `./apps.d.ts` in zapier-platform-core, which
+  // extends this BaseApp type.
   '/AppSchema': {
     self: { name: 'BaseApp' },
     properties: {
