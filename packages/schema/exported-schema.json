@@ -736,23 +736,9 @@
           "description": "A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.",
           "$ref": "/RefResourceSchema"
         },
-        "canPaginate": {
-          "description": "Does the dynamic dropdown function or request support pagination?",
-          "type": "boolean"
-        },
         "dynamic": {
           "description": "A reference to a trigger, request, or function that will power a dynamic dropdown.",
-          "oneOf": [
-            {
-              "$ref": "/RefResourceSchema"
-            },
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "$ref": "/RefResourceSchema"
         },
         "choices": {
           "description": "An object of machine keys and human values to populate a static dropdown.",
