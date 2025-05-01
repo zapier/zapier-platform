@@ -1,8 +1,6 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
-const RequestSchema = require('./RequestSchema');
-const FunctionSchema = require('./FunctionSchema');
 const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 const PlainFieldSchema = require('./PlainFieldSchema');
@@ -134,12 +132,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [
-    RefResourceSchema,
-    FieldChoicesSchema,
-    FieldMetaSchema,
-    PlainFieldSchema,
-    RequestSchema,
-    FunctionSchema,
-  ],
+  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema, PlainFieldSchema],
 );
