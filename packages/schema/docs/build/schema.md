@@ -1326,7 +1326,7 @@ Key | Required | Type | Description
 `dict` | no | `boolean` | Is this field a key/value input?
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
-`dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger, request, or function that will power a dynamic dropdown.
+`dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
 `choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
 `placeholder` | no | `string` | An example value that is not saved.
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?

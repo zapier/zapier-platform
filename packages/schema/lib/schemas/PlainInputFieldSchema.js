@@ -35,7 +35,7 @@ module.exports = makeSchema(
       },
       dynamic: {
         description:
-          'A reference to a trigger, request, or function that will power a dynamic dropdown.',
+          'A reference to a trigger that will power a dynamic dropdown.',
         $ref: RefResourceSchema.id,
       },
       choices: {

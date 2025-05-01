@@ -737,7 +737,7 @@
           "$ref": "/RefResourceSchema"
         },
         "dynamic": {
-          "description": "A reference to a trigger, request, or function that will power a dynamic dropdown.",
+          "description": "A reference to a trigger that will power a dynamic dropdown.",
           "$ref": "/RefResourceSchema"
         },
         "choices": {
