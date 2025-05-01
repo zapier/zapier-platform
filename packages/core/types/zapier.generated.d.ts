@@ -721,6 +721,11 @@ export interface PlainInputField {
   search?: RefResource;
 
   /**
+   * Does the dynamic dropdown function or request support pagination?
+   */
+  canPaginate?: boolean;
+
+  /**
    * A reference to a trigger, request, or function that will power a
    * dynamic dropdown.
    */
