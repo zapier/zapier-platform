@@ -1,8 +1,6 @@
 'use strict';
 
 const makeSchema = require('../utils/makeSchema');
-const RequestSchema = require('./RequestSchema');
-const FunctionSchema = require('./FunctionSchema');
 const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 const PlainFieldSchema = require('./PlainFieldSchema');
@@ -35,19 +33,10 @@ module.exports = makeSchema(
           'A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.',
         $ref: RefResourceSchema.id,
       },
-      canPaginate: {
-        description:
-          'Does the dynamic dropdown function or request support pagination?',
-        type: 'boolean',
-      },
       dynamic: {
         description:
-          'A reference to a trigger, request, or function that will power a dynamic dropdown.',
-        oneOf: [
-          { $ref: RefResourceSchema.id },
-          { $ref: RequestSchema.id },
-          { $ref: FunctionSchema.id },
-        ],
+          'A reference to a trigger that will power a dynamic dropdown.',
+        $ref: RefResourceSchema.id,
       },
       choices: {
         description:
@@ -143,12 +132,5 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [
-    RefResourceSchema,
-    FieldChoicesSchema,
-    FieldMetaSchema,
-    PlainFieldSchema,
-    RequestSchema,
-    FunctionSchema,
-  ],
+  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema, PlainFieldSchema],
 );
