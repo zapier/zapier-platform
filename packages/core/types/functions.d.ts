@@ -123,7 +123,7 @@ export type CreatePerformGet<
 export type SearchPerform<
   $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$InputData>) => [$Return] | Promise<[$Return]>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | Promise<$Return[]>;
 
 /**
  * Follow up a search's perform with additional data.
