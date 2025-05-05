@@ -737,18 +737,8 @@
           "$ref": "/RefResourceSchema"
         },
         "dynamic": {
-          "description": "A reference to a trigger, request, or function that will power a dynamic dropdown.",
-          "oneOf": [
-            {
-              "$ref": "/RefResourceSchema"
-            },
-            {
-              "$ref": "/RequestSchema"
-            },
-            {
-              "$ref": "/FunctionSchema"
-            }
-          ]
+          "description": "A reference to a trigger that will power a dynamic dropdown.",
+          "$ref": "/RefResourceSchema"
         },
         "choices": {
           "description": "An object of machine keys and human values to populate a static dropdown.",
