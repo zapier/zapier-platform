@@ -648,6 +648,25 @@
       "type": "string",
       "pattern": "^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_\\s\\[\\]]+(\\.[a-zA-Z0-9_\\s\\[\\]]+(,[a-zA-Z0-9_\\s\\[\\]]+)*)?$"
     },
+    "FieldDynamicChoicesSchema": {
+      "id": "/FieldDynamicChoicesSchema",
+      "description": "Describes dynamic dropdowns powered by a perform function or request.",
+      "type": "object",
+      "required": ["perform"],
+      "properties": {
+        "perform": {
+          "oneOf": [
+            {
+              "$ref": "/FunctionSchema"
+            },
+            {
+              "$ref": "/RequestSchema"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "FieldMetaSchema": {
       "id": "/FieldMetaSchema",
       "type": "object",
@@ -740,9 +759,23 @@
           "description": "A reference to a trigger that will power a dynamic dropdown.",
           "$ref": "/RefResourceSchema"
         },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Specifies which other input fields this field depends on. These must be filled before this one becomes enabled, and when their values change, this field's value should be cleared."
+        },
         "choices": {
-          "description": "An object of machine keys and human values to populate a static dropdown.",
-          "$ref": "/FieldChoicesSchema"
+          "description": "An object of machine keys and human values to populate a static or dynamicdropdown.",
+          "oneOf": [
+            {
+              "$ref": "/FieldChoicesSchema"
+            },
+            {
+              "$ref": "/FieldDynamicChoicesSchema"
+            }
+          ]
         },
         "placeholder": {
           "description": "An example value that is not saved.",

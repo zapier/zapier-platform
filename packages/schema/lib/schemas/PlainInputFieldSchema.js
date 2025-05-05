@@ -4,6 +4,7 @@ const makeSchema = require('../utils/makeSchema');
 const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 const PlainFieldSchema = require('./PlainFieldSchema');
+const FieldDynamicChoicesSchema = require('./FieldDynamicChoicesSchema');
 const FieldMetaSchema = require('./FieldMetaSchema');
 
 module.exports = makeSchema(
@@ -38,10 +39,19 @@ module.exports = makeSchema(
           'A reference to a trigger that will power a dynamic dropdown.',
         $ref: RefResourceSchema.id,
       },
+      dependsOn: {
+        type: 'array',
+        items: { type: 'string' },
+        description:
+          "Specifies which other input fields this field depends on. These must be filled before this one becomes enabled, and when their values change, this field's value should be cleared.",
+      },
       choices: {
         description:
-          'An object of machine keys and human values to populate a static dropdown.',
-        $ref: FieldChoicesSchema.id,
+          'An object of machine keys and human values to populate a static or dynamicdropdown.',
+        oneOf: [
+          { $ref: FieldChoicesSchema.id },
+          { $ref: FieldDynamicChoicesSchema.id },
+        ],
       },
       placeholder: {
         description: 'An example value that is not saved.',
@@ -132,5 +142,11 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema, PlainFieldSchema],
+  [
+    RefResourceSchema,
+    FieldChoicesSchema,
+    FieldDynamicChoicesSchema,
+    FieldMetaSchema,
+    PlainFieldSchema,
+  ],
 );

@@ -623,6 +623,16 @@ export interface AuthenticationSessionConfig {
 export type RefResource = string;
 
 /**
+ * Describes dynamic dropdowns powered by a perform function or
+ * request.
+ *
+ * [Docs: FieldDynamicChoicesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldDynamicChoicesSchema)
+ */
+export interface FieldDynamicChoices {
+  perform: Function | Request;
+}
+
+/**
  * Allows for additional metadata to be stored on the field.
  *
  * [Docs: FieldMetaSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldMetaSchema)
@@ -726,10 +736,17 @@ export interface PlainInputField {
   dynamic?: RefResource;
 
   /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
+   * Specifies which other input fields this field depends on. These
+   * must be filled before this one becomes enabled, and when their
+   * values change, this field's value should be cleared.
    */
-  choices?: FieldChoices;
+  dependsOn?: string[];
+
+  /**
+   * An object of machine keys and human values to populate a static
+   * or dynamicdropdown.
+   */
+  choices?: FieldChoices | FieldDynamicChoices;
 
   /** An example value that is not saved. */
   placeholder?: string;
