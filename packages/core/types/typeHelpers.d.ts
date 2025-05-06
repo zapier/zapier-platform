@@ -2,10 +2,10 @@ import type { Create, Search, Trigger } from './schemas.generated';
 import type { InputField, InputFields } from './inputs';
 import type { App } from './app';
 
-// export declare function defineInput<
-//   const $InputData extends Record<string, unknown>,
-//   const $InputField extends InputField<$InputData>,
-// >(input: $InputField): $InputField;
+export declare function defineInputField<
+  const $InputData extends Record<string, unknown>,
+  const $InputField extends InputField<$InputData>,
+>(input: $InputField): $InputField;
 
 export declare function defineInputFields<
   const $InputFields extends InputField<any>[],
