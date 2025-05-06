@@ -7,19 +7,34 @@
  * zapier-platform-schema version: 16.5.0
  *  schema-to-ts compiler version: 0.1.0
  */
-
 import type {
   AfterResponseMiddleware,
   BeforeRequestMiddleware,
   PerformFunction,
 } from './custom';
+import type { InputFields, InferInputData } from './inputs';
+import type {
+  PollingTriggerPerform,
+  WebhookTriggerPerform,
+  WebhookTriggerPerformList,
+  WebhookTriggerPerformSubscribe,
+  WebhookTriggerPerformUnsubscribe,
+  HookToPollTriggerPerformList,
+  HookToPollTriggerPerformSubscribe,
+  HookToPollTriggerPerformUnsubscribe,
+  CreatePerform,
+  CreatePerformResume,
+  CreatePerformGet,
+  SearchPerform,
+  SearchPerformGet,
+  SearchPerformResume,
+  OAuth2AuthorizeUrl,
+  OAuth2GetAccessToken,
+  OAuth2RefreshAccessToken,
+} from './functions';
 
-/**
- * Represents a full app.
- *
- * [Docs: AppSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AppSchema)
- */
-export interface App {
+/** Represents a full app. */
+export interface BaseApp {
   /** A version identifier for your code. */
   version: Version;
 
@@ -42,8 +57,8 @@ export interface App {
   authentication?: Authentication;
 
   /**
-   * A representation of a HTTP request - you can use the `{{syntax}}`
-   * to inject authentication, field or global variables.
+   * Define a request mixin, great for setting custom headers,
+   * content-types, etc.
    */
   requestTemplate?: Request;
 
@@ -72,31 +87,10 @@ export interface App {
   resources?: Resources;
 
   /**
-   * All the triggers for your app. You can add your own here, or
-   * Zapier will automatically register any from the list/hook methods
-   * on your resources.
-   */
-  triggers?: Triggers;
-
-  /**
    * All of the read bulks (GETs) your app exposes to retrieve
    * resources in batches.
    */
   bulkReads?: BulkReads;
-
-  /**
-   * All the searches for your app. You can add your own here, or
-   * Zapier will automatically register any from the search method on
-   * your resources.
-   */
-  searches?: Searches;
-
-  /**
-   * All the creates for your app. You can add your own here, or
-   * Zapier will automatically register any from the create method on
-   * your resources.
-   */
-  creates?: Creates;
 
   /**
    * All the search-or-create combos for your app. You can create your
@@ -126,283 +120,66 @@ export interface App {
    * **INTERNAL USE ONLY**. Zapier uses this to hold properties from a
    * legacy Web Builder app.
    */
-  legacy?: { [k: string]: unknown };
+  legacy?: Record<string, unknown>;
 
   /**
    * **INTERNAL USE ONLY**. Zapier uses this for internal webhook app
    * configurations.
    */
-  firehoseWebhooks?: { [k: string]: unknown };
+  firehoseWebhooks?: Record<string, unknown>;
 }
 
 /**
- * A path to a file that might have content like `module.exports =
- * (z, bundle) => [{id: 123}];`.
- *
- * [Docs: FunctionRequireSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionRequireSchema)
+ * Represents a simplified semver string, from `0.0.0` to
+ * `999.999.999`.
  */
-export interface FunctionRequire {
-  require: string;
-}
+export type Version = string;
 
 /**
- * Source code like `{source: "return 1 + 2"}` which the system will
- * wrap in a function for you.
- *
- * [Docs: FunctionSourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionSourceSchema)
+ * List of before or after middlewares. Can be an array of functions
+ * or a single function
  */
-export interface FunctionSource {
-  /**
-   * JavaScript code for the function body. This must end with a
-   * `return` statement.
-   */
-  source: string;
+export type Middlewares = Function[] | Function;
+
+/** Represents authentication schemes. */
+export interface Authentication {
+  /** Choose which scheme you want to use. */
+  type: 'basic' | 'custom' | 'digest' | 'oauth1' | 'oauth2' | 'session';
 
   /**
-   * Function signature. Defaults to `['z', 'bundle']` if not
-   * specified.
+   * A function or request that confirms the authentication is
+   * working.
    */
-  args?: string[];
-}
-
-/**
- * An object whose values can only be primitives
- *
- * [Docs: FlatObjectSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FlatObjectSchema)
- */
-export interface FlatObject {
-  /**
-   * Any key may exist in this flat object as long as its values are
-   * simple.
-   *
-   * This interface was referenced by `FlatObjectSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "[^\s]+".
-   */
-  [k: string]: null | string | number | boolean;
-}
-
-/**
- * Internal pointer to a function from the original source or the
- * source code itself. Encodes arity and if `arguments` is used in
- * the body. Note - just write normal functions and the system will
- * encode the pointers for you. Or, provide {source: "return 1 + 2"}
- * and the system will wrap in a function for you.
- *
- * [Docs: FunctionSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FunctionSchema)
- */
-export type Function = PerformFunction;
-
-/**
- * An object describing a labeled choice in a static dropdown.
- * Useful if the value a user picks isn't exactly what the zap uses.
- * For instance, when they click on a nickname, but the zap uses the
- * user's full name
- * ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).
- *
- * [Docs: FieldChoiceWithLabelSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoiceWithLabelSchema)
- */
-export interface FieldChoiceWithLabel {
-  /**
-   * The actual value that is sent into the Zap. This is displayed as
-   * light grey text in the editor. Should match sample exactly.
-   */
-  value: string;
+  test: Request | Function;
 
   /**
-   * A legacy field that is no longer used by the editor, but it is
-   * still required for now and should match the value.
+   * Fields you can request from the user before they connect your app
+   * to Zapier.
    */
-  sample: string;
-
-  /** A human readable label for this value. */
-  label: string;
-  [k: string]: unknown;
-}
-
-/**
- * A static dropdown of options. Which you use depends on your order
- * and label requirements:
- *
- * Need a Label? | Does Order Matter? | Type to Use
- * ---|---|---
- * Yes | No | Object of value -> label
- * No | Yes | Array of Strings
- * Yes | Yes | Array of
- * [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
- *
- * [Docs: FieldChoicesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldChoicesSchema)
- */
-export type FieldChoices =
-  | { [k: string]: unknown }
-  | (string | FieldChoiceWithLabel)[];
-
-/**
- * In addition to the requirements below, the following keys are
- * mutually exclusive:
- *
- * * `children` & `list`
- * * `children` & `dict`
- * * `children` & `type`
- * * `children` & `placeholder`
- * * `children` & `helpText`
- * * `children` & `default`
- * * `dict` & `list`
- * * `dynamic` & `dict`
- * * `dynamic` & `choices`
- *
- * [Docs: PlainFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#PlainFieldSchema)
- */
-export interface PlainField {
-  /** A unique machine readable key for this value (IE: "fname"). */
-  key: string;
-
-  /** A human readable label for this value (IE: "First Name"). */
-  label?: string;
+  fields?: AuthFields;
 
   /**
-   * The type of this value. Use `string` for basic text input, `text`
-   * for a large, `<textarea>` style box, and `code` for a
-   * `<textarea>` with a fixed-width font. Field type of `file` will
-   * accept either a file object or a string. If a URL is provided in
-   * the string, Zapier will automatically make a GET for that file.
-   * Otherwise, a .txt file will be generated.
+   * A string with variables, function, or request that returns the
+   * connection label for the authenticated user.
    */
-  type?:
-    | 'string'
-    | 'text'
-    | 'integer'
-    | 'number'
-    | 'boolean'
-    | 'datetime'
-    | 'file'
-    | 'password'
-    | 'copy'
-    | 'code';
+  connectionLabel?: Request | Function | string;
 
-  /** If this value is required or not. */
-  required?: boolean;
+  basicConfig?: AuthenticationBasicConfig;
 
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
+  customConfig?: AuthenticationCustomConfig;
 
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
-  list?: boolean;
+  digestConfig?: AuthenticationDigestConfig;
 
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: PlainField[];
+  oauth1Config?: AuthenticationOAuth1Config;
 
-  /** Is this field a key/value input? */
-  dict?: boolean;
-}
+  oauth2Config?: AuthenticationOAuth2Config;
 
-/**
- * Field schema specialized for authentication fields. In addition
- * to the requirements below, the following keys are mutually
- * exclusive:
- *
- * * `children` & `list`
- * * `children` & `dict`
- * * `children` & `type`
- * * `children` & `placeholder`
- * * `children` & `helpText`
- * * `children` & `default`
- * * `dict` & `list`
- * * `dynamic` & `dict`
- * * `dynamic` & `choices`
- *
- * [Docs: AuthFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldSchema)
- */
-export interface AuthField {
-  /** A unique machine readable key for this value (IE: "fname"). */
-  key: string;
-
-  /** A human readable label for this value (IE: "First Name"). */
-  label?: string;
-
-  /** The type of this value used to be. */
-  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'copy' | 'password';
-
-  /** If this value is required or not. This defaults to `true`. */
-  required?: boolean;
-
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
-  list?: boolean;
-
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: AuthField[];
-
-  /** Is this field a key/value input? */
-  dict?: boolean;
-
-  /**
-   * A human readable description of this value (IE: "The first part
-   * of a full name."). You can use Markdown.
-   */
-  helpText?: string;
-
-  /** An example value that is not saved. */
-  placeholder?: string;
-
-  /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
-   */
-  choices?: FieldChoices;
-
-  /**
-   * Is this field automatically populated (and hidden from the user)?
-   * Note: Only OAuth and Session Auth support fields with this key.
-   */
-  computed?: boolean;
-
-  /**
-   * Useful when you expect the input to be part of a longer string.
-   * Put "{{input}}" in place of the user's input (IE:
-   * "https://{{input}}.yourdomain.com").
-   */
-  inputFormat?: string;
-
-  /**
-   * Indicates if this authentication field is safe to e.g. be stored
-   * without encryption or displayed (not a secret).
-   */
-  isNoSecret?: boolean;
-  [k: string]: unknown;
+  sessionConfig?: AuthenticationSessionConfig;
 }
 
 /**
  * A representation of a HTTP request - you can use the `{{syntax}}`
  * to inject authentication, field or global variables.
- *
- * [Docs: RequestSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#RequestSchema)
  */
 export interface Request {
   /** The HTTP method for the request. */
@@ -415,7 +192,7 @@ export interface Request {
   url?: string;
 
   /** Can be nothing, a raw string or JSON (object or array). */
-  body?: null | string | { [k: string]: unknown } | unknown[];
+  body?: null | string | Record<string, unknown> | unknown[];
 
   /**
    * A mapping of the querystring - will get merged with any query
@@ -440,22 +217,15 @@ export interface Request {
    * Allowed fields are `params` and `body`. The default is `false`,
    * ex: ```removeMissingValuesFrom: { params: false, body: false }```
    */
-  removeMissingValuesFrom?: {
-    /**
-     * Refers to data sent via a requests query params (`req.params`)
-     */
-    params?: boolean;
-
-    /** Refers to tokens sent via a requsts body (`req.body`) */
-    body?: boolean;
-  };
+  removeMissingValuesFrom?: { params: boolean; body: boolean };
 
   /**
-   * Internal pointer to a function from the original source or the
-   * source code itself. Encodes arity and if `arguments` is used in
-   * the body. Note - just write normal functions and the system will
-   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
-   * and the system will wrap in a function for you.
+   * A function to customize how to serialize a value for curlies
+   * `{{var}}` in the request object. By default, when this is
+   * unspecified, the request client only replaces curlies where
+   * variables are strings, and would throw an error for non-strings.
+   * The function should accepts a single argument as the value to be
+   * serialized and return the string representation of the argument.
    */
   serializeValueForCurlies?: Function;
 
@@ -476,483 +246,52 @@ export interface Request {
 }
 
 /**
- * A representation of a HTTP redirect - you can use the
- * `{{syntax}}` to inject authentication, field or global variables.
- *
- * [Docs: RedirectRequestSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#RedirectRequestSchema)
+ * A bank of named functions that you can use in
+ * `z.hydrate('someName')` to lazily load data.
  */
-export interface RedirectRequest {
-  /** The HTTP method for the request. */
-  method?: 'GET';
+export type Hydrators = Record<string, Function>;
+
+/**
+ * All the resources that underlie common CRUD methods powering
+ * automatically handled triggers, creates, and searches for your
+ * app. Zapier will break these apart for you.
+ */
+export type Resources = Record<string, Resource>;
+
+/** Enumerates the bulk reads your app exposes. */
+export type BulkReads = Record<string, BulkRead>;
+
+/**
+ * Enumerates the search-or-creates your app has available for
+ * users.
+ */
+export type SearchOrCreates = Record<string, SearchOrCreate>;
+
+/** Alias for /SearchOrCreatesSchema */
+export type SearchAndCreates = Record<string, SearchOrCreate>;
+
+/** Codifies high-level options for your integration. */
+export interface AppFlags {
+  /**
+   * By default, Zapier patches the core `http` module so that all
+   * requests (including those from 3rd-party SDKs) can be logged. Set
+   * this to true if you're seeing issues using an SDK (such as AWS).
+   */
+  skipHttpPatch?: boolean;
 
   /**
-   * A URL for the request (we will parse the querystring and merge
-   * with params). Keys and values will not be re-encoded.
+   * Starting in `core` version `10.0.0`, `response.throwForStatus()`
+   * was called by default. We introduced a per-request way to opt-out
+   * of this behavior. This flag takes that a step further and
+   * controls that behavior integration-wide **for requests made using
+   * `z.request()`**. Unless they specify otherwise (per-request, or
+   * via middleware), [Shorthand
+   * requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests)
+   * _always_ call `throwForStatus()`. `z.request()` calls can also
+   * ignore this flag if they set `skipThrowForStatus` directly
    */
-  url?: string;
-
-  /** An object whose values can only be primitives */
-  params?: FlatObject;
+  skipThrowForStatus?: boolean;
 }
-
-/**
- * An array or collection of authentication fields.
- *
- * [Docs: AuthFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthFieldsSchema)
- */
-export type AuthFields = AuthField[];
-
-/**
- * Config for Basic Authentication. No extra properties are required
- * to setup Basic Auth, so you can leave this empty if your app uses
- * Basic Auth.
- *
- * [Docs: AuthenticationBasicConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthenticationBasicConfigSchema)
- */
-export interface AuthenticationBasicConfig {}
-
-/**
- * Config for custom authentication (like API keys). No extra
- * properties are required to setup this auth type, so you can leave
- * this empty if your app uses a custom auth method.
- *
- * [Docs: AuthenticationCustomConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthenticationCustomConfigSchema)
- */
-export interface AuthenticationCustomConfig {
-  /**
-   * EXPERIMENTAL: Define the call Zapier should make to send the OTP
-   * code.
-   */
-  sendCode?: Request | Function;
-}
-
-/**
- * Config for Digest Authentication. No extra properties are
- * required to setup Digest Auth, so you can leave this empty if
- * your app uses Digets Auth.
- *
- * [Docs: AuthenticationDigestConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthenticationDigestConfigSchema)
- */
-export interface AuthenticationDigestConfig {}
-
-/**
- * Config for OAuth1 authentication.
- *
- * [Docs: AuthenticationOAuth1ConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthenticationOAuth1ConfigSchema)
- */
-export interface AuthenticationOAuth1Config {
-  /**
-   * Define where Zapier will acquire a request token which is used
-   * for the rest of the three legged authentication process.
-   */
-  getRequestToken: Request | Function;
-
-  /**
-   * Define where Zapier will redirect the user to authorize our app.
-   * Typically, you should append an `oauth_token` querystring
-   * parameter to the request.
-   */
-  authorizeUrl: RedirectRequest | Function;
-
-  /** Define how Zapier fetches an access token from the API */
-  getAccessToken: Request | Function;
-}
-
-/**
- * Config for OAuth2 authentication.
- *
- * [Docs: AuthenticationOAuth2ConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthenticationOAuth2ConfigSchema)
- */
-export interface AuthenticationOAuth2Config {
-  /**
-   * Define where Zapier will redirect the user to authorize our app.
-   * Note: we append the redirect URL and state parameters to return
-   * value of this function.
-   */
-  authorizeUrl: RedirectRequest | Function;
-
-  /** Define how Zapier fetches an access token from the API */
-  getAccessToken: Request | Function;
-
-  /**
-   * Define how Zapier will refresh the access token from the API
-   */
-  refreshAccessToken?: Request | Function;
-
-  /**
-   * Define a non-standard code param Zapier should scrape instead.
-   */
-  codeParam?: string;
-
-  /** What scope should Zapier request? */
-  scope?: string;
-
-  /**
-   * Should Zapier invoke `refreshAccessToken` when we receive an
-   * error for a 401 response?
-   */
-  autoRefresh?: boolean;
-
-  /** Should Zapier use PKCE for OAuth2? */
-  enablePkce?: boolean;
-}
-
-/**
- * Config for session authentication.
- *
- * [Docs: AuthenticationSessionConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthenticationSessionConfigSchema)
- */
-export interface AuthenticationSessionConfig {
-  /**
-   * Define how Zapier fetches the additional authData needed to make
-   * API calls.
-   */
-  perform: Request | Function;
-}
-
-/**
- * Reference a resource by key and the data it returns. In the
- * format of: `{resource_key}.{foreign_key}(.{human_label_key})`.
- *
- * [Docs: RefResourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#RefResourceSchema)
- */
-export type RefResource = string;
-
-/**
- * Allows for additional metadata to be stored on the field.
- *
- * [Docs: FieldMetaSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#FieldMetaSchema)
- */
-export interface FieldMeta {
-  /**
-   * Only string, integer or boolean values are allowed.
-   *
-   * This interface was referenced by `FieldMetaSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "[^\s]+".
-   */
-  [k: string]: string | number | boolean;
-}
-
-/**
- * Field schema specialized for input fields. In addition to the
- * requirements below, the following keys are mutually exclusive:
- *
- * * `children` & `list`
- * * `children` & `dict`
- * * `children` & `type`
- * * `children` & `placeholder`
- * * `children` & `helpText`
- * * `children` & `default`
- * * `dict` & `list`
- * * `dynamic` & `dict`
- * * `dynamic` & `choices`
- *
- * [Docs: PlainInputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#PlainInputFieldSchema)
- */
-export interface PlainInputField {
-  /** A unique machine readable key for this value (IE: "fname"). */
-  key: string;
-
-  /** A human readable label for this value (IE: "First Name"). */
-  label?: string;
-
-  /**
-   * The type of this value. Use `string` for basic text input, `text`
-   * for a large, `<textarea>` style box, and `code` for a
-   * `<textarea>` with a fixed-width font. Field type of `file` will
-   * accept either a file object or a string. If a URL is provided in
-   * the string, Zapier will automatically make a GET for that file.
-   * Otherwise, a .txt file will be generated.
-   */
-  type?:
-    | 'string'
-    | 'text'
-    | 'integer'
-    | 'number'
-    | 'boolean'
-    | 'datetime'
-    | 'file'
-    | 'password'
-    | 'copy'
-    | 'code';
-
-  /** If this value is required or not. */
-  required?: boolean;
-
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
-  list?: boolean;
-
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: PlainInputField[];
-
-  /** Is this field a key/value input? */
-  dict?: boolean;
-
-  /**
-   * A human readable description of this value (IE: "The first part
-   * of a full name."). You can use Markdown.
-   */
-  helpText?: string;
-
-  /**
-   * A reference to a search that will guide the user to add a search
-   * step to populate this field when creating a Zap.
-   */
-  search?: RefResource;
-
-  /**
-   * A reference to a trigger that will power a dynamic dropdown.
-   */
-  dynamic?: RefResource;
-
-  /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
-   */
-  choices?: FieldChoices;
-
-  /** An example value that is not saved. */
-  placeholder?: string;
-
-  /**
-   * Does the value of this field affect the definitions of other
-   * fields in the set?
-   */
-  altersDynamicFields?: boolean;
-
-  /**
-   * Is this field automatically populated (and hidden from the user)?
-   * Note: Only OAuth, Session Auth, and certain internal use cases
-   * support fields with this key.
-   */
-  computed?: boolean;
-
-  /**
-   * Useful when you expect the input to be part of a longer string.
-   * Put "{{input}}" in place of the user's input (IE:
-   * "https://{{input}}.yourdomain.com").
-   */
-  inputFormat?: string;
-
-  /**
-   * Allows for additional metadata to be stored on the field.
-   * Supports simple key-values only (no sub-objects or arrays).
-   */
-  meta?: FieldMeta;
-}
-
-/**
- * Field schema specialized for output fields. In addition to the
- * requirements below, the following keys are mutually exclusive:
- *
- * * `children` & `list`
- * * `children` & `dict`
- * * `children` & `type`
- * * `children` & `placeholder`
- * * `children` & `helpText`
- * * `children` & `default`
- * * `dict` & `list`
- * * `dynamic` & `dict`
- * * `dynamic` & `choices`
- *
- * [Docs: PlainOutputFieldSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#PlainOutputFieldSchema)
- */
-export interface PlainOutputField {
-  /** A unique machine readable key for this value (IE: "fname"). */
-  key: string;
-
-  /** A human readable label for this value (IE: "First Name"). */
-  label?: string;
-
-  /**
-   * The type of this value. Field type of `file` will accept either a
-   * file object or a string. If a URL is provided in the string,
-   * Zapier will automatically make a GET for that file. Otherwise, a
-   * .txt file will be generated.
-   */
-  type?:
-    | 'string'
-    | 'number'
-    | 'boolean'
-    | 'datetime'
-    | 'file'
-    | 'password'
-    | 'integer';
-
-  /** If this value is required or not. */
-  required?: boolean;
-
-  /**
-   * A default value that is saved the first time a Zap is created.
-   */
-  default?: string;
-
-  /**
-   * Acts differently when used in inputFields vs. when used in
-   * outputFields. In inputFields: Can a user provide multiples of
-   * this field? In outputFields: Does this field return an array of
-   * items of type `type`?
-   */
-  list?: boolean;
-
-  /**
-   * An array of child fields that define the structure of a
-   * sub-object for this field. Usually used for line items.
-   *
-   * @minItems 1
-   */
-  children?: PlainOutputField[];
-
-  /** Is this field a key/value input? */
-  dict?: boolean;
-
-  /**
-   * Use this field as part of the primary key for deduplication. You
-   * can set multiple fields as "primary", provided they are unique
-   * together. If no fields are set, Zapier will default to using the
-   * `id` field. `primary` only makes sense for `outputFields`. It
-   * only works in static `outputFields`; will not work in
-   * custom/dynamic `outputFields`. For more information, see [How
-   * deduplication works in
-   * Zapier](https://platform.zapier.com/build/deduplication).
-   */
-  primary?: boolean;
-
-  /**
-   * Prevents triggering on new output until all values for fields
-   * with this property remain unchanged for 2 polls. It can be used
-   * to, e.g., not trigger on a new contact until the contact has
-   * completed typing their name. NOTE that this only applies to the
-   * `outputFields` of polling triggers.
-   */
-  steadyState?: boolean;
-}
-
-/**
- * EXPERIMENTAL: Overrides the original throttle configuration based
- * on a Zapier account attribute.
- *
- * [Docs: ThrottleOverrideObjectSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ThrottleOverrideObjectSchema)
- */
-export interface ThrottleOverrideObject {
-  /**
-   * The timeframe, in seconds, within which the system tracks the
-   * number of invocations for an action. The number of invocations
-   * begins at zero at the start of each window.
-   */
-  window: number;
-
-  /**
-   * The maximum number of invocations for an action, allowed within
-   * the timeframe window.
-   */
-  limit: number;
-
-  /**
-   * Account-based attribute to override the throttle by. You can set
-   * to one of the following: "free", "trial", "paid". Therefore, the
-   * throttle scope would be automatically set to "account" and ONLY
-   * the accounts based on the specified filter will have their
-   * requests throttled based on the throttle overrides while the rest
-   * are throttled based on the original configuration.
-   */
-  filter: 'free' | 'trial' | 'paid';
-
-  /**
-   * The effect of throttling on the tasks of the action. `true` means
-   * throttled tasks are automatically retried after some delay, while
-   * `false` means tasks are held without retry. It defaults to
-   * `true`. NOTE that it has no effect on polling triggers and should
-   * not be set.
-   */
-  retry?: boolean;
-}
-
-/**
- * An array or collection of input fields.
- *
- * [Docs: InputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#InputFieldsSchema)
- */
-export type InputFields = (PlainInputField | Function)[];
-
-/**
- * An array or collection of output fields.
- *
- * [Docs: OutputFieldsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#OutputFieldsSchema)
- */
-export type OutputFields = (PlainOutputField | Function)[];
-
-/**
- * A unique identifier for this item.
- *
- * [Docs: KeySchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#KeySchema)
- */
-export type Key = string;
-
-/**
- * Zapier uses this configuration to ensure this action is performed
- * one at a time per scope (avoid concurrency).
- *
- * [Docs: LockObjectSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#LockObjectSchema)
- */
-export interface LockObject {
-  /**
-   * The key to use for locking. This should be unique to the
-   * operation. While actions of different integrations with the same
-   * key and scope will never lock each other out, actions of the same
-   * integration with the same key and scope will do. User data
-   * provided for the input fields can be used in the key with the use
-   * of the curly braces referencing. For example, to access the user
-   * data provided for the input field "test_field", use
-   * `{{bundle.inputData.test_field}}`. Note that a required input
-   * field should be referenced to get user data always.
-   */
-  key: string;
-
-  /**
-   * By default, locks are scoped to the app. That is, all users of
-   * the app will share the same locks. If you want to restrict serial
-   * access to a specific user, auth, or account, you can set the
-   * scope to one or more of the following: 'user' - Locks based on
-   * user ids.  'auth' - Locks based on unique auth ids. 'account' -
-   * Locks for all users under a single account. You may also combine
-   * scopes. Note that "app" is included, always, in the scope
-   * provided. For example, a scope of ['account', 'auth'] would
-   * result to ['app', 'account', 'auth'].
-   */
-  scope?: ('user' | 'auth' | 'account')[];
-
-  /**
-   * The number of seconds to hold the lock before releasing it to
-   * become accessible to other task invokes that need it. If not
-   * provided, the default set by the app will be used. It cannot be
-   * more than 180.
-   */
-  timeout?: number;
-}
-
-/**
- * An array of objects suitable for returning in perform calls.
- *
- * [Docs: ResultsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResultsSchema)
- */
-export type Results = { [k: string]: unknown }[];
 
 /**
  * Zapier uses this configuration to apply throttling when the limit
@@ -961,8 +300,6 @@ export type Results = { [k: string]: unknown }[];
  * key, window, limit, and scope. To share a limit across multiple
  * actions in an integration, each should have the same
  * configuration set without "action" in the scope.
- *
- * [Docs: ThrottleObjectSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ThrottleObjectSchema)
  */
 export interface ThrottleObject {
   /**
@@ -1021,372 +358,119 @@ export interface ThrottleObject {
   /**
    * EXPERIMENTAL: Overrides the original throttle configuration based
    * on a Zapier account attribute.
-   *
-   * @minItems 1
    */
   overrides?: ThrottleOverrideObject[];
 }
 
 /**
- * Represents user information for a trigger, search, or create.
+ * Internal pointer to a function from the original source or the
+ * source code itself. Encodes arity and if `arguments` is used in
+ * the body. Note - just write normal functions and the system will
+ * encode the pointers for you. Or, provide {source: "return 1 + 2"}
+ * and the system will wrap in a function for you.
  *
- * [Docs: BasicDisplaySchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicDisplaySchema)
+ * @deprecated Prefer using the perform types from the `functions` module.
  */
-export interface BasicDisplay {
-  /**
-   * A short label like "New Record" or "Create Record in Project".
-   * Optional if `hidden` is true.
-   */
-  label?: string;
+export type Function = PerformFunction;
 
-  /**
-   * A description of what this trigger, search, or create does.
-   * Optional if `hidden` is true.
-   */
-  description?: string;
+/** An array or collection of authentication fields. */
+export type AuthFields = AuthField[];
 
-  /**
-   * A short blurb that can explain how to get this working. EG: how
-   * and where to copy-paste a static hook URL into your application.
-   * Only evaluated for static webhooks.
-   */
-  directions?: string;
+/**
+ * Config for Basic Authentication. No extra properties are required
+ * to setup Basic Auth, so you can leave this empty if your app uses
+ * Basic Auth.
+ */
+export interface AuthenticationBasicConfig {}
 
-  /** Should this operation be unselectable by users? */
-  hidden?: boolean;
+/**
+ * Config for custom authentication (like API keys). No extra
+ * properties are required to setup this auth type, so you can leave
+ * this empty if your app uses a custom auth method.
+ */
+export interface AuthenticationCustomConfig {
+  /**
+   * EXPERIMENTAL: Define the call Zapier should make to send the OTP
+   * code.
+   */
+  sendCode?: Request | Function;
 }
 
 /**
- * Represents the fundamental mechanics of triggers, searches, or
- * creates.
- *
- * [Docs: BasicOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicOperationSchema)
+ * Config for Digest Authentication. No extra properties are
+ * required to setup Digest Auth, so you can leave this empty if
+ * your app uses Digets Auth.
  */
-export interface BasicOperation {
+export interface AuthenticationDigestConfig {}
+
+/** Config for OAuth1 authentication. */
+export interface AuthenticationOAuth1Config {
   /**
-   * Optionally reference and extends a resource. Allows Zapier to
-   * automatically tie together samples, lists and hooks, greatly
-   * improving the UX. EG: if you had another trigger reusing a
-   * resource but filtering the results.
+   * Define where Zapier will acquire a request token which is used
+   * for the rest of the three legged authentication process.
    */
-  resource?: Key;
+  getRequestToken: Request | Function;
 
   /**
-   * How will Zapier get the data? This can be a function like `(z) =>
-   * [{id: 123}]` or a request like `{url: 'http...'}`.
+   * Define where Zapier will redirect the user to authorize our app.
+   * Typically, you should append an `oauth_token` querystring
+   * parameter to the request.
+   */
+  authorizeUrl: RedirectRequest | Function;
+
+  /** Define how Zapier fetches an access token from the API */
+  getAccessToken: Request | Function;
+}
+
+/** Config for OAuth2 authentication. */
+export interface AuthenticationOAuth2Config {
+  /**
+   * Define where Zapier will redirect the user to authorize our app.
+   * Note: we append the redirect URL and state parameters to return
+   * value of this function.
+   */
+  authorizeUrl: RedirectRequest | Function;
+
+  /** Define how Zapier fetches an access token from the API */
+  getAccessToken: Request | Function;
+
+  /** Define how Zapier will refresh the access token from the API */
+  refreshAccessToken?: Request | Function;
+
+  /** Define a non-standard code param Zapier should scrape instead. */
+  codeParam?: string;
+
+  /** What scope should Zapier request? */
+  scope?: string;
+
+  /**
+   * Should Zapier invoke `refreshAccessToken` when we receive an
+   * error for a 401 response?
+   */
+  autoRefresh?: boolean;
+
+  /** Should Zapier use PKCE for OAuth2? */
+  enablePkce?: boolean;
+}
+
+/** Config for session authentication. */
+export interface AuthenticationSessionConfig {
+  /**
+   * Define how Zapier fetches the additional authData needed to make
+   * API calls.
    */
   perform: Request | Function;
-
-  /** What should the form a user sees and configures look like? */
-  inputFields?: InputFields;
-
-  /**
-   * What fields of data will this return? Will use resource
-   * outputFields if missing, will also use sample if available.
-   */
-  outputFields?: OutputFields;
-
-  /**
-   * What does a sample of data look like? Will use resource sample if
-   * missing. Requirement waived if `display.hidden` is true or if
-   * this belongs to a resource that has a top-level sample
-   */
-  sample?: { [k: string]: unknown };
-
-  /**
-   * Zapier uses this configuration to ensure this action is performed
-   * one at a time per scope (avoid concurrency).
-   */
-  lock?: LockObject;
-
-  /**
-   * Zapier uses this configuration to apply throttling when the limit
-   * for the window is exceeded.
-   */
-  throttle?: ThrottleObject;
 }
 
-/**
- * Represents the inbound mechanics of hooks with optional
- * subscribe/unsubscribe. Defers to list for fields.
- *
- * [Docs: BasicHookOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicHookOperationSchema)
- */
-export interface BasicHookOperation {
-  /**
-   * Must be explicitly set to `"hook"` unless this hook is defined as
-   * part of a resource, in which case it's optional.
-   */
-  type?: 'hook';
-
-  /**
-   * Optionally reference and extends a resource. Allows Zapier to
-   * automatically tie together samples, lists and hooks, greatly
-   * improving the UX. EG: if you had another trigger reusing a
-   * resource but filtering the results.
-   */
-  resource?: Key;
-
-  /**
-   * Internal pointer to a function from the original source or the
-   * source code itself. Encodes arity and if `arguments` is used in
-   * the body. Note - just write normal functions and the system will
-   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
-   * and the system will wrap in a function for you.
-   */
-  perform: Function;
-
-  /**
-   * Fetch a list of items on demand during testing instead of waiting
-   * for a hook. You can also consider resources and their built-in
-   * hook/list methods. Note: this is required for public apps to
-   * ensure the best UX for the end-user. For private apps, this is
-   * strongly recommended for testing REST Hooks. Otherwise, you can
-   * ignore warnings about this property with the `--without-style`
-   * flag during `zapier push`.
-   */
-  performList?: Request | Function;
-
-  /**
-   * Does this endpoint support pagination via temporary cursor
-   * storage?
-   */
-  canPaginate?: boolean;
-
-  /**
-   * Takes a URL and any necessary data from the user and subscribes.
-   * Note: this is required for public apps to ensure the best UX for
-   * the end-user. For private apps, this is strongly recommended for
-   * testing REST Hooks. Otherwise, you can ignore warnings about this
-   * property with the `--without-style` flag during `zapier push`.
-   */
-  performSubscribe?: Request | Function;
-
-  /**
-   * Takes a URL and data from a previous subscribe call and
-   * unsubscribes. Note: this is required for public apps to ensure
-   * the best UX for the end-user. For private apps, this is strongly
-   * recommended for testing REST Hooks. Otherwise, you can ignore
-   * warnings about this property with the `--without-style` flag
-   * during `zapier push`.
-   */
-  performUnsubscribe?: Request | Function;
-
-  /** What should the form a user sees and configures look like? */
-  inputFields?: InputFields;
-
-  /**
-   * What fields of data will this return? Will use resource
-   * outputFields if missing, will also use sample if available.
-   */
-  outputFields?: OutputFields;
-
-  /**
-   * What does a sample of data look like? Will use resource sample if
-   * missing. Requirement waived if `display.hidden` is true or if
-   * this belongs to a resource that has a top-level sample
-   */
-  sample?: { [k: string]: unknown };
-}
-
-/**
- * Represents the fundamental mechanics of a trigger.
- *
- * [Docs: BasicPollingOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicPollingOperationSchema)
- */
-export interface BasicPollingOperation {
-  /**
-   * Clarify how this operation works (polling == pull or hook ==
-   * push).
-   */
-  type?: 'polling';
-
-  /**
-   * Optionally reference and extends a resource. Allows Zapier to
-   * automatically tie together samples, lists and hooks, greatly
-   * improving the UX. EG: if you had another trigger reusing a
-   * resource but filtering the results.
-   */
-  resource?: Key;
-
-  /**
-   * How will Zapier get the data? This can be a function like `(z) =>
-   * [{id: 123}]` or a request like `{url: 'http...'}`.
-   */
-  perform: Request | Function;
-
-  /**
-   * Does this endpoint support pagination via temporary cursor
-   * storage?
-   */
-  canPaginate?: boolean;
-
-  /** What should the form a user sees and configures look like? */
-  inputFields?: InputFields;
-
-  /**
-   * What fields of data will this return? Will use resource
-   * outputFields if missing, will also use sample if available.
-   */
-  outputFields?: OutputFields;
-
-  /**
-   * What does a sample of data look like? Will use resource sample if
-   * missing. Requirement waived if `display.hidden` is true or if
-   * this belongs to a resource that has a top-level sample
-   */
-  sample?: { [k: string]: unknown };
-
-  /**
-   * Zapier uses this configuration to apply throttling when the limit
-   * for the window is exceeded.
-   */
-  throttle?: ThrottleObject;
-}
-
-/**
- * Represents the fundamental mechanics of a search/create.
- *
- * [Docs: BasicActionOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicActionOperationSchema)
- */
-export interface BasicActionOperation {
-  /**
-   * Optionally reference and extends a resource. Allows Zapier to
-   * automatically tie together samples, lists and hooks, greatly
-   * improving the UX. EG: if you had another trigger reusing a
-   * resource but filtering the results.
-   */
-  resource?: Key;
-
-  /**
-   * How will Zapier get the data? This can be a function like `(z) =>
-   * [{id: 123}]` or a request like `{url: 'http...'}`.
-   */
-  perform: Request | Function;
-
-  /**
-   * Internal pointer to a function from the original source or the
-   * source code itself. Encodes arity and if `arguments` is used in
-   * the body. Note - just write normal functions and the system will
-   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
-   * and the system will wrap in a function for you.
-   */
-  performResume?: Function;
-
-  /**
-   * How will Zapier get a single record? If you find yourself
-   * reaching for this - consider resources and their built-in get
-   * methods.
-   */
-  performGet?: Request | Function;
-
-  /** What should the form a user sees and configures look like? */
-  inputFields?: InputFields;
-
-  /**
-   * What fields of data will this return? Will use resource
-   * outputFields if missing, will also use sample if available.
-   */
-  outputFields?: OutputFields;
-
-  /**
-   * What does a sample of data look like? Will use resource sample if
-   * missing. Requirement waived if `display.hidden` is true or if
-   * this belongs to a resource that has a top-level sample
-   */
-  sample?: { [k: string]: unknown };
-
-  /**
-   * Zapier uses this configuration to ensure this action is performed
-   * one at a time per scope (avoid concurrency).
-   */
-  lock?: LockObject;
-
-  /**
-   * Zapier uses this configuration to apply throttling when the limit
-   * for the window is exceeded.
-   */
-  throttle?: ThrottleObject;
-}
-
-/**
- * How will we get a single object given a unique identifier/id?
- *
- * [Docs: ResourceMethodGetSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResourceMethodGetSchema)
- */
-export interface ResourceMethodGet {
-  /** Define how this get method will be exposed in the UI. */
-  display: BasicDisplay;
-
-  /** Define how this get method will work. */
-  operation: BasicOperation;
-}
-
-/**
- * How will we get notified of new objects? Will be turned into a
- * trigger automatically.
- *
- * [Docs: ResourceMethodHookSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResourceMethodHookSchema)
- */
-export interface ResourceMethodHook {
-  /**
-   * Define how this hook/trigger method will be exposed in the UI.
-   */
-  display: BasicDisplay;
-
-  /** Define how this hook/trigger method will work. */
-  operation: BasicHookOperation;
-}
-
-/**
- * How will we get a list of new objects? Will be turned into a
- * trigger automatically.
- *
- * [Docs: ResourceMethodListSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResourceMethodListSchema)
- */
-export interface ResourceMethodList {
-  /**
-   * Define how this list/trigger method will be exposed in the UI.
-   */
-  display: BasicDisplay;
-
-  /** Define how this list/trigger method will work. */
-  operation: BasicPollingOperation;
-}
-
-/**
- * How will we find a specific object given filters or search terms?
- * Will be turned into a search automatically.
- *
- * [Docs: ResourceMethodSearchSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResourceMethodSearchSchema)
- */
-export interface ResourceMethodSearch {
-  /** Define how this search method will be exposed in the UI. */
-  display: BasicDisplay;
-
-  /** Define how this search method will work. */
-  operation: BasicActionOperation;
-}
-
-/**
- * How will we find create a specific object given inputs? Will be
- * turned into a create automatically.
- *
- * [Docs: ResourceMethodCreateSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResourceMethodCreateSchema)
- */
-export interface ResourceMethodCreate {
-  /** Define how this create method will be exposed in the UI. */
-  display: BasicDisplay;
-
-  /** Define how this create method will work. */
-  operation: BasicActionOperation;
-}
+/** An object whose values can only be primitives */
+export type FlatObject = Record<
+  string,
+  null | string | number | number | boolean
+>;
 
 /**
  * Represents a resource, which will in turn power triggers,
  * searches, or creates.
- *
- * [Docs: ResourceSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResourceSchema)
  */
 export interface Resource {
   /** A key to uniquely identify this resource. */
@@ -1398,9 +482,7 @@ export interface Resource {
    */
   noun: string;
 
-  /**
-   * How will we get a single object given a unique identifier/id?
-   */
+  /** How will we get a single object given a unique identifier/id? */
   get?: ResourceMethodGet;
 
   /**
@@ -1431,14 +513,34 @@ export interface Resource {
   outputFields?: OutputFields;
 
   /** What does a sample of data look like? */
-  sample?: { [k: string]: unknown };
+  sample?: Record<string, unknown>;
 }
 
-/**
- * How will Zapier fetch resources from your application?
- *
- * [Docs: BulkReadSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BulkReadSchema)
- */
+/** How will Zapier get notified of new objects? */
+export interface Trigger<
+  $Key extends string = string,
+  $InputFields extends InputFields = InputFields,
+> {
+  /** A key to uniquely identify this trigger. */
+  key: $Key;
+
+  /**
+   * A noun for this trigger that completes the sentence "triggers on
+   * a new XXX".
+   */
+  noun: string;
+
+  /** Configures the UI for this trigger. */
+  display: BasicDisplay;
+
+  /** Powers the functionality for this trigger. */
+  operation:
+    | BasicPollingOperation<$InputFields>
+    | BasicHookOperation<$InputFields>
+    | BasicHookToPollOperation<$InputFields>;
+}
+
+/** How will Zapier fetch resources from your application? */
 export interface BulkRead {
   /** A key to uniquely identify a record. */
   key: Key;
@@ -1456,161 +558,13 @@ export interface BulkRead {
   operation: BasicActionOperation;
 }
 
-/**
- * Represents the inbound mechanics of hook to poll style triggers.
- * Defers to list for fields.
- *
- * [Docs: BasicHookToPollOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicHookToPollOperationSchema)
- */
-export interface BasicHookToPollOperation {
-  /** Must be explicitly set to `"hook_to_poll"`. */
-  type?: 'hook_to_poll';
-
-  /**
-   * Similar a polling trigger, but checks for new data when a webhook
-   * is received, instead of every few minutes
-   */
-  performList: Request | Function;
-
-  /**
-   * Does this endpoint support pagination via temporary cursor
-   * storage?
-   */
-  canPaginate?: boolean;
-
-  /**
-   * Takes a URL and any necessary data from the user and subscribes.
-   */
-  performSubscribe: Request | Function;
-
-  /**
-   * Takes a URL and data from a previous subscribe call and
-   * unsubscribes.
-   */
-  performUnsubscribe: Request | Function;
-
-  /** What should the form a user sees and configures look like? */
-  inputFields?: InputFields;
-
-  /**
-   * What fields of data will this return? Will use resource
-   * outputFields if missing, will also use sample if available.
-   */
-  outputFields?: OutputFields;
-
-  /**
-   * What does a sample of data look like? Will use resource sample if
-   * missing. Requirement waived if `display.hidden` is true or if
-   * this belongs to a resource that has a top-level sample
-   */
-  sample?: { [k: string]: unknown };
-
-  /**
-   * The maximum amount of time to wait between polling requests in
-   * seconds. Minimum value is 20s and will default to 20 if not set,
-   * or set to a lower value.
-   */
-  maxPollingDelay?: number;
-}
-
-/**
- * How will Zapier get notified of new objects?
- *
- * [Docs: TriggerSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#TriggerSchema)
- */
-export interface Trigger {
-  /** A key to uniquely identify this trigger. */
-  key: Key;
-
-  /**
-   * A noun for this trigger that completes the sentence "triggers on
-   * a new XXX".
-   */
-  noun: string;
-
-  /** Configures the UI for this trigger. */
-  display: BasicDisplay;
-
-  /** Powers the functionality for this trigger. */
-  operation:
-    | BasicPollingOperation
-    | BasicHookOperation
-    | BasicHookToPollOperation;
-}
-
-/**
- * Represents the fundamental mechanics of a search.
- *
- * [Docs: BasicSearchOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicSearchOperationSchema)
- */
-export interface BasicSearchOperation {
-  /**
-   * Optionally reference and extends a resource. Allows Zapier to
-   * automatically tie together samples, lists and hooks, greatly
-   * improving the UX. EG: if you had another trigger reusing a
-   * resource but filtering the results.
-   */
-  resource?: Key;
-
-  /**
-   * How will Zapier get the data? This can be a function like `(z) =>
-   * [{id: 123}]` or a request like `{url: 'http...'}`.
-   */
-  perform: Request | Function;
-
-  /**
-   * Internal pointer to a function from the original source or the
-   * source code itself. Encodes arity and if `arguments` is used in
-   * the body. Note - just write normal functions and the system will
-   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
-   * and the system will wrap in a function for you.
-   */
-  performResume?: Function;
-
-  /**
-   * How will Zapier get a single record? If you find yourself
-   * reaching for this - consider resources and their built-in get
-   * methods.
-   */
-  performGet?: Request | Function;
-
-  /** What should the form a user sees and configures look like? */
-  inputFields?: InputFields;
-
-  /**
-   * What fields of data will this return? Will use resource
-   * outputFields if missing, will also use sample if available.
-   */
-  outputFields?: OutputFields;
-
-  /**
-   * What does a sample of data look like? Will use resource sample if
-   * missing. Requirement waived if `display.hidden` is true or if
-   * this belongs to a resource that has a top-level sample
-   */
-  sample?: { [k: string]: unknown };
-
-  /**
-   * Zapier uses this configuration to ensure this action is performed
-   * one at a time per scope (avoid concurrency).
-   */
-  lock?: LockObject;
-
-  /**
-   * Zapier uses this configuration to apply throttling when the limit
-   * for the window is exceeded.
-   */
-  throttle?: ThrottleObject;
-}
-
-/**
- * How will Zapier search for existing objects?
- *
- * [Docs: SearchSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#SearchSchema)
- */
-export interface Search {
+/** How will Zapier search for existing objects? */
+export interface Search<
+  $Key extends string = string,
+  $InputFields extends InputFields = InputFields,
+> {
   /** A key to uniquely identify this search. */
-  key: Key;
+  key: $Key;
 
   /**
    * A noun for this search that completes the sentence "finds a
@@ -1622,127 +576,16 @@ export interface Search {
   display: BasicDisplay;
 
   /** Powers the functionality for this search. */
-  operation: BasicSearchOperation;
+  operation: BasicSearchOperation<$InputFields>;
 }
 
-/**
- * Currently an **internal-only** feature. Zapier uses this
- * configuration for creating objects in bulk.
- *
- * [Docs: BufferConfigSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BufferConfigSchema)
- */
-export interface BufferConfig {
-  /**
-   * The list of keys of input fields to group bulk-create with. The
-   * actual user data provided for the fields will be used during
-   * execution. Note that a required input field should be referenced
-   * to get user data always.
-   *
-   * @minItems 1
-   */
-  groupedBy: unknown[];
-
-  /**
-   * The maximum number of items to call `performBuffer` with.
-   * **Note** that it is capped by the platform to prevent exceeding
-   * the [AWS Lambda's request/response payload size quota of 6
-   * MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution).
-   * Also, the execution is time-bound; we recommend reducing it upon
-   * consistent timeout.
-   */
-  limit: number;
-}
-
-/**
- * Represents the fundamental mechanics of a create.
- *
- * [Docs: BasicCreateOperationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BasicCreateOperationSchema)
- */
-export interface BasicCreateOperation {
-  /**
-   * Optionally reference and extends a resource. Allows Zapier to
-   * automatically tie together samples, lists and hooks, greatly
-   * improving the UX. EG: if you had another trigger reusing a
-   * resource but filtering the results.
-   */
-  resource?: Key;
-
-  /**
-   * How will Zapier get the data? This can be a function like `(z) =>
-   * [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of
-   * `perform` or `performBuffer` must be defined. If you choose to
-   * define `buffer` and `performBuffer`, you must omit `perform`.
-   */
-  perform?: Request | Function;
-
-  /**
-   * Internal pointer to a function from the original source or the
-   * source code itself. Encodes arity and if `arguments` is used in
-   * the body. Note - just write normal functions and the system will
-   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
-   * and the system will wrap in a function for you.
-   */
-  performResume?: Function;
-
-  /**
-   * How will Zapier get a single record? If you find yourself
-   * reaching for this - consider resources and their built-in get
-   * methods.
-   */
-  performGet?: Request | Function;
-
-  /** What should the form a user sees and configures look like? */
-  inputFields?: InputFields;
-
-  /**
-   * What fields of data will this return? Will use resource
-   * outputFields if missing, will also use sample if available.
-   */
-  outputFields?: OutputFields;
-
-  /**
-   * What does a sample of data look like? Will use resource sample if
-   * missing. Requirement waived if `display.hidden` is true or if
-   * this belongs to a resource that has a top-level sample
-   */
-  sample?: { [k: string]: unknown };
-
-  /**
-   * Zapier uses this configuration to ensure this action is performed
-   * one at a time per scope (avoid concurrency).
-   */
-  lock?: LockObject;
-
-  /**
-   * Zapier uses this configuration to apply throttling when the limit
-   * for the window is exceeded.
-   */
-  throttle?: ThrottleObject;
-
-  /**
-   * Currently an **internal-only** feature. Zapier uses this
-   * configuration for creating objects in bulk with `performBuffer`.
-   */
-  buffer?: BufferConfig;
-
-  /**
-   * Internal pointer to a function from the original source or the
-   * source code itself. Encodes arity and if `arguments` is used in
-   * the body. Note - just write normal functions and the system will
-   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
-   * and the system will wrap in a function for you.
-   */
-  performBuffer?: Function;
-}
-
-/**
- * How will Zapier create a new object?
- *
- * [Docs: CreateSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#CreateSchema)
- */
-export interface Create {
+/** How will Zapier create a new object? */
+export interface Create<
+  $Key extends string = string,
+  $InputFields extends InputFields = InputFields,
+> {
   /** A key to uniquely identify this create. */
-  key: Key;
+  key: $Key;
 
   /**
    * A noun for this create that completes the sentence "creates a new
@@ -1754,14 +597,12 @@ export interface Create {
   display: BasicDisplay;
 
   /** Powers the functionality for this create. */
-  operation: BasicCreateOperation;
+  operation: BasicCreateOperation<$InputFields>;
 }
 
 /**
  * Pair an existing search and a create to enable "Find or Create"
  * functionality in your app
- *
- * [Docs: SearchOrCreateSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#SearchOrCreateSchema)
  */
 export interface SearchOrCreate {
   /**
@@ -1785,7 +626,12 @@ export interface SearchOrCreate {
    */
   update?: Key;
 
-  /** An object whose values can only be primitives */
+  /**
+   * EXPERIMENTAL: A mapping where the key represents the input field
+   * for the update action, and the value represents the field from
+   * the search action's output that should be mapped to the update
+   * action's input field.
+   */
   updateInputFromSearchOutput?: FlatObject;
 
   /**
@@ -1794,249 +640,986 @@ export interface SearchOrCreate {
    * value will be used to filter down the search output for an exact
    * match.
    */
-  searchUniqueInputToOutputConstraint?: { [k: string]: unknown };
+  searchUniqueInputToOutputConstraint?: Record<string, unknown>;
 }
 
 /**
- * Enumerates the search-or-creates your app has available for
- * users.
- *
- * [Docs: SearchOrCreatesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#SearchOrCreatesSchema)
+ * EXPERIMENTAL: Overrides the original throttle configuration based
+ * on a Zapier account attribute.
  */
-export interface SearchOrCreates {
+export interface ThrottleOverrideObject {
   /**
-   * Any unique key can be used and its values will be validated
-   * against the SearchOrCreateSchema.
-   *
-   * This interface was referenced by `SearchOrCreatesSchema`'s
-   * JSON-Schema definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9_]*$".
+   * The timeframe, in seconds, within which the system tracks the
+   * number of invocations for an action. The number of invocations
+   * begins at zero at the start of each window.
    */
-  [k: string]: SearchOrCreate;
+  window: number;
+
+  /**
+   * The maximum number of invocations for an action, allowed within
+   * the timeframe window.
+   */
+  limit: number;
+
+  /**
+   * Account-based attribute to override the throttle by. You can set
+   * to one of the following: "free", "trial", "paid". Therefore, the
+   * throttle scope would be automatically set to "account" and ONLY
+   * the accounts based on the specified filter will have their
+   * requests throttled based on the throttle overrides while the rest
+   * are throttled based on the original configuration.
+   */
+  filter: 'free' | 'trial' | 'paid';
+
+  /**
+   * The effect of throttling on the tasks of the action. `true` means
+   * throttled tasks are automatically retried after some delay, while
+   * `false` means tasks are held without retry. It defaults to
+   * `true`. NOTE that it has no effect on polling triggers and should
+   * not be set.
+   */
+  retry?: boolean;
 }
 
 /**
- * Represents authentication schemes.
+ * Field schema specialized for authentication fields. In addition
+ * to the requirements below, the following keys are mutually
+ * exclusive:
  *
- * [Docs: AuthenticationSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AuthenticationSchema)
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
  */
-export interface Authentication {
-  /** Choose which scheme you want to use. */
-  type: 'basic' | 'custom' | 'digest' | 'oauth1' | 'oauth2' | 'session';
+export interface AuthField {
+  /** A unique machine readable key for this value (IE: "fname"). */
+  key: string;
+
+  /** A human readable label for this value (IE: "First Name"). */
+  label?: string;
+
+  /** The type of this value used to be. */
+  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'copy' | 'password';
+
+  /** If this value is required or not. This defaults to `true`. */
+  required?: boolean;
+
+  /** A default value that is saved the first time a Zap is created. */
+  default?: string;
 
   /**
-   * A function or request that confirms the authentication is
-   * working.
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
    */
-  test: Request | Function;
+  list?: boolean;
 
   /**
-   * Fields you can request from the user before they connect your app
-   * to Zapier.
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
    */
-  fields?: AuthFields;
+  children?: AuthField[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
 
   /**
-   * A string with variables, function, or request that returns the
-   * connection label for the authenticated user.
+   * A human readable description of this value (IE: "The first part
+   * of a full name."). You can use Markdown.
    */
-  connectionLabel?: Request | Function | string;
+  helpText?: string;
+
+  /** An example value that is not saved. */
+  placeholder?: string;
 
   /**
-   * Config for Basic Authentication. No extra properties are required
-   * to setup Basic Auth, so you can leave this empty if your app uses
-   * Basic Auth.
+   * An object of machine keys and human values to populate a static
+   * dropdown.
    */
-  basicConfig?: AuthenticationBasicConfig;
+  choices?: FieldChoices;
 
   /**
-   * Config for custom authentication (like API keys). No extra
-   * properties are required to setup this auth type, so you can leave
-   * this empty if your app uses a custom auth method.
+   * Is this field automatically populated (and hidden from the user)?
+   * Note: Only OAuth and Session Auth support fields with this key.
    */
-  customConfig?: AuthenticationCustomConfig;
+  computed?: boolean;
 
   /**
-   * Config for Digest Authentication. No extra properties are
-   * required to setup Digest Auth, so you can leave this empty if
-   * your app uses Digets Auth.
+   * Useful when you expect the input to be part of a longer string.
+   * Put "{{input}}" in place of the user's input (IE:
+   * "https://{{input}}.yourdomain.com").
    */
-  digestConfig?: AuthenticationDigestConfig;
+  inputFormat?: string;
 
-  /** Config for OAuth1 authentication. */
-  oauth1Config?: AuthenticationOAuth1Config;
-
-  /** Config for OAuth2 authentication. */
-  oauth2Config?: AuthenticationOAuth2Config;
-
-  /** Config for session authentication. */
-  sessionConfig?: AuthenticationSessionConfig;
+  /**
+   * Indicates if this authentication field is safe to e.g. be stored
+   * without encryption or displayed (not a secret).
+   */
+  isNoSecret?: boolean;
 }
 
 /**
- * All the resources that underlie common CRUD methods powering
- * automatically handled triggers, creates, and searches for your
- * app. Zapier will break these apart for you.
- *
- * [Docs: ResourcesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#ResourcesSchema)
+ * A representation of a HTTP redirect - you can use the
+ * `{{syntax}}` to inject authentication, field or global variables.
  */
-export interface Resources {
+export interface RedirectRequest {
+  /** The HTTP method for the request. */
+  method?: 'GET';
+
   /**
-   * Any unique key can be used and its values will be validated
-   * against the ResourceSchema.
-   *
-   * This interface was referenced by `ResourcesSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9_]*$".
+   * A URL for the request (we will parse the querystring and merge
+   * with params). Keys and values will not be re-encoded.
    */
-  [k: string]: Resource;
+  url?: string;
+
+  /**
+   * A mapping of the querystring - will get merged with any query
+   * params in the URL. Keys and values will be encoded.
+   */
+  params?: FlatObject;
+}
+
+/** A unique identifier for this item. */
+export type Key = string;
+
+/** How will we get a single object given a unique identifier/id? */
+export interface ResourceMethodGet {
+  /** Define how this get method will be exposed in the UI. */
+  display: BasicDisplay;
+
+  /** Define how this get method will work. */
+  operation: BasicOperation;
 }
 
 /**
- * Enumerates the bulk reads your app exposes.
- *
- * [Docs: BulkReadsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#BulkReadsSchema)
+ * How will we get notified of new objects? Will be turned into a
+ * trigger automatically.
  */
-export interface BulkReads {
-  /**
-   * Any unique key can be used and its values will be validated
-   * against the BulkReadSchema.
-   *
-   * This interface was referenced by `BulkReadsSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9_]*$".
-   */
-  [k: string]: BulkRead;
+export interface ResourceMethodHook {
+  /** Define how this hook/trigger method will be exposed in the UI. */
+  display: BasicDisplay;
+
+  /** Define how this hook/trigger method will work. */
+  operation: BasicHookOperation;
 }
 
 /**
- * Enumerates the triggers your app has available for users.
- *
- * [Docs: TriggersSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#TriggersSchema)
+ * How will we get a list of new objects? Will be turned into a
+ * trigger automatically.
  */
-export interface Triggers {
-  /**
-   * Any unique key can be used and its values will be validated
-   * against the TriggerSchema.
-   *
-   * This interface was referenced by `TriggersSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9_]*$".
-   */
-  [k: string]: Trigger;
+export interface ResourceMethodList {
+  /** Define how this list/trigger method will be exposed in the UI. */
+  display: BasicDisplay;
+
+  /** Define how this list/trigger method will work. */
+  operation: BasicPollingOperation;
 }
 
 /**
- * Enumerates the searches your app has available for users.
- *
- * [Docs: SearchesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#SearchesSchema)
+ * How will we find a specific object given filters or search terms?
+ * Will be turned into a search automatically.
  */
-export interface Searches {
-  /**
-   * Any unique key can be used and its values will be validated
-   * against the SearchSchema.
-   *
-   * This interface was referenced by `SearchesSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9_]*$".
-   */
-  [k: string]: Search;
+export interface ResourceMethodSearch {
+  /** Define how this search method will be exposed in the UI. */
+  display: BasicDisplay;
+
+  /** Define how this search method will work. */
+  operation: BasicActionOperation;
 }
 
 /**
- * Enumerates the creates your app has available for users.
- *
- * [Docs: CreatesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#CreatesSchema)
+ * How will we find create a specific object given inputs? Will be
+ * turned into a create automatically.
  */
-export interface Creates {
+export interface ResourceMethodCreate {
+  /** Define how this create method will be exposed in the UI. */
+  display: BasicDisplay;
+
+  /** Define how this create method will work. */
+  operation: BasicActionOperation;
+}
+
+/** An array or collection of output fields. */
+export type OutputFields = (PlainOutputField | Function)[];
+
+/** Represents user information for a trigger, search, or create. */
+export interface BasicDisplay {
   /**
-   * Any unique key can be used and its values will be validated
-   * against the CreateSchema.
-   *
-   * This interface was referenced by `CreatesSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9_]*$".
+   * A short label like "New Record" or "Create Record in Project".
+   * Optional if `hidden` is true.
    */
-  [k: string]: Create;
+  label?: string;
+
+  /**
+   * A description of what this trigger, search, or create does.
+   * Optional if `hidden` is true.
+   */
+  description?: string;
+
+  /**
+   * A short blurb that can explain how to get this working. EG: how
+   * and where to copy-paste a static hook URL into your application.
+   * Only evaluated for static webhooks.
+   */
+  directions?: string;
+
+  /** Should this operation be unselectable by users? */
+  hidden?: boolean;
+}
+
+/** Represents the fundamental mechanics of a trigger. */
+export interface BasicPollingOperation<
+  $InputFields extends InputFields = InputFields,
+> {
+  /**
+   * Clarify how this operation works (polling == pull or hook ==
+   * push).
+   */
+  type?: 'polling';
+
+  /**
+   * Optionally reference and extends a resource. Allows Zapier to
+   * automatically tie together samples, lists and hooks, greatly
+   * improving the UX. EG: if you had another trigger reusing a
+   * resource but filtering the results.
+   */
+  resource?: Key;
+
+  /**
+   * How will Zapier get the data? This can be a function like `(z) =>
+   * [{id: 123}]` or a request like `{url: 'http...'}`.
+   */
+  perform: Request | PollingTriggerPerform<InferInputData<$InputFields>>;
+
+  /**
+   * Does this endpoint support pagination via temporary cursor
+   * storage?
+   */
+  canPaginate?: boolean;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: $InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: Record<string, unknown>;
+
+  /**
+   * Zapier uses this configuration to apply throttling when the limit
+   * for the window is exceeded.
+   */
+  throttle?: ThrottleObject;
 }
 
 /**
- * Alias for /SearchOrCreatesSchema
- *
- * [Docs: SearchAndCreatesSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#SearchAndCreatesSchema)
+ * Represents the inbound mechanics of hooks with optional
+ * subscribe/unsubscribe. Defers to list for fields.
  */
-export interface SearchAndCreates {
+export interface BasicHookOperation<
+  $InputFields extends InputFields = InputFields,
+> {
   /**
-   * Any unique key can be used and its values will be validated
-   * against the SearchOrCreateSchema.
-   *
-   * This interface was referenced by `SearchAndCreatesSchema`'s
-   * JSON-Schema definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9_]*$".
+   * Must be explicitly set to `"hook"` unless this hook is defined as
+   * part of a resource, in which case it's optional.
    */
-  [k: string]: SearchOrCreate;
+  type?: 'hook';
+
+  /**
+   * Optionally reference and extends a resource. Allows Zapier to
+   * automatically tie together samples, lists and hooks, greatly
+   * improving the UX. EG: if you had another trigger reusing a
+   * resource but filtering the results.
+   */
+  resource?: Key;
+
+  /** A function that processes the inbound webhook request. */
+  perform: WebhookTriggerPerform<InferInputData<$InputFields>>;
+
+  /**
+   * Fetch a list of items on demand during testing instead of waiting
+   * for a hook. You can also consider resources and their built-in
+   * hook/list methods. Note: this is required for public apps to
+   * ensure the best UX for the end-user. For private apps, this is
+   * strongly recommended for testing REST Hooks. Otherwise, you can
+   * ignore warnings about this property with the `--without-style`
+   * flag during `zapier push`.
+   */
+  performList?:
+    | Request
+    | WebhookTriggerPerformList<InferInputData<$InputFields>>;
+
+  /**
+   * Does this endpoint support pagination via temporary cursor
+   * storage?
+   */
+  canPaginate?: boolean;
+
+  /**
+   * Takes a URL and any necessary data from the user and subscribes.
+   * Note: this is required for public apps to ensure the best UX for
+   * the end-user. For private apps, this is strongly recommended for
+   * testing REST Hooks. Otherwise, you can ignore warnings about this
+   * property with the `--without-style` flag during `zapier push`.
+   */
+  performSubscribe?:
+    | Request
+    | WebhookTriggerPerformSubscribe<InferInputData<$InputFields>>;
+
+  /**
+   * Takes a URL and data from a previous subscribe call and
+   * unsubscribes. Note: this is required for public apps to ensure
+   * the best UX for the end-user. For private apps, this is strongly
+   * recommended for testing REST Hooks. Otherwise, you can ignore
+   * warnings about this property with the `--without-style` flag
+   * during `zapier push`.
+   */
+  performUnsubscribe?:
+    | Request
+    | WebhookTriggerPerformUnsubscribe<InferInputData<$InputFields>>;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: $InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: Record<string, unknown>;
 }
 
 /**
- * Represents a simplified semver string, from `0.0.0` to
- * `999.999.999`.
- *
- * [Docs: VersionSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#VersionSchema)
+ * Represents the inbound mechanics of hook to poll style triggers.
+ * Defers to list for fields.
  */
-export type Version = string;
+export interface BasicHookToPollOperation<
+  $InputFields extends InputFields = InputFields,
+> {
+  /** Must be explicitly set to `"hook_to_poll"`. */
+  type?: 'hook_to_poll';
 
-/**
- * List of before or after middlewares. Can be an array of functions
- * or a single function
- *
- * [Docs: MiddlewaresSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#MiddlewaresSchema)
- */
-export type Middlewares = Function[] | Function;
-
-/**
- * A bank of named functions that you can use in
- * `z.hydrate('someName')` to lazily load data.
- *
- * [Docs: HydratorsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#HydratorsSchema)
- */
-export interface Hydrators {
   /**
-   * Internal pointer to a function from the original source or the
-   * source code itself. Encodes arity and if `arguments` is used in
-   * the body. Note - just write normal functions and the system will
-   * encode the pointers for you. Or, provide {source: "return 1 + 2"}
-   * and the system will wrap in a function for you.
-   *
-   * This interface was referenced by `HydratorsSchema`'s JSON-Schema
-   * definition
-   * via the `patternProperty` "^[a-zA-Z]+[a-zA-Z0-9]*$".
+   * Similar a polling trigger, but checks for new data when a webhook
+   * is received, instead of every few minutes
    */
-  [k: string]: Function;
+  performList:
+    | Request
+    | HookToPollTriggerPerformList<InferInputData<$InputFields>>;
+
+  /**
+   * Does this endpoint support pagination via temporary cursor
+   * storage?
+   */
+  canPaginate?: boolean;
+
+  /** Takes a URL and any necessary data from the user and subscribes. */
+  performSubscribe:
+    | Request
+    | HookToPollTriggerPerformSubscribe<InferInputData<$InputFields>>;
+
+  /**
+   * Takes a URL and data from a previous subscribe call and
+   * unsubscribes.
+   */
+  performUnsubscribe:
+    | Request
+    | HookToPollTriggerPerformUnsubscribe<InferInputData<$InputFields>>;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: $InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: Record<string, unknown>;
+
+  /**
+   * The maximum amount of time to wait between polling requests in
+   * seconds. Minimum value is 20s and will default to 20 if not set,
+   * or set to a lower value.
+   */
+  maxPollingDelay?: number;
+}
+
+/** Represents the fundamental mechanics of a search/create. */
+export interface BasicActionOperation {
+  /**
+   * Optionally reference and extends a resource. Allows Zapier to
+   * automatically tie together samples, lists and hooks, greatly
+   * improving the UX. EG: if you had another trigger reusing a
+   * resource but filtering the results.
+   */
+  resource?: Key;
+
+  /**
+   * How will Zapier get the data? This can be a function like `(z) =>
+   * [{id: 123}]` or a request like `{url: 'http...'}`.
+   */
+  perform: Request | Function;
+
+  /**
+   * A function that parses data from a perform (which uses
+   * z.generateCallbackUrl()) and callback request to resume this
+   * action.
+   */
+  performResume?: Function;
+
+  /**
+   * How will Zapier get a single record? If you find yourself
+   * reaching for this - consider resources and their built-in get
+   * methods.
+   */
+  performGet?: Request | Function;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: Record<string, unknown>;
+
+  /**
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
+   */
+  lock?: LockObject;
+
+  /**
+   * Zapier uses this configuration to apply throttling when the limit
+   * for the window is exceeded.
+   */
+  throttle?: ThrottleObject;
+}
+
+/** Represents the fundamental mechanics of a search. */
+export interface BasicSearchOperation<
+  $InputFields extends InputFields = InputFields,
+> {
+  /**
+   * Optionally reference and extends a resource. Allows Zapier to
+   * automatically tie together samples, lists and hooks, greatly
+   * improving the UX. EG: if you had another trigger reusing a
+   * resource but filtering the results.
+   */
+  resource?: Key;
+
+  /**
+   * How will Zapier get the data? This can be a function like `(z) =>
+   * [{id: 123}]` or a request like `{url: 'http...'}`.
+   */
+  perform: Request | SearchPerform<InferInputData<$InputFields>>;
+
+  /**
+   * A function that parses data from a perform (which uses
+   * z.generateCallbackUrl()) and callback request to resume this
+   * action.
+   */
+  performResume?: SearchPerformResume<InferInputData<$InputFields>>;
+
+  /**
+   * How will Zapier get a single record? If you find yourself
+   * reaching for this - consider resources and their built-in get
+   * methods.
+   */
+  performGet?: Request | SearchPerformGet<InferInputData<$InputFields>>;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: $InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: Record<string, unknown>;
+
+  /**
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
+   */
+  lock?: LockObject;
+
+  /**
+   * Zapier uses this configuration to apply throttling when the limit
+   * for the window is exceeded.
+   */
+  throttle?: ThrottleObject;
+}
+
+/** Represents the fundamental mechanics of a create. */
+export interface BasicCreateOperation<
+  $InputFields extends InputFields = InputFields,
+> {
+  /**
+   * Optionally reference and extends a resource. Allows Zapier to
+   * automatically tie together samples, lists and hooks, greatly
+   * improving the UX. EG: if you had another trigger reusing a
+   * resource but filtering the results.
+   */
+  resource?: Key;
+
+  /**
+   * How will Zapier get the data? This can be a function like `(z) =>
+   * [{id: 123}]` or a request like `{url: 'http...'}`. Exactly one of
+   * `perform` or `performBuffer` must be defined. If you choose to
+   * define `buffer` and `performBuffer`, you must omit `perform`.
+   */
+  perform?: Request | CreatePerform<InferInputData<$InputFields>>;
+
+  /**
+   * A function that parses data from a perform (which uses
+   * z.generateCallbackUrl()) and callback request to resume this
+   * action.
+   */
+  performResume?: CreatePerformResume<InferInputData<$InputFields>>;
+
+  /**
+   * How will Zapier get a single record? If you find yourself
+   * reaching for this - consider resources and their built-in get
+   * methods.
+   */
+  performGet?: Request | CreatePerformGet<InferInputData<$InputFields>>;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: $InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: Record<string, unknown>;
+
+  /**
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
+   */
+  lock?: LockObject;
+
+  /**
+   * Zapier uses this configuration to apply throttling when the limit
+   * for the window is exceeded.
+   */
+  throttle?: ThrottleObject;
+
+  /**
+   * Currently an **internal-only** feature. Zapier uses this
+   * configuration for creating objects in bulk with `performBuffer`.
+   */
+  buffer?: BufferConfig;
+
+  /**
+   * Currently an **internal-only** feature. A function to create
+   * objects in bulk with. `buffer` and `performBuffer` must either
+   * both be defined or neither. Additionally, only one of `perform`
+   * or `performBuffer` can be defined. If you choose to define
+   * `perform`, you must omit `buffer` and `performBuffer`.
+   */
+  performBuffer?: Function;
 }
 
 /**
- * Codifies high-level options for your integration.
+ * A static dropdown of options. Which you use depends on your order
+ * and label requirements:
  *
- * [Docs: AppFlagsSchema](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#AppFlagsSchema)
+ * Need a Label? | Does Order Matter? | Type to Use
+ * ---|---|---
+ * Yes | No | Object of value -> label
+ * No | Yes | Array of Strings
+ * Yes | Yes | Array of
+ * [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
  */
-export interface AppFlags {
+export type FieldChoices =
+  | Record<string, unknown>
+  | (string | FieldChoiceWithLabel)[];
+
+/**
+ * Represents the fundamental mechanics of triggers, searches, or
+ * creates.
+ */
+export interface BasicOperation {
   /**
-   * By default, Zapier patches the core `http` module so that all
-   * requests (including those from 3rd-party SDKs) can be logged. Set
-   * this to true if you're seeing issues using an SDK (such as AWS).
+   * Optionally reference and extends a resource. Allows Zapier to
+   * automatically tie together samples, lists and hooks, greatly
+   * improving the UX. EG: if you had another trigger reusing a
+   * resource but filtering the results.
    */
-  skipHttpPatch?: boolean;
+  resource?: Key;
 
   /**
-   * Starting in `core` version `10.0.0`, `response.throwForStatus()`
-   * was called by default. We introduced a per-request way to opt-out
-   * of this behavior. This flag takes that a step further and
-   * controls that behavior integration-wide **for requests made using
-   * `z.request()`**. Unless they specify otherwise (per-request, or
-   * via middleware), [Shorthand
-   * requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests)
-   * _always_ call `throwForStatus()`. `z.request()` calls can also
-   * ignore this flag if they set `skipThrowForStatus` directly
+   * How will Zapier get the data? This can be a function like `(z) =>
+   * [{id: 123}]` or a request like `{url: 'http...'}`.
    */
-  skipThrowForStatus?: boolean;
+  perform: Request | Function;
+
+  /** What should the form a user sees and configures look like? */
+  inputFields?: InputFields;
+
+  /**
+   * What fields of data will this return? Will use resource
+   * outputFields if missing, will also use sample if available.
+   */
+  outputFields?: OutputFields;
+
+  /**
+   * What does a sample of data look like? Will use resource sample if
+   * missing. Requirement waived if `display.hidden` is true or if
+   * this belongs to a resource that has a top-level sample
+   */
+  sample?: Record<string, unknown>;
+
+  /**
+   * Zapier uses this configuration to ensure this action is performed
+   * one at a time per scope (avoid concurrency).
+   */
+  lock?: LockObject;
+
+  /**
+   * Zapier uses this configuration to apply throttling when the limit
+   * for the window is exceeded.
+   */
+  throttle?: ThrottleObject;
 }
+
+/**
+ * Field schema specialized for output fields. In addition to the
+ * requirements below, the following keys are mutually exclusive:
+ *
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
+ */
+export interface PlainOutputField {
+  /** A unique machine readable key for this value (IE: "fname"). */
+  key: string;
+
+  /** A human readable label for this value (IE: "First Name"). */
+  label?: string;
+
+  /**
+   * The type of this value. Field type of `file` will accept either a
+   * file object or a string. If a URL is provided in the string,
+   * Zapier will automatically make a GET for that file. Otherwise, a
+   * .txt file will be generated.
+   */
+  type?:
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'datetime'
+    | 'file'
+    | 'password'
+    | 'integer';
+
+  /** If this value is required or not. */
+  required?: boolean;
+
+  /** A default value that is saved the first time a Zap is created. */
+  default?: string;
+
+  /**
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
+   */
+  list?: boolean;
+
+  /**
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
+   */
+  children?: PlainOutputField[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
+
+  /**
+   * Use this field as part of the primary key for deduplication. You
+   * can set multiple fields as "primary", provided they are unique
+   * together. If no fields are set, Zapier will default to using the
+   * `id` field. `primary` only makes sense for `outputFields`. It
+   * only works in static `outputFields`; will not work in
+   * custom/dynamic `outputFields`. For more information, see [How
+   * deduplication works in
+   * Zapier](https://platform.zapier.com/build/deduplication).
+   */
+  primary?: boolean;
+
+  /**
+   * Prevents triggering on new output until all values for fields
+   * with this property remain unchanged for 2 polls. It can be used
+   * to, e.g., not trigger on a new contact until the contact has
+   * completed typing their name. NOTE that this only applies to the
+   * `outputFields` of polling triggers.
+   */
+  steadyState?: boolean;
+}
+
+/**
+ * Zapier uses this configuration to ensure this action is performed
+ * one at a time per scope (avoid concurrency).
+ */
+export interface LockObject {
+  /**
+   * The key to use for locking. This should be unique to the
+   * operation. While actions of different integrations with the same
+   * key and scope will never lock each other out, actions of the same
+   * integration with the same key and scope will do. User data
+   * provided for the input fields can be used in the key with the use
+   * of the curly braces referencing. For example, to access the user
+   * data provided for the input field "test_field", use
+   * `{{bundle.inputData.test_field}}`. Note that a required input
+   * field should be referenced to get user data always.
+   */
+  key: string;
+
+  /**
+   * By default, locks are scoped to the app. That is, all users of
+   * the app will share the same locks. If you want to restrict serial
+   * access to a specific user, auth, or account, you can set the
+   * scope to one or more of the following: 'user' - Locks based on
+   * user ids.  'auth' - Locks based on unique auth ids. 'account' -
+   * Locks for all users under a single account. You may also combine
+   * scopes. Note that "app" is included, always, in the scope
+   * provided. For example, a scope of ['account', 'auth'] would
+   * result to ['app', 'account', 'auth'].
+   */
+  scope?: ('user' | 'auth' | 'account')[];
+
+  /**
+   * The number of seconds to hold the lock before releasing it to
+   * become accessible to other task invokes that need it. If not
+   * provided, the default set by the app will be used. It cannot be
+   * more than 180.
+   */
+  timeout?: number;
+}
+
+/**
+ * Currently an **internal-only** feature. Zapier uses this
+ * configuration for creating objects in bulk.
+ */
+export interface BufferConfig {
+  /**
+   * The list of keys of input fields to group bulk-create with. The
+   * actual user data provided for the fields will be used during
+   * execution. Note that a required input field should be referenced
+   * to get user data always.
+   */
+  groupedBy: unknown[];
+
+  /**
+   * The maximum number of items to call `performBuffer` with.
+   * **Note** that it is capped by the platform to prevent exceeding
+   * the [AWS Lambda's request/response payload size quota of 6
+   * MB](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html#function-configuration-deployment-and-execution).
+   * Also, the execution is time-bound; we recommend reducing it upon
+   * consistent timeout.
+   */
+  limit: number;
+}
+
+/**
+ * An object describing a labeled choice in a static dropdown.
+ * Useful if the value a user picks isn't exactly what the zap uses.
+ * For instance, when they click on a nickname, but the zap uses the
+ * user's full name
+ * ([image](https://cdn.zapier.com/storage/photos/8ed01ac5df3a511ce93ed2dc43c7fbbc.png)).
+ */
+export interface FieldChoiceWithLabel {
+  /**
+   * The actual value that is sent into the Zap. This is displayed as
+   * light grey text in the editor. Should match sample exactly.
+   */
+  value: string;
+
+  /**
+   * A legacy field that is no longer used by the editor, but it is
+   * still required for now and should match the value.
+   */
+  sample: string;
+
+  /** A human readable label for this value. */
+  label: string;
+}
+
+/**
+ * Field schema specialized for input fields. In addition to the
+ * requirements below, the following keys are mutually exclusive:
+ *
+ * * `children` & `list`
+ * * `children` & `dict`
+ * * `children` & `type`
+ * * `children` & `placeholder`
+ * * `children` & `helpText`
+ * * `children` & `default`
+ * * `dict` & `list`
+ * * `dynamic` & `dict`
+ * * `dynamic` & `choices`
+ */
+export interface PlainInputField {
+  /** A unique machine readable key for this value (IE: "fname"). */
+  key: string;
+
+  /** A human readable label for this value (IE: "First Name"). */
+  label?: string;
+
+  /**
+   * The type of this value. Use `string` for basic text input, `text`
+   * for a large, `<textarea>` style box, and `code` for a
+   * `<textarea>` with a fixed-width font. Field type of `file` will
+   * accept either a file object or a string. If a URL is provided in
+   * the string, Zapier will automatically make a GET for that file.
+   * Otherwise, a .txt file will be generated.
+   */
+  type?:
+    | 'string'
+    | 'text'
+    | 'integer'
+    | 'number'
+    | 'boolean'
+    | 'datetime'
+    | 'file'
+    | 'password'
+    | 'copy'
+    | 'code';
+
+  /** If this value is required or not. */
+  required?: boolean;
+
+  /** A default value that is saved the first time a Zap is created. */
+  default?: string;
+
+  /**
+   * Acts differently when used in inputFields vs. when used in
+   * outputFields. In inputFields: Can a user provide multiples of
+   * this field? In outputFields: Does this field return an array of
+   * items of type `type`?
+   */
+  list?: boolean;
+
+  /**
+   * An array of child fields that define the structure of a
+   * sub-object for this field. Usually used for line items.
+   */
+  children?: PlainInputField[];
+
+  /** Is this field a key/value input? */
+  dict?: boolean;
+
+  /**
+   * A human readable description of this value (IE: "The first part
+   * of a full name."). You can use Markdown.
+   */
+  helpText?: string;
+
+  /**
+   * A reference to a search that will guide the user to add a search
+   * step to populate this field when creating a Zap.
+   */
+  search?: RefResource;
+
+  /** A reference to a trigger that will power a dynamic dropdown. */
+  dynamic?: RefResource;
+
+  /**
+   * An object of machine keys and human values to populate a static
+   * dropdown.
+   */
+  choices?: FieldChoices;
+
+  /** An example value that is not saved. */
+  placeholder?: string;
+
+  /**
+   * Does the value of this field affect the definitions of other
+   * fields in the set?
+   */
+  altersDynamicFields?: boolean;
+
+  /**
+   * Is this field automatically populated (and hidden from the user)?
+   * Note: Only OAuth, Session Auth, and certain internal use cases
+   * support fields with this key.
+   */
+  computed?: boolean;
+
+  /**
+   * Useful when you expect the input to be part of a longer string.
+   * Put "{{input}}" in place of the user's input (IE:
+   * "https://{{input}}.yourdomain.com").
+   */
+  inputFormat?: string;
+
+  /**
+   * Allows for additional metadata to be stored on the field.
+   * Supports simple key-values only (no sub-objects or arrays).
+   */
+  meta?: FieldMeta;
+}
+
+/**
+ * Reference a resource by key and the data it returns. In the
+ * format of: `{resource_key}.{foreign_key}(.{human_label_key})`.
+ */
+export type RefResource = string;
+
+/** Allows for additional metadata to be stored on the field. */
+export type FieldMeta = Record<string, string | number | boolean>;
