@@ -78,7 +78,7 @@ export type HookToPollTriggerPerformUnsubscribe<
  * to populate more data.
  */
 export type CreatePerform<
-  $InputData extends DefaultInputData = { _none: number },
+  $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
 > = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
