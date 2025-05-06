@@ -1,3 +1,46 @@
+# 17.0.0
+
+_released `2025-05-07`_
+
+Version `17.0.0` is a breaking change release that contains several important upgrades and changes. Here is a brief breakdown of the main breaking changes (**:exclamation: denotes a breaking change**):
+
+1. ES Module support: It's now possible to build integrations using modern ESM syntax. This means we have changed the way we build integrations, and changed several dependencies.
+2. Schema changes: We have split authentication fields, input fields, and output fields into their own respective schemas, to allow for stricter schema checks and to prepare for future platform updates.
+3. No longer replace `{{curly brackets}}` outside of shorthand requests
+
+Here are the detailed release notes for this release (**note that ❗ denotes a breaking change**):
+
+### cli
+
+- :nail_care: ESM support added to `zapier init` command via the `--module` flag - supports Minimal and Typescript templates ([#976](https://github.com/zapier/zapier-platform/pull/976))
+- :hammer: `zapier build` now uses `esbuild` instead of `browserify` to detect dependencies ([#946](https://github.com/zapier/zapier-platform/pull/946))
+- :exclamation: `zapier build` and other local command updates: We have changed the way app definitions are imported to support integrations using ESM.
+- :hammer: Update `gulp-prettier` dependency from 4.0.0 to 5.0.0
+
+### core
+
+- :bug: HTTP 500 along with status codes >500 are caught in RPC client ([#974](https://github.com/zapier/zapier-platform/pull/974))
+- :hammer: Remove Bluebird library, replace with native promises ([#980](https://github.com/zapier/zapier-platform/pull/980))
+  - Context for integration logs is now tracked with a `whatHappened` property on the `_zapier` object
+- :hammer: Refactor middleware and lambda handler logic to use async/await instead of Promise chaining ([#980](https://github.com/zapier/zapier-platform/pull/980))
+- :exclamation: ESM Support: Two versions of `zapierwrapper.js`, one CJS and one ESM, loaded dynamically depending on the app type ([#965](https://github.com/zapier/zapier-platform/pull/965))
+  - Note: Because of this, you must use `zapier-platform-cli` version 17 to run `zapier` commands on an integration using `zapier-platform-core` version 17.
+- :exclamation: Stop replacing `{{curlies}}` unless it's a shorthand request ([#1001](https://github.com/zapier/zapier-platform/pull/1001))
+- :hammer: Trim newline and whitespaces from request headers ([#1000](https://github.com/zapier/zapier-platform/pull/1000))
+
+### schema
+
+- :exclamation: Deprecate shouldLock property in the schema ([#988](https://github.com/zapier/zapier-platform/pull/988))
+- :hammer: FieldSchema has been split into separate schemas and renamed for clarity ([#957](https://github.com/zapier/zapier-platform/pull/957), [#998](https://github.com/zapier/zapier-platform/pull/998)). Changes include:
+  - Input Fields (`PlainInputFieldSchema` and `InputFieldsSchema`)
+	- Output Fields (`PlainOutputFieldSchema` and `OutputFieldsSchema`)
+	- Authentication Fields (`AuthFieldSchema` and `AuthFieldsSchema`)
+- :hammer: A dedicated `BasicSearchOperationSchema` has been added ([#998](https://github.com/zapier/zapier-platform/pull/998))
+
+### legacy-scripting-runner
+
+- :hammer: Trim newline and whitespaces from request header ([#1000](https://github.com/zapier/zapier-platform/pull/1000))
+
 # 16.5.0
 
 _released `2025-04-10`_
