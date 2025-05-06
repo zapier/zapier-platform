@@ -5,7 +5,7 @@ _released `2025-05-07`_
 Version `17.0.0` is a breaking change release that contains several important upgrades and changes. Here is a brief breakdown of the main breaking changes (**:exclamation: denotes a breaking change**):
 
 1. ES Module support: It's now possible to build integrations using modern ESM syntax. This means we have changed the way we build integrations, and changed several dependencies.
-2. Schema changes: We have split authentication fields, input fields, and output fields into their own respective schemas, to allow for stricter schema checks and to prepare for future platform updates.
+2. Schema changes: We have split authentication fields, input fields, and output fields into their own respective schemas, to allow for stricter schema checks and to prepare for future platform updates. Along with this, we have removed irrelevant or incompatible field types and properties from certain schemas (see the `schema` section below for more detail).
 3. No longer replace `{{curly brackets}}` outside of shorthand requests
 
 Here are the detailed release notes for this release (**note that ❗ denotes a breaking change**):
@@ -33,8 +33,18 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
 - :exclamation: Deprecate shouldLock property in the schema ([#988](https://github.com/zapier/zapier-platform/pull/988))
 - :hammer: FieldSchema has been split into separate schemas and renamed for clarity ([#957](https://github.com/zapier/zapier-platform/pull/957), [#998](https://github.com/zapier/zapier-platform/pull/998)). Changes include:
   - Input Fields (`PlainInputFieldSchema` and `InputFieldsSchema`)
-	- Output Fields (`PlainOutputFieldSchema` and `OutputFieldsSchema`)
-	- Authentication Fields (`AuthFieldSchema` and `AuthFieldsSchema`)
+  - Output Fields (`PlainOutputFieldSchema` and `OutputFieldsSchema`)
+  - Authentication Fields (`AuthFieldSchema` and `AuthFieldsSchema`)
+- :exclamation: Along with this split, certain fields no longer support certain types and properties, as follows:
+  - `AuthenticationSchema.fields`:
+    - The following **types** are no longer supported: `code`, `file`, `integer`, `text`
+    - The following **properties** are no longer supported: `altersDynamicFields`, `dynamic`, `meta`, `primary`, `search`, `steadyState`
+  - `BasicActionOperationSchema.inputFields`:
+    - All **types** remain the same.
+    - The following **properties** are no longer supported: `primary`, `steadyState`
+  - `BasicActionOperationSchema.outputFields`:
+    - The following **types** are no longer supported: `text`, `copy`, `code`
+    - The following **properties** are no longer supported: `altersDynamicFields`, `choices`, `computed`, `dynamic`, `helpText`, `inputFormat`, `meta`, `placeholder`, `search`
 - :hammer: A dedicated `BasicSearchOperationSchema` has been added ([#998](https://github.com/zapier/zapier-platform/pull/998))
 
 ### legacy-scripting-runner
