@@ -2,6 +2,7 @@ import {
   defineApp,
   defineCreate,
   defineInputFields,
+  defineSearch,
   defineTrigger,
 } from './typeHelpers';
 
@@ -178,6 +179,22 @@ const expandedTrigger = defineTrigger({
 
 // #endregion
 
+// region Search Examples
+
+const basicSearch = defineSearch({
+  key: 'basicSearch',
+  noun: 'Basic Search Noun',
+  display: { label: 'Basic Search Display' },
+  operation: {
+    inputFields: plainInputFields,
+    perform: async (z, bundle) => {
+      return [{ id: 'abc' }];
+    },
+  },
+});
+
+// #endregion
+
 // #region App
 // ===========
 
@@ -187,6 +204,9 @@ const app = defineApp({
   creates: {
     [basicCreate.key]: basicCreate,
     [expandedCreate.key]: expandedCreate,
+  },
+  searches: {
+    [basicSearch.key]: basicSearch,
   },
   triggers: {
     [basicTrigger.key]: basicTrigger,

@@ -16,6 +16,11 @@ export declare function defineCreate<
   const $InputFields extends InputFields,
 >(create: Create<$Key, $InputFields>): Create<$Key, $InputFields>;
 
+export declare function defineSearch<
+  const $Key extends string,
+  const $InputFields extends InputFields,
+>(search: Search<$Key, $InputFields>): Search<$Key, $InputFields>;
+
 export declare function defineTrigger<
   const $Key extends string,
   const $InputFields extends InputFields,
