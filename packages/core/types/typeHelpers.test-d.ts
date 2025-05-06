@@ -1,7 +1,7 @@
 import {
   defineApp,
   defineCreate,
-  defineInputs,
+  defineInputFields,
   defineTrigger,
 } from './typeHelpers';
 
@@ -14,7 +14,7 @@ import { Bundle } from './custom';
 // #region Input Fields
 // ====================
 
-const plainInputFields = defineInputs([
+const plainInputFields = defineInputFields([
   { key: 'required_string', type: 'string', required: true },
   { key: 'optional_string', type: 'string', required: false },
   { key: 'required_number', type: 'number', required: true },
@@ -53,12 +53,12 @@ const basicCreate = defineCreate({
 // "Expanded" create is defined with separate Inputs, Perform, and only
 // then a `defineCreate` call.
 
-const expandedCreateInputFields = defineInputs([
+const expandedCreateInputFields = defineInputFields([
   { key: 'string2', type: 'string', required: true },
   { key: 'boolean2', type: 'boolean', required: false },
   (z, bundle) => {
     if (bundle.inputData.boolean2) {
-      return defineInputs([
+      return defineInputFields([
         { key: 'extra_string2', type: 'string', required: true },
         { key: 'extra_number2', type: 'number', required: true },
       ]);
@@ -145,12 +145,12 @@ const rawTrigger: Trigger<'rawTrigger', typeof rawInputFields> = {
 // Expanded Trigger uses `defineTrigger` with separate Inputs, Perform,
 // and only then a `defineTrigger` call.
 
-const expandedTriggerInputFields = defineInputs([
+const expandedTriggerInputFields = defineInputFields([
   { key: 'expandedTriggerString', type: 'string', required: true },
   { key: 'expandedTriggerBoolean', type: 'boolean', required: false },
   (z, bundle) => {
     if (bundle.inputData.expandedTriggerBoolean) {
-      return defineInputs([
+      return defineInputFields([
         { key: 'dynamicTriggerString', type: 'string', required: true },
         { key: 'dynamicTriggerNumber', type: 'number', required: true },
       ]);
