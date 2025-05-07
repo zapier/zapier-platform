@@ -61,8 +61,8 @@
     "dicer": "^0.3.1",
     "fs-extra": "^11.3.0",
     "mock-fs": "^5.5.0",
-    "nock": "^14.0.4",
-    "tsd": "^0.32.0"
+    "nock": "^13.5.4",
+    "tsd": "^0.31.1"
   },
   "optionalDependencies": {
     "@types/node": "^20.3.1"
