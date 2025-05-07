@@ -1,12 +1,12 @@
-import type { PerformFunction, Trigger } from 'zapier-platform-core';
+import { defineTrigger, PollingTriggerPerform } from 'zapier-platform-core';
 import { API_URL } from '../constants.js';
 
-const perform: PerformFunction = async (z, bundle) => {
+const perform = (async (z, bundle) => {
   const response = await z.request(`${API_URL}/movies`);
   return response.data;
-};
+}) satisfies PollingTriggerPerform;
 
-export default {
+export default defineTrigger({
   key: 'movie',
   noun: 'Movie',
 
@@ -23,4 +23,4 @@ export default {
       title: 'example',
     },
   },
-} satisfies Trigger;
+});
