@@ -5,25 +5,6 @@ const { buildFlags } = require('../buildFlags');
 
 const { listVersions } = require('../../utils/api');
 
-const deploymentToLifecycleState = (deployment) => {
-  switch (deployment) {
-    case 'non-production':
-      return 'private';
-    case 'production':
-      return 'promoted';
-    case 'demoted':
-      return 'available';
-    case 'legacy':
-      return 'legacy';
-    case 'deprecating':
-      return 'deprecating';
-    case 'deprecated':
-      return 'deprecated';
-    default:
-      return deployment;
-  }
-};
-
 class VersionCommand extends BaseCommand {
   async perform() {
     this.startSpinner('Loading versions');
@@ -31,7 +12,7 @@ class VersionCommand extends BaseCommand {
     this.stopSpinner();
     const rows = versions.map((v) => ({
       ...v,
-      state: deploymentToLifecycleState(v.lifecycle.status),
+      state: v.lifecycle.status,
     }));
 
     const visibleVersions = this.flags.all
