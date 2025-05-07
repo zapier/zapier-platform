@@ -109,6 +109,105 @@ describe('create http patch', () => {
     ]);
   });
 
+  it('should log request/response data for allowlisted content-types', () => {
+    // Arrange
+    const fakeHttpModule = {
+      request: (options, callback) => {
+        const res = new EventEmitter();
+
+        // Response data
+        res.statusCode = 200;
+        res.headers = { 'content-type': XML_TYPE }; // XML type should be supported
+        callback(res);
+        res.emit('data', Buffer.from('<foo>bar</foo>'));
+        res.emit('end');
+      },
+    };
+
+    const logBuffer = [];
+
+    const stubLogger = (_, data) => {
+      logBuffer.push(data);
+    };
+
+    const httpPatch = createHttpPatch({});
+    httpPatch(fakeHttpModule, stubLogger);
+
+    // Act
+    fakeHttpModule.request({
+      url: 'https://fake.zapier.com/foo',
+      body: JSON.stringify({ input: 'data' }),
+      headers: { 'content-type': JSON_TYPE }, // JSON type should be supported
+    });
+
+    // Assert
+    should(logBuffer).deepEqual([
+      {
+        log_type: 'http',
+        request_data: '{"input":"data"}',
+        request_headers: { 'content-type': JSON_TYPE },
+        request_method: 'GET',
+        request_type: 'patched-devplatform-outbound',
+        request_url: 'https://fake.zapier.com/foo',
+        request_via_client: false,
+        response_content: '<foo>bar</foo>',
+        response_headers: {
+          'content-type': 'application/xml',
+        },
+        response_status_code: 200,
+      },
+    ]);
+  });
+
+  it('should log request/response data when content-type header is array', () => {
+    // Arrange
+    const fakeHttpModule = {
+      request: (options, callback) => {
+        const res = new EventEmitter();
+
+        // Response data
+        res.statusCode = 200;
+        res.headers = { 'content-type': [XML_TYPE] }; // XML type should be supported
+        callback(res);
+        res.emit('data', Buffer.from('<foo>bar</foo>'));
+        res.emit('end');
+      },
+    };
+
+    const logBuffer = [];
+    const stubLogger = (_, data) => {
+      logBuffer.push(data);
+    };
+
+    const httpPatch = createHttpPatch({});
+    httpPatch(fakeHttpModule, stubLogger);
+
+    // Act
+    fakeHttpModule.request({
+      url: 'https://fake.zapier.com/foo',
+      body: JSON.stringify({ input: 'data' }),
+      headers: { 'content-type': [JSON_TYPE] }, // JSON type should be supported
+    });
+
+    // Assert
+    should(logBuffer).deepEqual([
+      {
+        log_type: 'http',
+        request_data: '{"input":"data"}',
+        request_headers: { 'content-type': [JSON_TYPE] },
+        request_method: 'GET',
+        request_type: 'patched-devplatform-outbound',
+        request_url: 'https://fake.zapier.com/foo',
+        request_via_client: false,
+        response_content: '<foo>bar</foo>',
+        response_headers: {
+          'content-type': ['application/xml'],
+        },
+        response_status_code: 200,
+      },
+    ]);
+  });
+
   it('should not log request/response data from non-allowlisted content-types', () => {
     // Arrange
     const fakeHttpModule = {
