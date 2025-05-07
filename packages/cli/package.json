@@ -51,7 +51,7 @@
     "cli-table3": "0.6.5",
     "colors": "1.4.0",
     "debug": "4.3.7",
-    "dotenv": "16.4.6",
+    "dotenv": "16.5.0",
     "esbuild": "0.24.2",
     "fs-extra": "11.2.0",
     "gulp-filter": "7.0.0",
