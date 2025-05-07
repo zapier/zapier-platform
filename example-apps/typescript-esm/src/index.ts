@@ -1,5 +1,4 @@
-import type { App } from 'zapier-platform-core';
-import zapier from 'zapier-platform-core';
+import zapier, { defineApp } from 'zapier-platform-core';
 
 import packageJson from '../package.json' with { type: 'json' };
 
@@ -8,7 +7,7 @@ import MovieTrigger from './triggers/movie.js';
 import authentication from './authentication.js';
 import { addBearerHeader } from './middleware.js';
 
-export default {
+export default defineApp({
   version: packageJson.version,
   platformVersion: zapier.version,
 
@@ -22,4 +21,4 @@ export default {
   creates: {
     [MovieCreate.key]: MovieCreate,
   },
-} satisfies App;
+}) 
