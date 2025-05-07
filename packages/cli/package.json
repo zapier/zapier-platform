@@ -40,7 +40,7 @@
     "validate": "yarn test && yarn smoke-test && yarn lint"
   },
   "dependencies": {
-    "@oclif/core": "4.0.34",
+    "@oclif/core": "4.3.0",
     "@oclif/plugin-autocomplete": "3.2.28",
     "@oclif/plugin-help": "6.2.28",
     "@oclif/plugin-not-found": "3.2.51",
@@ -70,7 +70,7 @@
     "ora": "5.4.0",
     "parse-gitignore": "0.5.1",
     "prettier": "3.4.1",
-    "read": "4.0.0",
+    "read": "4.1.0",
     "semver": "7.7.1",
     "string-length": "4.0.2",
     "through2": "4.0.2",
@@ -88,7 +88,7 @@
     "decompress": "4.2.1",
     "mock-fs": "^5.5.0",
     "nock": "^13.3.1",
-    "oclif": "^4.15.30",
+    "oclif": "^4.17.46",
     "typescript": "^5.6.3",
     "yamljs": "0.3.0"
   },
