@@ -52,7 +52,7 @@
     "colors": "1.4.0",
     "debug": "4.4.0",
     "dotenv": "16.5.0",
-    "esbuild": "0.24.2",
+    "esbuild": "0.25.4",
     "fs-extra": "11.2.0",
     "gulp-filter": "7.0.0",
     "gulp-prettier": "5.0.0",
@@ -87,9 +87,9 @@
     "chai": "^4.3.7",
     "decompress": "4.2.1",
     "mock-fs": "^5.5.0",
-    "nock": "^13.3.1",
+    "nock": "^14.0.4",
     "oclif": "^4.17.46",
-    "typescript": "^5.6.3",
+    "typescript": "^5.8.3",
     "yamljs": "0.3.0"
   },
   "bin": {
