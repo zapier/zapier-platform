@@ -47,9 +47,17 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
     - The following **properties** are no longer supported: `altersDynamicFields`, `choices`, `computed`, `dynamic`, `helpText`, `inputFormat`, `meta`, `placeholder`, `search`
 - :hammer: A dedicated `BasicSearchOperationSchema` has been added ([#998](https://github.com/zapier/zapier-platform/pull/998))
 
+### schema-to-ts
+
+- :nail_care: General rewrite to be smaller, faster, and include new helper functions using `const` [type parameters](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#const-type-parameters) to help with typing, including: `defineApp`, `defineTrigger`, `defineCreate`, `defineSearch`, `defineInputFields` ([#999](https://github.com/zapier/zapier-platform/pull/999))
+
 ### legacy-scripting-runner
 
 - :hammer: Trim newline and whitespaces from request header ([#1000](https://github.com/zapier/zapier-platform/pull/1000))
+
+### misc
+
+- :hammer: Dependency updates - full list in the PR ([#1010](https://github.com/zapier/zapier-platform/pull/1010))
 
 # 16.5.0
 
