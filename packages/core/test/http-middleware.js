@@ -475,6 +475,22 @@ describe('http querystring before middleware', () => {
     addQueryParams(req);
     should(req.url).eql('https://example.com?cool=%E7%83%8F龜%40$å');
   });
+
+  it('should allow to pass in a custom encodeURIComponent function', () => {
+    const req = {
+      url: 'https://example.com',
+      params: { cool: '!*()[]' },
+      encodeURIComponent: (s) => {
+        return encodeURIComponent(s)
+          .replaceAll('!', '%21')
+          .replaceAll('*', '%2A')
+          .replaceAll('(', '%28')
+          .replaceAll(')', '%29');
+      },
+    };
+    addQueryParams(req);
+    should(req.url).eql('https://example.com?cool=%21%2A%28%29%5B%5D');
+  });
 });
 
 describe('http addBasicAuthHeader before middelware', () => {

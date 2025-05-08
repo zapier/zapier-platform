@@ -59,6 +59,9 @@ const createHttpPatch = (event) => {
 
         // Only include request or response data for specific content types
         // which we are able to read in logs and which are not typically too large
+        // Limitation: This doesn't capture the request content-type if it's set afterwards, like:
+        //   const req = https.request(options, callback);
+        //   req.setHeader('Content-Type', 'text/plain');
         const requestContentType = getContentType(options.headers || {});
         const responseContentType = getContentType(response.headers || {});
 

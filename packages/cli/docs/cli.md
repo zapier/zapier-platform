@@ -921,5 +921,6 @@ Run the standard validation routine powered by json-schema that checks your inte
 **Usage**: `zapier versions`
 
 **Flags**
+* `-a, --all` | List all versions, including deprecated versions.
 * `-d, --debug` | Show extra debugging output.
 * `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
