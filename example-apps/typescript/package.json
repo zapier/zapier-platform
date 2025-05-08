@@ -10,7 +10,7 @@
     "_zapier-build": "npm run build"
   },
   "dependencies": {
-    "zapier-platform-core": "16.5.0"
+    "zapier-platform-core": "16.5.1"
   },
   "devDependencies": {
     "rimraf": "^5.0.10",
