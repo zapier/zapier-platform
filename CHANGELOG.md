@@ -1,41 +1,77 @@
 # 17.0.0
 
-_released `2025-05-07`_
+_released `2025-05-12`_
 
 Version `17.0.0` is a breaking change release that contains several important upgrades and changes. Here is a brief breakdown of the main breaking changes (**:exclamation: denotes a breaking change**):
 
-1. ES Module support: It's now possible to build integrations using modern ESM syntax. This means we have changed the way we build integrations, and changed several dependencies.
-2. Schema changes: We have split authentication fields, input fields, and output fields into their own respective schemas, to allow for stricter schema checks and to prepare for future platform updates. Along with this, we have removed irrelevant or incompatible field types and properties from certain schemas (see the `schema` section below for more detail).
-3. No longer replace `{{curly brackets}}` outside of shorthand requests
+### ES Module Support
 
-Here are the detailed release notes for this release (**note that ❗ denotes a breaking change**):
+You can now build integrations using modern ES Module syntax. This means you can use `import ... from ...` instead of `require(...)`, and use newer npm packages that support only ESM.
 
-### cli
+To start using ESM for your integration project:
+- Set `"type": "module"` in your `package.json`
+- Replace `main` with `exports` in your `package.json`
 
-- :nail_care: ESM support added to `zapier init` command via the `--module` flag - supports Minimal and Typescript templates ([#976](https://github.com/zapier/zapier-platform/pull/976))
-- :hammer: `zapier build` now uses `esbuild` instead of `browserify` to detect dependencies ([#946](https://github.com/zapier/zapier-platform/pull/946))
-- :exclamation: `zapier build` and other local command updates: We have changed the way app definitions are imported to support integrations using ESM.
-- :hammer: Update `gulp-prettier` dependency from 4.0.0 to 5.0.0
+For a complete example, check out [minimal-esm](https://github.com/zapier/zapier-platform/tree/82b11aef29a4e7cb576431dba24cba0066c5057b/example-apps/minimal-esm) or [typescript-esm](https://github.com/zapier/zapier-platform/tree/82b11aef29a4e7cb576431dba24cba0066c5057b/example-apps/typescript-esm) (both can be initialized using [`zapier init`](https://github.com/zapier/zapier-platform/blob/82b11aef29a4e7cb576431dba24cba0066c5057b/packages/cli/docs/cli.md#init) with the `-m esm` flag).
 
-### core
+Additionally, this update means it's no longer required for every integration's entry point to be `index.js` at the root directory. Instead, the entry point can be defined in `package.json`.
+  - For example, see the Typescript ESM example integration [at this link](https://github.com/zapier/zapier-platform/tree/main/example-apps/typescript-esm) - it no longer contains an `index.js` file at the root directory, rather the entry point is defined via `"exports": "./dist/index.js"` in the integration's [package.json](https://github.com/zapier/zapier-platform/blob/main/example-apps/typescript-esm/package.json#L20)
 
-- :bug: HTTP 500 along with status codes >500 are caught in RPC client ([#974](https://github.com/zapier/zapier-platform/pull/974))
-- :hammer: Remove Bluebird library, replace with native promises ([#980](https://github.com/zapier/zapier-platform/pull/980))
-  - Context for integration logs is now tracked with a `whatHappened` property on the `_zapier` object
-- :hammer: Refactor middleware and lambda handler logic to use async/await instead of Promise chaining ([#980](https://github.com/zapier/zapier-platform/pull/980))
-- :exclamation: ESM Support: Two versions of `zapierwrapper.js`, one CJS and one ESM, loaded dynamically depending on the app type ([#965](https://github.com/zapier/zapier-platform/pull/965))
-  - Note: Because of this, you must use `zapier-platform-cli` version 17 to run `zapier` commands on an integration using `zapier-platform-core` version 17.
-- :exclamation: Stop replacing `{{curlies}}` unless it's a shorthand request ([#1001](https://github.com/zapier/zapier-platform/pull/1001))
-- :hammer: Trim newline and whitespaces from request headers ([#1000](https://github.com/zapier/zapier-platform/pull/1000))
+### Typing Improvements
 
-### schema
+We've improved the typing system, making the TypeScript dev experience more enjoyable. The new typing system includes:
 
-- :exclamation: Deprecate shouldLock property in the schema ([#988](https://github.com/zapier/zapier-platform/pull/988))
-- :hammer: FieldSchema has been split into separate schemas and renamed for clarity ([#957](https://github.com/zapier/zapier-platform/pull/957), [#998](https://github.com/zapier/zapier-platform/pull/998)). Changes include:
-  - Input Fields (`PlainInputFieldSchema` and `InputFieldsSchema`)
-  - Output Fields (`PlainOutputFieldSchema` and `OutputFieldsSchema`)
-  - Authentication Fields (`AuthFieldSchema` and `AuthFieldsSchema`)
-- :exclamation: Along with this split, certain fields no longer support certain types and properties, as follows:
+- Bundle `inputData` types is now inferred from input fields.
+- New helper functions to help with typing:
+  - `defineApp`, `defineTrigger`, `defineCreate`, `defineSearch`, `defineInputFields`
+  - These are now recommended over the equivalent `satisfies Xyz` statements
+  - `satisfies` is still used for `perform` functions, with `InferInputData`, and for other features without `define` helpers. For example, `export default { ... } satisfies Authentication` is still expected.
+
+Check out the [typescript-esm](https://github.com/zapier/zapier-platform/tree/82b11aef29a4e7cb576431dba24cba0066c5057b/example-apps/typescript-esm) example project for a full example.
+
+### :exclamation: No More `{{curly brackets}}` Outside of Shorthand Requests
+
+Calling `z.request()` with `{{bundle.*}}` or `{{process.env.*}}` will now result in an error. For example:
+
+```js
+const perform = async (z, bundle) => {
+  const response = await z.request({
+    url: 'https://{{bundle.authData.subdomain}}.example.com',
+  });
+  return response.data;
+};
+```
+
+This will result in an error in v17. Instead, you must use [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) i.e. `${var}`:
+
+```js
+const perform = async (z, bundle) => {
+  const response = await z.request({
+    url: `https://${bundle.authData.subdomain}.example.com`,
+  });
+  return response.data;
+};
+```
+
+However, `{{curly backets}}` are still (and have to be) allowed in shorthand requests:
+
+```js
+{
+  operation: {
+    perform: {
+      url: 'https://{{bundle.authData.subdomain}}.example.com',
+      method: 'GET',
+    }
+  }
+}
+```
+
+### :exclamation: Schema Changes
+
+We have split authentication fields, input fields, and output fields into their own respective schemas, to allow for stricter schema checks and to prepare for future platform updates. Along with this, we have removed irrelevant or incompatible field types and properties from certain schemas.
+
+Note that a descriptive error will be thrown on `zapier validate` if your integration attempts to use an unsupported type or property; no need to manually check these. The updated schema are as follows:
+
   - `AuthenticationSchema.fields`:
     - The following **types** are no longer supported: `code`, `file`, `integer`, `text`
     - The following **properties** are no longer supported: `altersDynamicFields`, `dynamic`, `meta`, `primary`, `search`, `steadyState`
@@ -45,15 +81,35 @@ Here are the detailed release notes for this release (**note that ❗ denotes a 
   - `BasicActionOperationSchema.outputFields`:
     - The following **types** are no longer supported: `text`, `copy`, `code`
     - The following **properties** are no longer supported: `altersDynamicFields`, `choices`, `computed`, `dynamic`, `helpText`, `inputFormat`, `meta`, `placeholder`, `search`
+
+---------
+
+Apart from these major changes, here are the detailed release notes for this release (**note that ❗ denotes a breaking change**):
+
+### cli
+
+- :nail_care: ESM support added to `zapier init` command via the `--module` flag - supports Minimal and Typescript templates ([#976](https://github.com/zapier/zapier-platform/pull/976))
+- :hammer: `zapier build` now uses `esbuild` instead of `browserify` to detect dependencies, for a faster experience building, and to better support ESM ([#946](https://github.com/zapier/zapier-platform/pull/946))
+- :hammer: Update `gulp-prettier` dependency from 4.0.0 to 5.0.0
+
+### core
+
+- :exclamation: Stop replacing `{{curlies}}` unless it's a shorthand request ([#1001](https://github.com/zapier/zapier-platform/pull/1001))
+- :exclamation: ESM Support: Two versions of `zapierwrapper.js`, one CJS and one ESM, loaded dynamically depending on the app type ([#965](https://github.com/zapier/zapier-platform/pull/965))
+- :bug: Not every `{{curlies}}` in the request object need to be recursively replaced ([#1001](https://github.com/zapier/zapier-platform/pull/1001))
+- :bug: HTTP 500 along with status codes >500 are caught in RPC client ([#974](https://github.com/zapier/zapier-platform/pull/974))
+- :hammer: Remove Bluebird library, replace with native promises ([#980](https://github.com/zapier/zapier-platform/pull/980))
+- :hammer: Refactor middleware and lambda handler logic to use async/await instead of Promise chaining ([#980](https://github.com/zapier/zapier-platform/pull/980))
+- :hammer: Trim newline and whitespaces from request headers ([#1000](https://github.com/zapier/zapier-platform/pull/1000))
+
+### schema
+
+- :exclamation: Remove deprecated shouldLock property in the schema ([#988](https://github.com/zapier/zapier-platform/pull/988))
+- :hammer: FieldSchema has been split into separate schemas and renamed for clarity ([#957](https://github.com/zapier/zapier-platform/pull/957), [#998](https://github.com/zapier/zapier-platform/pull/998)). Changes include:
+  - Input Fields (`PlainInputFieldSchema` and `InputFieldsSchema`)
+  - Output Fields (`PlainOutputFieldSchema` and `OutputFieldsSchema`)
+  - Authentication Fields (`AuthFieldSchema` and `AuthFieldsSchema`)
 - :hammer: A dedicated `BasicSearchOperationSchema` has been added ([#998](https://github.com/zapier/zapier-platform/pull/998))
-
-### schema-to-ts
-
-- :nail_care: General rewrite to be smaller, faster, and include new helper functions using `const` [type parameters](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-5-0.html#const-type-parameters) to help with typing, including: `defineApp`, `defineTrigger`, `defineCreate`, `defineSearch`, `defineInputFields` ([#999](https://github.com/zapier/zapier-platform/pull/999))
-
-### legacy-scripting-runner
-
-- :hammer: Trim newline and whitespaces from request header ([#1000](https://github.com/zapier/zapier-platform/pull/1000))
 
 ### misc
 

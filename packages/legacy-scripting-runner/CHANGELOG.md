@@ -1,3 +1,7 @@
+## 3.8.15
+
+- :hammer: Trim newline and whitespaces from request header ([#1000](https://github.com/zapier/zapier-platform/pull/1000))
+
 ## 3.8.14
 
 - :bug: Revert `aws-sdk v2` bundling change from 3.8.13 ([#916](https://github.com/zapier/zapier-platform/pull/916)). This release is essentially the same as 3.8.12.
