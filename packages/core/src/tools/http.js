@@ -25,19 +25,17 @@ const ALLOWED_HTTP_DATA_CONTENT_TYPES = new Set([
 ]);
 
 const getContentType = (headers) => {
-  const headerKeys = Object.keys(headers);
-  let foundKey = '';
-
-  _.each(headerKeys, (key) => {
+  for (const [key, value] of Object.entries(headers)) {
     if (key.toLowerCase() === 'content-type') {
-      foundKey = key;
-      return false;
+      if (Array.isArray(value) && value.length > 0) {
+        return value[0];
+      } else if (typeof value === 'string') {
+        return value;
+      }
+      return null;
     }
-
-    return true;
-  });
-
-  return _.get(headers, foundKey, '');
+  }
+  return null;
 };
 
 // This function splits a comma-separated string described by RFC 2068 Section 2.
