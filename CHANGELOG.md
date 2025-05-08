@@ -11,7 +11,7 @@ _released `2025-05-08`_
 - :bug: `request_data` may log as `<unsupported format>` even when `content-type` is supported text format ([#1011](https://github.com/zapier/zapier-platform/pull/1011))
 - :nail_care: `z.request()` now accepts an `encodeURIComponent` function, allowing to control percent-encoding behavior ([#1009](https://github.com/zapier/zapier-platform/pull/1009))
 
-## schema
+### schema
 
 None!
 
