@@ -21,6 +21,7 @@ const checks = [
   require('./bufferedCreateConstraints'),
   require('./requirePerformConditionally'),
   require('./pollingThrottle'),
+  require('./AuthFieldisSafe'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {

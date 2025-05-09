@@ -108,7 +108,7 @@ const createRpcClient = (event) => {
       try {
         res = await request(req);
 
-        if (res.status > 500) {
+        if (res.status >= 500) {
           throw new Error('Unable to reach the RPC server');
         }
         if (res.content) {

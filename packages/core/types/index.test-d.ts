@@ -1,24 +1,23 @@
 import type {
   AfterResponseMiddleware,
-  BeforeRequestMiddleware,
-  Bundle,
-  ZObject,
-} from './zapier.custom';
-import type {
   App,
   Authentication,
   AuthenticationOAuth2Config,
-  BasicActionOperation,
-  BasicCreateActionOperation,
+  BasicCreateOperation,
   BasicDisplay,
   BasicHookOperation,
   BasicPollingOperation,
+  BasicSearchOperation,
+  BeforeRequestMiddleware,
+  Bundle,
   Create,
+  InputFields,
   Search,
   Trigger,
-} from './zapier.generated';
-
-import { expectType, expectDeprecated } from 'tsd';
+  ZObject,
+} from '.';
+import { expectAssignable, expectDeprecated, expectType } from 'tsd';
+import { defineApp, defineCreate } from './typeHelpers';
 
 const basicDisplay: BasicDisplay = {
   label: 'some-label',
@@ -29,8 +28,12 @@ const basicDisplay: BasicDisplay = {
 expectType<BasicDisplay>(basicDisplay);
 
 const oauth2Config: AuthenticationOAuth2Config = {
-  authorizeUrl: 'https://example.com/authorize',
-  getAccessToken: 'https://example.com/token',
+  authorizeUrl: {
+    url: 'https://example.com/authorize',
+  },
+  getAccessToken: {
+    url: 'https://example.com/token',
+  },
   refreshAccessToken: async (z: ZObject, b: Bundle) => 'some-refresh-token',
 };
 expectType<AuthenticationOAuth2Config>(oauth2Config);
@@ -42,14 +45,21 @@ const authentication: Authentication = {
 };
 expectType<Authentication>(authentication);
 
-const createOperation: BasicCreateActionOperation = {
-  inputFields: [{ key: 'some-input-key-1', type: 'string', required: true }],
-  perform: async (z: ZObject, b: Bundle) => ({ data: true }),
-  sample: { id: 'some-id', name: 'some-name' },
-};
-expectType<BasicCreateActionOperation>(createOperation);
+const inputFields = [
+  { key: 'required_string', type: 'string', required: true },
+  { key: 'optional_string', type: 'string', required: false },
+  { key: 'required_number', type: 'number', required: true },
+  { key: 'omitted_number', type: 'number' },
+] as const satisfies InputFields;
 
-const create: Create = {
+const createOperation = {
+  inputFields,
+  perform: async (z, b) => ({ data: true }),
+  sample: { id: 'some-id', name: 'some-name' },
+} satisfies BasicCreateOperation<typeof inputFields>;
+expectAssignable<BasicCreateOperation<typeof inputFields>>(createOperation);
+
+const create = defineCreate({
   key: 'some_create_key_v1',
   noun: 'Some Noun',
   display: {
@@ -57,16 +67,19 @@ const create: Create = {
     description: 'some trigger description',
   },
   operation: createOperation,
-};
-expectType<Create>(create);
+});
+expectAssignable<Create<'some_create_key_v1', typeof inputFields>>(create);
 
-const pollingOperation: BasicPollingOperation = {
+const pollingOperation = {
   type: 'polling',
-  inputFields: [{ key: 'some-input-key-1', type: 'number', required: true }],
-  perform: async (z: ZObject, b: Bundle) => ({ data: true }),
-};
+  inputFields,
+  perform: async (z, b) => [{ id: 'abc' }],
+} as const satisfies BasicPollingOperation<typeof inputFields>;
 
-const pollingTrigger: Trigger = {
+type _ = ReturnType<typeof pollingOperation.perform>;
+//   ^?
+
+const pollingTrigger = {
   key: 'some_polling_trigger_key_v1',
   noun: 'Some Noun',
   display: {
@@ -74,20 +87,22 @@ const pollingTrigger: Trigger = {
     description: 'some polling trigger description',
   },
   operation: pollingOperation,
-};
-expectType<Trigger>(pollingTrigger);
+} as const satisfies Trigger<'some_polling_trigger_key_v1', typeof inputFields>;
+expectAssignable<Trigger<'some_polling_trigger_key_v1', typeof inputFields>>(
+  pollingTrigger,
+);
 
-const hookOperation: BasicHookOperation = {
+const hookOperation = {
   type: 'hook',
-  inputFields: [{ key: 'some-input-key-1', type: 'boolean', required: false }],
-  perform: async (z: ZObject, b: Bundle) => ({ data: true }),
-  performList: async (z: ZObject, b: Bundle) => [{ data: true }],
-  performSubscribe: async (z: ZObject, b: Bundle) => ({ data: true }),
-  performUnsubscribe: async (z: ZObject, b: Bundle) => ({ data: true }),
-};
-expectType<BasicHookOperation>(hookOperation);
+  inputFields,
+  perform: async (z, bundle) => [{ data: true }],
+  performList: async (z, bundle) => [{ data: true }],
+  performSubscribe: async (z, bundle) => ({ data: true }),
+  performUnsubscribe: async (z, bundle) => ({ data: true }),
+} satisfies BasicHookOperation<typeof inputFields>;
+expectAssignable<BasicHookOperation<typeof inputFields>>(hookOperation);
 
-const hookTrigger: Trigger = {
+const hookTrigger = {
   key: 'some_hook_trigger_key_v1',
   noun: 'Some Noun',
   display: {
@@ -95,19 +110,21 @@ const hookTrigger: Trigger = {
     description: 'some hook description',
   },
   operation: hookOperation,
-};
-expectType<Trigger>(hookTrigger);
+} satisfies Trigger<'some_hook_trigger_key_v1', typeof inputFields>;
+expectAssignable<Trigger<'some_hook_trigger_key_v1', typeof inputFields>>(
+  hookTrigger,
+);
 
-const searchOperation: BasicActionOperation = {
-  inputFields: [{ key: 'some-input-key-1', type: 'file', required: true }],
-  perform: async (z: ZObject, b: Bundle) => {
+const searchOperation = {
+  inputFields,
+  perform: async (z, bundle) => {
     z.request('https://example.com', { middlewareData: { resumable: true } });
     return [{ data: true }];
   },
-};
-expectType<BasicActionOperation>(searchOperation);
+} satisfies BasicSearchOperation<typeof inputFields>;
+expectAssignable<BasicSearchOperation<typeof inputFields>>(searchOperation);
 
-const search: Search = {
+const search = {
   key: 'some_search_key_v1',
   noun: 'Some Noun',
   display: {
@@ -115,8 +132,8 @@ const search: Search = {
     description: 'some search description',
   },
   operation: searchOperation,
-};
-expectType<Search>(search);
+} as const satisfies Search<'some_search_key_v1', typeof inputFields>;
+expectAssignable<Search<'some_search_key_v1', typeof inputFields>>(search);
 
 const addBearerHeader: BeforeRequestMiddleware = (request, z, bundle) => {
   if (bundle?.authData?.access_token && !request.headers!.Authorization) {
@@ -138,7 +155,7 @@ const checkPermissionsError: AfterResponseMiddleware = (response, z) => {
   if (response.status === 403) {
     throw new z.errors.Error(
       response.json?.['o:errorDetails']?.[0].detail,
-      response.status.toString()
+      response.status.toString(),
     );
   }
   return response;
@@ -149,28 +166,25 @@ const asyncAfterResponse: AfterResponseMiddleware = async (response) =>
   response;
 expectType<AfterResponseMiddleware>(asyncAfterResponse);
 
-const app: App = {
+const app = defineApp({
   platformVersion: '0.0.1',
   version: '0.0.1',
 
   beforeRequest: [addBearerHeader, asyncBeforeRequest],
   afterResponse: [checkPermissionsError, asyncAfterResponse],
 
-  authentication,
-
   creates: { [create.key]: create },
-  triggers: {
-    [pollingTrigger.key]: pollingTrigger,
-    [hookTrigger.key]: hookTrigger,
-  },
-  searches: { [search.key]: search },
-};
-expectType<App>(app);
+});
+
+expectAssignable<App<undefined, Record<string, Create>>>(app);
+
+app.creates[create.key].operation.perform;
+//                                  ^?
 
 // Return types from z.request
 async (z: ZObject) => {
   const resp = await z.request<{ id: number; name: string }>(
-    'https://example.com'
+    'https://example.com',
   );
   expectType<{ id: number; name: string }>(resp.data);
   expectDeprecated(resp.json);
@@ -187,7 +201,7 @@ async (z: ZObject) => {
 async (z: ZObject) => {
   const resp = await z.request<{ id: number; name: string }>(
     'https://example.com',
-    { raw: true }
+    { raw: true },
   );
   const result = await resp.json();
   expectType<{ id: number; name: string }>(result);

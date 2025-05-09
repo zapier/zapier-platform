@@ -4,31 +4,34 @@
   "description": "Converts zapier-platform-schema JsonSchema definitions to TypeScript types",
   "author": "Thomas Cranny <thomas.cranny@zapier.com>",
   "private": true,
-  "main": "dist/cli.js",
+  "main": "src/main.ts",
   "type": "module",
   "scripts": {
-    "test": "vitest --run",
+    "test": "tsc && vitest --run",
+    "test:v2": "vitest src/v2",
     "clean": "rm -rf dist",
-    "prebuild": "yarn clean",
-    "build": "tsc",
-    "generate-types": "node ./dist/cli.js --schema-json ../packages/schema/exported-schema.json --output ../packages/core/types/zapier.generated.d.ts",
-    "generate-types:build": "yarn build && yarn generate-types",
-    "git-add": "git add ../packages/core/types/zapier.generated.d.ts",
-    "precommit": "yarn build && yarn generate-types && yarn git-add"
+    "generate-types": "tsx ./src/main.ts --schema-json ../packages/schema/exported-schema.json --output ../packages/core/types/schemas.generated.d.ts",
+    "git-add": "git add ../packages/core/types/schemas.generated.d.ts",
+    "precommit": "yarn generate-types && yarn git-add"
   },
   "dependencies": {
-    "commander": "^12.1.0",
+    "@commander-js/extra-typings": "^13.1.0",
+    "commander": "^13.1.0",
     "deepmerge": "^4.3.1",
-    "json-schema-to-typescript": "14.1.0",
-    "marked": "^12.0.2",
-    "pino": "^9.1.0",
-    "pino-pretty": "^11.0.0",
-    "prettier": "^3.4.1",
+    "json-schema-to-typescript": "15.0.4",
+    "marked": "^15.0.7",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0",
+    "prettier": "^3.5.3",
+    "ts-morph": "^25.0.1",
+    "tsx": "^4.19.3",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
-    "@types/node": "^20.14.10",
-    "typescript": "^5.5.3",
-    "vitest": "^1.6.1"
+    "@types/json-schema": "^7.0.15",
+    "@types/node": "^20.17.30",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vitest": "^3.1.1"
   }
 }

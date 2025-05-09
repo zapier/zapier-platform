@@ -3,7 +3,7 @@
 const makeSchema = require('../utils/makeSchema');
 
 const BasicDisplaySchema = require('./BasicDisplaySchema');
-const BasicActionOperationSchema = require('./BasicActionOperationSchema');
+const BasicSearchOperationSchema = require('./BasicSearchOperationSchema');
 const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema(
@@ -30,7 +30,7 @@ module.exports = makeSchema(
       },
       operation: {
         description: 'Powers the functionality for this search.',
-        $ref: BasicActionOperationSchema.id,
+        $ref: BasicSearchOperationSchema.id,
       },
     },
     additionalProperties: false,
@@ -80,5 +80,5 @@ module.exports = makeSchema(
       },
     ],
   },
-  [BasicDisplaySchema, BasicActionOperationSchema, KeySchema],
+  [BasicDisplaySchema, BasicSearchOperationSchema, KeySchema],
 );

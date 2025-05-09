@@ -15,4 +15,5 @@ module.exports = {
   createAppHandler: createLambdaHandler,
   createAppTester,
   integrationTestHandler,
+  ...require('./typeHelpers'),
 };

@@ -9,7 +9,7 @@ const appDefinition = require('../examples/definition.json');
 
 const copy = (o) => JSON.parse(JSON.stringify(o));
 
-const NUM_SCHEMAS = 57; // changes regularly as we expand
+const NUM_SCHEMAS = 61; // changes regularly as we expand
 
 describe('app', () => {
   describe('validation', () => {
@@ -224,6 +224,72 @@ describe('app', () => {
       };
       const results = schema.validateAppDefinition(appCopy);
       results.errors.should.eql([]);
+    });
+
+    it('should validate safe/unsafe auth fields', () => {
+      const appCopy = copy(appDefinition);
+
+      // Set up a "custom" auth that has two fields:
+      //   - "username" which is safe
+      //   - "password" which is not safe
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'username',
+            type: 'string',
+            isNoSecret: true, // allowed
+            required: true,
+          },
+          {
+            key: 'password',
+            type: 'password',
+            isNoSecret: false, // password is not safe
+            required: true,
+          },
+        ],
+      };
+
+      const results = schema.validateAppDefinition(appCopy);
+
+      // Expect zero errors
+      results.errors.should.have.length(0);
+      should(results.valid).eql(true);
+    });
+
+    it('should invalidate a "safe" password field', () => {
+      const appCopy = copy(appDefinition);
+
+      // Same "custom" auth but now marking "password" as isNoSecret=true
+      appCopy.authentication = {
+        type: 'custom',
+        test: {
+          url: 'https://example.com',
+        },
+        fields: [
+          {
+            key: 'password',
+            type: 'string',
+            isNoSecret: true, // invalid: password cannot be safe
+            required: true,
+          },
+        ],
+      };
+
+      const results = schema.validateAppDefinition(appCopy);
+
+      // Expect at least one error because "password" can't have isNoSecret = true
+      results.errors.should.have.length(1);
+      should(results.valid).eql(false);
+
+      const [error] = results.errors;
+      error.name.should.equal('sensitive');
+      error.stack.should.eql(
+        'instance.authentication.fields[0] cannot set isNoSecret as true for the sensitive key "password".',
+      );
     });
   });
 

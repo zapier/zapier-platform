@@ -1,38 +1,28 @@
 {
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig to read more about this file */
+    "rootDir": "./src",
 
-    /* Projects */
+    /* Base Options */
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "moduleDetection": "force",
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
 
     /* Language and Environment */
-    "target": "ESNext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "lib": [
-      "ES2022"
-    ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
+    "target": "ESNext",
+    "lib": ["ES2022"],
 
     /* Modules */
-    "module": "NodeNext" /* Specify what module code is generated. */,
-    "moduleResolution": "NodeNext" /* Specify how TypeScript looks up a file from a given module specifier. */,
-
-    "resolveJsonModule": true /* Enable importing .json files. */,
-    "rootDir": "./src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
-
-    /* JavaScript Support */
-
-    /* Emit */
-    "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
-    // "sourceMap": true /* Create source map files for emitted JavaScript files. */,
-    "outDir": "./dist" /* Specify an output folder for all emitted files. */,
-
-    /* Interop Constraints */
-    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
-    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
-
-    /* Type Checking */
-    "strict": true /* Enable all strict type-checking options. */,
-
-    /* Completeness */
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */
+    "noEmit": true /* Run by tsx */,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true
   },
   "exclude": ["node_modules", "./src/**/*.spec.ts"],
   "include": ["./src/**/*.ts"]

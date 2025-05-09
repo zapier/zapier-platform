@@ -61,4 +61,18 @@ module.exports = [{
     rules: {
         "no-unused-vars": 0,
     },
+}, {
+    files: ["example-apps/minimal-esm/*"],
+
+    languageOptions: {
+        ecmaVersion: 2025,
+        globals: {
+            ...globals.mocha,
+        },
+        sourceType: "module",
+    },
+
+    rules: {
+        "no-unused-vars": 0,
+    },
 }];
