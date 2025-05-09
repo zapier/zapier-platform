@@ -315,7 +315,7 @@ describe('build (runs slowly)', function () {
 });
 
 describe('build in workspaces', function () {
-  let tmpDir, origCwd, coreVersion;
+  let tmpDir, origCwd, coreVersion, corePackage;
 
   before(async () => {
     tmpDir = getNewTempDirPath();
@@ -331,6 +331,9 @@ describe('build in workspaces', function () {
 
     // Get the actual version from the local core package
     coreVersion = corePackageJson.version;
+
+    // Pack the local packages
+    corePackage = await npmPackCore();
 
     // Set up a monorepo project structure with two integrations as npm
     // workspaces:
@@ -373,7 +376,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '8.3.2',
-          'zapier-platform-core': `file:${corePath}`,
+          'zapier-platform-core': corePackage.path,
         },
         private: true,
       }),
@@ -392,7 +395,7 @@ describe('build in workspaces', function () {
         main: 'index.js',
         dependencies: {
           uuid: '9.0.1',
-          'zapier-platform-core': `file:${corePath}`,
+          'zapier-platform-core': corePackage.path,
         },
         private: true,
       }),
@@ -403,6 +406,7 @@ describe('build in workspaces', function () {
 
   after(() => {
     fs.removeSync(tmpDir);
+    corePackage.cleanup();
   });
 
   beforeEach(() => {
