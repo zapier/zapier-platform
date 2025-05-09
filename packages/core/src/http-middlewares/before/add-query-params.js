@@ -14,7 +14,9 @@ const addQueryParams = (req) => {
 
     normalizeEmptyParamFields(req);
 
-    let stringifiedParams = querystring.stringify(req.params);
+    let stringifiedParams = querystring.stringify(req.params, '&', '=', {
+      encodeURIComponent: req.encodeURIComponent,
+    });
 
     // it goes against spec, but for compatibility, some APIs want certain
     // characters (mostly $) unencoded

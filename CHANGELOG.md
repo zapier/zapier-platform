@@ -115,6 +115,23 @@ Apart from these major changes, here are the detailed release notes for this rel
 
 - :hammer: Dependency updates - full list in the PR ([#1010](https://github.com/zapier/zapier-platform/pull/1010))
 
+# 16.5.1
+
+_released `2025-05-08`_
+
+### cli
+
+- :nail_care: `zapier versions` filters out deprecated versions by default ([#995](https://github.com/zapier/zapier-platform/pull/995))
+
+### core
+
+- :bug: `request_data` may log as `<unsupported format>` even when `content-type` is supported text format ([#1011](https://github.com/zapier/zapier-platform/pull/1011))
+- :nail_care: `z.request()` now accepts an `encodeURIComponent` function, allowing to control percent-encoding behavior ([#1009](https://github.com/zapier/zapier-platform/pull/1009))
+
+### schema
+
+None!
+
 # 16.5.0
 
 _released `2025-04-10`_
