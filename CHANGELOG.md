@@ -70,7 +70,7 @@ However, `{{curly backets}}` are still (and have to be) allowed in shorthand req
 
 We have split authentication fields, input fields, and output fields into their own respective schemas, to allow for stricter schema checks and to prepare for future platform updates. Along with this, we have removed irrelevant or incompatible field types and properties from certain schemas.
 
-Note that a descriptive error will be thrown on `zapier validate` if your integration attempts to use an unsupported type or property; no need to manually check these. The updated schema are as follows:
+Note that a descriptive error will be thrown on `zapier validate` if your integration attempts to use an unsupported type or property to prompt you to change it; no need to manually check these. The updated schema are as follows:
 
   - `AuthenticationSchema.fields`:
     - The following **types** are no longer supported: `code`, `file`, `integer`, `text`
@@ -88,14 +88,14 @@ Apart from these major changes, here are the detailed release notes for this rel
 
 ### cli
 
-- :nail_care: ESM support added to `zapier init` command via the `--module` flag - supports Minimal and Typescript templates ([#976](https://github.com/zapier/zapier-platform/pull/976))
+- :tada: ESM support added to `zapier init` command via the `--module` flag - supports Minimal and Typescript templates ([#976](https://github.com/zapier/zapier-platform/pull/976))
 - :hammer: `zapier build` now uses `esbuild` instead of `browserify` to detect dependencies, for a faster experience building, and to better support ESM ([#946](https://github.com/zapier/zapier-platform/pull/946))
 - :hammer: Update `gulp-prettier` dependency from 4.0.0 to 5.0.0
 
 ### core
 
 - :exclamation: Stop replacing `{{curlies}}` unless it's a shorthand request ([#1001](https://github.com/zapier/zapier-platform/pull/1001))
-- :exclamation: ESM Support: Two versions of `zapierwrapper.js`, one CJS and one ESM, loaded dynamically depending on the app type ([#965](https://github.com/zapier/zapier-platform/pull/965))
+- :tada: ESM Support: Two versions of `zapierwrapper.js`, one CJS and one ESM, loaded dynamically depending on the app type ([#965](https://github.com/zapier/zapier-platform/pull/965))
 - :bug: Not every `{{curlies}}` in the request object need to be recursively replaced ([#1001](https://github.com/zapier/zapier-platform/pull/1001))
 - :bug: HTTP 500 along with status codes >500 are caught in RPC client ([#974](https://github.com/zapier/zapier-platform/pull/974))
 - :hammer: Remove Bluebird library, replace with native promises ([#980](https://github.com/zapier/zapier-platform/pull/980))
