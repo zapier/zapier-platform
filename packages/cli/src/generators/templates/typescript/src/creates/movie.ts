@@ -1,7 +1,17 @@
-import type { Create, PerformFunction } from 'zapier-platform-core';
-import { API_URL } from '../constants';
+import {
+  defineInputFields,
+  defineCreate,
+  type CreatePerform,
+  type InferInputData,
+} from 'zapier-platform-core';
+import { API_URL } from '../constants.js';
 
-const perform: PerformFunction = async (z, bundle) => {
+const inputFields = defineInputFields([
+  { key: 'title', required: true },
+  { key: 'year', type: 'integer' },
+]);
+
+const perform = (async (z, bundle) => {
   const response = await z.request({
     method: 'POST',
     url: `${API_URL}/movies`,
@@ -11,9 +21,9 @@ const perform: PerformFunction = async (z, bundle) => {
     },
   });
   return response.data;
-};
+}) satisfies CreatePerform<InferInputData<typeof inputFields>>;
 
-export default {
+export default defineCreate({
   key: 'movie',
   noun: 'Movie',
 
@@ -24,13 +34,10 @@ export default {
 
   operation: {
     perform,
-    inputFields: [
-      { key: 'title', required: true },
-      { key: 'year', type: 'integer' },
-    ],
+    inputFields,
     sample: {
       id: '1',
       title: 'example',
     },
   },
-} satisfies Create;
+});

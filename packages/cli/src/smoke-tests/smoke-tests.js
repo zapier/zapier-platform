@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const os = require('os');
 const path = require('path');
+const { captureOutput } = require('@oclif/test');
 const { promisify } = require('util');
 
 require('should');
@@ -143,10 +144,14 @@ describe('smoke tests - setup will take some time', function () {
       .should.be.true();
   });
 
-  it('zapier init -t minimal', () => {
-    runCommand(context.cliBin, ['init', 'awesome-app', '-t', 'minimal'], {
-      cwd: context.workdir,
-    });
+  it('zapier init -t minimal -m commonjs', () => {
+    runCommand(
+      context.cliBin,
+      ['init', 'awesome-app', '-t', 'minimal', '-m', 'commonjs'],
+      {
+        cwd: context.workdir,
+      },
+    );
 
     const newAppDir = path.join(context.workdir, 'awesome-app');
     fs.existsSync(newAppDir).should.be.true();
@@ -157,10 +162,53 @@ describe('smoke tests - setup will take some time', function () {
     fs.existsSync(appPackageJson).should.be.true();
   });
 
-  it('zapier scaffold trigger neat (JS)', () => {
-    runCommand(context.cliBin, ['init', 'scaffold-town', '-t', 'minimal'], {
-      cwd: context.workdir,
+  it('zapier init -t minimal -m esm', () => {
+    runCommand(
+      context.cliBin,
+      ['init', 'awesome-esm-app', '-t', 'minimal', '-m', 'esm'],
+      {
+        cwd: context.workdir,
+      },
+    );
+
+    const newAppDir = path.join(context.workdir, 'awesome-esm-app');
+    fs.existsSync(newAppDir).should.be.true();
+
+    const appIndexJs = path.join(newAppDir, 'index.js');
+    const appPackageJson = path.join(newAppDir, 'package.json');
+    fs.existsSync(appIndexJs).should.be.true();
+    fs.existsSync(appPackageJson).should.be.true();
+
+    const pkg = JSON.parse(
+      fs.readFileSync(appPackageJson, { encoding: 'utf8' }),
+    );
+    pkg.name.should.containEql('awesome-esm-app');
+    pkg.type.should.containEql('module');
+    pkg.exports.should.eql('./index.js');
+  });
+
+  it('should error with a mismatched module type', async () => {
+    await captureOutput(async function () {
+      const { error } = await runCommand(context.cliBin, [
+        'init',
+        'error-app',
+        '-t',
+        'basic-auth',
+        '-m',
+        'esm',
+      ]);
+      error.message.should.containEql(`ESM is not supported for this template`);
     });
+  });
+
+  it('zapier scaffold trigger neat (JS)', () => {
+    runCommand(
+      context.cliBin,
+      ['init', 'scaffold-town', '-t', 'minimal', '-m', 'commonjs'],
+      {
+        cwd: context.workdir,
+      },
+    );
 
     const newAppDir = path.join(context.workdir, 'scaffold-town');
     fs.existsSync(newAppDir).should.be.true();
@@ -195,7 +243,7 @@ describe('smoke tests - setup will take some time', function () {
   it('zapier scaffold trigger neat (TS)', () => {
     runCommand(
       context.cliBin,
-      ['init', 'scaffold-town-ts', '-t', 'typescript'],
+      ['init', 'scaffold-town-ts', '-t', 'typescript', '-m', 'commonjs'],
       { cwd: context.workdir },
     );
 
@@ -244,18 +292,18 @@ describe('smoke tests - setup will take some time', function () {
 
   describe('zapier init w/ templates (runs very slowly)', () => {
     const testableTemplates = [
-      'basic-auth',
-      'custom-auth',
-      'digest-auth',
-      // 'oauth1-trello',
-      'oauth2',
-      'session-auth',
-
-      'dynamic-dropdown',
-      'files',
-      'minimal',
-      'search-or-create',
-      'typescript',
+      { name: 'basic-auth' },
+      { name: 'custom-auth' },
+      { name: 'digest-auth' },
+      { name: 'oauth2' },
+      { name: 'session-auth' },
+      { name: 'dynamic-dropdown' },
+      { name: 'files' },
+      { name: 'minimal', module: 'commonjs' },
+      { name: 'minimal', module: 'esm' },
+      { name: 'search-or-create' },
+      { name: 'typescript', module: 'commonjs' },
+      { name: 'typescript', module: 'esm' },
     ];
 
     const invokeCommandsByTemplate = {
@@ -376,15 +424,29 @@ describe('smoke tests - setup will take some time', function () {
     });
 
     testableTemplates.forEach((template) => {
-      it(`${template} should test out of the box`, function () {
+      let testName, appDirName;
+      if (template.module) {
+        testName = `${template.name} (${template.module})`;
+        appDirName = `${template.name}-${template.module}`;
+      } else {
+        testName = template.name;
+        appDirName = template.name;
+      }
+
+      it(`${testName} should test out of the box`, function () {
         this.retries(3); // retry up to 3 times
 
-        runCommand(context.cliBin, ['init', template, '-t', template], {
+        const args = ['init', appDirName, '-t', template.name];
+        if (template.module) {
+          args.push('-m', template.module);
+        }
+
+        runCommand(context.cliBin, args, {
           cwd: subfolderPath,
           input: 'a', // tells `yo` to replace the auth file
         });
 
-        const appDir = path.join(subfolderPath, template);
+        const appDir = path.join(subfolderPath, appDirName);
         yarnInstall(corePackage.path, appDir);
 
         // should not throw an error
@@ -392,7 +454,7 @@ describe('smoke tests - setup will take some time', function () {
           cwd: appDir,
         });
 
-        const invokeCommands = invokeCommandsByTemplate[template];
+        const invokeCommands = invokeCommandsByTemplate[template.name];
         if (!invokeCommands) {
           return;
         }

@@ -1,8 +1,8 @@
-const _ = require('lodash');
-const path = require('path');
+const path = require('node:path');
 
-const { findCorePackageDir } = require('./misc');
 const { BASE_ENDPOINT } = require('../constants');
+const { findCorePackageDir, runCommand } = require('./misc');
+const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
 /**
  * Wraps Node's http.request() / https.request() so that all requests go via a relay URL.
@@ -218,34 +218,75 @@ function wrapFetchWithRelay(fetchFunc, relayUrl, relayHeaders) {
   };
 }
 
-const getLocalAppHandler = ({
-  reload = false,
-  baseEvent = {},
+const loadAppRawUsingImport = async (
+  appDir,
+  corePackageDir,
+  shouldDeleteWrapper,
+) => {
+  const wrapperPath = await copyZapierWrapper(corePackageDir, appDir);
+  let appRaw;
+  try {
+    // zapierwrapper.mjs is only available since zapier-platform-core v17.
+    // And only zapierwrapper.mjs exposes appRaw just for this use case.
+    appRaw = (await import(wrapperPath)).appRaw;
+  } catch (err) {
+    if (err.name === 'SyntaxError') {
+      // Run a separate process to print the line number of the SyntaxError.
+      // This workaround is needed because `err` doesn't provide the location
+      // info about the SyntaxError. However, if the error is thrown to
+      // Node.js's built-in error handler, it will print the location info.
+      // See: https://github.com/nodejs/node/issues/49441
+      await runCommand(process.execPath, ['zapierwrapper.js'], {
+        cwd: appDir,
+      });
+    }
+    throw err;
+  } finally {
+    if (shouldDeleteWrapper) {
+      await deleteZapierWrapper(appDir);
+    }
+  }
+
+  return appRaw;
+};
+
+const loadAppRawUsingRequire = (appDir) => {
+  let appRaw = require(appDir);
+  if (appRaw && appRaw.default) {
+    // Node.js 22+ supports using require() to import ESM.
+    // For Node.js < 20.17.0, require() will throw an error on ESM.
+    // https://nodejs.org/api/modules.html#loading-ecmascript-modules-using-require
+    appRaw = appRaw.default;
+  }
+  return appRaw;
+};
+
+const getLocalAppHandler = async ({
+  appDir = null,
   appId = null,
   deployKey = null,
   relayAuthenticationId = null,
   beforeRequest = null,
   afterResponse = null,
+  shouldDeleteWrapper = true,
 } = {}) => {
-  const entryPath = `${process.cwd()}/index`;
-  const rootPath = path.dirname(require.resolve(entryPath));
-  const corePackageDir = findCorePackageDir();
+  appDir = path.resolve(appDir || process.cwd());
 
-  if (reload) {
-    Object.keys(require.cache).forEach((cachePath) => {
-      if (cachePath.startsWith(rootPath)) {
-        delete require.cache[cachePath];
-      }
-    });
-  }
-  let appRaw, zapier;
+  const corePackageDir = findCorePackageDir();
+  let appRaw;
   try {
-    appRaw = require(entryPath);
-    zapier = require(corePackageDir);
+    appRaw = loadAppRawUsingRequire(appDir);
   } catch (err) {
-    // this err.stack doesn't give a nice traceback at all :-(
-    // maybe we could do require('syntax-error') in the future
-    return (event, ctx, callback) => callback(err);
+    if (err.code === 'MODULE_NOT_FOUND' || err.code === 'ERR_REQUIRE_ESM') {
+      appRaw = await loadAppRawUsingImport(
+        appDir,
+        corePackageDir,
+        shouldDeleteWrapper,
+      );
+    } else {
+      // err.name === 'SyntaxError' or others
+      throw err;
+    }
   }
 
   if (beforeRequest) {
@@ -282,41 +323,65 @@ const getLocalAppHandler = ({
     global.fetch = wrapFetchWithRelay(global.fetch, relayUrl, relayHeaders);
   }
 
+  // Assumes the entry point of zapier-platform-core is index.js
+  const coreEntryPoint = path.join(corePackageDir, 'index.js');
+  const zapier = (await import(coreEntryPoint)).default;
+
   const handler = zapier.createAppHandler(appRaw);
-  return (event, ctx, callback) => {
-    event = _.merge(
-      {},
-      event,
-      {
+  if (handler.length === 3) {
+    // < v17: function handler(event, ctx, callback)
+    return (event, ctx, callback) => {
+      event = {
+        ...event,
         calledFromCli: true,
-      },
-      baseEvent,
-    );
-    handler(event, _, callback);
-  };
+      };
+      return handler(event, ctx, callback);
+    };
+  } else {
+    // >= v17: async function handler(event, ctx = {})
+    return async (event, ctx = {}) => {
+      event = {
+        ...event,
+        calledFromCli: true,
+      };
+      return await handler(event, ctx);
+    };
+  }
 };
 
 // Runs a local app command (./index.js) like {command: 'validate'};
-const localAppCommand = (event) => {
-  const handler = getLocalAppHandler({
+const localAppCommand = async (event, appDir, shouldDeleteWrapper = true) => {
+  const handler = await getLocalAppHandler({
     appId: event.appId,
     deployKey: event.deployKey,
     relayAuthenticationId: event.relayAuthenticationId,
     beforeRequest: event.beforeRequest,
     afterResponse: event.afterResponse,
+    appDir,
+    shouldDeleteWrapper,
   });
-  return new Promise((resolve, reject) => {
-    handler(event, {}, (err, resp) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(resp.results);
-      }
+  if (handler.length === 3) {
+    // < 17: function handler(event, ctx, callback)
+    return new Promise((resolve, reject) => {
+      event = {
+        ...event,
+        calledFromCli: true,
+      };
+      handler(event, {}, (err, response) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(response.results);
+        }
+      });
     });
-  });
+  } else {
+    // >= 17: async function handler(event, ctx = {})
+    const response = await handler(event);
+    return response.results;
+  }
 };
 
 module.exports = {
-  getLocalAppHandler,
   localAppCommand,
 };

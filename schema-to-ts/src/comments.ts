@@ -1,7 +1,7 @@
-import wrap from 'word-wrap';
+import type { Token, Tokens, TokensList } from 'marked';
 
-import { Token, lexer, type TokensList } from 'marked';
-import type { Tokens } from 'marked';
+import { lexer } from 'marked';
+import wrap from 'word-wrap';
 
 const SINGLE_LINE_CONTENT_WIDTH = 60;
 const MULTILINE_DEFAULT_CONTENT_WIDTH = 65;
@@ -18,7 +18,7 @@ export const commentToTsDocString = (comment: string): string => {
 
   const tokens = lexer(stripped);
   const lines = reflowLines(tokens);
-  if (lines.length === 1 && lines[0].length < SINGLE_LINE_CONTENT_WIDTH) {
+  if (lines.length === 1 && lines[0]!.length < SINGLE_LINE_CONTENT_WIDTH) {
     return `/** ${stripped} */\n`;
   }
   const docsLines = lines.map((line) => ` * ${line}`).join('\n');
@@ -47,4 +47,15 @@ const isSolitaryLink = (
 ): token is Tokens.Paragraph & { tokens: [Tokens.Link] } =>
   token.type === 'paragraph' &&
   token.tokens?.length === 1 &&
-  token.tokens[0].type === 'link';
+  token.tokens[0]?.type === 'link';
+
+export function docStringLines(
+  comment: string | undefined,
+  trailingContent?: string,
+): string[] | undefined {
+  if (comment === undefined) {
+    return undefined;
+  }
+  const tokens = lexer(comment);
+  return [reflowLines(tokens).join('\n') + (trailingContent ?? '')];
+}

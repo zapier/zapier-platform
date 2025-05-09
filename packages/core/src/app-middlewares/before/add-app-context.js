@@ -12,12 +12,13 @@ const logSafeBundle = (bundle) => {
 */
 const addAppContext = (input) => {
   const methodName = _.get(input, '_zapier.event.method');
-  const bundle = _.get(input, '_zapier.event.bundle', {});
+  input._zapier.whatHappened.push(`Executing ${methodName} with bundle`);
 
-  input._addContext(
-    `Executing ${methodName} with bundle`,
-    JSON.stringify(logSafeBundle(bundle)),
-  );
+  const bundle = _.get(input, '_zapier.event.bundle', {});
+  if (Object.keys(bundle).length > 0) {
+    input._zapier.whatHappened.push(JSON.stringify(logSafeBundle(bundle)));
+  }
+
   return input;
 };
 
