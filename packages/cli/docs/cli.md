@@ -36,7 +36,7 @@ This command does the following:
 * Copies all code into the temporary folder
 * Adds an entry point: `zapierwrapper.js`
 * Generates and validates app definition.
-* Detects dependencies via browserify (optional, on by default)
+* Detects dependencies via esbuild (optional, on by default)
 * Zips up all needed `.js` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your `.zapierapprc`.
 * Moves the zip to `build/build.zip` and `build/source.zip` and deletes the temp folder
 
@@ -283,11 +283,13 @@ This doesn't register or deploy the integration with Zapier - try the `zapier re
 
 **Flags**
 * `-t, --template` | The template to start your integration with. One of `[basic-auth | callback | custom-auth | digest-auth | dynamic-dropdown | files | minimal | oauth1-trello | oauth2 | openai | search-or-create | session-auth | typescript]`.
+* `-m, --module` | Choose module type: CommonJS or ES Modules. Only enabled for Typescript and Minimal templates. One of `[commonjs | esm]`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier init myapp`
 * `zapier init ./path/myapp --template oauth2`
+* `zapier init ./path/myapp --template minimal --module esm`
 
 
 ## integrations

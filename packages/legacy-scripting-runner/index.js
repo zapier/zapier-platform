@@ -30,7 +30,7 @@ const createInternalRequestClient = (input) => {
   const logResponseModule = require('zapier-platform-core/src/http-middlewares/after/log-response');
   const prepareRequest = require('zapier-platform-core/src/http-middlewares/before/prepare-request');
   const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
-
+  const sanitizeHeaders = require('zapier-platform-core/src/http-middlewares/before/sanatize-headers');
   // Before core 12.0.3, log-response.js module exported the logResponse()
   // function, and it's the only export. Since core 12.0.3, logResponse()
   // function is inside an exported object. So we do the following to make sure
@@ -48,6 +48,7 @@ const createInternalRequestClient = (input) => {
     createInjectInputMiddleware(input),
     prepareRequest,
     addQueryParams,
+    sanitizeHeaders,
   ];
 
   const verifySSL = _.get(input, '_zapier.event.verifySSL');
@@ -858,7 +859,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         request = {};
       }
 
-      request = { ...bundle.request, ...request };
+      request = { ...bundle.request, ...request, replace: true };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
       if (!preMethod && !isBodyStream && isAnyFileFieldSet(bundle)) {
