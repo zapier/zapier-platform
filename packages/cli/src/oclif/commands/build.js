@@ -51,7 +51,7 @@ This command does the following:
 * Copies all code into the temporary folder
 * Adds an entry point: \`zapierwrapper.js\`
 * Generates and validates app definition.
-* Detects dependencies via browserify (optional, on by default)
+* Detects dependencies via esbuild (optional, on by default)
 * Zips up all needed \`.js\` files. If you want to include more files, add a "includeInBuild" property (array with strings of regexp paths) to your \`${CURRENT_APP_FILE}\`.
 * Moves the zip to \`${BUILD_PATH}\` and \`${SOURCE_PATH}\` and deletes the temp folder
 
