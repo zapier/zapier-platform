@@ -518,6 +518,12 @@ class InvokeCommand extends BaseCommand {
     startSpinner('Invoking authentication.oauth2Config.authorizeUrl');
 
     const stateParam = crypto.randomBytes(20).toString('hex');
+    const codeVerifier = crypto.randomBytes(22).toString('hex').slice(0, 43);
+    const codeChallenge = crypto
+      .createHash('sha256')
+      .update(codeVerifier)
+      .digest('base64url');
+
     let authorizeUrl = await localAppCommand({
       command: 'execute',
       method: 'authentication.oauth2Config.authorizeUrl',
@@ -526,6 +532,7 @@ class InvokeCommand extends BaseCommand {
           response_type: 'code',
           redirect_uri: redirectUri,
           state: stateParam,
+          code_challenge: codeChallenge,
         },
       },
       zcacheTestObj,
@@ -543,16 +550,19 @@ class InvokeCommand extends BaseCommand {
     endSpinner();
     startSpinner('Starting local HTTP server');
 
-    let resolveCode;
-    const codePromise = new Promise((resolve) => {
-      resolveCode = resolve;
+    let resolveParams;
+    const paramsPromise = new Promise((resolve) => {
+      resolveParams = resolve;
     });
 
     const server = http.createServer((req, res) => {
       // Parse the request URL to extract the query parameters
-      const code = new URL(req.url, redirectUri).searchParams.get('code');
+      // const code = new URL(req.url, redirectUri).searchParams.get('code');
+      const params = new URL(req.url, redirectUri).searchParams;
+      const code = params.get('code');
       if (code) {
-        resolveCode(code);
+        resolveParams(params);
+        // resolveCode(code);
         debug(`Received code '${code}' from ${req.headers.referer}`);
 
         res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -581,7 +591,7 @@ class InvokeCommand extends BaseCommand {
     const { default: open } = await import('open');
     open(authorizeUrl);
 
-    const code = await codePromise;
+    const params = await paramsPromise;
     endSpinner();
 
     startSpinner('Closing local HTTP server');
@@ -598,8 +608,12 @@ class InvokeCommand extends BaseCommand {
       method: 'authentication.oauth2Config.getAccessToken',
       bundle: {
         inputData: {
-          code,
+          code: params.get('code'),
+          code_verifier: codeVerifier,
           redirect_uri: redirectUri,
+          scope: encodeURIComponent(
+            appDefinition.authentication.oauth2Config.scope
+          ),
         },
       },
       zcacheTestObj,
