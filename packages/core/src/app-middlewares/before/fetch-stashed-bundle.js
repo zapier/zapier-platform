@@ -1,7 +1,6 @@
 'use strict';
 
 const fetch = require('node-fetch');
-const rpc = require('../../tools/rpc');
 const _ = require('lodash');
 
 const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
@@ -19,7 +18,10 @@ const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
 
 const fetchStashedBundle = async (input) => {
   const stashedBundleKey = _.get(input, '_zapier.event.stashedBundleKey', {});
-
+  const rpc = _.get(input, '_zapier.rpc');
+  if (!rpc) {
+    throw new Error('rpc is not available');
+  }
   if (stashedBundleKey) {
     // Use the RPC to get a presigned URL for downloading the data
     const s3Url = await rpc(
