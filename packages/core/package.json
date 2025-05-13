@@ -15,6 +15,7 @@
   "files": [
     "/include/",
     "/index.js",
+    "/index.mjs",
     "/src/",
     "/types/"
   ],
