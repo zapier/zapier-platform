@@ -117,12 +117,12 @@ describe('Integration Test', function () {
       input.bundle.meta = { isTestingAuth: true };
       return app(input).then((output) => {
         const user = output.results;
-        should.equal(user.id, 1);
-        should.equal(user.username, 'Bret');
+        should.equal(user.id, 2);
+        should.equal(user.username, 'Antonette');
       });
     });
 
-    it('authentication.test, core < 8.0.0', () => {
+    it('authentication.test, core < 9.0.0', () => {
       const input = createTestInput(compiledApp, 'authentication.test');
       input.bundle.authData = {
         key1: 'sec',
@@ -131,8 +131,8 @@ describe('Integration Test', function () {
       input.bundle.meta = { standard_poll: false, test_poll: true };
       return app(input).then((output) => {
         const user = output.results;
-        should.equal(user.id, 1);
-        should.equal(user.username, 'Bret');
+        should.equal(user.id, 2);
+        should.equal(user.username, 'Antonette');
       });
     });
   });
