@@ -1,6 +1,6 @@
 ## 3.8.16
 
-- :bug: sync `z.reqeust` should log `request_params` ([#1017](https://github.com/zapier/zapier-platform/pull/1017))
+- :bug: sync `z.request` should log `request_params` ([#1017](https://github.com/zapier/zapier-platform/pull/1017))
 
 ## 3.8.15
 
