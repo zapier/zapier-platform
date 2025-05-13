@@ -1,6 +1,6 @@
 'use strict';
 
-const fetch = require('node-fetch');
+const fetch = require('../../tools/fetch');
 const _ = require('lodash');
 
 const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
@@ -26,10 +26,7 @@ const fetchStashedBundle = async (input) => {
 
   if (stashedBundleKey) {
     // Use the RPC to get a presigned URL for downloading the data
-    const s3Url = await rpc(
-      'generate_presigned_download_url',
-      stashedBundleKey,
-    );
+    const s3Url = await rpc('get_presigned_download_url', stashedBundleKey);
     const response = await withRetry(() => fetch(s3Url));
     if (!response.ok) {
       throw new Error('Failed to fetch stashed bundle from S3.');
