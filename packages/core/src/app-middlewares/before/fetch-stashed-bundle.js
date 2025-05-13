@@ -26,7 +26,11 @@ const fetchStashedBundle = async (input) => {
 
   if (stashedBundleKey) {
     // Use the RPC to get a presigned URL for downloading the data
-    const s3Url = await rpc('get_presigned_download_url', stashedBundleKey);
+    const s3UrlResponse = await rpc(
+      'get_presigned_download_url',
+      stashedBundleKey,
+    );
+    const s3Url = s3UrlResponse.url;
     const response = await withRetry(() => fetch(s3Url));
     if (!response.ok) {
       throw new Error('Failed to fetch stashed bundle from S3.');
