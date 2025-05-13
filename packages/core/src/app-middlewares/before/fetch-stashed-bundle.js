@@ -17,7 +17,7 @@ const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
 };
 
 const fetchStashedBundle = async (input) => {
-  const stashedBundleKey = _.get(input, '_zapier.event.stashedBundleKey', {});
+  const stashedBundleKey = _.get(input, '_zapier.event.stashedBundleKey', undefined);
   const rpc = _.get(input, '_zapier.rpc');
   if (!rpc) {
     throw new Error('rpc is not available');
