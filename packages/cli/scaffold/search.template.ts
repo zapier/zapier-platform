@@ -1,7 +1,20 @@
-import type { PerformFunction, Search } from 'zapier-platform-core';
+import {
+  defineInputFields,
+  defineSearch,
+  type SearchPerform,
+  type InferInputData,
+} from 'zapier-platform-core';
+
+const inputFields = defineInputFields([
+  {
+    key: 'name',
+    required: true,
+    helpText: 'Find the <%= NOUN %> with this name.',
+  },
+]);
 
 // find a particular <%= LOWER_NOUN %> by name
-const perform: PerformFunction = async (z, bundle) => {
+const perform = (async (z, bundle) => {
   const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
@@ -10,9 +23,9 @@ const perform: PerformFunction = async (z, bundle) => {
   });
   // this should return an array of objects (but only the first will be used)
   return response.data;
-};
+}) satisfies SearchPerform<InferInputData<typeof inputFields>>;
 
-export default {
+export default defineSearch({
   // see here for a full list of available properties:
   // https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#searchschema
   key: '<%= KEY %>',
@@ -30,13 +43,7 @@ export default {
       '// `inputFields` defines the fields a user could provide',
       '// Zapier will pass them in as `bundle.inputData` later. Searches need at least one `inputField`.'
     ].join('\n    ') : '' %>
-    inputFields: [
-      {
-        key: 'name',
-        required: true,
-        helpText: 'Find the <%= NOUN %> with this name.',
-      },
-    ],
+    inputFields,
 
     <%= INCLUDE_INTRO_COMMENTS ? [
     '// In cases where Zapier needs to show an example record to the user, but we are unable to get a live example',
@@ -60,4 +67,4 @@ export default {
       // {key: 'name', label: 'Person Name'}
     ],
   },
-} satisfies Search;
+});

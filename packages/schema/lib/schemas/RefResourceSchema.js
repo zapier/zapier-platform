@@ -7,7 +7,7 @@ module.exports = makeSchema({
   description:
     'Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.',
   type: 'string',
-  // the human_label_key should match the broad `string` type that FieldSchema.key can be, with commas!
+  // the human_label_key should match the broad `string` type that PlainFieldSchema.key can be, with commas!
   pattern:
     '^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_\\s\\[\\]]+(\\.[a-zA-Z0-9_\\s\\[\\]]+(,[a-zA-Z0-9_\\s\\[\\]]+)*)?$',
   examples: [

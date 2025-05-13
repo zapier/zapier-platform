@@ -32,6 +32,18 @@ const writeGitignore = (gen) => {
 };
 
 const writeGenericPackageJson = (gen, packageJsonExtension) => {
+  const moduleExtension =
+    gen.options.module === 'esm'
+      ? {
+          exports: './index.js',
+          type: 'module',
+        }
+      : {
+          main: 'index.js',
+        };
+
+  const fullExtension = merge(moduleExtension, packageJsonExtension);
+
   gen.fs.writeJSON(
     gen.destinationPath('package.json'),
     merge(
@@ -39,7 +51,6 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
         name: gen.options.packageName,
         version: '1.0.0',
         description: '',
-        main: 'index.js',
         scripts: {
           test: 'jest --testTimeout 10000',
         },
@@ -51,12 +62,24 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
         },
         private: true,
       },
-      packageJsonExtension,
+      fullExtension,
     ),
   );
 };
 
 const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
+  const moduleExtension =
+    gen.options.module === 'esm'
+      ? {
+          exports: './dist/index.js',
+          type: 'module',
+        }
+      : {
+          main: 'index.js',
+        };
+
+  const fullExtension = merge(moduleExtension, packageJsonExtension);
+
   gen.fs.writeJSON(
     gen.destinationPath('package.json'),
     merge(
@@ -64,7 +87,6 @@ const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
         name: gen.options.packageName,
         version: '1.0.0',
         description: '',
-        main: 'src/index.js',
         scripts: {
           test: 'vitest',
         },
@@ -76,17 +98,38 @@ const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
         },
         private: true,
       },
-      packageJsonExtension,
+      fullExtension,
     ),
   );
 };
 
 const writeGenericIndex = (gen, hasAuth) => {
+  const templatePath =
+    gen.options.module === 'esm'
+      ? 'index-esm.template.js'
+      : 'index.template.js';
   gen.fs.copyTpl(
-    gen.templatePath('index.template.js'),
+    gen.templatePath(templatePath),
     gen.destinationPath('index.js'),
     { corePackageName: PLATFORM_PACKAGE, hasAuth },
   );
+};
+
+const writeTypeScriptIndex = (gen) => {
+  const templatePath =
+    gen.options.module === 'esm'
+      ? 'index-esm.template.ts'
+      : 'index.template.ts';
+  gen.fs.copyTpl(
+    gen.templatePath(templatePath),
+    gen.destinationPath('src/index.ts'),
+  );
+
+  // create root directory index.js if it's commonjs
+  if (gen.options.module === 'commonjs') {
+    const content = `module.exports = require('./dist').default;`;
+    gen.fs.write(gen.destinationPath('index.js'), content);
+  }
 };
 
 const authTypes = {
@@ -170,7 +213,7 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
   const packageJsonExtension = {
     typescript: {
       scripts: {
-        test: 'vitest',
+        test: 'vitest --run',
         clean: 'rimraf ./dist ./build',
         build: 'npm run clean && tsc',
         '_zapier-build': 'npm run build',
@@ -189,6 +232,7 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
     gen.destinationPath(),
   );
+  writeTypeScriptIndex(gen);
 };
 
 const TEMPLATE_ROUTES = {
@@ -206,6 +250,8 @@ const TEMPLATE_ROUTES = {
   'session-auth': writeForAuthTemplate,
   typescript: writeForStandaloneTypeScriptTemplate,
 };
+
+const ESM_SUPPORTED_TEMPLATES = ['minimal', 'typescript'];
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
 
@@ -234,6 +280,31 @@ class ProjectGenerator extends Generator {
         },
       ]);
       this.options.template = this.answers.template;
+    }
+
+    if (
+      ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
+      !this.options.module
+    ) {
+      this.answers = await this.prompt([
+        {
+          type: 'list',
+          name: 'module',
+          choices: ['commonjs', 'esm'],
+          message: 'Choose module type:',
+          default: 'commonjs',
+        },
+      ]);
+      this.options.module = this.answers.module;
+    }
+
+    if (
+      !ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
+      this.options.module === 'esm'
+    ) {
+      throw new Error(
+        'ESM is not supported for this template, please use a different template or set the module to commonjs',
+      );
     }
   }
 

@@ -2,20 +2,20 @@
   "name": "typescript",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
   "scripts": {
     "test": "vitest",
-    "build": "npm run clean && tsc",
     "clean": "rimraf ./dist ./build",
+    "build": "npm run clean && tsc",
     "_zapier-build": "npm run build"
   },
   "dependencies": {
-    "zapier-platform-core": "16.5.1"
+    "zapier-platform-core": "17.0.0"
   },
   "devDependencies": {
+    "vitest": "^2.1.2",
     "rimraf": "^5.0.10",
-    "typescript": "^5.5.4",
-    "vitest": "^2.0.5"
+    "typescript": "5.6.2"
   },
-  "private": true
+  "private": true,
+  "main": "index.js"
 }

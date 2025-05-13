@@ -32,7 +32,7 @@ const verifyIncompatibilities = (inputFields, path) => {
           new jsonschema.ValidationError(
             `must not contain ${firstField} and ${secondField}, as they're mutually exclusive.`,
             inputField,
-            '/FieldSchema',
+            '/PlainFieldSchema',
             `instance.${path}.inputFields[${index}]`,
             'invalid',
             'inputFields',

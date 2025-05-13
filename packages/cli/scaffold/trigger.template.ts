@@ -1,7 +1,10 @@
-import type { PerformFunction, Trigger } from 'zapier-platform-core';
+import {
+  defineTrigger,
+  type PollingTriggerPerform,
+} from 'zapier-platform-core';
 
 // triggers on a new <%= LOWER_NOUN %> with a certain tag
-const perform: PerformFunction = async (z, bundle) => {
+const perform = (async (z, bundle) => {
   const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
@@ -10,9 +13,9 @@ const perform: PerformFunction = async (z, bundle) => {
   });
   // this should return an array of objects
   return response.data;
-};
+}) satisfies PollingTriggerPerform;
 
-export default {
+export default defineTrigger({
   // see here for a full list of available properties:
   // https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#triggerschema
   key: '<%= KEY %>' as const,
@@ -55,4 +58,4 @@ export default {
       // {key: 'name', label: 'Person Name'}
     ],
   },
-} satisfies Trigger;
+});
