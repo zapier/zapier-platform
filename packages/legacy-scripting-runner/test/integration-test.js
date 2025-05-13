@@ -756,7 +756,7 @@ describe('Integration Test', function () {
         zap: { name: 'My Awesome Zap' },
       };
       return app(input).then((output) => {
-        output.results.length.should.greaterThan(1);
+        should.equal(output.results.length, 1);
 
         const firstContact = output.results[0];
         should.equal(firstContact.name, 'Patched by KEY_poll!');
@@ -775,6 +775,7 @@ describe('Integration Test', function () {
             'Content-Type': 'application/json; charset=utf-8',
             'X-Api-Key': 'secret',
           },
+          request_params: { id: '2' },
           response_status_code: 200,
           response_headers: {
             'content-type': 'application/json; charset=utf-8',
@@ -782,8 +783,11 @@ describe('Integration Test', function () {
         });
 
         const loggedResponseData = JSON.parse(logs[0].response_content);
-        loggedResponseData.length.should.greaterThan(1);
-        loggedResponseData[0].should.containEql({ id: 1, username: 'Bret' });
+        loggedResponseData.length.should.eql(1);
+        loggedResponseData[0].should.containEql({
+          id: 2,
+          username: 'Antonette',
+        });
 
         // bundle log
         logs[1].should.containDeep({
@@ -795,7 +799,9 @@ describe('Integration Test', function () {
             },
             auth_fields: { api_key: 'secret' },
           },
-          output: [{ id: 1, username: 'Bret', name: 'Patched by KEY_poll!' }],
+          output: [
+            { id: 2, username: 'Antonette', name: 'Patched by KEY_poll!' },
+          ],
         });
       });
     });
