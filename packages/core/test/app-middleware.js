@@ -258,7 +258,7 @@ describe('app middleware', () => {
       input._zapier.rpc = rpc;
 
       await fetchStashedBundle(input).should.be.rejectedWith(
-        'Failed to read stashed bundle from S3 response.',
+        'Got an invalid stashed bundle from S3.',
       );
     });
   });

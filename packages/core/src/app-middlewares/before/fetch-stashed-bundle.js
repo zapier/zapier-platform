@@ -37,9 +37,6 @@ const fetchStashedBundle = async (input) => {
     }
     try {
       const stashedBundle = await response.json();
-      // Get the existing bundle
-      // Try to set it to stashed bundle
-      // If errors then use the existing bundle
       // Set the bundle to the stashedBundle value
       _.set(input, '_zapier.event.bundle', stashedBundle);
     } catch (error) {
