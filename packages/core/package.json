@@ -8,9 +8,14 @@
   "license": "SEE LICENSE IN LICENSE",
   "types": "types/index.d.ts",
   "exports": {
-    "require": "./index.js",
-    "import": "./index.mjs",
-    "types": "./types/index.d.ts"
+    ".": {
+      "require": "./index.js",
+      "import": "./index.mjs",
+      "types": "./types/index.d.ts"
+    },
+    "./src/*": {
+      "require": "./src/*.js"
+    }
   },
   "files": [
     "/include/",
