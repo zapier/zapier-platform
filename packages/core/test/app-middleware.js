@@ -214,12 +214,10 @@ describe('app middleware', () => {
 
     it('should fetch and set the stashed bundle if stashedBundleKey is present', async () => {
       const rpc = makeRpc();
-      mockRpcCall({ url: 'https://s3-fake.zapier.com/some-key/' });
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
 
       // Set up nock to intercept the fetch request
-      nock('https://s3-fake.zapier.com')
-        .get('/some-key/')
-        .reply(200, { key: 'value' });
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, { key: 'value' });
 
       const input = createTestInput('some.method', exampleAppDefinition);
       input._zapier.event.stashedBundleKey = 'some-key';
@@ -230,10 +228,10 @@ describe('app middleware', () => {
 
     it('should throw an error if fetch fails', async () => {
       const rpc = makeRpc();
-      mockRpcCall({ url: 'https://s3-fake.zapier.com/some-key/' });
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
 
       // Set up nock to intercept the fetch request and simulate a failure
-      nock('https://s3-fake.zapier.com').get('/some-key/').reply(500);
+      nock(FAKE_S3_URL).get('/some-key/').reply(500);
 
       const input = createTestInput('some.method', exampleAppDefinition);
       input._zapier.event.stashedBundleKey = 'some-key';
@@ -246,12 +244,10 @@ describe('app middleware', () => {
 
     it('should throw an error if response is not valid JSON', async () => {
       const rpc = makeRpc();
-      mockRpcCall({ url: 'https://s3-fake.zapier.com/some-key/' });
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
 
       // Set up nock to intercept the fetch request and return invalid JSON
-      nock('https://s3-fake.zapier.com')
-        .get('/some-key/')
-        .reply(200, 'Invalid JSON');
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, 'Invalid JSON');
 
       const input = createTestInput('some.method', exampleAppDefinition);
       input._zapier.event.stashedBundleKey = 'some-key';
