@@ -12,7 +12,6 @@ const {
   makeRpc,
 } = require('./tools/mocky');
 const exampleAppDefinition = require('./userapp');
-
 const fetchStashedBundle = require('../src/app-middlewares/before/fetch-stashed-bundle');
 
 describe('app middleware', () => {

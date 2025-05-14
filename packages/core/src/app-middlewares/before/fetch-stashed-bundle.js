@@ -2,6 +2,7 @@
 
 const fetch = require('../../tools/fetch');
 const _ = require('lodash');
+const { StashedBundleError } = require('../../errors');
 
 const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
   try {
@@ -33,14 +34,14 @@ const fetchStashedBundle = async (input) => {
     const s3Url = s3UrlResponse.url;
     const response = await withRetry(() => fetch(s3Url));
     if (!response.ok) {
-      throw new Error('Failed to read stashed bundle from S3.');
+      throw new StashedBundleError('Failed to read stashed bundle from S3.');
     }
     try {
       const stashedBundle = await response.json();
       // Set the bundle to the stashedBundle value
       _.set(input, '_zapier.event.bundle', stashedBundle);
     } catch (error) {
-      throw new Error('Got an invalid stashed bundle from S3.');
+      throw new StashedBundleError('Got an invalid stashed bundle from S3.');
     }
   }
   return input;
