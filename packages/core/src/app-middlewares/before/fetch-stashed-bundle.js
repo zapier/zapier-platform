@@ -43,7 +43,7 @@ const fetchStashedBundle = async (input) => {
       // Set the bundle to the stashedBundle value
       _.set(input, '_zapier.event.bundle', stashedBundle);
     } catch (error) {
-      throw new Error('Failed to read stashed bundle from S3 response.');
+      throw new Error('Got an invalid stashed bundle from S3.');
     }
   }
   return input;
