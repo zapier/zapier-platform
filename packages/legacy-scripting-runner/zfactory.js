@@ -110,6 +110,7 @@ const zfactory = (zcli, app, logger) => {
       request_url: url,
       request_method: method,
       request_headers: req.headers,
+      request_params: req.qs,
       request_data: req.data,
       request_via_client: false,
       response_status_code: res.status_code,
