@@ -75,4 +75,10 @@ module.exports = [{
     rules: {
         "no-unused-vars": 0,
     },
+}, {
+    files: ['packages/core/**.mjs'],
+    languageOptions: {
+      ecmaVersion: 2025,
+      sourceType: 'module',
+},
 }];

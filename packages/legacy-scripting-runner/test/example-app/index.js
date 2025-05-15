@@ -131,6 +131,7 @@ const legacyScriptingSource = `
 
       contact_full_poll: function(bundle) {
         bundle.request.url = '${AUTH_JSON_SERVER_URL}/users';
+        bundle.request.params = { id: '2' };
         var response = z.request(bundle.request);
         var contacts = z.JSON.parse(response.content);
         contacts[0].name = 'Patched by KEY_poll!';
