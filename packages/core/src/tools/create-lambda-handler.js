@@ -177,7 +177,7 @@ const loadApp = async (event, rpc, appRawOrPath) => {
 };
 
 const createLambdaHandler = (appRawOrPath) => {
-  const handler = async (event, context = {}) => {
+  const handlerPromise = async (event, context = {}) => {
     // If we're running out of memory or file descriptors, force exit the process.
     // The backend will try again via @retry(ProcessExitedException).
     checkMemory(event);
@@ -271,6 +271,21 @@ const createLambdaHandler = (appRawOrPath) => {
         }
       });
     });
+  };
+
+  // For backwards compatibility with older versions of Zapier CLI,
+  // support both callback and Promise styles
+  const handler = (event, context = {}, callback) => {
+    // If callback is provided, indicating <v17, call it
+    if (typeof callback === 'function') {
+      handlerPromise(event, context)
+        .then((result) => callback(null, result))
+        .catch((err) => callback(err));
+      return;
+    }
+
+    // If no callback is provided, indicating >=v17, return a Promise
+    return handlerPromise(event, context);
   };
 
   return handler;
