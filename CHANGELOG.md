@@ -4,11 +4,13 @@ _released `2025-05-14`_
 
 ### cli
 
+- :bug: `zapier init` Typescript template OAuth2 implementation doesn't work out of the box ([#1022](https://github.com/zapier/zapier-platform/pull/1022))
 - :bug: `version-store.js` is updated to show the Node and NPM versions for v17 ([#1020](https://github.com/zapier/zapier-platform/pull/1020))
 
 ### core
 
 - :bug: `zapier build` (and therefore also `zapier push`) hangs on the `Building app definition.json` step when it's run on an integration with a Core dependency of v17, and run via CLI with a version less than v17 ([#1020](https://github.com/zapier/zapier-platform/pull/1020))
+- :bug: Downstream apps can't access members of the `zapier` library via deconstructed `import` statements ([#1018](https://github.com/zapier/zapier-platform/pull/1018))
 
 ### schema
 
