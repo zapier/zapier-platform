@@ -228,7 +228,10 @@ const loadAppRawUsingImport = async (
   try {
     // zapierwrapper.mjs is only available since zapier-platform-core v17.
     // And only zapierwrapper.mjs exposes appRaw just for this use case.
-    appRaw = (await import(wrapperPath)).appRaw;
+    // Convert path to file:// URL for Windows compatibility with ESM imports
+    const pathForUrl = path.resolve(wrapperPath).replace(/\\/g, '/');
+    const wrapperUrl = new URL(`file:///${pathForUrl.replace(/^\//, '')}`);
+    appRaw = (await import(wrapperUrl.href)).appRaw;
   } catch (err) {
     if (err.name === 'SyntaxError') {
       // Run a separate process to print the line number of the SyntaxError.
@@ -325,7 +328,10 @@ const getLocalAppHandler = async ({
 
   // Assumes the entry point of zapier-platform-core is index.js
   const coreEntryPoint = path.join(corePackageDir, 'index.js');
-  const zapier = (await import(coreEntryPoint)).default;
+  // Convert path to file:// URL for Windows compatibility with ESM imports
+  const pathForUrl = path.resolve(coreEntryPoint).replace(/\\/g, '/');
+  const coreEntryUrl = new URL(`file:///${pathForUrl.replace(/^\//, '')}`);
+  const zapier = (await import(coreEntryUrl.href)).default;
 
   const handler = zapier.createAppHandler(appRaw);
   if (handler.length === 3) {
@@ -360,6 +366,7 @@ const localAppCommand = async (event, appDir, shouldDeleteWrapper = true) => {
     appDir,
     shouldDeleteWrapper,
   });
+
   if (handler.length === 3) {
     // < 17: function handler(event, ctx, callback)
     return new Promise((resolve, reject) => {
