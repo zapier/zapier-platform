@@ -6,11 +6,21 @@
   "homepage": "https://platform.zapier.com/",
   "author": "Zapier Engineering <contact@zapier.com>",
   "license": "SEE LICENSE IN LICENSE",
-  "main": "index.js",
   "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "import": "./index.mjs",
+      "types": "./types/index.d.ts"
+    },
+    "./src/*": {
+      "require": "./src/*.js"
+    }
+  },
   "files": [
     "/include/",
     "/index.js",
+    "/index.mjs",
     "/src/",
     "/types/"
   ],
