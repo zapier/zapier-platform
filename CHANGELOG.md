@@ -71,7 +71,7 @@ const perform = async (z, bundle) => {
 };
 ```
 
-However, `{{curly backets}}` are still (and have to be) allowed in shorthand requests:
+However, `{{curly backets}}` are still (and have to be) allowed in other places, including `operation.lock.key`. They are also allowed (actually required) in usage of shorthand requests:
 
 ```js
 {
