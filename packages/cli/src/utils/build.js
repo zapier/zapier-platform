@@ -63,6 +63,7 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     external: ['../test/userapp'],
     format: 'esm',
     write: false, // no need to write outfile
+    absWorkingDir: cwd,
   });
 
   return Object.keys(result.metafile.inputs).map((path) =>
