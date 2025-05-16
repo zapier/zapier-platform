@@ -254,7 +254,8 @@ const loadAppRawUsingImport = async (
 };
 
 const loadAppRawUsingRequire = (appDir) => {
-  let appRaw = require(appDir);
+  const normalizedPath = path.resolve(appDir);
+  let appRaw = require(normalizedPath);
   if (appRaw && appRaw.default) {
     // Node.js 22+ supports using require() to import ESM.
     // For Node.js < 20.17.0, require() will throw an error on ESM.
