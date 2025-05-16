@@ -29,10 +29,12 @@ const createAppWithCustomBefores = (appRaw, customBefores) => {
   const waitForPromises = require('zapier-platform-core/src/app-middlewares/after/wait-for-promises');
   const createCommandHandler = require('zapier-platform-core/src/create-command-handler');
   const applyMiddleware = require('zapier-platform-core/src/middleware');
-
+  const fetchStashedBundle = require('zapier-platform-core/src/app-middlewares/before/fetch-stashed-bundle');
   const frozenCompiledApp = schemaTools.prepareApp(appRaw);
 
-  const befores = [addAppContext, injectZObject].concat(customBefores || []);
+  const befores = [addAppContext, injectZObject, fetchStashedBundle].concat(
+    customBefores || [],
+  );
   const afters = [checkOutput, largeResponseCachePointer, waitForPromises];
 
   const app = createCommandHandler(frozenCompiledApp);
