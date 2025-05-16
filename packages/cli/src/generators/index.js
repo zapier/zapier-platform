@@ -290,9 +290,9 @@ class ProjectGenerator extends Generator {
         {
           type: 'list',
           name: 'module',
-          choices: ['commonjs', 'esm'],
+          choices: ['esm', 'commonjs'],
           message: 'Choose module type:',
-          default: 'commonjs',
+          default: 'esm',
         },
       ]);
       this.options.module = this.answers.module;
