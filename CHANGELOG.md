@@ -1,3 +1,19 @@
+## 17.1.0
+
+_released `2025-05-20`_
+
+### cli
+
+None!
+
+### core
+
+- :nail_care: Automatically stash input bundles exceeding the maximum size for AWS Lambda. The bundle is reinjected using the `fetchStashedBundle` before-middleware in the app ([#1016](https://github.com/zapier/zapier-platform/pull/1016)).
+
+### schema
+
+None!
+
 ## 17.0.2
 
 _released `2025-05-19`_
