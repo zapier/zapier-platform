@@ -9,7 +9,7 @@
     "_zapier-build": "npm run build"
   },
   "dependencies": {
-    "zapier-platform-core": "17.0.2"
+    "zapier-platform-core": "17.1.0"
   },
   "devDependencies": {
     "vitest": "^2.1.2",
