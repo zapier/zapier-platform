@@ -1,4 +1,21 @@
-# 17.0.1
+## 17.0.2
+
+_released `2025-05-19`_
+
+### cli
+
+- :bug: Fix crashing issues on Windows ([#1024](https://github.com/zapier/zapier-platform/pull/1024))
+- :nail_care: Default to ESM for `zapier init` if template supports it ([#1026](https://github.com/zapier/zapier-platform/pull/1026))
+
+### core
+
+None!
+
+### schema
+
+None!
+
+## 17.0.1
 
 _released `2025-05-14`_
 
@@ -16,7 +33,7 @@ _released `2025-05-14`_
 
 None!
 
-# 17.0.0
+## 17.0.0
 
 _released `2025-05-12`_
 
@@ -133,7 +150,7 @@ Apart from these major changes, here are the detailed release notes for this rel
 
 - :hammer: Dependency updates - full list in the PR ([#1010](https://github.com/zapier/zapier-platform/pull/1010))
 
-# 16.5.1
+## 16.5.1
 
 _released `2025-05-08`_
 
@@ -150,7 +167,7 @@ _released `2025-05-08`_
 
 None!
 
-# 16.5.0
+## 16.5.0
 
 _released `2025-04-10`_
 
