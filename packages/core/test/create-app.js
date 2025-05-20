@@ -257,7 +257,7 @@ describe('create-app', () => {
     result.headers['X-Author'].should.deepEqual(['One Cool Dev']);
   });
 
-  it('should return a rendered URL for OAuth2 authorizeURL', (done) => {
+  it('should return a rendered URL for OAuth2 authorizeURL', async () => {
     const oauth2AppDefinition = dataTools.jsonCopy(appDefinition);
     oauth2AppDefinition.authentication = {
       type: 'oauth2',
@@ -285,17 +285,11 @@ describe('create-app', () => {
     input.bundle.authData = { domain: 'my-sub' };
     input.bundle.inputData = { scope: 'read,write' };
 
-    oauth2App(input)
-      .then((output) => {
-        output.results.should.eql(
-          'https://my-sub.example.com?scope=read%2Cwrite',
-        );
-        done();
-      })
-      .catch(done);
+    const output = await oauth2App(input);
+    output.results.should.eql('https://my-sub.example.com?scope=read%2Cwrite');
   });
 
-  it('should run a raw provided request', (done) => {
+  it('should run a raw provided request', async () => {
     const input = createRawTestInput({
       command: 'request',
       bundle: {
@@ -304,13 +298,30 @@ describe('create-app', () => {
         },
       },
     });
-    app(input)
-      .then((output) => {
-        const response = output.results;
-        JSON.parse(response.content).url.should.eql(`${HTTPBIN_URL}/get`);
-        done();
-      })
-      .catch(done);
+    const output = await app(input);
+    const response = output.results;
+    JSON.parse(response.content).url.should.eql(`${HTTPBIN_URL}/get`);
+  });
+
+  it('should error on curlies for raw request', async () => {
+    const input = createRawTestInput({
+      command: 'request',
+      bundle: {
+        inputData: {
+          lastname: 'Hamilton',
+        },
+        request: {
+          url: `${HTTPBIN_URL}/post`,
+          method: 'POST',
+          params: {
+            lastname: '{{bundle.inputData.lastname}}',
+          },
+        },
+      },
+    });
+    await app(input).should.be.rejectedWith(
+      /no longer supports \{\{bundle\.\*\}\}/,
+    );
   });
 
   describe('output checks', () => {

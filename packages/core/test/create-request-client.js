@@ -7,6 +7,7 @@ const _ = require('lodash');
 const should = require('should');
 
 const createAppRequestClient = require('../src/tools/create-app-request-client');
+const { REPLACE_CURLIES } = require('../src/constants');
 const createInput = require('../src/tools/create-input');
 const errors = require('../src/errors');
 const { HTTPBIN_URL } = require('./constants');
@@ -385,6 +386,7 @@ describe('request client', function () {
     it('should replace remaining curly params with empty string when set as false', async () => {
       const request = createAppRequestClient(input);
       const response = await request({
+        [REPLACE_CURLIES]: true,
         url: `${HTTPBIN_URL}/get`,
         params: {
           something: '',
@@ -394,8 +396,8 @@ describe('request client', function () {
         removeMissingValuesFrom: {
           params: false,
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       response.data.args.something.should.deepEqual(['']);
@@ -434,8 +436,8 @@ describe('request client', function () {
         removeMissingValuesFrom: {
           params: true,
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       should(response.data.args.something).eql(undefined);
@@ -499,8 +501,8 @@ describe('request client', function () {
           hookUrl: '{{bundle.targetUrl}}',
           zapId: '{{bundle.meta.zap.id}}',
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { hookUrl, zapId } = JSON.parse(response.data.data);
@@ -521,8 +523,8 @@ describe('request client', function () {
         params: {
           id: '{{bundle.subscribeData.id}}',
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { url } = JSON.parse(response.content);
@@ -554,8 +556,8 @@ describe('request client', function () {
           float: '{{bundle.inputData.float}}',
           arr: '{{bundle.inputData.arr}}',
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { json } = response.data;
@@ -593,8 +595,8 @@ describe('request client', function () {
           float: 123.456,
           arr: [1, 2, 3],
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { json } = response.data;
@@ -625,8 +627,8 @@ describe('request client', function () {
         removeMissingValuesFrom: {
           body: true,
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { json } = response.data;
@@ -654,8 +656,8 @@ describe('request client', function () {
             value: 'exists',
           },
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { json } = response.data;
@@ -698,8 +700,8 @@ describe('request client', function () {
         headers: {
           Authorization: 'Bearer {{bundle.authData.access_token}}',
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { json, headers } = response.data;
@@ -723,8 +725,8 @@ describe('request client', function () {
         body: {
           message: 'No arrays, thank you: {{bundle.inputData.badData}}',
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       }).should.be.rejectedWith(
         'Cannot reliably interpolate objects or arrays into a string. ' +
           'Variable `bundle.inputData.badData` is an Array:\n"1,2,3"',
@@ -751,8 +753,8 @@ describe('request client', function () {
           streetAddress: '{{bundle.inputData.address.street}}',
           city: '{{bundle.inputData.address.city}}',
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { json } = response.data;
@@ -789,8 +791,8 @@ describe('request client', function () {
           'x-cool': '{{bundle.authData.access_token}}',
           'x-another': '{{bundle.authData.access_token}}',
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       const { headers } = response.data;
@@ -836,8 +838,8 @@ describe('request client', function () {
           }
           return value;
         },
-        // Set `replace` to true to make it act like a shorthand request
-        replace: true,
+        // Set this internal symbol to true to make it act like a shorthand request
+        [REPLACE_CURLIES]: true,
       });
 
       response.data.json.should.deepEqual({

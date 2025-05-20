@@ -21,6 +21,7 @@ const sanitizeHeaders = require('../src/http-middlewares/before/sanatize-headers
 const applyMiddleware = require('../src/middleware');
 const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-request');
 const { parseDictHeader } = require('../src/tools/http');
+const { REPLACE_CURLIES } = require('../src/constants');
 const { HTTPBIN_URL } = require('./constants');
 
 describe('http requests', () => {
@@ -150,7 +151,6 @@ describe('http prepareRequest', () => {
       params: {
         foo: '{{inputData.foo}}',
       },
-      replace: true,
       body: '123',
       input: {
         _zapier: {
@@ -176,7 +176,7 @@ describe('http prepareRequest', () => {
   it('should force "bundle" prefix when doing replacement', () => {
     const origReq = {
       url: 'https://example.com/{{inputData.foo}}',
-      replace: true,
+      [REPLACE_CURLIES]: true,
       input: {
         _zapier: {
           event: {
@@ -374,7 +374,7 @@ describe('http prepareRequest', () => {
 
   it('should not replace values in input', () => {
     const request = prepareRequest({
-      replace: true,
+      [REPLACE_CURLIES]: true,
       url: 'https://{{bundle.authData.subdomain}}.example.com/recipes',
       method: 'POST',
       body: {
