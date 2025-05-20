@@ -26,7 +26,6 @@ const RENDER_ONLY_METHODS = [
 const REPLACE_CURLIES = Symbol('replaceCurlies');
 
 const REQUEST_OBJECT_SHORTHAND_OPTIONS = {
-  isShorthand: true,
   [REPLACE_CURLIES]: true,
 };
 
