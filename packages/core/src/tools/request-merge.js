@@ -14,6 +14,9 @@ const caseInsensitiveMerge = (requestOne, requestTwo, requestThree) => {
 
   // This is a very quick & efficient merge for all of request's properties
   const mergedRequest = _.merge(requestOne, requestTwo, requestThree);
+
+  // _.merge() ignores symbols. REPLACE_CURLIES is a symbol, so we need to add
+  // it back
   if (requestThree[REPLACE_CURLIES]) {
     mergedRequest[REPLACE_CURLIES] = requestThree[REPLACE_CURLIES];
   }
