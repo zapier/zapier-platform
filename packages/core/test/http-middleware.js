@@ -669,6 +669,10 @@ describe('http oauth1SignRequest before middelware', () => {
 });
 
 describe('http throwForStatus after middleware', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   it('throws for 400 <= status < 600', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
@@ -717,12 +721,12 @@ describe('http throwForStatus after middleware', () => {
 
     // httpbin.zapier-tooling.com no longer allows you to set a 600 status code
     // so we need to mock it
-    const localScope = nock(HTTPBIN_URL).get('/status/600').reply(600, 'error');
+    const scope = nock(HTTPBIN_URL).get('/status/600').reply(600, 'error');
     const response = await request({
       url: `${HTTPBIN_URL}/status/600`,
     });
     response.status.should.equal(600);
-    localScope.isDone().should.be.true();
+    scope.isDone().should.be.true();
   });
 });
 
