@@ -72,7 +72,6 @@ describe('z', () => {
       response.should.have.property('content');
 
       response.status_code.should.eql(200);
-      debugger;
 
       const results = JSON.parse(response.content);
       results.args.should.eql({ hello: ['world'] });
