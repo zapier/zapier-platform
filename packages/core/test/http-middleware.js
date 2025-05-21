@@ -422,6 +422,62 @@ describe('http prepareRequest', () => {
       },
     });
   });
+
+  it('should replace curlies in single pass', async () => {
+    const request = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      body: {
+        name: '{{bundle.inputData.alias}}',
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                alias: '{{bundle.inputData.name}}',
+                name: '{{bundle.inputData.username}}',
+                username: 'franklin',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Why req.body.name is an empty string?
+    // 1. req.body.name was '{{bundle.inputData.alias}}' before prepareRequest
+    // 2. req.body.name became '{{bundle.inputData.name}}' during prepareRequest
+    // 3. req.body.name was stripped to '' by normalizeEmptyBodyFields in prepareRequest
+    //    Even though '{{bundle.inputData.name}}` -> '{{bundle.inputData.username}}' was in the replacement bank,
+    //    multi-pass replacement should be forbidden.
+    should(request.body).eql('{"name":""}');
+  });
+
+  it('should handle circular reference', async () => {
+    const request = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      body: {
+        name: '{{bundle.inputData.my_name}}',
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                my_name: '{{bundle.inputData.your_name}}',
+                your_name: '{{bundle.inputData.my_name}}',
+              },
+            },
+          },
+        },
+      },
+    });
+    should(request.body).eql('{"name":""}');
+  });
 });
 
 describe('http querystring before middleware', () => {
