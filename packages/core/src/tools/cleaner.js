@@ -69,18 +69,20 @@ const findNextCurlies = (str) => {
 // Recurse a nested object replace all instances of keys->vals in the bank.
 const recurseReplaceBank = (obj, bank = {}) => {
   const replacer = (input) => {
-    if (!['string', 'number'].includes(typeof input)) {
+    if (typeof input !== 'string') {
       return input;
     }
 
-    const outputStrings = [];
-    let inputString = String(input);
+    const outputItems = [];
+    let inputString = input;
 
     // 1000 iterations is just a static upper bound to make infinite loops
     // impossible. Who would have 1000 {{curlies}} in a string... right?
-    for (let i = 0; i < 1000; i++) {
+    const MAX_ITERATIONS = 1000;
+    for (let i = 0; i < MAX_ITERATIONS; i++) {
       const { start, end } = findNextCurlies(inputString);
       if (start < 0) {
+        outputItems.push(inputString);
         break;
       }
 
@@ -88,31 +90,49 @@ const recurseReplaceBank = (obj, bank = {}) => {
       const key = inputString.slice(start, end);
       const tail = inputString.slice(end);
 
-      outputStrings.push(head);
+      if (head) {
+        outputItems.push(head);
+      }
 
       const replacementValue = bank[key];
-      if (replacementValue) {
+      if (replacementValue == null) {
+        // No match in the bank
+        outputItems.push(key);
+      } else {
+        const isPartOfString = head || tail;
         if (
-          Array.isArray(replacementValue) ||
-          _.isPlainObject(replacementValue)
+          isPartOfString &&
+          (Array.isArray(replacementValue) || _.isPlainObject(replacementValue))
         ) {
+          const bareKey = key.slice(2, -2); // '{{key}}' -> 'key'
           throw new TypeError(
             'Cannot reliably interpolate objects or arrays into a string. ' +
-              `Variable \`${key}\` is an ${getObjectType(
+              `Variable \`${bareKey}\` is an ${getObjectType(
                 replacementValue,
               )}:\n"${replacementValue}"`,
           );
         } else {
-          outputStrings.push(replacementValue);
+          outputItems.push(replacementValue);
         }
-      } else {
-        outputStrings.push('');
       }
 
       inputString = tail;
+      if (!inputString) {
+        break;
+      }
+
+      if (i === MAX_ITERATIONS - 1) {
+        // The input string does have more than 1000 {{curlies}}, just return
+        // the rest of the string without replacing.
+        outputItems.push(inputString);
+      }
     }
 
-    return outputStrings.join('');
+    if (outputItems.length === 1 && typeof outputItems[0] !== 'string') {
+      return outputItems[0];
+    } else {
+      return outputItems.join('');
+    }
   };
   return recurseReplace(obj, replacer);
 };

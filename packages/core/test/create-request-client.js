@@ -82,12 +82,19 @@ describe('request client', function () {
     const request = createAppRequestClient(input);
     const response = await request({
       method: 'POST',
-      url: 'https://httpbin.zapier-tooling.com/post',
+      url: `${HTTPBIN_URL}/post`,
       body: request({ url: fileUrl, raw: true }),
     });
     response.status.should.eql(200);
-    const body = JSON.parse(response.content);
-    body.data.should.eql(fileExpectedContent);
+
+    // Current version of httpbin.zapier-tooling.com encodes the input in base64
+    // and returns it, so we need to decode it here.
+    const encodedData = response.data.data;
+    const [header, encodedBody] = encodedData.split(',');
+    header.should.eql('data:application/octet-stream;base64');
+
+    const decodedBody = Buffer.from(encodedBody, 'base64').toString('utf8');
+    decodedBody.should.eql(fileExpectedContent);
   });
 
   it('should handle a buffer upload fine', async () => {
@@ -98,8 +105,15 @@ describe('request client', function () {
       body: Buffer.from('hello world this is a cat (=^..^=)'),
     });
     response.status.should.eql(200);
-    const body = JSON.parse(response.content);
-    body.data.should.eql('hello world this is a cat (=^..^=)');
+
+    // Current version of httpbin.zapier-tooling.com encodes the input in base64
+    // and returns it, so we need to decode it here.
+    const encodedData = response.data.data;
+    const [header, encodedBody] = encodedData.split(',');
+    header.should.eql('data:application/octet-stream;base64');
+
+    const decodedBody = Buffer.from(encodedBody, 'base64').toString('utf8');
+    decodedBody.should.eql('hello world this is a cat (=^..^=)');
   });
 
   it('should handle a stream upload fine', async () => {
@@ -110,8 +124,15 @@ describe('request client', function () {
       body: fs.createReadStream(path.join(__dirname, 'test.txt')),
     });
     response.status.should.eql(200);
-    const body = JSON.parse(response.content);
-    body.data.should.eql('hello world this is a cat (=^..^=)');
+
+    // Current version of httpbin.zapier-tooling.com encodes the input in base64
+    // and returns it, so we need to decode it here.
+    const encodedData = response.data.data;
+    const [header, encodedBody] = encodedData.split(',');
+    header.should.eql('data:application/octet-stream;base64');
+
+    const decodedBody = Buffer.from(encodedBody, 'base64').toString('utf8');
+    decodedBody.should.eql('hello world this is a cat (=^..^=)');
   });
 
   it('should support single url param', async () => {

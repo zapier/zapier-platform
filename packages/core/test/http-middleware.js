@@ -679,7 +679,7 @@ describe('http throwForStatus after middleware', () => {
     }).should.be.rejectedWith(errors.ResponseError, {
       name: 'ResponseError',
       doNotContextify: true,
-      message: `{"status":400,"headers":{"content-type":null,"retry-after":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
+      message: `{"status":400,"headers":{"content-type":"text/plain; charset=utf-8","retry-after":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
     });
   });
 
@@ -697,6 +697,7 @@ describe('http throwForStatus after middleware', () => {
 
     response.status.should.equal(200);
   });
+
   it('does not throw for 2xx', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
@@ -708,16 +709,20 @@ describe('http throwForStatus after middleware', () => {
 
     response.status.should.equal(200);
   });
+
   it('does not throw for >= 600', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
     const request = createAppRequestClient(input);
 
+    // httpbin.zapier-tooling.com no longer allows you to set a 600 status code
+    // so we need to mock it
+    const localScope = nock(HTTPBIN_URL).get('/status/600').reply(600, 'error');
     const response = await request({
       url: `${HTTPBIN_URL}/status/600`,
     });
-
     response.status.should.equal(600);
+    localScope.isDone().should.be.true();
   });
 });
 
