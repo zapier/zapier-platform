@@ -3836,7 +3836,7 @@ describe('Integration Test', function () {
       };
       return app(input).then((output) => {
         const file = output.results.file;
-        should.equal(file.sha1, '04bc9f090eafc29a4ab29b05f0f306365b017857');
+        should.equal(file.sha1, '0b01577e8e0063ec7048ddd8bcf17c06b821b452');
         should.equal(file.mimetype, 'application/json');
         should.equal(file.originalname, 'an example.json');
 
@@ -3866,7 +3866,7 @@ describe('Integration Test', function () {
       };
       return app(input).then((output) => {
         const file = output.results.file;
-        should.equal(file.sha1, 'ebad26f071d502f26ea7afccea320195c1ad7e8e');
+        should.equal(file.sha1, '35c06366ecfbb3c452cf8aa6abf2377f2281cfd9');
         should.equal(file.mimetype, 'application/json');
         should.equal(file.originalname, 'example.json');
 
@@ -3896,7 +3896,7 @@ describe('Integration Test', function () {
       };
       return app(input).then((output) => {
         const file = output.results.file;
-        should.equal(file.sha1, 'd7bd9d0e663a001291d1536715403744cbff054d');
+        should.equal(file.sha1, '69a1677af6e04e993b6b1415a4ba29be7a20388b');
         should.equal(file.mimetype, 'application/json');
         should.equal(file.originalname, '中文.json');
 
@@ -4160,7 +4160,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8',
+            'application/json; charset=utf-8',
           );
         });
       });
@@ -4196,7 +4196,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8',
+            'application/json; charset=utf-8',
           );
         });
       });
@@ -4235,7 +4235,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8',
+            'application/json; charset=utf-8',
           );
         });
       });
@@ -4278,7 +4278,7 @@ describe('Integration Test', function () {
           response.getHeader.should.be.Function();
           should.equal(
             response.getHeader('content-type'),
-            'application/json; encoding=utf-8',
+            'application/json; charset=utf-8',
           );
         });
       });
