@@ -576,6 +576,7 @@ You cannot pass both `--user` and `--account`.
 * `--user` | Migrates all of a users' Private Zaps within all accounts for which the specified user is a member
 * `--account` | Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member
 * `-y, --yes` | Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.
+* `--yesExceptEnv` | Automatically answer 'yes' to all prompts except environment variable changes
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**

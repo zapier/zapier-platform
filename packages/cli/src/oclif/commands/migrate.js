@@ -10,6 +10,7 @@ const { buildFlags } = require('../buildFlags');
 class MigrateCommand extends BaseCommand {
   async run_require_confirmation_pre_checks(app, requestBody) {
     const assumeYes = 'yes' in this.flags;
+    const assumeYesExceptEnv = 'yesExceptEnv' in this.flags;
     const url = `/apps/${app.id}/pre-migration-require-confirmation-checks`;
 
     this.startSpinner(`Running pre-checks before migration...`);
@@ -42,7 +43,18 @@ class MigrateCommand extends BaseCommand {
             'Would you like to continue with the migration regardless?',
           ));
 
-        if (!shouldContinuePreChecks) {
+        let shouldContinueEnvCheck = false;
+        if (formattedErrors.toLowercase.contains('e001')) {
+          shouldContinueEnvCheck =
+            assumeYesExceptEnv ||
+            (await this.confirm(
+              'Would you like to continue with the promotion process despite environment variable changes?',
+            ));
+        } else {
+          shouldContinueEnvCheck = true;
+        }
+
+        if (!shouldContinuePreChecks || !shouldContinueEnvCheck) {
           this.error('Cancelled migration.');
         }
       } else {
@@ -161,6 +173,10 @@ MigrateCommand.flags = buildFlags({
       char: 'y',
       description:
         'Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.',
+    }),
+    yesExceptEnv: Flags.boolean({
+      description:
+        "Automatically answer 'yes' to all prompts except environment variable changes",
     }),
   },
 });
