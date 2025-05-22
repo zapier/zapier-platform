@@ -64,6 +64,7 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     format: 'esm',
     write: false, // no need to write outfile
     absWorkingDir: cwd,
+    tsconfigRaw: '{}',
   });
 
   return Object.keys(result.metafile.inputs).map((path) =>
