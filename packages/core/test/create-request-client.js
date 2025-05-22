@@ -10,7 +10,7 @@ const createAppRequestClient = require('../src/tools/create-app-request-client')
 const { REPLACE_CURLIES } = require('../src/constants');
 const createInput = require('../src/tools/create-input');
 const errors = require('../src/errors');
-const { HTTPBIN_URL } = require('./constants');
+const { AUTH_JSON_SERVER, HTTPBIN_URL } = require('./constants');
 
 describe('request client', function () {
   const testLogger = () => Promise.resolve({});
@@ -344,7 +344,7 @@ describe('request client', function () {
     const request = createAppRequestClient(input);
     const response = await request({
       method: 'GET',
-      url: 'https://auth-json-server.zapier-staging.com/echo',
+      url: `${AUTH_JSON_SERVER}/echo`,
       body: {
         name: 'Darth Vader',
       },
@@ -361,7 +361,7 @@ describe('request client', function () {
     const request = createAppRequestClient(input);
     const response = await request({
       method: 'GET',
-      url: 'https://auth-json-server.zapier-staging.com/echo',
+      url: `${AUTH_JSON_SERVER}/echo`,
       body: {
         name: 'Darth Vader',
       },
@@ -379,7 +379,7 @@ describe('request client', function () {
     const request = createAppRequestClient(input);
     const response = await request({
       method: 'GET',
-      url: 'https://auth-json-server.zapier-staging.com/echo',
+      url: `${AUTH_JSON_SERVER}/echo`,
       body: {},
       allowGetBody: true,
     });
@@ -868,6 +868,69 @@ describe('request client', function () {
         obj: 'obj: id=456,name=John',
         str: 'str: hello',
       });
+    });
+
+    it('should replace curlies in requestTemplate', async () => {
+      const event = {
+        bundle: {
+          authData: {
+            access_token: 'a_token',
+          },
+        },
+      };
+      const input = createInput({}, event, testLogger);
+      input._zapier.app.requestTemplate = {
+        headers: {
+          authorization: 'Bearer {{bundle.authData.access_token}}',
+        },
+      };
+      const request = createAppRequestClient(input);
+      const response = await request({
+        url: `${AUTH_JSON_SERVER}/recipes`,
+        params: {
+          name: 'name 3',
+        },
+      });
+      const recipes = response.data;
+      recipes.length.should.eql(1);
+
+      const recipe = recipes[0];
+      recipe.should.containEql({
+        id: '3',
+        name: 'name 3',
+      });
+    });
+
+    it('should replace curlies in requestTemplate in single pass', async () => {
+      const event = {
+        bundle: {
+          authData: {
+            access_token: '{{bundle.authData.real_token}}',
+            real_token: 'a_token',
+          },
+        },
+      };
+      const input = createInput({}, event, testLogger);
+      input._zapier.app.requestTemplate = {
+        headers: {
+          authorization: 'Bearer {{bundle.authData.access_token}}',
+        },
+        params: {
+          token: '{{bundle.authData.access_token}}',
+        },
+      };
+      const request = createAppRequestClient(input);
+      const response = await request({
+        url: `${HTTPBIN_URL}/get`,
+      });
+
+      // Current behavior: Leftover curlies after one-pass replacement are
+      // handled inconsistently. In headers, they are left as-is; in query
+      // params, they are replaced with an empty string.
+      response.data.headers.Authorization.should.deepEqual([
+        'Bearer {{bundle.authData.real_token}}',
+      ]);
+      response.data.args.token.should.deepEqual(['']);
     });
   });
 });

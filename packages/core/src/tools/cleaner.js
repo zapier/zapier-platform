@@ -143,7 +143,7 @@ const finalizeBundle = pipe(
 );
 
 // Takes a raw app and bundle and composes a bank of {{key}}->val
-const createBundleBank = (appRaw, event = {}, serializeFunc = (x) => x) => {
+const createBundleBank = (event = {}, serializeFunc = (x) => x) => {
   const bank = {
     bundle: finalizeBundle(event.bundle),
     process: {
