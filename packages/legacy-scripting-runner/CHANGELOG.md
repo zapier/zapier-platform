@@ -1,6 +1,6 @@
 ## 3.8.17
 
-- :hammer: Ensure `z.request` renders `{{curlies}}` on zapier-platform-core v17.1.0 ([#1037](https://github.com/zapier/zapier-platform/pull/1037))
+- :hammer: Ensure `z.request` renders `{{curlies}}` on different zapier-platform-core versions ([#1037](https://github.com/zapier/zapier-platform/pull/1037))
 
 ## 3.8.16
 
