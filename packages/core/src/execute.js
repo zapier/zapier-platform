@@ -10,18 +10,15 @@ const prepareRequest = require('./http-middlewares/before/prepare-request');
 const constants = require('./constants');
 
 const executeHttpRequest = (input, options) => {
-  options = _.extend(
-    {},
+  options = {
     // shorthand requests should always throw _unless_ the object specifically opts out
     // this covers godzilla devs who use shorthand requests (most of them) that rely on the throwing behavior
     // when we set the app-wide skip for everyone, we don't want their behavior to change
     // so, this line takes precedence over the global setting, but not the local one (`options`)
-    {
-      skipThrowForStatus: false,
-    },
-    options,
-    constants.REQUEST_OBJECT_SHORTHAND_OPTIONS,
-  );
+    skipThrowForStatus: false,
+    ...options,
+    ...constants.REQUEST_OBJECT_SHORTHAND_OPTIONS,
+  };
   return input.z.request(options).then((response) => {
     if (response.data === undefined) {
       throw new Error(
@@ -83,11 +80,10 @@ const execute = (app, input) => {
   } else if (_.isObject(method) && method.url) {
     const options = method;
     if (isRenderOnly(methodName)) {
-      const requestWithInput = _.extend(
-        {},
-        injectInput(input)(options),
-        constants.REQUEST_OBJECT_SHORTHAND_OPTIONS,
-      );
+      const requestWithInput = {
+        ...injectInput(input)(options),
+        ...constants.REQUEST_OBJECT_SHORTHAND_OPTIONS,
+      };
       const preparedRequest = addQueryParams(prepareRequest(requestWithInput));
       return preparedRequest.url;
     }

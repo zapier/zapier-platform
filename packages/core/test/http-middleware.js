@@ -21,6 +21,7 @@ const sanitizeHeaders = require('../src/http-middlewares/before/sanatize-headers
 const applyMiddleware = require('../src/middleware');
 const oauth1SignRequest = require('../src/http-middlewares/before/oauth1-sign-request');
 const { parseDictHeader } = require('../src/tools/http');
+const { REPLACE_CURLIES } = require('../src/constants');
 const { HTTPBIN_URL } = require('./constants');
 
 describe('http requests', () => {
@@ -150,7 +151,6 @@ describe('http prepareRequest', () => {
       params: {
         foo: '{{inputData.foo}}',
       },
-      replace: true,
       body: '123',
       input: {
         _zapier: {
@@ -176,7 +176,7 @@ describe('http prepareRequest', () => {
   it('should force "bundle" prefix when doing replacement', () => {
     const origReq = {
       url: 'https://example.com/{{inputData.foo}}',
-      replace: true,
+      [REPLACE_CURLIES]: true,
       input: {
         _zapier: {
           event: {
@@ -374,7 +374,7 @@ describe('http prepareRequest', () => {
 
   it('should not replace values in input', () => {
     const request = prepareRequest({
-      replace: true,
+      [REPLACE_CURLIES]: true,
       url: 'https://{{bundle.authData.subdomain}}.example.com/recipes',
       method: 'POST',
       body: {
@@ -421,6 +421,62 @@ describe('http prepareRequest', () => {
         q: '{{bundle.inputData.query}}',
       },
     });
+  });
+
+  it('should replace curlies in single pass', async () => {
+    const request = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      body: {
+        name: '{{bundle.inputData.alias}}',
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                alias: '{{bundle.inputData.name}}',
+                name: '{{bundle.inputData.username}}',
+                username: 'franklin',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Why req.body.name is an empty string?
+    // 1. req.body.name was '{{bundle.inputData.alias}}' before prepareRequest
+    // 2. req.body.name became '{{bundle.inputData.name}}' during prepareRequest
+    // 3. req.body.name was stripped to '' by normalizeEmptyBodyFields in prepareRequest
+    //    Even though '{{bundle.inputData.name}}` -> '{{bundle.inputData.username}}' was in the replacement bank,
+    //    multi-pass replacement should be forbidden.
+    should(request.body).eql('{"name":""}');
+  });
+
+  it('should handle circular reference', async () => {
+    const request = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      body: {
+        name: '{{bundle.inputData.my_name}}',
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                my_name: '{{bundle.inputData.your_name}}',
+                your_name: '{{bundle.inputData.my_name}}',
+              },
+            },
+          },
+        },
+      },
+    });
+    should(request.body).eql('{"name":""}');
   });
 });
 
@@ -613,6 +669,10 @@ describe('http oauth1SignRequest before middelware', () => {
 });
 
 describe('http throwForStatus after middleware', () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   it('throws for 400 <= status < 600', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
@@ -623,7 +683,7 @@ describe('http throwForStatus after middleware', () => {
     }).should.be.rejectedWith(errors.ResponseError, {
       name: 'ResponseError',
       doNotContextify: true,
-      message: `{"status":400,"headers":{"content-type":null,"retry-after":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
+      message: `{"status":400,"headers":{"content-type":"text/plain; charset=utf-8","retry-after":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400"}}`,
     });
   });
 
@@ -641,6 +701,7 @@ describe('http throwForStatus after middleware', () => {
 
     response.status.should.equal(200);
   });
+
   it('does not throw for 2xx', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
@@ -652,16 +713,20 @@ describe('http throwForStatus after middleware', () => {
 
     response.status.should.equal(200);
   });
+
   it('does not throw for >= 600', async () => {
     const testLogger = () => Promise.resolve({});
     const input = createInput({}, {}, testLogger);
     const request = createAppRequestClient(input);
 
+    // httpbin.zapier-tooling.com no longer allows you to set a 600 status code
+    // so we need to mock it
+    const scope = nock(HTTPBIN_URL).get('/status/600').reply(600, 'error');
     const response = await request({
       url: `${HTTPBIN_URL}/status/600`,
     });
-
     response.status.should.equal(600);
+    scope.isDone().should.be.true();
   });
 });
 

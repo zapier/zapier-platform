@@ -3,6 +3,7 @@
 const _ = require('lodash');
 
 const requestClean = require('./request-clean');
+const { REPLACE_CURLIES } = require('../constants');
 
 // Do a merge with case-insensitive keys in the .header, and drop empty .header keys
 const caseInsensitiveMerge = (requestOne, requestTwo, requestThree) => {
@@ -13,6 +14,12 @@ const caseInsensitiveMerge = (requestOne, requestTwo, requestThree) => {
 
   // This is a very quick & efficient merge for all of request's properties
   const mergedRequest = _.merge(requestOne, requestTwo, requestThree);
+
+  // _.merge() ignores symbols. REPLACE_CURLIES is a symbol, so we need to add
+  // it back
+  if (requestThree[REPLACE_CURLIES]) {
+    mergedRequest[REPLACE_CURLIES] = requestThree[REPLACE_CURLIES];
+  }
 
   // Now to cleanup headers, we start on the last request (the one with priority) and work backwards to add the keys that don't already exist
   // NOTE: This is done "manually" instead of a _.merge or Object.assign() because we need case-insensitivity

@@ -16,6 +16,8 @@ const {
   JSON_TYPE_UTF8,
 } = require('../../tools/http');
 
+const { REPLACE_CURLIES } = require('../../constants');
+
 const isStream = (obj) => obj instanceof stream.Stream;
 const isPromise = (obj) => obj && typeof obj.then === 'function';
 
@@ -108,8 +110,9 @@ const throwForCurlies = (value, path) => {
     if (/{{\s*(bundle|process)\.[^}]*}}/.test(value)) {
       throw new Error(
         'z.request() no longer supports {{bundle.*}} or {{process.*}} as of v17 ' +
-          "unless it's used in a shorthand request. " +
-          'Use JavaScript template literals instead. ' +
+          "unless it's used in a shorthand request defined by the integration. " +
+          'Zapier Customers: Remove "{{curly braces}}" from your request. ' +
+          'Developers: Use JavaScript template literals instead. ' +
           `Value in violation: "${value}" in attribute "${path.join('.')}".`,
       );
     }
@@ -158,7 +161,7 @@ const prepareRequest = function (req) {
     body: req.body,
   };
 
-  if (req.replace) {
+  if (req[REPLACE_CURLIES]) {
     // replace {{curlies}} in the request
     const bank = createBundleBank(
       input._zapier.app,

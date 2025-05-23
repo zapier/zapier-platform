@@ -23,7 +23,11 @@ const RENDER_ONLY_METHODS = [
   'authentication.oauth1Config.authorizeUrl',
 ];
 
-const REQUEST_OBJECT_SHORTHAND_OPTIONS = { isShorthand: true, replace: true };
+const REPLACE_CURLIES = Symbol('replaceCurlies');
+
+const REQUEST_OBJECT_SHORTHAND_OPTIONS = {
+  [REPLACE_CURLIES]: true,
+};
 
 const DEFAULT_LOGGING_HTTP_ENDPOINT = 'https://httplogger.zapier.com/input';
 const DEFAULT_LOGGING_HTTP_API_KEY = 'R24hzu86v3jntwtX2DtYECeWAB'; // It's ok, this isn't PROD
@@ -65,13 +69,14 @@ module.exports = {
   IS_TESTING,
   KILL_MAX_LIMIT,
   KILL_MIN_LIMIT,
+  NON_STREAM_UPLOAD_MAX_SIZE,
   PACKAGE_NAME,
   PACKAGE_VERSION,
   RENDER_ONLY_METHODS,
+  REPLACE_CURLIES,
   REQUEST_OBJECT_SHORTHAND_OPTIONS,
   RESPONSE_SIZE_LIMIT,
   SAFE_LOG_KEYS,
   STATUSES,
   UPLOAD_MAX_SIZE,
-  NON_STREAM_UPLOAD_MAX_SIZE,
 };

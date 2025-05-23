@@ -72,9 +72,17 @@ describe('z', () => {
       response.should.have.property('content');
 
       response.status_code.should.eql(200);
+
       const results = JSON.parse(response.content);
       results.args.should.eql({ hello: ['world'] });
-      results.data.should.eql(bundleRequest.data);
+
+      // Current version of httpbin.zapier-tooling.com encodes the input in
+      // base64 and returns it, so we need to decode it here.
+      const [header, encodedBody] = results.data.split(',');
+      header.should.eql('data:application/octet-stream;base64');
+
+      const decodedBody = Buffer.from(encodedBody, 'base64').toString('utf8');
+      decodedBody.should.eql(bundleRequest.data);
       results.headers.Accept.should.deepEqual(['application/json']);
 
       done();

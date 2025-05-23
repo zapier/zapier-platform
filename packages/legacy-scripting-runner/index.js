@@ -11,6 +11,7 @@ const {
 } = require('zapier-platform-core/src/tools/cleaner');
 
 const { flattenPaths } = require('zapier-platform-core/src/tools/data');
+const { REPLACE_CURLIES } = require('zapier-platform-core/src/constants');
 
 const {
   ErrorException,
@@ -859,7 +860,7 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
         request = {};
       }
 
-      request = { ...bundle.request, ...request, replace: true };
+      request = { ...bundle.request, ...request, [REPLACE_CURLIES]: true };
 
       const isBodyStream = typeof _.get(request, 'body.pipe') === 'function';
       if (!preMethod && !isBodyStream && isAnyFileFieldSet(bundle)) {

@@ -43,66 +43,96 @@ const recurseCleanFuncs = (obj, path) => {
   return obj;
 };
 
+const findNextCurlies = (str) => {
+  const start = str.indexOf('{{');
+  if (start < 0) {
+    return {
+      start: -1,
+      end: -1,
+    };
+  }
+
+  const end = str.indexOf('}}', start + 2);
+  if (end < 0) {
+    return {
+      start: -1,
+      end: -1,
+    };
+  }
+
+  return {
+    start,
+    end: end + 2,
+  };
+};
+
 // Recurse a nested object replace all instances of keys->vals in the bank.
 const recurseReplaceBank = (obj, bank = {}) => {
-  const matchesCurlies = /({{.*?}})/;
-  const matchesKeyRegexMap = Object.keys(bank).reduce((acc, key) => {
-    // Escape characters (ex. {{foo}} => \\{\\{foo\\}\\} )
-    acc[key] = new RegExp(key.replace(/[-[\]/{}()\\*+?.^$|]/g, '\\$&'), 'g');
-    return acc;
-  }, {});
-  const replacer = (out) => {
-    if (!['string', 'number'].includes(typeof out)) {
-      return out;
+  const replacer = (input) => {
+    if (typeof input !== 'string') {
+      return input;
     }
 
-    // whatever leaves this function replaces values in the calling object
-    // so, we don't want to return a different data type unless it's a censored string
-    const originalValue = out;
-    const originalValueStr = String(out);
-    let maybeChangedString = originalValueStr;
+    const outputItems = [];
+    let inputString = input;
 
-    Object.keys(bank).forEach((key) => {
-      const matchesKey = matchesKeyRegexMap[key];
-      // RegExp.test modifies internal state of the regex object
-      // since we're re-using regexes, we have to reset that state between calls
-      // or the second time in a row that the key should match, it misses instead
-      // see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex
-      matchesKey.lastIndex = 0;
-      if (!matchesKey.test(maybeChangedString)) {
-        return;
+    // 1000 iterations is just a static upper bound to make infinite loops
+    // impossible. Who would have 1000 {{curlies}} in a string... right?
+    const MAX_ITERATIONS = 1000;
+    for (let i = 0; i < MAX_ITERATIONS; i++) {
+      const { start, end } = findNextCurlies(inputString);
+      if (start < 0) {
+        outputItems.push(inputString);
+        break;
       }
 
-      const valueParts = maybeChangedString
-        .split(matchesCurlies)
-        .filter(Boolean);
+      const head = inputString.slice(0, start);
+      const key = inputString.slice(start, end);
+      const tail = inputString.slice(end);
+
+      if (head) {
+        outputItems.push(head);
+      }
+
       const replacementValue = bank[key];
-      const isPartOfString =
-        !matchesCurlies.test(maybeChangedString) || valueParts.length > 1;
-      const shouldThrowTypeError =
-        isPartOfString &&
-        (Array.isArray(replacementValue) || _.isPlainObject(replacementValue));
-
-      if (shouldThrowTypeError) {
-        const bareKey = _.trimEnd(_.trimStart(key, '{'), '}');
-        throw new TypeError(
-          'Cannot reliably interpolate objects or arrays into a string. ' +
-            `Variable \`${bareKey}\` is an ${getObjectType(
-              replacementValue,
-            )}:\n"${replacementValue}"`,
-        );
+      if (replacementValue == null) {
+        // No match in the bank
+        outputItems.push(key);
+      } else {
+        const isPartOfString = head || tail;
+        if (
+          isPartOfString &&
+          (Array.isArray(replacementValue) || _.isPlainObject(replacementValue))
+        ) {
+          const bareKey = key.slice(2, -2); // '{{key}}' -> 'key'
+          throw new TypeError(
+            'Cannot reliably interpolate objects or arrays into a string. ' +
+              `Variable \`${bareKey}\` is an ${getObjectType(
+                replacementValue,
+              )}:\n"${replacementValue}"`,
+          );
+        } else {
+          outputItems.push(replacementValue);
+        }
       }
 
-      maybeChangedString = isPartOfString
-        ? valueParts.join('').replace(matchesKey, replacementValue)
-        : replacementValue;
-    });
+      inputString = tail;
+      if (!inputString) {
+        break;
+      }
 
-    if (originalValueStr === maybeChangedString) {
-      // we didn't censor or replace the value, so return the original
-      return originalValue;
+      if (i === MAX_ITERATIONS - 1) {
+        // The input string does have more than 1000 {{curlies}}, just return
+        // the rest of the string without replacing.
+        outputItems.push(inputString);
+      }
     }
-    return maybeChangedString;
+
+    if (outputItems.length === 1 && typeof outputItems[0] !== 'string') {
+      return outputItems[0];
+    } else {
+      return outputItems.join('');
+    }
   };
   return recurseReplace(obj, replacer);
 };
