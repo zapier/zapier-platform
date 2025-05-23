@@ -21,4 +21,4 @@ export default defineApp({
   creates: {
     [MovieCreate.key]: MovieCreate,
   },
-}) 
+});
