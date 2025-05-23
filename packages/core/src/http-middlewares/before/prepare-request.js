@@ -148,33 +148,44 @@ const prepareRequest = function (req) {
 
   req = sugarBody(req);
 
-  // apply app requestTemplate to request
-  if (req.merge) {
-    const requestTemplate = (input._zapier?.app || {}).requestTemplate;
-    req = requestMerge(requestTemplate, req);
-  }
-
-  const replaceable = {
-    url: req.url,
-    headers: req.headers,
-    params: req.params,
-    body: req.body,
-  };
-
-  if (req[REPLACE_CURLIES]) {
-    // replace {{curlies}} in the request
+  if (req[REPLACE_CURLIES] || req.merge) {
     const bank = createBundleBank(
-      input._zapier.app,
-      input._zapier.event,
+      input?._zapier?.event || {},
       req.serializeValueForCurlies,
     );
-    req = {
-      ...req,
-      ...recurseReplaceBank(replaceable, bank),
+
+    const replaceable = {
+      url: req.url,
+      headers: req.headers,
+      params: req.params,
+      body: req.body,
     };
-  } else {
-    // throw if there's {{curlies}} in the request
-    throwForCurlies(replaceable);
+    if (req[REPLACE_CURLIES]) {
+      // replace {{curlies}} in the request
+      req = {
+        ...req,
+        ...recurseReplaceBank(replaceable, bank),
+      };
+    } else {
+      // throw if there's {{curlies}} in the request
+      throwForCurlies(replaceable);
+    }
+
+    if (req.merge) {
+      // Always replace {{curlies}} in reqeustTemplate regardless of
+      // req[REPLACE_CURLIES]
+      const requestTemplate = input._zapier?.app?.requestTemplate || {};
+      const replaceable = {
+        url: requestTemplate.url,
+        headers: requestTemplate.headers,
+        params: requestTemplate.params,
+        body: requestTemplate.body,
+      };
+      const renderedTemplate = recurseReplaceBank(replaceable, bank);
+
+      // Apply app.requestTemplate to request
+      req = requestMerge(renderedTemplate, req);
+    }
   }
 
   req = coerceBody(req);

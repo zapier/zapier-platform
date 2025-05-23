@@ -478,6 +478,55 @@ describe('http prepareRequest', () => {
     });
     should(request.body).eql('{"name":""}');
   });
+
+  it('should handle two curlies in a string', async () => {
+    const request = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      body: {
+        full_name:
+          '{{bundle.inputData.first_name}} {{bundle.inputData.last_name}}',
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                first_name: 'Michael',
+                last_name: 'Jordan',
+              },
+            },
+          },
+        },
+      },
+    });
+    should(request.body).eql('{"full_name":"Michael Jordan"}');
+  });
+
+  it('should replace no more than 1000 curlies', async () => {
+    const request = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      body: {
+        long: '{{bundle.inputData.answer}} '.repeat(1002) + '!',
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                answer: 'no',
+              },
+            },
+          },
+        },
+      },
+    });
+    const { long } = JSON.parse(request.body);
+    should(long).eql('no '.repeat(1000) + '  !');
+  });
 });
 
 describe('http querystring before middleware', () => {
