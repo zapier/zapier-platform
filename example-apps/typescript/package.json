@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "vitest",
+    "test": "vitest --run",
     "clean": "rimraf ./dist ./build",
     "build": "npm run clean && tsc",
     "_zapier-build": "npm run build"

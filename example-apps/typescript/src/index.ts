@@ -1,4 +1,4 @@
-import { defineApp, version as platformVersion } from 'zapier-platform-core';
+import { version as platformVersion, defineApp } from 'zapier-platform-core';
 
 import packageJson from '../package.json';
 
