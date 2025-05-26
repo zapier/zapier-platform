@@ -1,4 +1,7 @@
-import { defineTrigger, PollingTriggerPerform } from 'zapier-platform-core';
+import {
+  defineTrigger,
+  type PollingTriggerPerform,
+} from 'zapier-platform-core';
 import { API_URL } from '../constants.js';
 
 const perform = (async (z, bundle) => {
