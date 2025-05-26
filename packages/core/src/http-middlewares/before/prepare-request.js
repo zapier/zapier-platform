@@ -154,7 +154,7 @@ const prepareRequest = function (req) {
       req.serializeValueForCurlies,
     );
 
-    const replaceable = {
+    const requestReplaceable = {
       url: req.url,
       headers: req.headers,
       params: req.params,
@@ -164,24 +164,24 @@ const prepareRequest = function (req) {
       // replace {{curlies}} in the request
       req = {
         ...req,
-        ...recurseReplaceBank(replaceable, bank),
+        ...recurseReplaceBank(requestReplaceable, bank),
       };
     } else {
       // throw if there's {{curlies}} in the request
-      throwForCurlies(replaceable);
+      throwForCurlies(requestReplaceable);
     }
 
     if (req.merge) {
       // Always replace {{curlies}} in reqeustTemplate regardless of
       // req[REPLACE_CURLIES]
       const requestTemplate = input._zapier?.app?.requestTemplate || {};
-      const replaceable = {
+      const templateReplaceable = {
         url: requestTemplate.url,
         headers: requestTemplate.headers,
         params: requestTemplate.params,
         body: requestTemplate.body,
       };
-      const renderedTemplate = recurseReplaceBank(replaceable, bank);
+      const renderedTemplate = recurseReplaceBank(templateReplaceable, bank);
 
       // Apply app.requestTemplate to request
       req = requestMerge(renderedTemplate, req);
