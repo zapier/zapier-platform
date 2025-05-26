@@ -1,3 +1,7 @@
+## 3.8.17
+
+- :bug: Ensure `z.request` renders `{{curlies}}` on different zapier-platform-core versions ([#1037](https://github.com/zapier/zapier-platform/pull/1037))
+
 ## 3.8.16
 
 - :bug: sync `z.request` should log `request_params` ([#1017](https://github.com/zapier/zapier-platform/pull/1017))
