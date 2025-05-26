@@ -32,7 +32,10 @@ const runCommand = (command, args, options) => {
   options = options || {};
 
   if (isWindows()) {
-    command += '.cmd';
+    const needsCmdShim = ['npm', 'npx', 'yarn'].includes(command.toLowerCase())
+    if (needsCmdShim) {
+      command += '.cmd'
+    }
 
     // See CVE-2024-27980
     options.shell = true;
