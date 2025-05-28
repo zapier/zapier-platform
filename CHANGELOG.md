@@ -9,7 +9,7 @@ _released `2025-05-19`_
 
 ### core
 
-None!
+- :bug: ESM apps can't import `define` helpers from `zapier-platform-core` ([#1018](https://github.com/zapier/zapier-platform/pull/1018))
 
 ### schema
 
@@ -27,7 +27,6 @@ _released `2025-05-14`_
 ### core
 
 - :bug: `zapier build` (and therefore also `zapier push`) hangs on the `Building app definition.json` step when it's run on an integration with a Core dependency of v17, and run via CLI with a version less than v17 ([#1020](https://github.com/zapier/zapier-platform/pull/1020))
-- :bug: Downstream apps can't access members of the `zapier` library via deconstructed `import` statements ([#1018](https://github.com/zapier/zapier-platform/pull/1018))
 
 ### schema
 
