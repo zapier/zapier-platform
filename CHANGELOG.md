@@ -1,3 +1,25 @@
+## 17.0.3
+
+_released `2025-05-30`_
+
+### cli
+
+- :bug: Fix "Cannot find base config file" tsconfig warning on `zapier build` ([#1033](https://github.com/zapier/zapier-platform/pull/1033))
+
+### core
+
+- :bug: Fix various bugs with `{{curlies}}` replacement ([#1032](https://github.com/zapier/zapier-platform/pull/1032))
+- :bug: `{{curlies}}` in `requestTemplate` aren't properly replaced ([#1034](https://github.com/zapier/zapier-platform/pull/1034))
+- :bug: Fix unexpected line breaks in logged response content ([#1042](https://github.com/zapier/zapier-platform/pull/1042))
+
+### schema
+
+None!
+
+### misc
+
+- :scroll: Update example apps: [oauth2](https://github.com/zapier/zapier-platform/tree/8fcadb7d8eaa10d4eb99b84ec8df70a0bb9b8e16/example-apps/oauth2), [typescript](https://github.com/zapier/zapier-platform/tree/8fcadb7d8eaa10d4eb99b84ec8df70a0bb9b8e16/example-apps/typescript), [typescript-esm](https://github.com/zapier/zapier-platform/tree/8fcadb7d8eaa10d4eb99b84ec8df70a0bb9b8e16/example-apps/typescript-esm) ([#1036](https://github.com/zapier/zapier-platform/pull/1036))
+
 ## 17.0.2
 
 _released `2025-05-19`_
