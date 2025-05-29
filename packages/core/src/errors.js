@@ -79,7 +79,6 @@ const names = [
   'NotImplementedError',
   'RefreshAuthError',
   'RequireModuleError',
-  'StashedBundleError',
   'StopRequestError',
 ];
 
