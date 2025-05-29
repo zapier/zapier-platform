@@ -110,7 +110,7 @@ const createHttpPatch = (event) => {
           } else {
             const responseBody = _.map(chunks, (chunk) =>
               chunk.toString(),
-            ).join('\n');
+            ).join('');
             sendToLogger(responseBody);
           }
         };
