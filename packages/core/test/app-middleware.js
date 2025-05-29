@@ -1,18 +1,16 @@
 'use strict';
 const should = require('should');
-const nock = require('nock');
+
 const createApp = require('../src/create-app');
 const createInput = require('../src/tools/create-input');
 const dataTools = require('../src/tools/data');
 const {
   FAKE_S3_URL,
-  mockRpcCall,
+  makeRpc,
   mockRpcGetPresignedPostCall,
   mockUpload,
-  makeRpc,
 } = require('./tools/mocky');
 const exampleAppDefinition = require('./userapp');
-const fetchStashedBundle = require('../src/app-middlewares/before/fetch-stashed-bundle');
 
 describe('app middleware', () => {
   const createTestInput = (method, appDefinition) => {
@@ -197,64 +195,6 @@ describe('app middleware', () => {
 
       const bigOutput = app(bigInputCall);
       bigOutput.should.not.have.property('resultsUrl');
-    });
-  });
-
-  describe('fetchStashedBundle', () => {
-    beforeEach(() => {
-      // Reset all nock interceptors
-      nock.cleanAll();
-    });
-    it('should return input unchanged if stashedBundleKey is not present', async () => {
-      const input = createTestInput('some.method', exampleAppDefinition);
-      const output = await fetchStashedBundle(input);
-      output.should.equal(input);
-    });
-
-    it('should fetch and set the stashed bundle if stashedBundleKey is present', async () => {
-      const rpc = makeRpc();
-      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
-
-      // Set up nock to intercept the fetch request
-      nock(FAKE_S3_URL).get('/some-key/').reply(200, { key: 'value' });
-
-      const input = createTestInput('some.method', exampleAppDefinition);
-      input._zapier.event.stashedBundleKey = 'some-key';
-      input._zapier.rpc = rpc;
-      const output = await fetchStashedBundle(input);
-      output._zapier.event.bundle.should.eql({ key: 'value' });
-    });
-
-    it('should throw an error if fetch fails', async () => {
-      const rpc = makeRpc();
-      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
-
-      // Set up nock to intercept the fetch request and simulate a failure
-      nock(FAKE_S3_URL).get('/some-key/').reply(500);
-
-      const input = createTestInput('some.method', exampleAppDefinition);
-      input._zapier.event.stashedBundleKey = 'some-key';
-      input._zapier.rpc = rpc;
-
-      await fetchStashedBundle(input).should.be.rejectedWith(
-        'Failed to read stashed bundle from S3.',
-      );
-    });
-
-    it('should throw an error if response is not valid JSON', async () => {
-      const rpc = makeRpc();
-      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
-
-      // Set up nock to intercept the fetch request and return invalid JSON
-      nock(FAKE_S3_URL).get('/some-key/').reply(200, 'Invalid JSON');
-
-      const input = createTestInput('some.method', exampleAppDefinition);
-      input._zapier.event.stashedBundleKey = 'some-key';
-      input._zapier.rpc = rpc;
-
-      await fetchStashedBundle(input).should.be.rejectedWith(
-        'Got an invalid stashed bundle from S3.',
-      );
     });
   });
 });
