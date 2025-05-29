@@ -272,8 +272,11 @@ describe('create http patch', () => {
                 response_status_code: 200,
               });
 
+              // We've seen httpbin put a line break in the middle of a JSON
+              // object, so we need to remove it before parsing.
+              const responseContent = log.response_content.replaceAll('\n', '');
               const loggedIds = Array.from(
-                log.response_content.matchAll(/"id":(\d+)/g),
+                responseContent.matchAll(/"id":(\d+)/g),
                 (m) => m[1],
               );
               should(loggedIds).have.length(50);
