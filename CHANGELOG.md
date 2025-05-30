@@ -9,6 +9,7 @@ _released `2025-05-30`_
 ### core
 
 - :bug: Fix various bugs with `{{curlies}}` replacement ([#1032](https://github.com/zapier/zapier-platform/pull/1032))
+- :bug: Remove request body fields with undefined `{{curlies}}` when the content-type is `application/x-www-form-urlencoded` ([#1044](https://github.com/zapier/zapier-platform/pull/1044))
 - :bug: `{{curlies}}` in `requestTemplate` aren't properly replaced ([#1034](https://github.com/zapier/zapier-platform/pull/1034))
 - :bug: Fix unexpected line breaks in logged response content ([#1042](https://github.com/zapier/zapier-platform/pull/1042))
 
