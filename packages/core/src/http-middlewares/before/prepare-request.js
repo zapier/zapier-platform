@@ -52,6 +52,7 @@ const coerceBody = (req) => {
 
   // auto coerce form if header says so
   if (contentType === FORM_TYPE && req.body && !_.isString(req.body)) {
+    normalizeEmptyBodyFields(req);
     req.body = querystring.stringify(req.body).replace(/%20/g, '+');
   }
 

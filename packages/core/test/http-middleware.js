@@ -527,6 +527,70 @@ describe('http prepareRequest', () => {
     const { long } = JSON.parse(request.body);
     should(long).eql('no '.repeat(1000) + '  !');
   });
+
+  it('should remove body fields using undefined input data curlies', async () => {
+    // With header "Content-Type": "application/json"
+    const requestForJsonBody = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: {
+        name: '{{bundle.inputData.username}}',
+        email: '{{bundle.inputData.email}}',
+        language: '{{bundle.inputData.language}}',
+      },
+      removeMissingValuesFrom: {
+        body: true,
+        params: false,
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                username: 'franklin',
+                language: 'eng',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    should(requestForJsonBody.body).eql('{"name":"franklin","language":"eng"}');
+
+    // With header "Content-Type": "application/x-www-form-urlencoded"
+    const requestForFormBody = prepareRequest({
+      [REPLACE_CURLIES]: true,
+      url: 'https://example.com/post',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: {
+        name: '{{bundle.inputData.username}}',
+        email: '{{bundle.inputData.email}}',
+        language: '{{bundle.inputData.language}}',
+      },
+      removeMissingValuesFrom: {
+        body: true,
+        params: false,
+      },
+      input: {
+        _zapier: {
+          event: {
+            bundle: {
+              inputData: {
+                username: 'franklin',
+                language: 'eng',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    should(requestForFormBody.body).eql('name=franklin&language=eng');
+  });
 });
 
 describe('http querystring before middleware', () => {
