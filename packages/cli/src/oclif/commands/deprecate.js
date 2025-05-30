@@ -5,6 +5,14 @@ const colors = require('colors/safe');
 
 const { callAPI, getSpecificVersionInfo } = require('../../utils/api');
 
+const DEPRECATION_REASONS = [
+  { name: 'API shutdown', value: 'api_shutdown' },
+  { name: 'Security vulnerability', value: 'security_vulnerability' },
+  { name: 'Critical bug', value: 'critical_bug' },
+  { name: 'Legal requirement', value: 'legal_requirement' },
+  { name: 'Other', value: 'other' },
+];
+
 class DeprecateCommand extends BaseCommand {
   async perform() {
     const app = await this.getWritableApp();
@@ -17,6 +25,27 @@ class DeprecateCommand extends BaseCommand {
       `${colors.yellow('Warning: Deprecation is an irreversible action that will eventually block access to this version.')}\n` +
         `${colors.yellow('If all your changes are non-breaking, use `zapier migrate` instead to move users over to a newer version.')}\n`,
     );
+
+    // Get deprecation reason - either from flag or prompt user
+    let deprecationReason = this.flags.reason;
+
+    if (!deprecationReason) {
+      deprecationReason = await this.promptWithList(
+        'Please select a reason for deprecating this version:',
+        DEPRECATION_REASONS,
+        {
+          useStderr: true,
+        },
+      );
+    } else {
+      // Validate the provided reason
+      const validReasons = DEPRECATION_REASONS.map((r) => r.value);
+      if (!validReasons.includes(deprecationReason)) {
+        this.error(
+          `Invalid deprecation reason: ${deprecationReason}. Valid options are: ${validReasons.join(', ')}`,
+        );
+      }
+    }
 
     if (
       !this.flags.force &&
@@ -32,7 +61,7 @@ class DeprecateCommand extends BaseCommand {
     }
 
     this.log(
-      `\nPreparing to deprecate version ${version} your app "${app.title}".\n`,
+      `\nPreparing to deprecate version ${version} your app "${app.title}" due to: ${DEPRECATION_REASONS.find((r) => r.value === deprecationReason)?.name}.\n`,
     );
     const url = `/apps/${app.id}/versions/${version}/deprecate`;
     this.startSpinner(`Deprecating ${version}`);
@@ -40,6 +69,7 @@ class DeprecateCommand extends BaseCommand {
       method: 'PUT',
       body: {
         deprecation_date: date,
+        deprecation_reason: deprecationReason,
       },
     });
     this.stopSpinner();
@@ -55,6 +85,17 @@ DeprecateCommand.flags = buildFlags({
       char: 'f',
       description: 'Skip confirmation prompt. Use with caution.',
     }),
+    reason: Flags.string({
+      char: 'r',
+      description: 'Reason for deprecation.',
+      options: [
+        'api_shutdown',
+        'security_vulnerability',
+        'critical_bug',
+        'legal_requirement',
+        'other',
+      ],
+    }),
   },
 });
 DeprecateCommand.args = {
@@ -68,10 +109,21 @@ DeprecateCommand.args = {
     required: true,
   }),
 };
-DeprecateCommand.examples = ['zapier deprecate 1.2.3 2011-10-01'];
+DeprecateCommand.examples = [
+  'zapier deprecate 1.2.3 2011-10-01',
+  'zapier deprecate 1.2.3 2011-10-01 --reason=security_vulnerability',
+  'zapier deprecate 1.2.3 2011-10-01 -r critical_bug',
+];
 DeprecateCommand.description = `Mark a non-production version of your integration as deprecated, with removal by a certain date.
 
 Use this when an integration version will not be supported or start breaking at a known date.
+
+When deprecating a version, you must provide a reason for the deprecation. You can either specify the reason using the --reason flag or you will be prompted to select from the following options:
+- API shutdown
+- Security vulnerability  
+- Critical bug
+- Legal requirement
+- Other
 
 Zapier will immediately send emails warning users of the deprecation if a date less than 30 days in the future is set, otherwise the emails will be sent exactly 30 days before the configured deprecation date.
 
