@@ -678,3 +678,144 @@ describe('build ESM (runs slowly)', function () {
     should.equal(buildExists, true);
   });
 });
+
+describe('build hybrid packages in CJS app', function () {
+  let tmpDir, entryPoint, corePackage;
+
+  before(async () => {
+    tmpDir = getNewTempDirPath();
+
+    // Create a basic CJS app that uses uuid
+    fs.outputFileSync(
+      path.join(tmpDir, 'index.js'),
+      `const { v4: uuidv4 } = require('uuid');
+module.exports = {
+  version: require('./package.json').version,
+  triggers: {
+    test: {
+      operation: {
+        perform: () => {
+          return [{id: uuidv4()}];
+        }
+      }
+    }
+  }
+};`,
+    );
+
+    // Create package.json
+    corePackage = await npmPackCore();
+    fs.outputFileSync(
+      path.join(tmpDir, 'package.json'),
+      JSON.stringify({
+        name: 'cjs-uuid-test',
+        version: '1.0.0',
+        main: 'index.js',
+        dependencies: {
+          uuid: '9.0.1',
+          'zapier-platform-core': corePackage.path,
+        },
+      }),
+    );
+
+    runCommand('npm', ['install'], { cwd: tmpDir });
+    entryPoint = path.resolve(tmpDir, 'index.js');
+  });
+
+  after(() => {
+    fs.removeSync(tmpDir);
+    corePackage.cleanup();
+  });
+
+  it('should list both CJS and ESM paths in dumbPaths', async function () {
+    const dumbPaths = await build.listFiles(tmpDir);
+
+    // dumbPaths should contain both CJS and ESM paths since it's just listing all files
+    dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
+    dumbPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js'); // ESM path
+  });
+
+  it('should only include CJS paths in smartPaths', async function () {
+    const smartPaths = await build.requiredFiles({
+      cwd: tmpDir,
+      entryPoints: [entryPoint],
+    });
+
+    // For CJS app, smartPaths should only contain CJS paths
+    smartPaths.should.containEql('node_modules/uuid/dist/index.js');
+    smartPaths.should.not.containEql(
+      'node_modules/uuid/dist/esm-node/index.js',
+    );
+  });
+});
+
+describe('build hybrid packages in ESM app', function () {
+  let tmpDir, entryPoint, corePackage;
+
+  before(async () => {
+    tmpDir = getNewTempDirPath();
+
+    // Create a basic ESM app that uses uuid
+    fs.outputFileSync(
+      path.join(tmpDir, 'index.js'),
+      `import { v4 as uuidv4 } from 'uuid';
+export default {
+  version: '1.0.0',
+  triggers: {
+    test: {
+      operation: {
+        perform: () => {
+          return [{id: uuidv4()}];
+        }
+      }
+    }
+  }
+};`,
+    );
+
+    // Create package.json
+    corePackage = await npmPackCore();
+    fs.outputFileSync(
+      path.join(tmpDir, 'package.json'),
+      JSON.stringify({
+        name: 'esm-uuid-test',
+        version: '1.0.0',
+        exports: {
+          import: './index.js',
+        },
+        type: 'module',
+        dependencies: {
+          uuid: '9.0.1',
+          'zapier-platform-core': corePackage.path,
+        },
+      }),
+    );
+
+    runCommand('npm', ['install'], { cwd: tmpDir });
+    entryPoint = path.resolve(tmpDir, 'index.js');
+  });
+
+  after(() => {
+    fs.removeSync(tmpDir);
+    corePackage.cleanup();
+  });
+
+  it('should list both CJS and ESM paths in dumbPaths', async function () {
+    const dumbPaths = await build.listFiles(tmpDir);
+
+    // dumbPaths should contain both CJS and ESM paths since it's just listing all files
+    dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
+    dumbPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js'); // ESM path
+  });
+
+  it('should only include ESM paths in smartPaths', async function () {
+    const smartPaths = await build.requiredFiles({
+      cwd: tmpDir,
+      entryPoints: [entryPoint],
+    });
+
+    // For ESM app, smartPaths should only contain ESM paths
+    smartPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js');
+    smartPaths.should.not.containEql('node_modules/uuid/dist/index.js');
+  });
+});
