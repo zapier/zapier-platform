@@ -62,6 +62,11 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     logLevel: 'warning',
     external: ['../test/userapp'],
     format: 'esm',
+    // excluding 'module' condition like this breaks the build for hybrid packages (like uuid) in ESM apps
+    // but fixes it for CJS apps, which otherwise would include the ESM version of the package
+    conditions: ['import', 'require'],
+    // could we use the mainFields option to fix this instead?
+    mainFields: ['main', 'exports'],
     write: false, // no need to write outfile
     absWorkingDir: cwd,
     tsconfigRaw: '{}',
@@ -178,6 +183,19 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
     requiredFiles({ cwd: dir, entryPoints }),
     getLinkedAppConfig(dir).catch(() => ({})),
   ]);
+
+  const uuidDumbPaths = dumbPaths.filter((path) =>
+    path.startsWith('node_modules/uuid'),
+  );
+  if (uuidDumbPaths.length > 0) {
+    console.log('Found uuid module paths:', uuidDumbPaths);
+  }
+  const uuidSmartPaths = smartPaths.filter((path) =>
+    path.startsWith('node_modules/uuid'),
+  );
+  if (uuidSmartPaths.length > 0) {
+    console.log('Found uuid module paths:', uuidSmartPaths);
+  }
 
   if (disableDependencyDetection) {
     paths = dumbPaths;
