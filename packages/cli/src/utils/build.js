@@ -55,9 +55,12 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
 
   const appPackageJson = require(path.join(cwd, 'package.json'));
   const isESM = appPackageJson.type === 'module';
-  // include 'module' condition if the app is an ESM app (PDE-6187)
+  // Only include 'module' condition if the app is an ESM app (PDE-6187)
   // otherwise exclude 'module' since it breaks the build for hybrid packages (like uuid)
-  // in CJS apps by only including ESM version of packages
+  // in CJS apps by only including ESM version of packages.
+  // An empty list is necessary because otherwise if `platform: node` is specified,
+  // the 'module' condition is included by default.
+  // https://esbuild.github.io/api/#conditions
   const conditions = isESM ? ['module'] : [];
   const format = isESM ? 'esm' : 'cjs';
 
