@@ -58,9 +58,7 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
   // include 'module' condition if the app is an ESM app (PDE-6187)
   // otherwise exclude 'module' since it breaks the build for hybrid packages (like uuid)
   // in CJS apps by only including ESM version of packages
-  const conditions = isESM
-    ? ['import', 'require', 'module']
-    : ['import', 'require'];
+  const conditions = isESM ? ['module'] : [];
   const format = isESM ? 'esm' : 'cjs';
 
   const result = await esbuild.build({
