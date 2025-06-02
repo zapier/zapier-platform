@@ -117,6 +117,14 @@ describe('build (runs slowly)', function () {
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
     fs.outputFileSync(path.join(tmpProjectDir, '.zapierapprc'), '{}');
+    fs.outputFileSync(
+      path.join(tmpProjectDir, 'package.json'),
+      JSON.stringify({
+        name: 'test',
+        version: '1.0.0',
+        main: 'index.js',
+      }),
+    );
     fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
@@ -125,7 +133,7 @@ describe('build (runs slowly)', function () {
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
       .then((files) => {
-        files.length.should.equal(2);
+        files.length.should.equal(3);
 
         const indexFile = files.find(
           ({ path: filePath }) => filePath === 'index.js',
@@ -158,6 +166,14 @@ describe('build (runs slowly)', function () {
     );
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
+    fs.outputFileSync(
+      path.join(tmpProjectDir, 'package.json'),
+      JSON.stringify({
+        name: 'test',
+        version: '1.0.0',
+        main: 'index.js',
+      }),
+    );
     fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
@@ -166,7 +182,7 @@ describe('build (runs slowly)', function () {
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
       .then((files) => {
-        files.length.should.equal(2);
+        files.length.should.equal(3);
 
         const indexFile = files.find(
           ({ path: filePath }) => filePath === 'index.js',
@@ -640,6 +656,15 @@ describe('build ESM (runs slowly)', function () {
     fs.outputFileSync(tmpIndexPath, "console.log('hello!')");
     fs.chmodSync(tmpIndexPath, 0o700);
     fs.outputFileSync(path.join(tmpProjectDir, '.zapierapprc'), '{}');
+    fs.outputFileSync(
+      path.join(tmpProjectDir, 'package.json'),
+      JSON.stringify({
+        name: 'test',
+        version: '1.0.0',
+        main: 'index.js',
+        type: 'module',
+      }),
+    );
     fs.ensureDirSync(path.dirname(tmpZipPath));
 
     global.argOpts = {};
@@ -648,7 +673,7 @@ describe('build ESM (runs slowly)', function () {
       .makeZip(tmpProjectDir, tmpZipPath)
       .then(() => decompress(tmpZipPath, tmpUnzipPath))
       .then((files) => {
-        files.length.should.equal(2);
+        files.length.should.equal(3);
 
         const indexFile = files.find(
           ({ path: filePath }) => filePath === 'index.js',

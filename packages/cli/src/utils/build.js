@@ -61,6 +61,7 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
   const conditions = isESM
     ? ['import', 'require', 'module']
     : ['import', 'require'];
+  const format = isESM ? 'esm' : 'cjs';
 
   const result = await esbuild.build({
     entryPoints,
@@ -70,7 +71,7 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     metafile: true,
     logLevel: 'warning',
     external: ['../test/userapp'],
-    format: 'esm',
+    format,
     conditions,
     write: false, // no need to write outfile
     absWorkingDir: cwd,
