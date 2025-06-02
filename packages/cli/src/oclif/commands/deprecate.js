@@ -6,10 +6,11 @@ const colors = require('colors/safe');
 const { callAPI, getSpecificVersionInfo } = require('../../utils/api');
 
 const DEPRECATION_REASONS = [
-  { name: 'API shutdown', value: 'api_shutdown' },
-  { name: 'Security vulnerability', value: 'security_vulnerability' },
-  { name: 'Critical bug', value: 'critical_bug' },
-  { name: 'Legal requirement', value: 'legal_requirement' },
+  { name: 'API shutdown', value: 'api shutdown' },
+  { name: 'Security vulnerability', value: 'security vulnerability' },
+  { name: 'Critical bug', value: 'critical bug' },
+  { name: 'Legal requirement', value: 'legal requirement' },
+  { name: 'Breaking change', value: 'breaking change' },
   { name: 'Other', value: 'other' },
 ];
 
@@ -47,6 +48,19 @@ class DeprecateCommand extends BaseCommand {
       }
     }
 
+    let customReason = null;
+    if (deprecationReason === 'other') {
+      customReason = await this.prompt(
+        'Please provide a brief user-facing reason (50 characters max):',
+        {
+          required: true,
+          charLimit: 50,
+          useStderr: true,
+        },
+      );
+      customReason = 'other: ' + customReason;
+    }
+
     if (
       !this.flags.force &&
       !(await this.confirm(
@@ -61,15 +75,16 @@ class DeprecateCommand extends BaseCommand {
     }
 
     this.log(
-      `\nPreparing to deprecate version ${version} your app "${app.title}" due to: ${DEPRECATION_REASONS.find((r) => r.value === deprecationReason)?.name}.\n`,
+      `\nPreparing to deprecate version ${version} your app "${app.title}" due to: ${customReason || DEPRECATION_REASONS.find((r) => r.value === deprecationReason)?.name}.\n`,
     );
+
     const url = `/apps/${app.id}/versions/${version}/deprecate`;
     this.startSpinner(`Deprecating ${version}`);
     await callAPI(url, {
       method: 'PUT',
       body: {
         deprecation_date: date,
-        deprecation_reason: deprecationReason,
+        deprecation_reason: customReason || deprecationReason,
       },
     });
     this.stopSpinner();
@@ -88,13 +103,7 @@ DeprecateCommand.flags = buildFlags({
     reason: Flags.string({
       char: 'r',
       description: 'Reason for deprecation.',
-      options: [
-        'api_shutdown',
-        'security_vulnerability',
-        'critical_bug',
-        'legal_requirement',
-        'other',
-      ],
+      options: DEPRECATION_REASONS.map((r) => r.value),
     }),
   },
 });

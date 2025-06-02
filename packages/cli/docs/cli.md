@@ -183,7 +183,7 @@ Do not use deprecation if you only have non-breaking changes, such as:
 
 **Flags**
 * `-f, --force` | Skip confirmation prompt. Use with caution.
-* `-r, --reason` | Reason for deprecation. One of `[api_shutdown | security_vulnerability | critical_bug | legal_requirement | other]`.
+* `-r, --reason` | Reason for deprecation. One of `[api shutdown | security vulnerability | critical bug | legal requirement | breaking change | other]`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
