@@ -128,11 +128,7 @@ DeprecateCommand.description = `Mark a non-production version of your integratio
 Use this when an integration version will not be supported or start breaking at a known date.
 
 When deprecating a version, you must provide a reason for the deprecation. You can either specify the reason using the --reason flag or you will be prompted to select from the following options:
-- API shutdown
-- Security vulnerability  
-- Critical bug
-- Legal requirement
-- Other
+${DEPRECATION_REASONS.map((r) => `- ${r.name}`).join('\n')}
 
 Zapier will immediately send emails warning users of the deprecation if a date less than 30 days in the future is set, otherwise the emails will be sent exactly 30 days before the configured deprecation date.
 
