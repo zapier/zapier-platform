@@ -1,3 +1,19 @@
+## 17.0.4
+
+_released `2025-06-03`_
+
+### cli
+
+- :bug: Fix "Cannot find module..." error after running `zapier build` on a CJS integration using hybrid packages([#1046](https://github.com/zapier/zapier-platform/pull/1046))
+
+### core
+
+None!
+
+### schema
+
+None!
+
 ## 17.0.3
 
 _released `2025-05-30`_
