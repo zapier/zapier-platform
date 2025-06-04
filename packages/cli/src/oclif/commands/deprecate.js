@@ -6,11 +6,10 @@ const colors = require('colors/safe');
 const { callAPI, getSpecificVersionInfo } = require('../../utils/api');
 
 const DEPRECATION_REASONS = [
-  { name: 'API shutdown', value: 'api shutdown' },
+  { name: 'API endpoint deprecated', value: 'api endpoint deprecated' },
   { name: 'Security vulnerability', value: 'security vulnerability' },
   { name: 'Critical bug', value: 'critical bug' },
   { name: 'Legal requirement', value: 'legal requirement' },
-  { name: 'Breaking change', value: 'breaking change' },
   { name: 'Other', value: 'other' },
 ];
 

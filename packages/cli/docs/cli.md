@@ -101,6 +101,28 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * `zapier canary:list`
 
 
+## canary:status
+
+> Show detailed status and metrics for active canary deployments
+
+**Usage**: `zapier canary:status`
+
+**Flags**
+* `-d, --debug` | Show extra debugging output.
+* `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
+* `-w, --window` | Time window for metrics One of `[5m | 15m | 30m | 1h]`. Defaults to `15m`.
+* `--watch` | Watch mode - continuously refresh the status
+* `-i, --interval` | Refresh interval in seconds (minimum 5)  Defaults to `30`.
+
+**Examples**
+* `zapier canary:status`
+* `zapier canary:status my-app-id`
+* `zapier canary:status --window 30m`
+* `zapier canary:status --watch`
+* `zapier canary:status --watch --interval 10`
+* `zapier canary:status --format json`
+
+
 ## convert
 
 > Convert a Visual Builder integration to a CLI integration.
@@ -161,11 +183,10 @@ This only works if there are no users or Zaps on that version. You will probably
 Use this when an integration version will not be supported or start breaking at a known date.
 
 When deprecating a version, you must provide a reason for the deprecation. You can either specify the reason using the --reason flag or you will be prompted to select from the following options:
-- API shutdown
+- API endpoint deprecated
 - Security vulnerability
 - Critical bug
 - Legal requirement
-- Breaking change
 - Other
 
 Zapier will immediately send emails warning users of the deprecation if a date less than 30 days in the future is set, otherwise the emails will be sent exactly 30 days before the configured deprecation date.
@@ -184,7 +205,7 @@ Do not use deprecation if you only have non-breaking changes, such as:
 
 **Flags**
 * `-f, --force` | Skip confirmation prompt. Use with caution.
-* `-r, --reason` | Reason for deprecation. One of `[api shutdown | security vulnerability | critical bug | legal requirement | breaking change | other]`.
+* `-r, --reason` | Reason for deprecation. One of `[api endpoint deprecated | security vulnerability | critical bug | legal requirement | other]`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
