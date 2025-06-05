@@ -21,9 +21,9 @@ const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
 };
 
 /**
- * Decrypt a Fernet-encrypted bundle using ultra-simple approach with proper Fernet library.
+ * Decrypt a bundle using secret key
  *
- * This matches the Python backend ultra-simple implementation:
+ * This matches the backend implementation:
  * 1. Hash the secret with SHA256 to get 32 bytes
  * 2. Base64url encode those bytes to make Fernet-compatible key
  * 3. Use Fernet library to decrypt (handles all token parsing internally)
@@ -43,10 +43,10 @@ const decryptBundleWithSecret = (fernetToken, secret) => {
       throw new Error('Invalid secret - must be a non-empty string');
     }
 
-    // Create the same key as Python backend (ultra-simple approach)
+    // Create the same key as backend
     // Hash the secret and take first 32 bytes, then base64url encode for Fernet
     const keyHash = crypto.createHash('sha256').update(secret).digest();
-    const keyBytes = keyHash.subarray(0, 32); // Take first 32 bytes
+    const keyBytes = keyHash.subarray(0, 32);
     const fernetKey = keyBytes.toString('base64url'); // Use built-in base64url encoding
 
     // Use Fernet library to decrypt (handles all the token parsing)
