@@ -1,3 +1,5 @@
+const fs = require('node:fs/promises');
+
 const { Args, Flags } = require('@oclif/core');
 
 const BaseCommand = require('../ZapierBaseCommand');
@@ -8,9 +10,40 @@ const { convertApp } = require('../../utils/convert');
 const { isExistingEmptyDir } = require('../../utils/files');
 const { initApp } = require('../../utils/init');
 
+const readStream = async (stream) => {
+  const chunks = [];
+  for await (const chunk of stream) {
+    chunks.push(chunk);
+  }
+  return chunks.join('');
+};
+
 class ConvertCommand extends BaseCommand {
-  generateCreateFunc(appId, version) {
+  generateCreateFunc(appId, version, json, title, description) {
     return async (tempAppDir) => {
+      if (json) {
+        const appInfo = {
+          title,
+          description,
+        };
+
+        let parsedDefinition = json;
+        if (parsedDefinition.startsWith('@')) {
+          const filePath = parsedDefinition.substr(1);
+          let definitionStream;
+          if (filePath === '-') {
+            definitionStream = process.stdin;
+          } else {
+            const fd = await fs.open(filePath);
+            definitionStream = fd.createReadStream({ encoding: 'utf8' });
+          }
+          parsedDefinition = await readStream(definitionStream);
+        }
+        parsedDefinition = JSON.parse(parsedDefinition);
+
+        return convertApp(appInfo, parsedDefinition, tempAppDir);
+      }
+
       // has info about the app, such as title
       // has a CLI version of the actual app implementation
       this.throwForInvalidVersion(version);
@@ -41,13 +74,14 @@ class ConvertCommand extends BaseCommand {
   }
 
   async perform() {
-    const { integrationId: appId, path } = this.args;
-    const { version } = this.flags;
-    if (!appId) {
-      this.error(
-        'You must provide an integrationId. See zapier convert --help for more info.',
-      );
-    }
+    const { path } = this.args;
+    const {
+      integrationId: appId,
+      version,
+      json,
+      title,
+      description,
+    } = this.flags;
 
     if (
       (await isExistingEmptyDir(path)) &&
@@ -56,16 +90,18 @@ class ConvertCommand extends BaseCommand {
       this.exit();
     }
 
-    await initApp(path, this.generateCreateFunc(appId, version));
+    if (!appId && !json) {
+      this.error('You must provide either an integrationId or json.');
+    }
+
+    await initApp(
+      path,
+      this.generateCreateFunc(appId, version, json, title, description),
+    );
   }
 }
 
 ConvertCommand.args = {
-  integrationId: Args.string({
-    description: `To get the integration/app ID, go to "https://developer.zapier.com", click on an integration, and copy the number directly after "/app/" in the URL.`,
-    required: true,
-    parse: (input) => Number(input),
-  }),
   path: Args.string({
     description:
       'Relative to your current path - IE: `.` for current directory.',
@@ -75,11 +111,41 @@ ConvertCommand.args = {
 
 ConvertCommand.flags = buildFlags({
   commandFlags: {
+    integrationId: Args.string({
+      char: 'i',
+      description: `To get the integration/app ID, go to "https://developer.zapier.com", click on an integration, and copy the number directly after "/app/" in the URL.`,
+      required: false,
+      dependsOn: ['version'],
+      exclusive: ['definition'],
+      parse: (input) => Number(input),
+    }),
     version: Flags.string({
       char: 'v',
       description:
         'Convert a specific version. Required when converting a Visual Builder integration.',
-      required: true,
+      required: false,
+      dependsOn: ['integrationId'],
+    }),
+    json: Flags.string({
+      char: 'j',
+      description:
+        'The JSON definition to use, as alternative for reading from a Visual Builder integration. Must be a JSON-encoded object. The data can be passed from the command directly like \'{"key": "value"}\', read from a file like @file.json, or read from stdin like @-.',
+      required: false,
+      exclusive: ['integrationId'],
+    }),
+    title: Flags.string({
+      char: 't',
+      description:
+        'The integration title, which will be snake-cased for the package.json name.',
+      required: false,
+      dependsOn: ['json'],
+    }),
+    description: Flags.string({
+      char: 'd',
+      description:
+        'The integration description, which will be used for the package.json description.',
+      required: false,
+      dependsOn: ['json'],
     }),
   },
 });

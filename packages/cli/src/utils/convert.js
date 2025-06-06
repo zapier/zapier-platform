@@ -101,7 +101,7 @@ const getAuthFieldKeys = (appDefinition) => {
 
 const renderPackageJson = async (appInfo, appDefinition) => {
   const name = _.kebabCase(
-    appInfo.title || _.get(appInfo, ['general', 'title']),
+    appInfo.title || _.get(appInfo, ['general', 'title']) || '',
   );
 
   // Not using escapeSpecialChars because we don't want to escape single quotes (not
@@ -366,10 +366,10 @@ const writeGitIgnore = async (newAppDir) => {
 };
 
 const writeZapierAppRc = async (appInfo, appDefinition, newAppDir) => {
-  const json = {};
-  if (appInfo.id) {
-    json.id = appInfo.id;
+  if (!appInfo.id) {
+    return;
   }
+  const json = { id: appInfo.id };
   if (appInfo.key) {
     json.key = appInfo.key;
   }
