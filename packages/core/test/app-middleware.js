@@ -1,5 +1,6 @@
 'use strict';
 const should = require('should');
+const nock = require('nock');
 
 const createApp = require('../src/create-app');
 const createInput = require('../src/tools/create-input');
@@ -9,8 +10,12 @@ const {
   makeRpc,
   mockRpcGetPresignedPostCall,
   mockUpload,
+  mockRpcCall,
 } = require('./tools/mocky');
 const exampleAppDefinition = require('./userapp');
+const fetchStashedBundle = require('../src/app-middlewares/before/fetch-stashed-bundle');
+const crypto = require('crypto');
+const fernet = require('fernet');
 
 describe('app middleware', () => {
   const createTestInput = (method, appDefinition) => {
@@ -195,6 +200,140 @@ describe('app middleware', () => {
 
       const bigOutput = app(bigInputCall);
       bigOutput.should.not.have.property('resultsUrl');
+    });
+  });
+
+  describe('fetchStashedBundle', () => {
+    beforeEach(() => {
+      // Reset all nock interceptors
+      nock.cleanAll();
+      // Clear environment variable
+      delete process.env._ZAPIER_ONE_TIME_SECRET;
+    });
+
+    afterEach(() => {
+      // Clean up environment variable
+      delete process.env._ZAPIER_ONE_TIME_SECRET;
+    });
+
+    it('should return input unchanged if stashedBundleKey is not present', async () => {
+      const input = createTestInput('some.method', exampleAppDefinition);
+      const output = await fetchStashedBundle(input);
+      output.should.equal(input);
+    });
+
+    it('should return input unchanged if secret is not present', async () => {
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      // No secret set in environment
+      const output = await fetchStashedBundle(input);
+      output.should.equal(input);
+    });
+
+    it('should decrypt and set the stashed bundle if data is encrypted', async () => {
+      const testSecret = 'test-secret-key';
+      const testData = { encrypted: 'data', key: 'value' };
+
+      // Set up environment variable
+      process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
+
+      // Create Fernet key same way as the function does
+      const keyHash = crypto.createHash('sha256').update(testSecret).digest();
+      const keyBytes = keyHash.subarray(0, 32);
+      const fernetKey = keyBytes.toString('base64url');
+
+      // Create encrypted token
+      const secret = new fernet.Secret(fernetKey);
+      const token = new fernet.Token({
+        secret: secret,
+        token: '',
+        ttl: 0,
+      });
+      const encryptedToken = token.encode(JSON.stringify(testData));
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
+
+      // Set up nock to return encrypted data
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, encryptedToken);
+
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      input._zapier.rpc = rpc;
+
+      const output = await fetchStashedBundle(input);
+      output._zapier.event.bundle.should.eql(testData);
+    });
+
+    it('should throw an error if fetch fails', async () => {
+      process.env._ZAPIER_ONE_TIME_SECRET = 'test-secret';
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
+
+      // Set up nock to intercept the fetch request and simulate a failure
+      nock(FAKE_S3_URL).get('/some-key/').reply(500);
+
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      input._zapier.rpc = rpc;
+
+      await fetchStashedBundle(input).should.be.rejectedWith(
+        'Failed to read stashed bundle from S3.',
+      );
+    });
+
+    it('should throw an error if decryption fails', async () => {
+      process.env._ZAPIER_ONE_TIME_SECRET = 'test-secret';
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
+
+      // Set up nock to return invalid encrypted data
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, 'invalid-encrypted-data');
+
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      input._zapier.rpc = rpc;
+
+      await fetchStashedBundle(input).should.be.rejectedWith(
+        /Bundle decryption failed/,
+      );
+    });
+
+    it('should throw an error if decrypted data is not valid JSON', async () => {
+      const testSecret = 'test-secret-key';
+
+      // Set up environment variable
+      process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
+
+      // Create Fernet key same way as the function does
+      const keyHash = crypto.createHash('sha256').update(testSecret).digest();
+      const keyBytes = keyHash.subarray(0, 32);
+      const fernetKey = keyBytes.toString('base64url');
+
+      // Create encrypted token with invalid JSON
+      const secret = new fernet.Secret(fernetKey);
+      const token = new fernet.Token({
+        secret: secret,
+        token: '',
+        ttl: 0,
+      });
+      const encryptedToken = token.encode('invalid json data');
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
+
+      // Set up nock to return encrypted invalid JSON
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, encryptedToken);
+
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      input._zapier.rpc = rpc;
+
+      await fetchStashedBundle(input).should.be.rejectedWith(
+        /Invalid JSON in decrypted bundle/,
+      );
     });
   });
 });
