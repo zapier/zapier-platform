@@ -28,9 +28,9 @@ const createApp = (appRaw) => {
 
   // standard before middlewares
   const befores = [
+    fetchStashedBundle,
     addAppContext,
     injectZObject,
-    fetchStashedBundle,
     ...ensureArray(frozenCompiledApp.beforeApp),
   ];
 
