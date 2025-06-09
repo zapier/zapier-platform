@@ -1,3 +1,20 @@
+## 17.1.0
+
+_released `2025-06-10`_
+
+### cli
+
+- :tada: `zapier convert` now accepts an app definition via the `--json` flag ([#1048](https://github.com/zapier/zapier-platform/pull/1048))
+- :nail_care: `zapier deprecate` now prompts for deprecation reason ([#1045](https://github.com/zapier/zapier-platform/pull/1045))
+
+### core
+
+None!
+
+### schema
+
+None!
+
 ## 17.0.4
 
 _released `2025-06-03`_
