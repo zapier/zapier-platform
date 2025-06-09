@@ -11,7 +11,6 @@ const klaw = require('klaw');
 const updateNotifier = require('update-notifier');
 const colors = require('colors/safe');
 const semver = require('semver');
-const { minimatch } = require('minimatch');
 
 const {
   constants: { Z_BEST_COMPRESSION },
@@ -39,7 +38,7 @@ const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
 const checkMissingAppInfo = require('./check-missing-app-info');
 
-const { runCommand, isWindows, findCorePackageDir } = require('./misc');
+const { runCommand } = require('./misc');
 const { respectGitIgnore } = require('./ignore');
 const { localAppCommand } = require('./local');
 
@@ -266,26 +265,6 @@ const maybeRunBuildScript = async (options = {}) => {
       endSpinner();
     }
   }
-};
-
-// Get `workspaces` from root package.json and convert them to absolute paths.
-// Returns an empty array if package.json can't be found.
-const listWorkspaces = (workspaceRoot) => {
-  const packageJsonPath = path.join(workspaceRoot, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return [];
-  }
-
-  let packageJson;
-  try {
-    packageJson = require(packageJsonPath);
-  } catch (err) {
-    return [];
-  }
-
-  return (packageJson.workspaces || []).map((relpath) =>
-    path.resolve(workspaceRoot, relpath),
-  );
 };
 
 const _buildFunc = async ({
