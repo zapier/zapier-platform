@@ -178,10 +178,12 @@ describe('RegisterCommand', () => {
         .reply(201, exportedApp);
     }
 
-    fs.writeFileSync(
-      APP_RC_FILE,
-      `{"id":${privateApp.id},"key":"App${privateApp.id}"}`,
-    );
+    beforeEach(function () {
+      fs.writeFileSync(
+        APP_RC_FILE,
+        `{"id":${privateApp.id},"key":"App${privateApp.id}"}`,
+      );
+    });
 
     it('zapier register should successfully register an app with all data provided', async function () {
       setup();

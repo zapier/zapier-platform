@@ -127,7 +127,7 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 
 > Convert a Visual Builder integration to a CLI integration.
 
-**Usage**: `zapier convert INTEGRATIONID PATH`
+**Usage**: `zapier convert PATH`
 
 The resulting CLI integration will be identical to its Visual Builder version and ready to push and use immediately!
 
@@ -136,11 +136,14 @@ If you re-run this command on an existing directory it will leave existing files
 You'll need to do a `zapier push` before the new version is visible in the editor, but otherwise you're good to go.
 
 **Arguments**
-* (required) `integrationId` | To get the integration/app ID, go to "https://developer.zapier.com", click on an integration, and copy the number directly after "/app/" in the URL.
 * (required) `path` | Relative to your current path - IE: `.` for current directory.
 
 **Flags**
-* (required) `-v, --version` | Convert a specific version. Required when converting a Visual Builder integration.
+* `-i, --integrationId` | To get the integration/app ID, go to "https://developer.zapier.com", click on an integration, and copy the number directly after "/app/" in the URL.
+* `-v, --version` | Convert a specific version. Required when converting a Visual Builder integration.
+* `-j, --json` | The JSON definition to use, as alternative for reading from a Visual Builder integration. Must be a JSON-encoded object. The data can be passed from the command directly like '{"key": "value"}', read from a file like @file.json, or read from stdin like @-.
+* `-t, --title` | The integration title, which will be snake-cased for the package.json name.
+* `-d, --description` | The integration description, which will be used for the package.json description.
 * `-d, --debug` | Show extra debugging output.
 
 

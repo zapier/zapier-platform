@@ -464,4 +464,164 @@ describe('convert', () => {
       should(createFile.includes("[{ source: 'not a function' }]")).be.true();
     });
   });
+
+  describe('JSON definition conversion', () => {
+    it('should convert from JSON definition with custom title and description', async () => {
+      const appInfo = {
+        title: 'My Custom App',
+        description: 'A custom app for testing',
+      };
+
+      // Use a definition without a version to test the default behavior
+      const customDefinition = {
+        platformVersion: '8.0.1',
+        triggers: {
+          simple_trigger: {
+            operation: {
+              perform: {
+                url: 'https://api.example.com/items',
+                method: 'GET',
+              },
+            },
+            noun: 'Item',
+            display: {
+              label: 'New Item',
+              description: 'Triggers when a new item is created',
+            },
+            key: 'simple_trigger',
+          },
+        },
+      };
+
+      await convertApp(appInfo, customDefinition, tempAppDir);
+
+      // Check package.json uses custom title and description
+      const pkg = require(path.join(tempAppDir, 'package.json'));
+      should(pkg.name).eql('my-custom-app');
+      should(pkg.description).eql('A custom app for testing');
+      should(pkg.version).eql('1.0.0'); // no version bump since this is new
+
+      // Should not create .zapierapprc when no app ID provided
+      const rcExists = fs.existsSync(path.join(tempAppDir, '.zapierapprc'));
+      should(rcExists).be.false();
+
+      // All other files should still be created
+      [
+        '.gitignore',
+        '.env',
+        'package.json',
+        'index.js',
+        'triggers/simple_trigger.js',
+        'test/triggers/simple_trigger.test.js',
+      ].forEach((filename) => {
+        const filepath = path.join(tempAppDir, filename);
+        fs.existsSync(filepath).should.be.true(`failed to create ${filename}`);
+      });
+    });
+
+    it('should handle empty title gracefully', async () => {
+      const appInfo = {
+        title: '',
+        description: 'App with no title',
+      };
+
+      await convertApp(appInfo, visualAppDefinition, tempAppDir);
+
+      const pkg = require(path.join(tempAppDir, 'package.json'));
+      should(pkg.name).eql(''); // kebab-case of empty string is empty string
+      should(pkg.description).eql('App with no title');
+    });
+
+    it('should handle undefined title gracefully', async () => {
+      const appInfo = {
+        description: 'App with undefined title',
+      };
+
+      await convertApp(appInfo, visualAppDefinition, tempAppDir);
+
+      const pkg = require(path.join(tempAppDir, 'package.json'));
+      should(pkg.name).eql('');
+      should(pkg.description).eql('App with undefined title');
+    });
+
+    it('should handle minimal app info', async () => {
+      const appInfo = {};
+      const minimalDefinition = {
+        platformVersion: '8.0.1',
+        triggers: {
+          simple_trigger: {
+            operation: {
+              perform: {
+                url: 'https://api.example.com/items',
+                method: 'GET',
+              },
+            },
+            noun: 'Item',
+            display: {
+              label: 'New Item',
+              description: 'Triggers when a new item is created',
+            },
+            key: 'simple_trigger',
+          },
+        },
+      };
+
+      await convertApp(appInfo, minimalDefinition, tempAppDir);
+
+      const pkg = require(path.join(tempAppDir, 'package.json'));
+      should(pkg.name).eql('');
+      should(pkg.version).eql('1.0.0');
+
+      // Should not create .zapierapprc
+      const rcExists = fs.existsSync(path.join(tempAppDir, '.zapierapprc'));
+      should(rcExists).be.false();
+
+      // Should create basic files
+      const triggerExists = fs.existsSync(
+        path.join(tempAppDir, 'triggers/simple_trigger.js'),
+      );
+      should(triggerExists).be.true();
+    });
+  });
+
+  describe('.zapierapprc creation', () => {
+    it('should not create .zapierapprc when appInfo has no id', async () => {
+      const appInfo = {
+        title: 'Test App',
+        key: 'some-key', // key without id should not create file
+      };
+
+      await convertApp(appInfo, visualAppDefinition, tempAppDir);
+
+      const rcExists = fs.existsSync(path.join(tempAppDir, '.zapierapprc'));
+      should(rcExists).be.false();
+    });
+
+    it('should create .zapierapprc with only id when no key provided', async () => {
+      const appInfo = {
+        id: 12345,
+        title: 'Test App',
+      };
+
+      await convertApp(appInfo, visualAppDefinition, tempAppDir);
+
+      const rcFile = JSON.parse(readTempFile('.zapierapprc'));
+      should(rcFile.id).eql(12345);
+      should(rcFile.key).be.undefined();
+    });
+
+    it('should create .zapierapprc with both id and key', async () => {
+      const appInfo = {
+        id: 12345,
+        key: 'TestApp12345',
+        title: 'Test App',
+      };
+
+      await convertApp(appInfo, visualAppDefinition, tempAppDir);
+
+      const rcFile = JSON.parse(readTempFile('.zapierapprc'));
+      should(rcFile.id).eql(12345);
+      should(rcFile.key).eql('TestApp12345');
+    });
+  });
 });
