@@ -23,7 +23,8 @@ const fetchStashedBundle = async (input) => {
     const s3Url = s3UrlResponse.url;
     const response = await withRetry(() => fetch(s3Url));
     if (!response.ok) {
-      throw new StashedBundleError('Failed to read stashed bundle from S3.');
+      const errorMessage = `Failed to read stashed bundle from S3. Status: ${response.status} ${response.statusText}`;
+      throw new StashedBundleError(errorMessage);
     }
 
     try {
