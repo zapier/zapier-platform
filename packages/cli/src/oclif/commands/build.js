@@ -8,6 +8,7 @@ const {
 } = require('../../constants');
 
 const { buildAndOrUpload } = require('../../utils/build');
+const colors = require('colors/safe');
 
 class BuildCommand extends BaseCommand {
   async perform() {
@@ -21,7 +22,8 @@ class BuildCommand extends BaseCommand {
     );
 
     this.log(
-      `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}. Try the \`zapier upload\` command now.`,
+      `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}.\n` +
+        `Now you can upload them with the ${colors.bold.underline('zapier upload')} command.`,
     );
   }
 }

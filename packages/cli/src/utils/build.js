@@ -1,11 +1,11 @@
-const crypto = require('crypto');
-const os = require('os');
-const path = require('path');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
 const _ = require('lodash');
 const archiver = require('archiver');
 const esbuild = require('esbuild');
-const fs = require('fs');
 const fse = require('fs-extra');
 const klaw = require('klaw');
 const updateNotifier = require('update-notifier');
@@ -19,7 +19,7 @@ const {
 
 const constants = require('../constants');
 
-const { writeFile, copyDir, ensureDir, removeDir } = require('./files');
+const { copyDir } = require('./files');
 
 const {
   prettyJSONstringify,
@@ -35,7 +35,7 @@ const {
   validateApp,
 } = require('./api');
 
-const { copyZapierWrapper } = require('./zapierwrapper');
+const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
 const checkMissingAppInfo = require('./check-missing-app-info');
 
@@ -71,7 +71,12 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     platform: 'node',
     metafile: true,
     logLevel: 'warning',
-    external: ['../test/userapp'],
+    external: [
+      '../test/userapp',
+      'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
+      './request-worker', // appears in zapier-platform-legacy-scripting-runner/zfactory.js
+      './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
+    ],
     format,
     conditions,
     write: false, // no need to write outfile
@@ -290,95 +295,61 @@ const _buildFunc = async ({
   printProgress = true,
   checkOutdated = true,
 } = {}) => {
-  const zipPath = constants.BUILD_PATH;
-  const sourceZipPath = constants.SOURCE_PATH;
-  const wdir = process.cwd();
-
-  const osTmpDir = await fse.realpath(os.tmpdir());
-  const tmpDir = path.join(
-    osTmpDir,
-    'zapier-' + crypto.randomBytes(4).toString('hex'),
-  );
-  debug('Using temp directory: ', tmpDir);
-
   if (checkOutdated) {
     maybeNotifyAboutOutdated();
+  }
+
+  const zipPath = constants.BUILD_PATH;
+  const sourceZipPath = constants.SOURCE_PATH;
+  const appDir = process.cwd();
+
+  let workingDir;
+  if (skipNpmInstall) {
+    workingDir = appDir;
+    debug('Building in app directory: ', workingDir);
+  } else {
+    const osTmpDir = await fse.realpath(os.tmpdir());
+    workingDir = path.join(
+      osTmpDir,
+      'zapier-' + crypto.randomBytes(4).toString('hex'),
+    );
+    debug('Building in temp directory: ', workingDir);
   }
 
   await maybeRunBuildScript();
 
   // make sure our directories are there
-  await ensureDir(tmpDir);
-  await ensureDir(constants.BUILD_DIR);
+  await fse.ensureDir(workingDir);
+  await fse.ensureDir(constants.BUILD_DIR);
 
-  if (printProgress) {
-    startSpinner('Copying project to temp directory');
-  }
+  const corePath = path.join(
+    workingDir,
+    'node_modules',
+    constants.PLATFORM_PACKAGE,
+  );
 
-  const copyFilter = skipNpmInstall
-    ? (src) => !src.endsWith('.zip')
-    : undefined;
-
-  await copyDir(wdir, tmpDir, { filter: copyFilter });
-
-  if (skipNpmInstall) {
-    const corePackageDir = findCorePackageDir();
-    const nodeModulesDir = path.dirname(corePackageDir);
-    const workspaceRoot = path.dirname(nodeModulesDir);
-    if (wdir !== workspaceRoot) {
-      // If we're in here, it means the user is using npm/yarn workspaces
-      const workspaces = listWorkspaces(workspaceRoot);
-
-      await copyDir(nodeModulesDir, path.join(tmpDir, 'node_modules'), {
-        filter: (src) => {
-          if (src.endsWith('.zip')) {
-            return false;
-          }
-          const stat = fse.lstatSync(src);
-          if (stat.isSymbolicLink()) {
-            const realPath = path.resolve(
-              path.dirname(src),
-              fse.readlinkSync(src),
-            );
-            for (const workspace of workspaces) {
-              // Use minimatch to do glob pattern match. If match, it means the
-              // symlink points to a workspace package, so we don't copy it.
-              if (minimatch(realPath, workspace)) {
-                return false;
-              }
-            }
-          }
-          return true;
-        },
-        onDirExists: (dir) => {
-          // Don't overwrite existing sub-directories in node_modules
-          return false;
-        },
-      });
-    }
-  }
-
-  let output = {};
   if (!skipNpmInstall) {
+    if (printProgress) {
+      startSpinner('Copying project to temp directory');
+    }
+    const copyFilter = (src) => !src.endsWith('.zip');
+    await copyDir(appDir, workingDir, { filter: copyFilter });
+
     if (printProgress) {
       endSpinner();
       startSpinner('Installing project dependencies');
     }
-    output = await runCommand('npm', ['install', '--production'], {
-      cwd: tmpDir,
+    const output = await runCommand('npm', ['install', '--production'], {
+      cwd: workingDir,
     });
-  }
 
-  // `npm install` may fail silently without returning a non-zero exit code, need to check further here
-  const corePath = path.join(
-    tmpDir,
-    'node_modules',
-    constants.PLATFORM_PACKAGE,
-  );
-  if (!fs.existsSync(corePath)) {
-    throw new Error(
-      'Could not install dependencies properly. Error log:\n' + output.stderr,
-    );
+    // `npm install` may fail silently without returning a non-zero exit code,
+    // need to check further here
+    if (!fs.existsSync(corePath)) {
+      throw new Error(
+        'Could not install dependencies properly. Error log:\n' + output.stderr,
+      );
+    }
   }
 
   if (printProgress) {
@@ -386,7 +357,7 @@ const _buildFunc = async ({
     startSpinner('Applying entry point files');
   }
 
-  await copyZapierWrapper(corePath, tmpDir);
+  await copyZapierWrapper(corePath, workingDir);
 
   if (printProgress) {
     endSpinner();
@@ -395,18 +366,19 @@ const _buildFunc = async ({
 
   const rawDefinition = await localAppCommand(
     { command: 'definition' },
-    tmpDir,
+    workingDir,
     false,
   );
-  const fileWriteError = await writeFile(
-    path.join(tmpDir, 'definition.json'),
-    prettyJSONstringify(rawDefinition),
-  );
 
-  if (fileWriteError) {
-    debug('\nFile Write Error:\n', fileWriteError, '\n');
+  try {
+    fs.writeFileSync(
+      path.join(workingDir, 'definition.json'),
+      prettyJSONstringify(rawDefinition),
+    );
+  } catch (err) {
+    debug('\nFile Write Error:\n', err, '\n');
     throw new Error(
-      `Unable to write ${tmpDir}/definition.json, please check file permissions!`,
+      `Unable to write ${workingDir}/definition.json, please check file permissions!`,
     );
   }
 
@@ -426,7 +398,7 @@ const _buildFunc = async ({
     }
     const validationErrors = await localAppCommand(
       { command: 'validate' },
-      tmpDir,
+      workingDir,
       false,
     );
     if (validationErrors.length) {
@@ -471,40 +443,40 @@ const _buildFunc = async ({
   if (printProgress) {
     startSpinner('Zipping project and dependencies');
   }
-  await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyDetection);
+  await makeZip(
+    workingDir,
+    path.join(appDir, zipPath),
+    disableDependencyDetection,
+  );
   await makeSourceZip(
-    tmpDir,
-    path.join(wdir, sourceZipPath),
+    workingDir,
+    path.join(appDir, sourceZipPath),
     disableDependencyDetection,
   );
 
   if (printProgress) {
     endSpinner();
-    startSpinner('Testing build');
   }
 
-  if (!isWindows()) {
-    // TODO err, what should we do on windows?
+  if (skipNpmInstall) {
+    if (printProgress) {
+      startSpinner('Cleaning up temp files');
+    }
 
-    // tries to do a reproducible build at least
-    // https://content.pivotal.io/blog/barriers-to-deterministic-reproducible-zip-files
-    // https://reproducible-builds.org/tools/ or strip-nondeterminism
-    await runCommand(
-      'find',
-      ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'],
-      { cwd: tmpDir },
-    );
-  }
+    await deleteZapierWrapper(workingDir);
+    fs.rmSync(path.join(workingDir, 'definition.json'));
 
-  if (printProgress) {
-    endSpinner();
-    startSpinner('Cleaning up temp directory');
-  }
-
-  await removeDir(tmpDir);
-
-  if (printProgress) {
-    endSpinner();
+    if (printProgress) {
+      endSpinner();
+    }
+  } else {
+    if (printProgress) {
+      startSpinner('Cleaning up temp directory');
+    }
+    await fse.removeDir(workingDir);
+    if (printProgress) {
+      endSpinner();
+    }
   }
 
   return zipPath;
