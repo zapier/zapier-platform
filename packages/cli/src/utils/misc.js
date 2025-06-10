@@ -80,8 +80,8 @@ const runCommand = (command, args, options) => {
 const isValidNodeVersion = (version = process.version) =>
   semver.satisfies(version, NODE_VERSION_CLI_REQUIRES);
 
-const findCorePackageDir = () => {
-  let baseDir = process.cwd();
+const findCorePackageDir = (workingDir) => {
+  let baseDir = workingDir || process.cwd();
   // 500 is just an arbitrary number to prevent infinite loops
   for (let i = 0; i < 500; i++) {
     const dir = path.join(baseDir, 'node_modules', PLATFORM_PACKAGE);

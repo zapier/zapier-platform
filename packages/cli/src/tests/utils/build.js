@@ -356,7 +356,7 @@ describe('build in workspaces', function () {
     //
     // (project root)
     // ├─ package.json
-    // └── packages/
+    // └─ packages/
     //    ├─ app-1/
     //    │  ├─ index.js
     //    │  └─ package.json
@@ -374,7 +374,8 @@ describe('build in workspaces', function () {
       }),
     );
 
-    const defaultIndexJs = `module.exports = {
+    const defaultIndexJs = `const uuid = require('uuid');
+module.exports = {
 	version: require('./package.json').version,
 	platformVersion: require('zapier-platform-core').version,
 };`;
@@ -417,7 +418,7 @@ describe('build in workspaces', function () {
       }),
     );
 
-    runCommand('yarn', ['install'], { cwd: tmpDir });
+    await runCommand('yarn', ['install'], { cwd: tmpDir });
   });
 
   after(() => {
@@ -434,9 +435,9 @@ describe('build in workspaces', function () {
   });
 
   it('should build in app-1', async () => {
-    const workspaceDir = path.join(tmpDir, 'packages', 'app-1');
-    const zipPath = path.join(workspaceDir, 'build', 'build.zip');
-    const unzipPath = path.join(tmpDir, 'build', 'build');
+    const appDir = path.join(tmpDir, 'packages', 'app-1');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+    const unzipPath = path.join(tmpDir, 'build_extracted');
 
     // Make sure the zapier-platform-core dependency is installed in the root
     // project directory
@@ -444,12 +445,12 @@ describe('build in workspaces', function () {
       path.join(tmpDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.true();
     fs.existsSync(
-      path.join(workspaceDir, 'node_modules', 'zapier-platform-core'),
+      path.join(appDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.false();
 
     fs.ensureDirSync(path.dirname(zipPath));
 
-    process.chdir(workspaceDir);
+    process.chdir(appDir);
 
     await build.buildAndOrUpload(
       { build: true, upload: false },
@@ -466,6 +467,7 @@ describe('build in workspaces', function () {
       fs.readFileSync(
         path.join(
           unzipPath,
+          '__root',
           'node_modules',
           'zapier-platform-core',
           'package.json',
@@ -476,7 +478,7 @@ describe('build in workspaces', function () {
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
-        path.join(unzipPath, 'node_modules', 'uuid', 'package.json'),
+        path.join(unzipPath, '__root', 'node_modules', 'uuid', 'package.json'),
       ),
     );
     uuidPackageJson.version.should.equal('8.3.2');

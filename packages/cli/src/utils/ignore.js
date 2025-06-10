@@ -1,20 +1,23 @@
-const fs = require('fs');
-const colors = require('colors/safe');
-const ignore = require('ignore');
-const gitIgnore = require('parse-gitignore');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
-const constants = require('../constants');
+const colors = require('colors/safe');
+const gitIgnore = require('parse-gitignore');
+const ignore = require('ignore');
+
+const { BLOCKLISTED_PATHS, IS_TESTING } = require('../constants');
+
 const isBlocklisted = (filePath) => {
-  return constants.BLOCKLISTED_PATHS.find((excluded) => {
-    return filePath.search(excluded) === 0;
-  });
+  return (
+    BLOCKLISTED_PATHS.find((excluded) => filePath.startsWith(excluded)) != null
+  );
 };
+
 // Exclude file paths in .gitignore
 const respectGitIgnore = (dir, paths) => {
   const gitIgnorePath = path.join(dir, '.gitignore');
   if (!fs.existsSync(gitIgnorePath)) {
-    if (!constants.IS_TESTING) {
+    if (!IS_TESTING) {
       console.warn(
         `\n\n\t${colors.yellow(
           '!! Warning !!',

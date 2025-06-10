@@ -1,5 +1,6 @@
-const os = require('os');
-const path = require('path');
+const os = require('node:os');
+const path = require('node:path');
+
 const versionStore = require('./version-store');
 
 const BASE_ENDPOINT = process.env.ZAPIER_BASE_ENDPOINT || 'https://zapier.com';
@@ -22,7 +23,7 @@ const BLOCKLISTED_PATHS = [
   '.git',
   '.env',
   '.environment',
-  'build',
+  `build${path.sep}`,
 ];
 const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;

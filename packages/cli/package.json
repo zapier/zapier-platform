@@ -59,7 +59,6 @@
     "ignore": "5.2.4",
     "inquirer": "8.2.5",
     "jscodeshift": "^17.3.0",
-    "klaw": "4.1.0",
     "lodash": "4.17.21",
     "luxon": "3.6.1",
     "marked": "14.1.4",

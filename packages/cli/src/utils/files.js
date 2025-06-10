@@ -1,10 +1,11 @@
-const _ = require('lodash');
-const crypto = require('crypto');
-const os = require('os');
-const path = require('path');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
-const fse = require('fs-extra');
+const _ = require('lodash');
 const colors = require('colors/safe');
+const fse = require('fs-extra');
 
 const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
@@ -200,19 +201,42 @@ const makeTempDir = () => {
   return workdir;
 };
 
+function* walkDir(dir) {
+  const entries = fs.readdirSync(dir);
+  for (const entry of entries) {
+    const absPath = path.join(dir, entry);
+    const stat = fs.lstatSync(absPath);
+    if (stat.isSymbolicLink()) {
+      yield {
+        type: 'symlink',
+        path: absPath,
+        target: fs.realpathSync(absPath),
+      };
+    } else if (stat.isFile()) {
+      yield {
+        type: 'file',
+        path: absPath,
+      };
+    } else if (stat.isDirectory()) {
+      yield* walkDir(absPath);
+    }
+  }
+}
+
 module.exports = {
   copyDir,
+  copyFile,
   deleteFile,
   ensureDir,
   fileExistsSync,
   isEmptyDir,
   isExistingEmptyDir,
+  makeTempDir,
   readFile,
   readFileStr,
   removeDir,
   removeDirSync,
   validateFileExists,
+  walkDir,
   writeFile,
-  copyFile,
-  makeTempDir,
 };
