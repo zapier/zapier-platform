@@ -16,12 +16,11 @@ const fetchStashedBundle = async (input) => {
   const secret = process.env._ZAPIER_ONE_TIME_SECRET;
   if (stashedBundleKey && secret) {
     // Use the RPC to get a presigned URL for downloading the data
-    const s3UrlResponse = await rpc(
+    const rpcResponse = await rpc(
       'get_presigned_download_url',
       stashedBundleKey,
     );
-    const s3Url = s3UrlResponse.url;
-    const response = await withRetry(() => fetch(s3Url));
+    const response = await withRetry(() => fetch(rpcResponse.url));
     if (!response.ok) {
       const errorMessage = `Failed to read stashed bundle. Status: ${response.status} ${response.statusText}`;
       throw new StashedBundleError(errorMessage);
