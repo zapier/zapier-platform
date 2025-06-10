@@ -11,14 +11,14 @@ const fernet = require('fernet');
  * 2. Base64url encode those bytes to make Fernet-compatible key
  * 3. Use Fernet library to decrypt (handles all token parsing internally)
  *
- * @param {string} fernetToken - The Fernet token to decrypt
+ * @param {string} bundle - The bundle represented as an encrypted token
  * @param {string} secret - The secret key for decryption
  * @returns {Object} The decrypted bundle object
  */
-const decryptBundleWithSecret = (fernetToken, secret) => {
+const decryptBundleWithSecret = (bundle, secret) => {
   try {
     // Validate input
-    if (!fernetToken || typeof fernetToken !== 'string') {
+    if (!bundle || typeof bundle !== 'string') {
       throw new Error('Invalid object from s3 - must be a non-empty string');
     }
 
@@ -35,7 +35,7 @@ const decryptBundleWithSecret = (fernetToken, secret) => {
     // Use Fernet library to decrypt (handles all the token parsing)
     const token = new fernet.Token({
       secret: new fernet.Secret(fernetKey),
-      token: fernetToken,
+      token: bundle,
       ttl: 0,
     });
 

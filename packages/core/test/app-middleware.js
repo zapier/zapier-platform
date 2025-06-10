@@ -279,7 +279,7 @@ describe('app middleware', () => {
       input._zapier.rpc = rpc;
 
       await fetchStashedBundle(input).should.be.rejectedWith(
-        'Failed to read stashed bundle from S3. Status: 500 Internal Server Error',
+        'Failed to read stashed bundle. Status: 500 Internal Server Error',
       );
     });
 
