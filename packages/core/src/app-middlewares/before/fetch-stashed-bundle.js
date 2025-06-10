@@ -1,7 +1,7 @@
 'use strict';
 
-const fetch = require('../../tools/fetch');
 const _ = require('lodash');
+const fetch = require('../../tools/fetch');
 const { StashedBundleError } = require('../../errors');
 const { withRetry } = require('../../tools/retry-utils');
 const { decryptBundleWithSecret } = require('../../tools/bundle-encryption');
