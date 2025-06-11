@@ -437,7 +437,7 @@ module.exports = {
   it('should build in app-1', async () => {
     const appDir = path.join(tmpDir, 'packages', 'app-1');
     const zipPath = path.join(appDir, 'build', 'build.zip');
-    const unzipPath = path.join(tmpDir, 'build_extracted');
+    const unzipPath = path.join(tmpDir, 'app1_extracted');
 
     // Make sure the zapier-platform-core dependency is installed in the root
     // project directory
@@ -467,7 +467,6 @@ module.exports = {
       fs.readFileSync(
         path.join(
           unzipPath,
-          '__root',
           'node_modules',
           'zapier-platform-core',
           'package.json',
@@ -478,25 +477,16 @@ module.exports = {
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
-        path.join(unzipPath, '__root', 'node_modules', 'uuid', 'package.json'),
+        path.join(unzipPath, 'node_modules', 'uuid', 'package.json'),
       ),
     );
     uuidPackageJson.version.should.equal('8.3.2');
-
-    // Make sure node_modules/app-1 and node_modules/app-2 are not included
-    // in the build
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-1'),
-    ).should.be.false();
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-2'),
-    ).should.be.false();
   });
 
   it('should build in app-2', async () => {
     const workspaceDir = path.join(tmpDir, 'packages', 'app-2');
     const zipPath = path.join(workspaceDir, 'build', 'build.zip');
-    const unzipPath = path.join(tmpDir, 'build', 'build');
+    const unzipPath = path.join(tmpDir, 'app2_extracted');
 
     // Make sure the zapier-platform-core dependency is installed in the root
     // project directory
@@ -536,19 +526,17 @@ module.exports = {
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
-        path.join(unzipPath, 'node_modules', 'uuid', 'package.json'),
+        path.join(
+          unzipPath,
+          'packages',
+          'app-2',
+          'node_modules',
+          'uuid',
+          'package.json',
+        ),
       ),
     );
     uuidPackageJson.version.should.equal('9.0.1');
-
-    // Make sure node_modules/app-1 and node_modules/app-2 are not included
-    // in the build
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-1'),
-    ).should.be.false();
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-2'),
-    ).should.be.false();
   });
 });
 

@@ -201,24 +201,33 @@ const makeTempDir = () => {
   return workdir;
 };
 
+// Iterates files and symlinks in a directory recursively.
+// Yields fs.Dirent objects.
 function* walkDir(dir) {
-  const entries = fs.readdirSync(dir);
+  const entries = fs.readdirSync(dir, { withFileTypes: true, recursive: true });
   for (const entry of entries) {
-    const absPath = path.join(dir, entry);
-    const stat = fs.lstatSync(absPath);
-    if (stat.isSymbolicLink()) {
-      yield {
-        type: 'symlink',
-        path: absPath,
-        target: fs.realpathSync(absPath),
-      };
-    } else if (stat.isFile()) {
-      yield {
-        type: 'file',
-        path: absPath,
-      };
-    } else if (stat.isDirectory()) {
-      yield* walkDir(absPath);
+    if (entry.isDirectory()) {
+      const subDir = path.join(entry.parentPath, entry.name);
+      yield* walkDir(subDir);
+    } else if (entry.isFile() || entry.isSymbolicLink()) {
+      yield entry;
+    }
+  }
+}
+
+// Iterates files and symlinks in a directory recursively, up to a specified
+// number of levels deep (maxLevels). The minimum value for maxLevels is 1.
+// Yields fs.Dirent objects.
+function* walkDirLimitedLevels(dir, maxLevels, currentLevel = 1) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      if (currentLevel < maxLevels) {
+        const subDir = path.join(entry.parentPath, entry.name);
+        yield* walkDirLimitedLevels(subDir, maxLevels, currentLevel + 1);
+      }
+    } else if (entry.isFile() || entry.isSymbolicLink()) {
+      yield entry;
     }
   }
 }
@@ -238,5 +247,6 @@ module.exports = {
   removeDirSync,
   validateFileExists,
   walkDir,
+  walkDirLimitedLevels,
   writeFile,
 };

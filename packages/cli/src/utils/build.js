@@ -20,7 +20,7 @@ const {
   SOURCE_PATH,
   UPDATE_NOTIFICATION_INTERVAL,
 } = require('../constants');
-const { copyDir, walkDir } = require('./files');
+const { copyDir, walkDir, walkDirLimitedLevels } = require('./files');
 const { iterfilter, itermap } = require('./itertools');
 
 const {
@@ -86,6 +86,11 @@ const requiredFiles = async (workingDir, entryPoints) => {
   return Object.keys(result.metafile.inputs);
 };
 
+// From a file path relative to workingDir, traverse up the directory tree until
+// it finds a directory that looks like a package directory, which either
+// contains a package.json file or whose path matches a pattern like
+// 'node_modules/(@scope/)package-name'.
+// Returns null if no package directory is found.
 const getPackageDir = (workingDir, relPath) => {
   const nm = `node_modules${path.sep}`;
   let i = relPath.lastIndexOf(nm);
@@ -107,7 +112,7 @@ const getPackageDir = (workingDir, relPath) => {
 
   i += nm.length;
   if (relPath[i] === '@') {
-    // For scoped package, e.g. node_modules/@zapier/zapier-platform-core
+    // For scoped package, e.g. node_modules/@zapier/package-name
     const j = relPath.indexOf(path.sep, i + 1);
     if (j < 0) {
       return null;
@@ -129,54 +134,38 @@ function expandRequiredFiles(workingDir, relPaths) {
       expandedPaths.add(path.join(packageDir, 'package.json'));
     }
   }
-  return Array.from(expandedPaths).sort();
+  return expandedPaths;
 }
 
-// Yields entries in a directory recursively. Each entry is an object of:
-// {
-//   type: 'file' | 'symlink',
-//   path: '/absolute/path/to/entry',
-//   target: '/absolute/path/to/target' // only exists for symlinks
-// }
-function* iterFiles(dir) {
+// Yields files and symlinks (as fs.Direnv objects) from a directory
+// recursively, excluding names that are typically not needed in the build,
+// such as .git, .env, build, etc.
+function* walkDirWithIgnores(dir) {
   const shouldInclude = (entry) => {
-    const relPath = path.relative(dir, entry.path);
-    return !isBlocklisted(relPath);
+    // FIXME: entry.parentPath is not necessarily a relative path
+    return !isBlocklisted(path.join(entry.parentPath, entry.name));
   };
   yield* iterfilter(shouldInclude, walkDir(dir));
 }
 
-// Yields symlinks in a directory recursively. Each entry is an object of:
-// {
-//   type: 'symlink',
-//   path: '/absolute/path/to/symlink',
-//   target: '/absolute/path/to/target'
-//  }
-function* iterSymlinks(dir) {
-  yield* iterfilter((entry) => entry.type === 'symlink', walkDir(dir));
-}
-
-// Yields entries in a directory recursively that match any of the given or
-// preset regex patterns. Each entry is an object of:
-// {
-//   type: 'file' | 'symlink',
-//   path: '/absolute/path/to/entry',
-//   target: '/absolute/path/to/target' // only exists for symlinks
-// }
-function* iterMatchedFiles(dir, patterns) {
-  patterns = [
-    ...(patterns || []),
-    `${path.sep}definition.json$`,
-    `${path.sep}package.json$`,
+// Yields files and symlinks (as fs.Direnv objects) from a directory recursively
+// that match any of the given or preset regex patterns.
+function* walkDirWithPatterns(dir, patterns) {
+  const presetPatterns = [
+    `${path.sep}definition\\.json$`,
+    `${path.sep}package\\.json$`,
     `${path.sep}aws-sdk${path.sep}apis${path.sep}.*\\.json$`,
   ];
+  patterns = [...presetPatterns, ...(patterns || [])].map(
+    (x) => new RegExp(x, 'i'),
+  );
   const shouldInclude = (entry) => {
-    const relPath = path.relative(dir, entry.path);
+    const relPath = path.join(entry.parentPath, entry.name);
     if (isBlocklisted(relPath)) {
       return false;
     }
     for (const pattern of patterns) {
-      if (relPath.match(new RegExp(pattern), 'i')) {
+      if (pattern.test(relPath)) {
         return true;
       }
     }
@@ -184,101 +173,6 @@ function* iterMatchedFiles(dir, patterns) {
   };
   yield* iterfilter(shouldInclude, walkDir(dir));
 }
-
-// const listFiles = (dir) => {
-//   const isBlocklisted = (filePath) => {
-//     return constants.BLOCKLISTED_PATHS.find((excluded) => {
-//       return filePath.search(excluded) === 0;
-//     });
-//   };
-//
-//   return new Promise((resolve, reject) => {
-//     const paths = [];
-//     const cwd = dir + path.sep;
-//     klaw(dir, { preserveSymlinks: true })
-//       .on('data', (item) => {
-//         const strippedPath = stripPath(cwd, item.path);
-//         if (!item.stats.isDirectory() && !isBlocklisted(strippedPath)) {
-//           paths.push(strippedPath);
-//         }
-//       })
-//       .on('error', reject)
-//       .on('end', () => {
-//         paths.sort();
-//         resolve(paths);
-//       });
-//   });
-// };
-
-// Implements the logic to get the package directory if absPath matches pnpm's
-// directory name pattern:
-// node_modules/.pnpm/<package_x>@<version><remaining>/node_modules/<package_x>/...
-//
-// For the above example, this function returns "<package_x>@<version><remaining>".
-// If filePath doesn't match the pattern, it returns null.
-//
-// Check https://pnpm.io/symlinked-node-modules-structure to learn more about
-// pnpm's directory layout.
-const getPackageDirNameIfSelf = (absPath) => {
-  const pnpmSubstring = `node_modules${path.sep}.pnpm${path.sep}`;
-  let i = absPath.indexOf(pnpmSubstring);
-  if (i < 0) {
-    return null;
-  }
-
-  i += pnpmSubstring.length;
-
-  const j = absPath.indexOf(path.sep, i);
-  if (j < 0) {
-    return null;
-  }
-  const firstName = absPath.substring(i, j);
-  i = j + 1; // skip the next path.sep
-
-  const nm = `node_modules${path.sep}`;
-  if (!absPath.substring(i).startsWith(nm)) {
-    return null;
-  }
-
-  i += nm.length;
-  const start = i;
-  if (absPath[start] === '@') {
-    const j = absPath.indexOf(path.sep, start + 1);
-    if (j < 0) {
-      return null;
-    }
-    i = j + 1; // skip the next path.sep
-  }
-
-  const end = absPath.indexOf(path.sep, i);
-  if (end < 0) {
-    return null;
-  }
-
-  const secondName = absPath.substring(start, end);
-
-  let firstShortName;
-  if (firstName[0] === '@') {
-    let k = firstName.indexOf('@', 1);
-    if (k < 0) {
-      k = undefined;
-    }
-    firstShortName = firstName.substring(0, k);
-  } else {
-    let k = firstName.indexOf('@');
-    if (k < 0) {
-      k = undefined;
-    }
-    firstShortName = firstName.substring(0, k);
-  }
-
-  firstShortName = firstShortName.replace('+', path.sep);
-  if (firstShortName === secondName) {
-    return firstName;
-  }
-
-  return null;
-};
 
 const writeZipFromPaths = (workingDir, zipPath, paths) => {
   return new Promise((resolve, reject) => {
@@ -312,6 +206,7 @@ const writeZipFromPaths = (workingDir, zipPath, paths) => {
   });
 };
 
+// Opens a zip file for writing. Returns an Archiver object.
 const openZip = (outputPath) => {
   const output = fs.createWriteStream(outputPath);
   const zip = archiver('zip', {
@@ -326,9 +221,28 @@ const openZip = (outputPath) => {
   zip.finish = async () => {
     // zip.finalize() doesn't return a promise, so here we create a
     // zip.finish() function so the caller can await it.
+    // So callers: Use `await zip.finish()` and avoid zip.finalize().
     zip.finalize();
     await streamCompletePromise;
   };
+
+  if (path.sep === '\\') {
+    // On Windows, patch zip.file() and zip.symlink() so they normalize the path
+    // separator to '/' because we're supposed to use '/' in a zip file.
+    // Those are the only two methods we're currently using. If you wanted to
+    // call other zip.xxx methods, you should patch them here as well.
+    const origFileMethod = zip.file;
+    zip.file = (filepath, data) => {
+      filepath = filepath.replaceAll('\\', '/');
+      return origFileMethod.call(zip, filepath, data);
+    };
+    const origSymlinkMethod = zip.symlink;
+    zip.symlink = (name, target, mode) => {
+      name = name.replaceAll('\\', '/');
+      target = target.replaceAll('\\', '/');
+      return origSymlinkMethod.call(zip, name, target, mode);
+    };
+  }
 
   zip.pipe(output);
   return zip;
@@ -372,6 +286,30 @@ const findWorkspaceRoot = async (workingDir) => {
   return null;
 };
 
+const getNearestNodeModulesDir = (workingDir, relPath) => {
+  if (relPath.endsWith(`${path.sep}package.json`)) {
+    const nmDir = path.resolve(
+      workingDir,
+      path.dirname(relPath),
+      'node_modules',
+    );
+    return fs.existsSync(nmDir) ? nmDir : null;
+  } else {
+    let dir = path.dirname(relPath);
+    for (let i = 0; i < 100; i++) {
+      if (dir.endsWith(`${path.sep}node_modules`)) {
+        return dir;
+      }
+      const nextDir = path.dirname(dir);
+      if (nextDir === dir) {
+        break;
+      }
+      dir = nextDir;
+    }
+    return null;
+  }
+};
+
 // Creates the build.zip file.
 const makeZip = async (workingDir, zipPath, disableDependencyDetection) => {
   const zip = openZip(zipPath);
@@ -380,13 +318,15 @@ const makeZip = async (workingDir, zipPath, disableDependencyDetection) => {
     // Ideally, if dependency detection works really well, we don't need to
     // support --disable-dependency-detection at all. We might want phase out
     // this code path over time.
-    for (const entry of iterFiles(workingDir)) {
-      const relPath = path.relative(workingDir, entry.path);
-      if (entry.type === 'file') {
-        zip.file(entry.path, { name: relPath, mode: 0o755 });
-      } else if (entry.type === 'symlink') {
-        // resolve the symlink and write the target to the zip
-        zip.file(entry.target, { name: relPath, mode: 0o755 });
+    for (const entry of walkDirWithIgnores(workingDir)) {
+      const relPath = path.join(entry.parentPath, entry.name);
+      const absPath = path.resolve(workingDir, relPath);
+      if (entry.isFile()) {
+        zip.file(absPath, { name: relPath });
+      } else if (entry.isSymbolicLink()) {
+        // Resolve the symlink and write the target to the zip
+        const target = fs.realPathSync(absPath);
+        zip.file(target, { name: relPath });
       }
     }
   } else {
@@ -406,14 +346,68 @@ const makeZip = async (workingDir, zipPath, disableDependencyDetection) => {
           workingDir,
           await requiredFiles(workingDir, entryPoints),
         ),
-        ...iterMatchedFiles(workingDir, appConfig?.includeInBuild),
+        ...itermap(
+          (entry) => path.join(entry.parentPath, entry.name),
+          walkDirWithPatterns(workingDir, appConfig?.includeInBuild),
+        ),
       ]),
     ).sort();
 
-    const workspaceRoot = await findWorkspaceRoot(workingDir);
-    const tracedPackages = new Set();
+    const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
 
-    debug('\nZip files:');
+    if (workspaceRoot !== workingDir) {
+      const appDirRelPath = path.relative(workspaceRoot, workingDir);
+      const linkNames = ['zapierwrapper.js', 'index.js'];
+      for (const name of linkNames) {
+        zip.symlink(name, path.join(appDirRelPath, name), 0o644);
+      }
+
+      const filenames = ['package.json', 'definition.json'];
+      for (const name of filenames) {
+        const absPath = path.resolve(workingDir, name);
+        zip.file(absPath, { name, mode: 0o644 });
+      }
+    }
+
+    // Write required files to the zip
+    for (const relPath of relPaths) {
+      const absPath = path.resolve(workingDir, relPath);
+      const nameInZip = path.relative(workspaceRoot, absPath);
+      if (nameInZip === 'package.json' && workspaceRoot !== workingDir) {
+        // Ignore workspace root's package.json
+        continue;
+      }
+      zip.file(absPath, { name: nameInZip });
+    }
+
+    // Next, find all symlinks that are either: (1) immediate children of any
+    // node_modules directory, or (2) located one directory level below a
+    // node_modules directory. (1) is for the case of node_modules/package_name.
+    // (2) is for the case of node_modules/@scope/package_name.
+    const nodeModulesDirs = new Set();
+    for (const relPath of relPaths) {
+      const nmDir = getNearestNodeModulesDir(workingDir, relPath);
+      if (nmDir) {
+        nodeModulesDirs.add(nmDir);
+      }
+    }
+
+    for (const relNmDir of nodeModulesDirs) {
+      const absNmDir = path.resolve(workingDir, relNmDir);
+      const symlinks = iterfilter(
+        (entry) => entry.isSymbolicLink(),
+        walkDirLimitedLevels(absNmDir, 2),
+      );
+      for (const symlink of symlinks) {
+        const absPath = path.resolve(
+          workingDir,
+          symlink.parentPath,
+          symlink.name,
+        );
+        const nameInZip = path.relative(workspaceRoot, absPath);
+        zip.file(absPath, { name: nameInZip });
+      }
+    }
 
     // If the developer uses pnpm workspaces, we'll use the '__root' directory
     // in the zip to represent the workspace root. The directory layout in the
@@ -434,77 +428,6 @@ const makeZip = async (workingDir, zipPath, disableDependencyDetection) => {
     // ├─ package.json
     // ├─ index.js
     // └─ other files of the app...
-
-    // 3. find symlinks of dependencies of the app's dependencies
-    for (const relPath of relPaths) {
-      const absPath = path.resolve(workingDir, relPath);
-      if (absPath.startsWith(workingDir)) {
-        zip.file(absPath, { name: relPath, mode: 0o755 });
-        debug(`  ${absPath}`);
-      } else if (workspaceRoot && absPath.startsWith(workspaceRoot)) {
-        const wsRelPath = path.relative(workspaceRoot, absPath);
-        const name = path.join('__root', wsRelPath);
-        zip.file(absPath, { name, mode: 0o755 });
-        debug(`  ${absPath}`);
-
-        // For a package hoisted to pnpm workspace root, like
-        // workspace_root/node_modules/.pnpm/foo@1.0.0/node_modules/foo,
-        // foo's dependencies live next to it as a symlink like
-        // workspace_root/node_modules/.pnpm/foo@1.0.0/node_modules/bar.
-        // So we need to follow those symlinks and add them to the zip.
-        const pkgDirName = getPackageDirNameIfSelf(absPath);
-        if (!pkgDirName || tracedPackages.has(pkgDirName)) {
-          continue;
-        }
-
-        tracedPackages.add(pkgDirName);
-
-        const pkgNmDir = path.resolve(
-          workspaceRoot,
-          'node_modules',
-          '.pnpm',
-          pkgDirName,
-          'node_modules',
-        );
-        for (const symlink of iterSymlinks(pkgNmDir)) {
-          const nameInZip = path.join(
-            '__root',
-            path.relative(workspaceRoot, symlink.path),
-          );
-          const targetInZip = path.relative(
-            path.dirname(symlink.path),
-            symlink.target,
-          );
-          zip.symlink(nameInZip, targetInZip, 0o755);
-          debug(`  ${symlink.path}`);
-        }
-      } else {
-        throw new Error(
-          `File '${absPath}' is not within the app directory or workspace root.`,
-        );
-      }
-    }
-
-    // 4. find symlinks of app's dependencies
-    for (const entry of iterSymlinks(workingDir)) {
-      const relPath = path.relative(workingDir, entry.path);
-      if (entry.target.startsWith(workspaceRoot)) {
-        const absTargetInZip = path.join(
-          '__root',
-          path.relative(workspaceRoot, entry.target),
-        );
-        const targetInZip = path.relative(
-          path.dirname(relPath),
-          absTargetInZip,
-        );
-        zip.symlink(relPath, targetInZip, 0o755);
-      } else {
-        zip.symlink(relPath, entry.target, 0o755);
-      }
-      debug(`  ${entry.path}`);
-    }
-
-    debug('');
   }
 
   await zip.finish();
@@ -514,8 +437,9 @@ const makeSourceZip = async (workingDir, zipPath) => {
   const paths = Array.from(
     itermap(
       // respectGitIgnore() wants relative paths
-      (entry) => path.relative(workingDir, entry.path),
-      iterFiles(workingDir),
+      (entry) =>
+        path.relative(workingDir, path.join(entry.parentPath, entry.name)),
+      walkDirWithIgnores(workingDir),
     ),
   );
   const finalPaths = respectGitIgnore(workingDir, paths);
@@ -758,7 +682,6 @@ const buildAndOrUpload = async (
 
 module.exports = {
   buildAndOrUpload,
-  iterFiles,
   makeSourceZip,
   makeZip,
   maybeRunBuildScript,
