@@ -31,7 +31,14 @@ const createInternalRequestClient = (input) => {
   const logResponseModule = require('zapier-platform-core/src/http-middlewares/after/log-response');
   const prepareRequest = require('zapier-platform-core/src/http-middlewares/before/prepare-request');
   const prepareResponse = require('zapier-platform-core/src/http-middlewares/after/prepare-response');
-  const sanitizeHeaders = require('zapier-platform-core/src/http-middlewares/before/sanatize-headers');
+
+  let sanitizeHeaders;
+  try {
+    sanitizeHeaders = require('zapier-platform-core/src/http-middlewares/before/sanatize-headers');
+  } catch (err) {
+    // Older versions of platform-core don't have sanitize-headers middleware
+  }
+
   // Before core 12.0.3, log-response.js module exported the logResponse()
   // function, and it's the only export. Since core 12.0.3, logResponse()
   // function is inside an exported object. So we do the following to make sure
@@ -49,8 +56,11 @@ const createInternalRequestClient = (input) => {
     createInjectInputMiddleware(input),
     prepareRequest,
     addQueryParams,
-    sanitizeHeaders,
   ];
+
+  if (sanitizeHeaders) {
+    httpBefores.push(sanitizeHeaders);
+  }
 
   const verifySSL = _.get(input, '_zapier.event.verifySSL');
   if (verifySSL === false) {
