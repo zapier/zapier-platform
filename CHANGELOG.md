@@ -1,3 +1,20 @@
+## 17.2.0
+
+_released `2025-06-11`_
+
+
+### cli
+
+None!
+
+### core
+
+- :tada: Add before middleware to fetch stashed bundles for improved large payload handling ([#1050](https://github.com/zapier/zapier-platform/pull/1050))
+
+### schema
+
+None!
+
 ## 17.1.0
 
 _released `2025-06-10`_
