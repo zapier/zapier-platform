@@ -7,7 +7,11 @@ const ignore = require('ignore');
 
 const { IS_TESTING } = require('../constants');
 
-const BLOCKLISTED_PREFIXES = ['.DS_Store', '.git', `build${path.sep}`];
+const BLOCKLISTED_PREFIXES = [
+  '.DS_Store',
+  `.git${path.sep}`,
+  `build${path.sep}`,
+];
 const BLOCKLISTED_SUFFIXES = ['.gitkeep', '.env', '.environment', '.zip'];
 
 // Tells if we should exclude a file from build.zip or source.zip

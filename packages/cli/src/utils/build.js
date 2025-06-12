@@ -321,13 +321,15 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
   const appConfig = await getLinkedAppConfig(workingDir, false);
   const relPaths = Array.from(
     new Set([
-      // files found by esbuild and their package.json files
+      // Files found by esbuild and their package.json files
       ...expandRequiredFiles(
         workingDir,
         await findRequiredFiles(workingDir, entryPoints),
       ),
+      // Files matching includeInBuild and other preset patterns
       ...itermap(
-        (entry) => path.join(entry.parentPath, entry.name),
+        (entry) =>
+          path.relative(workingDir, path.join(entry.parentPath, entry.name)),
         walkDirWithPatterns(workingDir, appConfig?.includeInBuild),
       ),
     ]),
@@ -345,7 +347,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
     const filenames = ['package.json', 'definition.json'];
     for (const name of filenames) {
       const absPath = path.resolve(workingDir, name);
-      zip.file(absPath, { name });
+      zip.file(absPath, { name, mode: 0o644 });
     }
   }
 
@@ -357,7 +359,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
       // Ignore workspace root's package.json
       continue;
     }
-    zip.file(absPath, { name: nameInZip });
+    zip.file(absPath, { name: nameInZip, mode: 0o644 });
   }
 
   // Next, find all symlinks that are either: (1) immediate children of any
@@ -385,7 +387,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         symlink.name,
       );
       const nameInZip = path.relative(workspaceRoot, absPath);
-      zip.file(absPath, { name: nameInZip });
+      zip.file(absPath, { name: nameInZip, mode: 0o644 });
     }
   }
 };
@@ -433,7 +435,7 @@ const makeSourceZip = async (workingDir, zipPath) => {
     const absPath = path.resolve(workingDir, relPath);
     debug(`  ${absPath}`);
 
-    zip.file(absPath, { name: relPath });
+    zip.file(absPath, { name: relPath, mode: 0o644 });
   }
   debug();
 
@@ -478,9 +480,15 @@ const maybeRunBuildScript = async (options = {}) => {
     );
 
     if (_.get(pJson, ['scripts', ZAPIER_BUILD_KEY])) {
-      startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
+      if (options.printProgress) {
+        startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
+      }
+
       await runCommand('npm', ['run', ZAPIER_BUILD_KEY], options);
-      endSpinner();
+
+      if (options.printProgress) {
+        endSpinner();
+      }
     }
   }
 };
@@ -513,7 +521,7 @@ const _buildFunc = async ({
     debug('Building in temp directory: ', workingDir);
   }
 
-  await maybeRunBuildScript();
+  await maybeRunBuildScript({ printProgress });
 
   // make sure our directories are there
   await fse.ensureDir(workingDir);
@@ -676,4 +684,5 @@ module.exports = {
   makeBuildZip,
   makeSourceZip,
   maybeRunBuildScript,
+  walkDirWithPresetBlocklist,
 };

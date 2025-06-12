@@ -47,10 +47,7 @@ describe('build (runs slowly)', function () {
   it('should list only required files', async function () {
     this.retries(3); // retry up to 3 times
 
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('index.js');
     smartPaths.should.containEql('dist/index.js');
@@ -63,18 +60,20 @@ describe('build (runs slowly)', function () {
   });
 
   it('should list all the files', () => {
-    return build.listFiles(tmpDir).then((dumbPaths) => {
-      // check that way more than the required package files are grabbed
-      dumbPaths.should.containEql('index.js');
-      dumbPaths.should.containEql('dist/index.js');
-      dumbPaths.should.containEql('dist/triggers/movie.js');
+    const dumbPaths = Array.from(build.walkDirWithPresetBlocklist(tmpDir)).map(
+      (entry) => path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
-      dumbPaths.should.containEql('src/index.ts');
-      dumbPaths.should.containEql('src/triggers/movie.ts');
-      dumbPaths.should.containEql('tsconfig.json');
+    // check that way more than the required package files are grabbed
+    dumbPaths.should.containEql('index.js');
+    dumbPaths.should.containEql('dist/index.js');
+    dumbPaths.should.containEql('dist/triggers/movie.js');
 
-      dumbPaths.length.should.be.within(3000, 10000);
-    });
+    dumbPaths.should.containEql('src/index.ts');
+    dumbPaths.should.containEql('src/triggers/movie.ts');
+    dumbPaths.should.containEql('tsconfig.json');
+
+    dumbPaths.length.should.be.within(3000, 10000);
   });
 
   it('list should not include blocklisted files', () => {
@@ -82,10 +81,12 @@ describe('build (runs slowly)', function () {
 
     [
       'safe.js',
+      '.DS_Store',
       '.env',
       '.environment',
-      '.git/HEAD',
-      'build/the-build.zip',
+      `.git${path.sep}HEAD`,
+      '.DS_Store',
+      `build${path.sep}the-build.zip`,
     ].forEach((file) => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
@@ -95,16 +96,23 @@ describe('build (runs slowly)', function () {
       fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
-    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
-      dumbPaths.should.containEql('safe.js');
-      dumbPaths.should.not.containEql('.env');
-      dumbPaths.should.not.containEql('build/the-build.zip');
-      dumbPaths.should.not.containEql('.environment');
-      dumbPaths.should.not.containEql('.git/HEAD');
+    const dumbPaths = Array.from(
+      build.walkDirWithPresetBlocklist(tmpProjectDir),
+    ).map((entry) => {
+      return path.relative(
+        tmpProjectDir,
+        path.join(entry.parentPath, entry.name),
+      );
     });
+    dumbPaths.should.containEql('safe.js');
+    dumbPaths.should.not.containEql('.env');
+    dumbPaths.should.not.containEql('build/the-build.zip');
+    dumbPaths.should.not.containEql('.environment');
+    dumbPaths.should.not.containEql('.git/HEAD');
+    dumbPaths.should.not.containEql('.DS_Store');
   });
 
-  it('should make a build.zip', () => {
+  it('should make a build.zip', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -129,32 +137,24 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(3);
+    await build.makeBuildZip(tmpProjectDir, tmpZipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
-      });
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    files.length.should.equal(3);
+
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
-  it('should make a build.zip without .zapierapprc', () => {
+  it('should make a build.zip without .zapierapprc', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -178,32 +178,23 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(3);
+    await build.makeBuildZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    files.length.should.equal(3);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
-      });
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
-  it('should make a source.zip without .gitignore', () => {
+  it('should make a source.zip without .gitignore', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -223,37 +214,27 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeSourceZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(4);
+    await build.makeSourceZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
+    const filePaths = new Set(files.map((file) => file.path));
+    filePaths.should.deepEqual(
+      new Set(['index.js', 'README.md', '.zapierapprc']),
+    );
 
-        const readmeFile = files.find(
-          ({ path: filePath }) => filePath === 'README.md',
-        );
-        should.exist(readmeFile);
-      });
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
-  it('should make a source.zip with .gitignore', () => {
+  it('should make a source.zip with .gitignore', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -282,42 +263,13 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeSourceZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(4);
+    await build.makeSourceZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-
-        const readmeFile = files.find(
-          ({ path: filePath }) => filePath === 'README.md',
-        );
-        should.exist(readmeFile);
-
-        const gitIgnoreFile = files.find(
-          ({ path: filePath }) => filePath === '.gitignore',
-        );
-        should.not.exist(gitIgnoreFile);
-
-        const testLogFile = files.find(
-          ({ path: filePath }) => filePath === 'test.log',
-        );
-        should.not.exist(testLogFile);
-
-        const DSStoreFile = files.find(
-          ({ path: filePath }) => filePath === '.DS_Store',
-        );
-        should.not.exist(DSStoreFile);
-
-        const environmentFile = files.find(
-          ({ path: filePath }) => filePath === '.environment',
-        );
-        should.not.exist(environmentFile);
-      });
+    const filePaths = new Set(files.map((file) => file.path));
+    filePaths.should.deepEqual(
+      new Set(['index.js', 'README.md', '.zapierapprc', '.gitignore']),
+    );
   });
 
   it('should run the zapier-build script', async () => {
@@ -330,7 +282,7 @@ describe('build (runs slowly)', function () {
   });
 });
 
-describe('build in workspaces', function () {
+describe('build in npm/yarn workspaces', function () {
   let tmpDir, origCwd, coreVersion, corePackage;
 
   before(async () => {
@@ -578,10 +530,8 @@ describe('build ESM (runs slowly)', function () {
   it('should list only required files', async function () {
     this.retries(3); // retry up to 3 times
 
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
+
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('dist/index.js');
     smartPaths.should.containEql('dist/triggers/movie.js');
@@ -592,18 +542,20 @@ describe('build ESM (runs slowly)', function () {
     smartPaths.length.should.be.within(200, 305);
   });
 
-  it('should list all the files', () => {
-    return build.listFiles(tmpDir).then((dumbPaths) => {
-      // check that way more than the required package files are grabbed
-      dumbPaths.should.containEql('dist/index.js');
-      dumbPaths.should.containEql('dist/triggers/movie.js');
+  it('should list all the files', async () => {
+    const dumbPaths = Array.from(build.walkDirWithPresetBlocklist(tmpDir)).map(
+      (entry) => path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
-      dumbPaths.should.containEql('src/index.ts');
-      dumbPaths.should.containEql('src/triggers/movie.ts');
-      dumbPaths.should.containEql('tsconfig.json');
+    // check that way more than the required package files are grabbed
+    dumbPaths.should.containEql('dist/index.js');
+    dumbPaths.should.containEql('dist/triggers/movie.js');
 
-      dumbPaths.length.should.be.within(3000, 10000);
-    });
+    dumbPaths.should.containEql('src/index.ts');
+    dumbPaths.should.containEql('src/triggers/movie.ts');
+    dumbPaths.should.containEql('tsconfig.json');
+
+    dumbPaths.length.should.be.within(3000, 10000);
   });
 
   it('list should not include blocklisted files', () => {
@@ -611,10 +563,11 @@ describe('build ESM (runs slowly)', function () {
 
     [
       'safe.js',
+      '.DS_Store',
       '.env',
       '.environment',
-      '.git/HEAD',
-      'build/the-build.zip',
+      `.git${path.sep}HEAD`,
+      `build${path.sep}the-build.zip`,
     ].forEach((file) => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
@@ -624,16 +577,19 @@ describe('build ESM (runs slowly)', function () {
       fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
-    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
-      dumbPaths.should.containEql('safe.js');
-      dumbPaths.should.not.containEql('.env');
-      dumbPaths.should.not.containEql('build/the-build.zip');
-      dumbPaths.should.not.containEql('.environment');
-      dumbPaths.should.not.containEql('.git/HEAD');
-    });
+    const dumbPaths = Array.from(
+      build.walkDirWithPresetBlocklist(tmpProjectDir),
+    ).map((entry) =>
+      path.relative(tmpProjectDir, path.join(entry.parentPath, entry.name)),
+    );
+    dumbPaths.should.containEql('safe.js');
+    dumbPaths.should.not.containEql('.env');
+    dumbPaths.should.not.containEql('build/the-build.zip');
+    dumbPaths.should.not.containEql('.environment');
+    dumbPaths.should.not.containEql('.git/HEAD');
   });
 
-  it('should make a build.zip', () => {
+  it('should make a build.zip', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -659,29 +615,24 @@ describe('build ESM (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(3);
+    await build.makeBuildZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
-      });
+    const filePaths = new Set(files.map((file) => file.path));
+    filePaths.should.deepEqual(
+      new Set(['index.js', 'zapierwrapper.js', 'package.json']),
+    );
+
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
   it('should run the zapier-build script', async () => {
@@ -743,7 +694,11 @@ module.exports = {
   });
 
   it('should list both CJS and ESM paths in dumbPaths', async function () {
-    const dumbPaths = await build.listFiles(tmpDir);
+    const dumbPaths = Array.from(
+      await build.walkDirWithPresetBlocklist(tmpDir),
+    ).map((entry) =>
+      path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
     // dumbPaths should contain both CJS and ESM paths since it's just listing all files
     dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
@@ -751,10 +706,7 @@ module.exports = {
   });
 
   it('should only include CJS paths in smartPaths', async function () {
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
     // For CJS app, smartPaths should only contain CJS paths
     smartPaths.should.containEql('node_modules/uuid/dist/index.js');
@@ -816,7 +768,11 @@ export default {
   });
 
   it('should list both CJS and ESM paths in dumbPaths', async function () {
-    const dumbPaths = await build.listFiles(tmpDir);
+    const dumbPaths = Array.from(
+      await build.walkDirWithPresetBlocklist(tmpDir),
+    ).map((entry) =>
+      path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
     // dumbPaths should contain both CJS and ESM paths since it's just listing all files
     dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
@@ -824,10 +780,7 @@ export default {
   });
 
   it('should only include ESM paths in smartPaths', async function () {
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
     // For ESM app, smartPaths should only contain ESM paths
     smartPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js');
