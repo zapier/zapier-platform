@@ -18,13 +18,6 @@ const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
 const SOURCE_PATH = `${BUILD_DIR}/source.zip`;
-const BLOCKLISTED_PATHS = [
-  // Will be excluded from build.zip and source.zip
-  '.git',
-  '.env',
-  '.environment',
-  `build${path.sep}`,
-];
 const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;
 const NODE_VERSION_CLI_REQUIRES = '>=18'; // should be the oldest non-ETL version
@@ -92,7 +85,6 @@ module.exports = {
   AUTH_LOCATION,
   AUTH_LOCATION_RAW,
   BASE_ENDPOINT,
-  BLOCKLISTED_PATHS,
   BUILD_DIR,
   BUILD_PATH,
   CHECK_REF_DOC_LINK,

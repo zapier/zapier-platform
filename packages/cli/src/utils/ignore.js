@@ -5,12 +5,25 @@ const colors = require('colors/safe');
 const gitIgnore = require('parse-gitignore');
 const ignore = require('ignore');
 
-const { BLOCKLISTED_PATHS, IS_TESTING } = require('../constants');
+const { IS_TESTING } = require('../constants');
 
-const isBlocklisted = (filePath) => {
-  return (
-    BLOCKLISTED_PATHS.find((excluded) => filePath.startsWith(excluded)) != null
-  );
+const BLOCKLISTED_PREFIXES = ['.DS_Store', '.git', `build${path.sep}`];
+const BLOCKLISTED_SUFFIXES = ['.gitkeep', '.env', '.environment', '.zip'];
+
+// Tells if we should exclude a file from build.zip or source.zip
+const isBlocklisted = (relPath) => {
+  // Will be excluded from build.zip and source.zip
+  for (const prefix of BLOCKLISTED_PREFIXES) {
+    if (relPath.startsWith(prefix)) {
+      return true;
+    }
+  }
+  for (const suffix of BLOCKLISTED_SUFFIXES) {
+    if (relPath.endsWith(suffix)) {
+      return true;
+    }
+  }
+  return false;
 };
 
 // Exclude file paths in .gitignore

@@ -204,7 +204,7 @@ const makeTempDir = () => {
 // Iterates files and symlinks in a directory recursively.
 // Yields fs.Dirent objects.
 function* walkDir(dir) {
-  const entries = fs.readdirSync(dir, { withFileTypes: true, recursive: true });
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.isDirectory()) {
       const subDir = path.join(entry.parentPath, entry.name);

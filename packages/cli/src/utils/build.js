@@ -51,7 +51,7 @@ const debug = require('debug')('zapier:build');
 
 // Given entry points in a directory, return an array of file paths that are
 // required for the build. The returned paths are relative to workingDir.
-const requiredFiles = async (workingDir, entryPoints) => {
+const findRequiredFiles = async (workingDir, entryPoints) => {
   const appPackageJson = require(path.join(workingDir, 'package.json'));
   const isESM = appPackageJson.type === 'module';
   // Only include 'module' condition if the app is an ESM app (PDE-6187)
@@ -140,10 +140,10 @@ function expandRequiredFiles(workingDir, relPaths) {
 // Yields files and symlinks (as fs.Direnv objects) from a directory
 // recursively, excluding names that are typically not needed in the build,
 // such as .git, .env, build, etc.
-function* walkDirWithIgnores(dir) {
+function* walkDirWithPresetBlocklist(dir) {
   const shouldInclude = (entry) => {
-    // FIXME: entry.parentPath is not necessarily a relative path
-    return !isBlocklisted(path.join(entry.parentPath, entry.name));
+    const relPath = path.relative(dir, path.join(entry.parentPath, entry.name));
+    return !isBlocklisted(relPath);
   };
   yield* iterfilter(shouldInclude, walkDir(dir));
 }
@@ -173,38 +173,6 @@ function* walkDirWithPatterns(dir, patterns) {
   };
   yield* iterfilter(shouldInclude, walkDir(dir));
 }
-
-const writeZipFromPaths = (workingDir, zipPath, paths) => {
-  return new Promise((resolve, reject) => {
-    const output = fs.createWriteStream(zipPath);
-    const zip = archiver('zip', {
-      zlib: { level: Z_BEST_COMPRESSION },
-    });
-
-    // listen for all archive data to be written
-    output.on('close', function () {
-      resolve();
-    });
-
-    zip.on('error', function (err) {
-      reject(err);
-    });
-
-    // pipe archive data to the file
-    zip.pipe(output);
-
-    paths.forEach(function (filePath) {
-      let basePath = path.dirname(filePath);
-      if (basePath === '.') {
-        basePath = undefined;
-      }
-      const name = path.join(workingDir, filePath);
-      zip.file(name, { name: filePath, mode: 0o755 });
-    });
-
-    zip.finalize();
-  });
-};
 
 // Opens a zip file for writing. Returns an Archiver object.
 const openZip = (outputPath) => {
@@ -310,144 +278,166 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
   }
 };
 
+const writeBuildZipDumbly = async (workingDir, zip) => {
+  for (const entry of walkDirWithPresetBlocklist(workingDir)) {
+    const relPath = path.join(entry.parentPath, entry.name);
+    const absPath = path.resolve(workingDir, relPath);
+    if (entry.isFile()) {
+      zip.file(absPath, { name: relPath });
+    } else if (entry.isSymbolicLink()) {
+      // Resolve the symlink and write the target to the zip
+      const target = fs.realPathSync(absPath);
+      zip.file(target, { name: relPath });
+    }
+  }
+};
+
+// ├─__root/
+// │   └── node_modules/
+// │       └── .pnpm/
+// │            └── zapier-platform-core@17.1.0/
+// │                └── node_modules/
+// │                    ├── zapier-platform-core/
+// │                    │   ├── package.json
+// │                    │   └── other platform-core files...
+// │                    ├── lodash/ -> ../../lodash@4.17.21/node_modules/lodash/
+// │                    └── other dependencies of platform-core...
+// ├─ node_modules/
+// │  ├── zapier-platform-core/ -> ../__root/node_modules/.pnpm/zapier-platform-core@17.1.0/node_modules/zapier-platform-core/
+// │  └── other dependencies of the app...
+// ├─ package.json
+// ├─ index.js
+// └─ other files of the app...
+const writeBuildZipSmartly = async (workingDir, zip) => {
+  const entryPoints = [path.resolve(workingDir, 'zapierwrapper.js')];
+  const indexPath = path.resolve(workingDir, 'index.js');
+  if (fs.existsSync(indexPath)) {
+    // Necessary for CommonJS integrations. The zapierwrapper they use require()
+    // the index.js file using a variable. esbuild can't detect it, so we need
+    // to add it here specifically.
+    entryPoints.push(indexPath);
+  }
+
+  const appConfig = await getLinkedAppConfig(workingDir, false);
+  const relPaths = Array.from(
+    new Set([
+      // files found by esbuild and their package.json files
+      ...expandRequiredFiles(
+        workingDir,
+        await findRequiredFiles(workingDir, entryPoints),
+      ),
+      ...itermap(
+        (entry) => path.join(entry.parentPath, entry.name),
+        walkDirWithPatterns(workingDir, appConfig?.includeInBuild),
+      ),
+    ]),
+  ).sort();
+
+  const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
+
+  if (workspaceRoot !== workingDir) {
+    const appDirRelPath = path.relative(workspaceRoot, workingDir);
+    const linkNames = ['zapierwrapper.js', 'index.js'];
+    for (const name of linkNames) {
+      zip.symlink(name, path.join(appDirRelPath, name), 0o644);
+    }
+
+    const filenames = ['package.json', 'definition.json'];
+    for (const name of filenames) {
+      const absPath = path.resolve(workingDir, name);
+      zip.file(absPath, { name });
+    }
+  }
+
+  // Write required files to the zip
+  for (const relPath of relPaths) {
+    const absPath = path.resolve(workingDir, relPath);
+    const nameInZip = path.relative(workspaceRoot, absPath);
+    if (nameInZip === 'package.json' && workspaceRoot !== workingDir) {
+      // Ignore workspace root's package.json
+      continue;
+    }
+    zip.file(absPath, { name: nameInZip });
+  }
+
+  // Next, find all symlinks that are either: (1) immediate children of any
+  // node_modules directory, or (2) located one directory level below a
+  // node_modules directory. (1) is for the case of node_modules/package_name.
+  // (2) is for the case of node_modules/@scope/package_name.
+  const nodeModulesDirs = new Set();
+  for (const relPath of relPaths) {
+    const nmDir = getNearestNodeModulesDir(workingDir, relPath);
+    if (nmDir) {
+      nodeModulesDirs.add(nmDir);
+    }
+  }
+
+  for (const relNmDir of nodeModulesDirs) {
+    const absNmDir = path.resolve(workingDir, relNmDir);
+    const symlinks = iterfilter(
+      (entry) => entry.isSymbolicLink(),
+      walkDirLimitedLevels(absNmDir, 2),
+    );
+    for (const symlink of symlinks) {
+      const absPath = path.resolve(
+        workingDir,
+        symlink.parentPath,
+        symlink.name,
+      );
+      const nameInZip = path.relative(workspaceRoot, absPath);
+      zip.file(absPath, { name: nameInZip });
+    }
+  }
+};
+
 // Creates the build.zip file.
-const makeZip = async (workingDir, zipPath, disableDependencyDetection) => {
+const makeBuildZip = async (
+  workingDir,
+  zipPath,
+  disableDependencyDetection,
+) => {
   const zip = openZip(zipPath);
 
   if (disableDependencyDetection) {
     // Ideally, if dependency detection works really well, we don't need to
-    // support --disable-dependency-detection at all. We might want phase out
-    // this code path over time.
-    for (const entry of walkDirWithIgnores(workingDir)) {
-      const relPath = path.join(entry.parentPath, entry.name);
-      const absPath = path.resolve(workingDir, relPath);
-      if (entry.isFile()) {
-        zip.file(absPath, { name: relPath });
-      } else if (entry.isSymbolicLink()) {
-        // Resolve the symlink and write the target to the zip
-        const target = fs.realPathSync(absPath);
-        zip.file(target, { name: relPath });
-      }
-    }
+    // support --disable-dependency-detection at all. We might want to phase out
+    // this code path over time. Also, this doesn't handle workspaces.
+    await writeBuildZipDumbly(workingDir, zip);
   } else {
-    const entryPoints = [path.resolve(workingDir, 'zapierwrapper.js')];
-    const indexPath = path.resolve(workingDir, 'index.js');
-    if (fs.existsSync(indexPath)) {
-      // Necessary for CommonJS integrations. The zapierwrapper they use require()
-      // the index.js file using a variable. esbuild can't detect it, so we need
-      // to add it here specifically.
-      entryPoints.push(indexPath);
-    }
-
-    const appConfig = await getLinkedAppConfig(workingDir, false);
-    const relPaths = Array.from(
-      new Set([
-        ...expandRequiredFiles(
-          workingDir,
-          await requiredFiles(workingDir, entryPoints),
-        ),
-        ...itermap(
-          (entry) => path.join(entry.parentPath, entry.name),
-          walkDirWithPatterns(workingDir, appConfig?.includeInBuild),
-        ),
-      ]),
-    ).sort();
-
-    const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
-
-    if (workspaceRoot !== workingDir) {
-      const appDirRelPath = path.relative(workspaceRoot, workingDir);
-      const linkNames = ['zapierwrapper.js', 'index.js'];
-      for (const name of linkNames) {
-        zip.symlink(name, path.join(appDirRelPath, name), 0o644);
-      }
-
-      const filenames = ['package.json', 'definition.json'];
-      for (const name of filenames) {
-        const absPath = path.resolve(workingDir, name);
-        zip.file(absPath, { name, mode: 0o644 });
-      }
-    }
-
-    // Write required files to the zip
-    for (const relPath of relPaths) {
-      const absPath = path.resolve(workingDir, relPath);
-      const nameInZip = path.relative(workspaceRoot, absPath);
-      if (nameInZip === 'package.json' && workspaceRoot !== workingDir) {
-        // Ignore workspace root's package.json
-        continue;
-      }
-      zip.file(absPath, { name: nameInZip });
-    }
-
-    // Next, find all symlinks that are either: (1) immediate children of any
-    // node_modules directory, or (2) located one directory level below a
-    // node_modules directory. (1) is for the case of node_modules/package_name.
-    // (2) is for the case of node_modules/@scope/package_name.
-    const nodeModulesDirs = new Set();
-    for (const relPath of relPaths) {
-      const nmDir = getNearestNodeModulesDir(workingDir, relPath);
-      if (nmDir) {
-        nodeModulesDirs.add(nmDir);
-      }
-    }
-
-    for (const relNmDir of nodeModulesDirs) {
-      const absNmDir = path.resolve(workingDir, relNmDir);
-      const symlinks = iterfilter(
-        (entry) => entry.isSymbolicLink(),
-        walkDirLimitedLevels(absNmDir, 2),
-      );
-      for (const symlink of symlinks) {
-        const absPath = path.resolve(
-          workingDir,
-          symlink.parentPath,
-          symlink.name,
-        );
-        const nameInZip = path.relative(workspaceRoot, absPath);
-        zip.file(absPath, { name: nameInZip });
-      }
-    }
-
-    // If the developer uses pnpm workspaces, we'll use the '__root' directory
-    // in the zip to represent the workspace root. The directory layout in the
-    // zip file would be like:
-    // ├─__root/
-    // │   └── node_modules/
-    // │       └── .pnpm/
-    // │            └── zapier-platform-core@17.1.0/
-    // │                └── node_modules/
-    // │                    ├── zapier-platform-core/
-    // │                    │   ├── package.json
-    // │                    │   └── other platform-core files...
-    // │                    ├── lodash/ -> ../../lodash@4.17.21/node_modules/lodash/
-    // │                    └── other dependencies of platform-core...
-    // ├─ node_modules/
-    // │  ├── zapier-platform-core/ -> ../__root/node_modules/.pnpm/zapier-platform-core@17.1.0/node_modules/zapier-platform-core/
-    // │  └── other dependencies of the app...
-    // ├─ package.json
-    // ├─ index.js
-    // └─ other files of the app...
+    await writeBuildZipSmartly(workingDir, zip);
   }
 
   await zip.finish();
 };
 
 const makeSourceZip = async (workingDir, zipPath) => {
-  const paths = Array.from(
+  const relPaths = Array.from(
     itermap(
-      // respectGitIgnore() wants relative paths
       (entry) =>
         path.relative(workingDir, path.join(entry.parentPath, entry.name)),
-      walkDirWithIgnores(workingDir),
+      walkDirWithPresetBlocklist(workingDir),
     ),
   );
-  const finalPaths = respectGitIgnore(workingDir, paths);
-  finalPaths.sort();
-  debug('\nSource Zip files:');
-  finalPaths.forEach((filePath) => debug(`  ${filePath}`));
+  const finalRelPaths = respectGitIgnore(workingDir, relPaths).sort();
+
+  const zip = openZip(zipPath);
+
+  debug('\nSource files:');
+  for (const relPath of finalRelPaths) {
+    if (relPath === 'definition.json' || relPath === 'zapierwrapper.js') {
+      // These two files are generated at build time;
+      // they're not part of the source code.
+      continue;
+    }
+
+    const absPath = path.resolve(workingDir, relPath);
+    debug(`  ${absPath}`);
+
+    zip.file(absPath, { name: relPath });
+  }
   debug();
-  await writeZipFromPaths(workingDir, zipPath, finalPaths);
+
+  await zip.finish();
 };
 
 const maybeNotifyAboutOutdated = () => {
@@ -634,7 +624,7 @@ const _buildFunc = async ({
   maybeStartSpinner('Zipping project and dependencies');
 
   const zipPath = path.join(appDir, BUILD_PATH);
-  await makeZip(workingDir, zipPath, disableDependencyDetection);
+  await makeBuildZip(workingDir, zipPath, disableDependencyDetection);
   await makeSourceZip(
     workingDir,
     path.join(appDir, SOURCE_PATH),
@@ -682,8 +672,8 @@ const buildAndOrUpload = async (
 
 module.exports = {
   buildAndOrUpload,
+  findRequiredFiles,
+  makeBuildZip,
   makeSourceZip,
-  makeZip,
   maybeRunBuildScript,
-  requiredFiles,
 };
