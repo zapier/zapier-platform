@@ -3,19 +3,7 @@
 const _ = require('lodash');
 const uploader = require('./uploader');
 const crypto = require('crypto');
-
-const withRetry = async (fn, retries = 3, delay = 100, attempt = 0) => {
-  try {
-    return await fn();
-  } catch (error) {
-    if (attempt >= retries) {
-      throw error;
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, delay));
-    return withRetry(fn, retries, delay, attempt + 1);
-  }
-};
+const { withRetry } = require('./retry-utils');
 
 // responseStasher uploads the data and returns the URL that points to that data.
 const stashResponse = async (input, response) => {

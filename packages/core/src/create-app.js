@@ -7,6 +7,7 @@ const schemaTools = require('./tools/schema');
 // before middles
 const injectZObject = require('./app-middlewares/before/z-object');
 const addAppContext = require('./app-middlewares/before/add-app-context');
+const fetchStashedBundle = require('./app-middlewares/before/fetch-stashed-bundle');
 
 // after middles
 const checkOutput = require('./app-middlewares/after/checks');
@@ -27,6 +28,7 @@ const createApp = (appRaw) => {
 
   // standard before middlewares
   const befores = [
+    fetchStashedBundle,
     addAppContext,
     injectZObject,
     ...ensureArray(frozenCompiledApp.beforeApp),
