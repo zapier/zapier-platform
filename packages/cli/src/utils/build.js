@@ -264,7 +264,7 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
       path.dirname(relPath),
       'node_modules',
     );
-    return fs.existsSync(nmDir) ? nmDir : null;
+    return fs.existsSync(nmDir) ? path.relative(workingDir, nmDir) : null;
   } else {
     let dir = path.dirname(relPath);
     for (let i = 0; i < 100; i++) {
@@ -295,22 +295,6 @@ const writeBuildZipDumbly = async (workingDir, zip) => {
   }
 };
 
-// ├─__root/
-// │   └── node_modules/
-// │       └── .pnpm/
-// │            └── zapier-platform-core@17.1.0/
-// │                └── node_modules/
-// │                    ├── zapier-platform-core/
-// │                    │   ├── package.json
-// │                    │   └── other platform-core files...
-// │                    ├── lodash/ -> ../../lodash@4.17.21/node_modules/lodash/
-// │                    └── other dependencies of platform-core...
-// ├─ node_modules/
-// │  ├── zapier-platform-core/ -> ../__root/node_modules/.pnpm/zapier-platform-core@17.1.0/node_modules/zapier-platform-core/
-// │  └── other dependencies of the app...
-// ├─ package.json
-// ├─ index.js
-// └─ other files of the app...
 const writeBuildZipSmartly = async (workingDir, zip) => {
   const entryPoints = [path.resolve(workingDir, 'zapierwrapper.js')];
   const indexPath = path.resolve(workingDir, 'index.js');
@@ -531,8 +515,6 @@ const _buildFunc = async ({
   const buildDir = path.join(appDir, BUILD_DIR);
   await fse.ensureDir(buildDir);
 
-  const corePath = findCorePackageDir(workingDir);
-
   if (!skipNpmInstall) {
     maybeStartSpinner('Copying project to temp directory');
     const copyFilter = (src) => !src.endsWith('.zip');
@@ -546,6 +528,7 @@ const _buildFunc = async ({
 
     // `npm install` may fail silently without returning a non-zero exit code,
     // need to check further here
+    const corePath = path.join(workingDir, 'node_modules', PLATFORM_PACKAGE);
     if (!fs.existsSync(corePath)) {
       throw new Error(
         'Could not install dependencies properly. Error log:\n' + output.stderr,
@@ -556,6 +539,7 @@ const _buildFunc = async ({
   maybeEndSpinner();
   maybeStartSpinner('Applying entry point files');
 
+  const corePath = findCorePackageDir(workingDir);
   await copyZapierWrapper(corePath, workingDir);
 
   maybeEndSpinner();
@@ -651,7 +635,7 @@ const _buildFunc = async ({
     maybeEndSpinner();
   } else {
     maybeStartSpinner('Cleaning up temp directory');
-    await fse.removeDir(workingDir);
+    await fse.remove(workingDir);
     maybeEndSpinner();
   }
 
