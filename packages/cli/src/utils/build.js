@@ -255,7 +255,10 @@ const findWorkspaceRoot = async (workingDir) => {
 };
 
 const getNearestNodeModulesDir = (workingDir, relPath) => {
-  if (relPath.endsWith(`${path.sep}package.json`)) {
+  if (
+    relPath.endsWith(`${path.sep}package.json`) ||
+    relPath === 'package.json'
+  ) {
     const nmDir = path.resolve(
       workingDir,
       path.dirname(relPath),
