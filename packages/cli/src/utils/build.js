@@ -196,9 +196,10 @@ const openZip = (outputPath) => {
 
   if (path.sep === '\\') {
     // On Windows, patch zip.file() and zip.symlink() so they normalize the path
-    // separator to '/' because we're supposed to use '/' in a zip file.
-    // Those are the only two methods we're currently using. If you wanted to
-    // call other zip.xxx methods, you should patch them here as well.
+    // separator to '/' because we're supposed to use '/' in a zip file
+    // regardless of the OS platform. Those are the only two methods we're
+    // currently using. If you wanted to call other zip.xxx methods, you should
+    // patch them here as well.
     const origFileMethod = zip.file;
     zip.file = (filepath, data) => {
       filepath = filepath.replaceAll('\\', '/');
@@ -255,10 +256,7 @@ const findWorkspaceRoot = async (workingDir) => {
 };
 
 const getNearestNodeModulesDir = (workingDir, relPath) => {
-  if (
-    relPath.endsWith(`${path.sep}package.json`) ||
-    relPath === 'package.json'
-  ) {
+  if (path.basename(relPath) === 'package.json') {
     const nmDir = path.resolve(
       workingDir,
       path.dirname(relPath),
@@ -288,9 +286,8 @@ const writeBuildZipDumbly = async (workingDir, zip) => {
     if (entry.isFile()) {
       zip.file(absPath, { name: relPath });
     } else if (entry.isSymbolicLink()) {
-      // Resolve the symlink and write the target to the zip
-      const target = fs.realPathSync(absPath);
-      zip.file(target, { name: relPath });
+      const target = fs.readlinkSync(absPath);
+      zip.symlink(relPath, target, 0o644);
     }
   }
 };
@@ -364,7 +361,13 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
   for (const relNmDir of nodeModulesDirs) {
     const absNmDir = path.resolve(workingDir, relNmDir);
     const symlinks = iterfilter(
-      (entry) => entry.isSymbolicLink(),
+      (entry) => {
+        // Only include symlinks that are not in node_modules/.bin directories
+        return (
+          entry.isSymbolicLink() &&
+          !entry.parentPath.endsWith(`${path.sep}node_modules${path.sep}.bin`)
+        );
+      },
       walkDirLimitedLevels(absNmDir, 2),
     );
     for (const symlink of symlinks) {
@@ -374,7 +377,8 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         symlink.name,
       );
       const nameInZip = path.relative(workspaceRoot, absPath);
-      zip.file(absPath, { name: nameInZip, mode: 0o644 });
+      const target = fs.readlinkSync(absPath);
+      zip.symlink(nameInZip, target, 0o644);
     }
   }
 };
