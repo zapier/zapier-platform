@@ -87,7 +87,7 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
   if (path.sep === '\\') {
     // The paths in result.metafile.inputs use forward slashes even on Windows,
     // path.normalize() will convert them to backslashes.
-    relPaths = relPaths.map((x) => path.normalize());
+    relPaths = relPaths.map((x) => path.normalize(x));
   }
   return relPaths;
 };
