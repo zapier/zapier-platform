@@ -286,7 +286,7 @@ const writeBuildZipDumbly = async (workingDir, zip) => {
     if (entry.isFile()) {
       zip.file(absPath, { name: relPath });
     } else if (entry.isSymbolicLink()) {
-      const target = fs.readlinkSync(absPath);
+      const target = path.relative(entry.parentPath, fs.realpathSync(absPath));
       zip.symlink(relPath, target, 0o644);
     }
   }
@@ -377,8 +377,11 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         symlink.name,
       );
       const nameInZip = path.relative(workspaceRoot, absPath);
-      const target = fs.readlinkSync(absPath);
-      zip.symlink(nameInZip, target, 0o644);
+      const targetInZip = path.relative(
+        symlink.parentPath,
+        fs.realpathSync(absPath),
+      );
+      zip.symlink(nameInZip, targetInZip, 0o644);
     }
   }
 };
