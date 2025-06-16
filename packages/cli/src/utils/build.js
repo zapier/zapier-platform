@@ -83,7 +83,13 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     tsconfigRaw: '{}',
   });
 
-  return Object.keys(result.metafile.inputs);
+  let relPaths = Object.keys(result.metafile.inputs);
+  if (path.sep === '\\') {
+    // The paths in result.metafile.inputs use forward slashes even on Windows,
+    // path.normalize() will convert them to backslashes.
+    relPaths = relPaths.map((x) => path.normalize());
+  }
+  return relPaths;
 };
 
 // From a file path relative to workingDir, traverse up the directory tree until
@@ -202,13 +208,13 @@ const openZip = (outputPath) => {
     // patch them here as well.
     const origFileMethod = zip.file;
     zip.file = (filepath, data) => {
-      filepath = filepath.replaceAll('\\', '/');
+      filepath = path.normalize(filepath);
       return origFileMethod.call(zip, filepath, data);
     };
     const origSymlinkMethod = zip.symlink;
     zip.symlink = (name, target, mode) => {
-      name = name.replaceAll('\\', '/');
-      target = target.replaceAll('\\', '/');
+      name = path.normalize(name);
+      target = path.normalize(target);
       return origSymlinkMethod.call(zip, name, target, mode);
     };
   }
