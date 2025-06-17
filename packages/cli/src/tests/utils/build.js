@@ -291,8 +291,8 @@ describe('build (runs slowly)', function () {
 //    │  ├─ index.js
 //    │  └─ package.json
 //    └─ app-2/
-// 	     ├─ index.js
-// 	     └─ package.json
+//       ├─ index.js
+//       └─ package.json
 //
 // where app-1 and app-2 depends on the same local version of platform-core
 // package, but they use different versions of uuid.
