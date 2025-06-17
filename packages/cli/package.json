@@ -63,7 +63,6 @@
     "luxon": "3.6.1",
     "marked": "14.1.4",
     "marked-terminal": "7.2.1",
-    "minimatch": "9.0.3",
     "node-fetch": "2.7.0",
     "open": "10.1.2",
     "ora": "5.4.0",
