@@ -287,8 +287,8 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
 
 const writeBuildZipDumbly = async (workingDir, zip) => {
   for (const entry of walkDirWithPresetBlocklist(workingDir)) {
-    const relPath = path.join(entry.parentPath, entry.name);
-    const absPath = path.resolve(workingDir, relPath);
+    const absPath = path.resolve(entry.parentPath, entry.name);
+    const relPath = path.relative(workingDir, absPath);
     if (entry.isFile()) {
       zip.file(absPath, { name: relPath });
     } else if (entry.isSymbolicLink()) {
