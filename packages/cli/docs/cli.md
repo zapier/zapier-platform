@@ -170,7 +170,7 @@ When deprecating a version, you must provide a reason for the deprecation. You c
 - Legal requirement
 - Other
 
-Zapier will immediately send emails warning users of the deprecation if a date less than 30 days in the future is set, otherwise the emails will be sent exactly 30 days before the configured deprecation date.
+The deprecation date must be at least 3 weeks days in the future. Zapier will send emails warning users of the deprecation exactly 14 days before the configured deprecation date. This gives you 1 week to migrate users to a newer version, if possible, before we notify them that they need to do so themselves.
 
 There are other side effects: they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
 

@@ -63,9 +63,9 @@ class DeprecateCommand extends BaseCommand {
     if (
       !this.flags.force &&
       !(await this.confirm(
-        'Are you sure you want to deprecate this version? This will notify users that their Zaps or other automations will stop working after the specified date.' +
+        'Are you sure you want to deprecate this version? Only do so if it would start to fail otherwise. We will notify users that their Zaps or other automations will stop working two weeks before the specified date.' +
           (hasActiveUsers
-            ? `\n\nThis version has ${versionInfo.user_count} active user(s). Strongly consider migrating users to another version before deprecating!`
+            ? `\n\nThis version has ${versionInfo.user_count} active user(s) via Zaps. Strongly consider migrating users to another version at least two weeks before the deprecation date!`
             : ''),
       ))
     ) {
@@ -129,7 +129,7 @@ Use this when an integration version will not be supported or start breaking at 
 When deprecating a version, you must provide a reason for the deprecation. You can either specify the reason using the --reason flag or you will be prompted to select from the following options:
 ${DEPRECATION_REASONS.map((r) => `- ${r.name}`).join('\n')}
 
-Zapier will immediately send emails warning users of the deprecation if a date less than 30 days in the future is set, otherwise the emails will be sent exactly 30 days before the configured deprecation date.
+The deprecation date must be at least 3 weeks days in the future. Zapier will send emails warning users of the deprecation exactly 14 days before the configured deprecation date. This gives you 1 week to migrate users to a newer version, if possible, before we notify them that they need to do so themselves.
 
 There are other side effects: they'll start seeing it as "Deprecated" in the UI, and once the deprecation date arrives, if the Zaps weren't updated, they'll be paused and the users will be emailed again explaining what happened.
 
