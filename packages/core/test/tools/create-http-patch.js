@@ -9,7 +9,7 @@ const {
   BINARY_TYPE,
   JSON_TYPE,
   TEXT_TYPE,
-  XML_TYPE,
+  XML_TEXT_TYPE,
 } = require('../../src/tools/http');
 const createAppTester = require('../../src/tools/create-app-tester');
 const createHttpPatch = require('../../src/tools/create-http-patch');
@@ -67,7 +67,7 @@ describe('create http patch', () => {
 
         // Response data
         res.statusCode = 200;
-        res.headers = { 'content-type': XML_TYPE }; // XML type should be supported
+        res.headers = { 'content-type': XML_TEXT_TYPE }; // XML type should be supported
         callback(res);
         res.emit('data', Buffer.from('<foo>bar</foo>'));
         res.emit('end');
@@ -117,7 +117,7 @@ describe('create http patch', () => {
 
         // Response data
         res.statusCode = 200;
-        res.headers = { 'content-type': [XML_TYPE] }; // XML type should be supported
+        res.headers = { 'content-type': [XML_TEXT_TYPE] }; // XML type should be supported
         callback(res);
         res.emit('data', Buffer.from('<foo>bar</foo>'));
         res.emit('end');

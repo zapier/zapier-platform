@@ -9,7 +9,8 @@ const HTML_TYPE = 'text/html';
 const TEXT_TYPE = 'text/plain';
 const TEXT_TYPE_UTF8 = 'text/plain; charset=utf-8';
 const YAML_TYPE = 'application/yaml';
-const XML_TYPE = 'text/xml';
+const XML_TEXT_TYPE = 'text/xml';
+const XML_APPLICATION_TYPE = 'application/xml';
 const JSONAPI_TYPE = 'application/vnd.api+json';
 
 const ALLOWED_HTTP_DATA_CONTENT_TYPES = new Set([
@@ -20,7 +21,8 @@ const ALLOWED_HTTP_DATA_CONTENT_TYPES = new Set([
   TEXT_TYPE,
   TEXT_TYPE_UTF8,
   YAML_TYPE,
-  XML_TYPE,
+  XML_TEXT_TYPE,
+  XML_APPLICATION_TYPE,
   JSONAPI_TYPE,
 ]);
 
@@ -122,7 +124,8 @@ module.exports = {
   HTML_TYPE,
   TEXT_TYPE,
   YAML_TYPE,
-  XML_TYPE,
+  XML_TEXT_TYPE,
+  XML_APPLICATION_TYPE,
   JSONAPI_TYPE,
   ALLOWED_HTTP_DATA_CONTENT_TYPES,
   getContentType,
