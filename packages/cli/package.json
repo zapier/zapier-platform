@@ -19,7 +19,7 @@
     "/oclif.manifest.json"
   ],
   "engines": {
-    "node": ">=18.18"
+    "node": ">=18.20"
   },
   "scripts": {
     "docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js",
