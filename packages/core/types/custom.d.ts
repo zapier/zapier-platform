@@ -18,9 +18,14 @@ export const createAppTester: (
   options?: { customStoreKey?: string },
 ) => <T, B extends Bundle>(
   func: (z: ZObject, bundle: B) => T | Promise<T>,
-  bundle?: Partial<B>, // partial so we don't have to make a full bundle in tests
+  bundle?: DeepPartial<B>, // partial so we don't have to make a full bundle in tests
   clearZcacheBeforeUse?: boolean,
 ) => Promise<T>; // appTester always returns a promise
+
+/** Recursively make all properties of an object optional. */
+type DeepPartial<T> = T extends object
+  ? { [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P] }
+  : T;
 
 type HttpMethod =
   | 'GET'
