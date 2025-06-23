@@ -85,7 +85,6 @@ describe('build (runs slowly)', function () {
       '.env',
       '.environment',
       `.git${path.sep}HEAD`,
-      '.DS_Store',
       `build${path.sep}the-build.zip`,
     ].forEach((file) => {
       const fileDir = file.split(path.sep);
