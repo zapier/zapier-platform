@@ -9,7 +9,7 @@ const HTML_TYPE = 'text/html';
 const TEXT_TYPE = 'text/plain';
 const TEXT_TYPE_UTF8 = 'text/plain; charset=utf-8';
 const YAML_TYPE = 'application/yaml';
-const XML_TYPE = 'application/xml';
+const XML_TYPE = 'text/xml';
 const JSONAPI_TYPE = 'application/vnd.api+json';
 
 const ALLOWED_HTTP_DATA_CONTENT_TYPES = new Set([
