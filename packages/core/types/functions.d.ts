@@ -2,9 +2,16 @@ import type { Bundle, ZObject } from './custom';
 
 type DefaultInputData = Record<string, unknown>;
 
+/**
+ * Wraps a `perform` function that is used to poll for data from an API.
+ * By default must return an array of objects with an `id` field, but
+ * when one or more output fields have `primary:true` set on them, this
+ * can be overridden by setting the second type parameter to a type with
+ * those keys.
+ */
 export type PollingTriggerPerform<
   $InputData extends DefaultInputData = DefaultInputData,
-  $Return extends { id: string } = { id: string }, // Primary key stuff later?
+  $Return extends {} = { id: string },
 > = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | Promise<$Return[]>;
 
 /**
