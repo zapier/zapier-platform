@@ -907,6 +907,12 @@ export interface BasicPollingOperation<
   inputFields?: $InputFields;
 
   /**
+   * Defines groups for organizing input fields in the UI. Each group
+   * can have a key, label, and emphasis styling.
+   */
+  inputFieldGroups?: InputFieldGroups;
+
+  /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
@@ -996,6 +1002,12 @@ export interface BasicHookOperation<
   inputFields?: $InputFields;
 
   /**
+   * Defines groups for organizing input fields in the UI. Each group
+   * can have a key, label, and emphasis styling.
+   */
+  inputFieldGroups?: InputFieldGroups;
+
+  /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
@@ -1050,6 +1062,12 @@ export interface BasicHookToPollOperation<
   inputFields?: $InputFields;
 
   /**
+   * Defines groups for organizing input fields in the UI. Each group
+   * can have a key, label, and emphasis styling.
+   */
+  inputFieldGroups?: InputFieldGroups;
+
+  /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
@@ -1102,6 +1120,12 @@ export interface BasicActionOperation {
 
   /** What should the form a user sees and configures look like? */
   inputFields?: InputFields;
+
+  /**
+   * Defines groups for organizing input fields in the UI. Each group
+   * can have a key, label, and emphasis styling.
+   */
+  inputFieldGroups?: InputFieldGroups;
 
   /**
    * What fields of data will this return? Will use resource
@@ -1165,6 +1189,12 @@ export interface BasicSearchOperation<
   inputFields?: $InputFields;
 
   /**
+   * Defines groups for organizing input fields in the UI. Each group
+   * can have a key, label, and emphasis styling.
+   */
+  inputFieldGroups?: InputFieldGroups;
+
+  /**
    * What fields of data will this return? Will use resource
    * outputFields if missing, will also use sample if available.
    */
@@ -1226,6 +1256,12 @@ export interface BasicCreateOperation<
 
   /** What should the form a user sees and configures look like? */
   inputFields?: $InputFields;
+
+  /**
+   * Defines groups for organizing input fields in the UI. Each group
+   * can have a key, label, and emphasis styling.
+   */
+  inputFieldGroups?: InputFieldGroups;
 
   /**
    * What fields of data will this return? Will use resource
@@ -1304,6 +1340,12 @@ export interface BasicOperation {
 
   /** What should the form a user sees and configures look like? */
   inputFields?: InputFields;
+
+  /**
+   * Defines groups for organizing input fields in the UI. Each group
+   * can have a key, label, and emphasis styling.
+   */
+  inputFieldGroups?: InputFieldGroups;
 
   /**
    * What fields of data will this return? Will use resource
@@ -1411,6 +1453,13 @@ export interface PlainOutputField {
    */
   steadyState?: boolean;
 }
+
+/** An array or collection of input field groups. */
+export type InputFieldGroups = {
+  key: Key;
+  label: string;
+  emphasize: boolean;
+}[];
 
 /**
  * Zapier uses this configuration to ensure this action is performed
@@ -1613,6 +1662,12 @@ export interface PlainInputField {
    * Supports simple key-values only (no sub-objects or arrays).
    */
   meta?: FieldMeta;
+
+  /**
+   * References a group key from the operation's inputFieldGroups to
+   * organize this field with others.
+   */
+  group?: Key;
 }
 
 /**
