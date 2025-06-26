@@ -81,6 +81,7 @@ BasicHookOperationSchema.properties = {
     },
   },
   inputFields: BasicHookOperationSchema.properties.inputFields,
+  inputFieldGroups: BasicHookOperationSchema.properties.inputFieldGroups,
   outputFields: BasicHookOperationSchema.properties.outputFields,
   sample: BasicHookOperationSchema.properties.sample,
 };

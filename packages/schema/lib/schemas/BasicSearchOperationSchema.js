@@ -31,6 +31,7 @@ BasicSearchOperationSchema.properties = {
     oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   },
   inputFields: BasicSearchOperationSchema.properties.inputFields,
+  inputFieldGroups: BasicSearchOperationSchema.properties.inputFieldGroups,
   outputFields: BasicSearchOperationSchema.properties.outputFields,
   sample: BasicSearchOperationSchema.properties.sample,
   lock: BasicSearchOperationSchema.properties.lock,

@@ -10,6 +10,7 @@ const KeySchema = require('./KeySchema');
 const LockObjectSchema = require('./LockObjectSchema');
 const ThrottleObjectSchema = require('./ThrottleObjectSchema');
 const InputFieldsSchema = require('./InputFieldsSchema');
+const InputFieldGroupsSchema = require('./InputFieldGroupsSchema');
 const OutputFieldsSchema = require('./OutputFieldsSchema');
 
 module.exports = makeSchema(
@@ -34,6 +35,11 @@ module.exports = makeSchema(
         description:
           'What should the form a user sees and configures look like?',
         $ref: InputFieldsSchema.id,
+      },
+      inputFieldGroups: {
+        description:
+          'Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.',
+        $ref: InputFieldGroupsSchema.id,
       },
       outputFields: {
         description:
@@ -84,6 +90,7 @@ module.exports = makeSchema(
   },
   [
     InputFieldsSchema,
+    InputFieldGroupsSchema,
     OutputFieldsSchema,
     FunctionSchema,
     KeySchema,

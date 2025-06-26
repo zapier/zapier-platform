@@ -669,6 +669,13 @@
         }
       }
     },
+    "KeySchema": {
+      "id": "/KeySchema",
+      "description": "A unique identifier for this item.",
+      "type": "string",
+      "minLength": 2,
+      "pattern": "^[a-zA-Z]+[a-zA-Z0-9_]*$"
+    },
     "PlainInputFieldSchema": {
       "description": "Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "id": "/PlainInputFieldSchema",
@@ -765,6 +772,10 @@
         "meta": {
           "description": "Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).",
           "$ref": "/FieldMetaSchema"
+        },
+        "group": {
+          "description": "References a group key from the operation's inputFieldGroups to organize this field with others.",
+          "$ref": "/KeySchema"
         }
       },
       "additionalProperties": false
@@ -875,6 +886,31 @@
         ]
       }
     },
+    "InputFieldGroupsSchema": {
+      "id": "/InputFieldGroupsSchema",
+      "description": "An array or collection of input field groups.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["key"],
+        "properties": {
+          "key": {
+            "description": "The unique identifier for this group.",
+            "$ref": "/KeySchema"
+          },
+          "label": {
+            "description": "The human-readable name for the group.",
+            "type": "string",
+            "minLength": 1
+          },
+          "emphasize": {
+            "description": "Whether this group should be visually emphasized in the UI.",
+            "type": "boolean"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
     "OutputFieldsSchema": {
       "id": "/OutputFieldsSchema",
       "description": "An array or collection of output fields.",
@@ -889,13 +925,6 @@
           }
         ]
       }
-    },
-    "KeySchema": {
-      "id": "/KeySchema",
-      "description": "A unique identifier for this item.",
-      "type": "string",
-      "minLength": 2,
-      "pattern": "^[a-zA-Z]+[a-zA-Z0-9_]*$"
     },
     "LockObjectSchema": {
       "id": "/LockObjectSchema",
@@ -1046,6 +1075,10 @@
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
         },
+        "inputFieldGroups": {
+          "description": "Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.",
+          "$ref": "/InputFieldGroupsSchema"
+        },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/OutputFieldsSchema"
@@ -1156,6 +1189,10 @@
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
         },
+        "inputFieldGroups": {
+          "description": "Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.",
+          "$ref": "/InputFieldGroupsSchema"
+        },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/OutputFieldsSchema"
@@ -1208,6 +1245,10 @@
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
+        },
+        "inputFieldGroups": {
+          "description": "Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.",
+          "$ref": "/InputFieldGroupsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1270,6 +1311,10 @@
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
+        },
+        "inputFieldGroups": {
+          "description": "Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.",
+          "$ref": "/InputFieldGroupsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1513,6 +1558,10 @@
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
         },
+        "inputFieldGroups": {
+          "description": "Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.",
+          "$ref": "/InputFieldGroupsSchema"
+        },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
           "$ref": "/OutputFieldsSchema"
@@ -1614,6 +1663,10 @@
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
+        },
+        "inputFieldGroups": {
+          "description": "Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.",
+          "$ref": "/InputFieldGroupsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
@@ -1730,6 +1783,10 @@
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
+        },
+        "inputFieldGroups": {
+          "description": "Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.",
+          "$ref": "/InputFieldGroupsSchema"
         },
         "outputFields": {
           "description": "What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.",
