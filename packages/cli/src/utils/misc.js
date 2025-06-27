@@ -69,10 +69,11 @@ const runCommand = (command, args, options) => {
     result.on('error', reject);
 
     result.on('close', (code) => {
-      if (code !== 0) {
+      if (code === 0) {
+        resolve({ stdout, stderr });
+      } else {
         reject(new Error(stderr));
       }
-      resolve({ stdout, stderr });
     });
   });
 };

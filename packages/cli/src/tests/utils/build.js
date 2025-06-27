@@ -1128,13 +1128,19 @@ export default {
     // dumbPaths should contain both CJS and ESM paths since it's just listing all files
     dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
     dumbPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js'); // ESM path
+    dumbPaths.should.containEql('node_modules/uuid/wrapper.mjs'); // ESM path
   });
 
   it('should only include ESM paths in smartPaths', async function () {
     const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
-    // For ESM app, smartPaths should only contain ESM paths
-    smartPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js');
-    smartPaths.should.not.containEql('node_modules/uuid/dist/index.js');
+    // For ESM app, smartPaths should contain the "exports/./node/import" entry
+    // point: './wrapper.mjs' (https://github.com/uuidjs/uuid/blob/v9.0.1/package.json#L30)
+    smartPaths.should.containEql('node_modules/uuid/wrapper.mjs');
+    smartPaths.should.containEql('node_modules/uuid/dist/index.js');
+
+    // This one, even though it's a ESM entry point, defined in
+    // "exports/./node/module", it isn't used by Node.js
+    smartPaths.should.not.containEql('node_modules/uuid/dist/esm-node/index.js');
   });
 });

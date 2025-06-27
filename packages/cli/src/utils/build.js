@@ -12,6 +12,7 @@ const colors = require('colors/safe');
 const esbuild = require('esbuild');
 const fse = require('fs-extra');
 const updateNotifier = require('update-notifier');
+const decompress = require('decompress');
 
 const {
   BUILD_DIR,
@@ -54,13 +55,6 @@ const debug = require('debug')('zapier:build');
 const findRequiredFiles = async (workingDir, entryPoints) => {
   const appPackageJson = require(path.join(workingDir, 'package.json'));
   const isESM = appPackageJson.type === 'module';
-  // Only include 'module' condition if the app is an ESM app (PDE-6187)
-  // otherwise exclude 'module' since it breaks the build for hybrid packages (like uuid)
-  // in CJS apps by only including ESM version of packages.
-  // An empty list is necessary because otherwise if `platform: node` is specified,
-  // the 'module' condition is included by default.
-  // https://esbuild.github.io/api/#conditions
-  const conditions = isESM ? ['module'] : [];
   const format = isESM ? 'esm' : 'cjs';
 
   const result = await esbuild.build({
@@ -77,7 +71,9 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
       './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
     ],
     format,
-    conditions,
+    // Setting conditions to an empty array to exclude 'module' condition,
+    // which Node.js doesn't use. https://esbuild.github.io/api/#conditions
+    conditions: [],
     write: false, // no need to write outfile
     absWorkingDir: workingDir,
     tsconfigRaw: '{}',
@@ -493,6 +489,67 @@ const maybeRunBuildScript = async (options = {}) => {
   }
 };
 
+const extractMissingModulePath = (testDir, error) => {
+  // Extract relative path to print a more user-friendly error message
+  if (error.message && error.message.includes('MODULE_NOT_FOUND')) {
+    const searchString = `Cannot find module '${testDir}/`;
+    const idx = error.message.indexOf(searchString);
+    if (idx >= 0) {
+      const pathStart = idx + searchString.length;
+      const pathEnd = error.message.indexOf("'", pathStart);
+      if (pathEnd >= 0) {
+        const relPath = error.message.substring(pathStart, pathEnd);
+        return relPath;
+      }
+    }
+  }
+  return null;
+};
+
+const testBuildZip = async (zipPath) => {
+  const osTmpDir = await fse.realpath(os.tmpdir());
+  const testDir = path.join(
+    osTmpDir,
+    'zapier-' + crypto.randomBytes(4).toString('hex'),
+  );
+
+  try {
+    await fse.ensureDir(testDir);
+    await decompress(zipPath, testDir);
+
+    const entryPoints = ['zapierwrapper.js', 'index.js'];
+    for (const entryPoint of entryPoints) {
+      const entryPath = path.join(testDir, entryPoint);
+      if (!fs.existsSync(entryPath)) {
+        throw new Error(`Entry point ${entryPoint} not found in build.zip`);
+      }
+    }
+
+    try {
+      for (const entryPoint of entryPoints) {
+        await runCommand(process.execPath, [entryPoint], {
+          cwd: testDir,
+          timeout: 5000,
+        });
+      }
+    } catch (error) {
+      // Extract relative path to print a more user-friendly error message
+      const relPath = extractMissingModulePath(testDir, error);
+      if (relPath) {
+        throw new Error(
+          `Detected a missing file in build.zip: '${relPath}'\n` +
+            `You may have to add it to ${colors.bold.underline('includeInBuild')} ` +
+            `in your ${colors.bold.underline('.zapierapprc')} file.`,
+        );
+      }
+      throw error;
+    }
+  } finally {
+    // Clean up test directory
+    await fse.remove(testDir);
+  }
+};
+
 const _buildFunc = async ({
   skipNpmInstall = false,
   disableDependencyDetection = false,
@@ -652,6 +709,10 @@ const _buildFunc = async ({
     maybeEndSpinner();
   }
 
+  maybeStartSpinner('Testing build');
+  await testBuildZip(zipPath);
+  maybeEndSpinner();
+
   return zipPath;
 };
 
@@ -684,5 +745,6 @@ module.exports = {
   makeBuildZip,
   makeSourceZip,
   maybeRunBuildScript,
+  testBuildZip,
   walkDirWithPresetBlocklist,
 };
