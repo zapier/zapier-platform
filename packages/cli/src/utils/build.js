@@ -517,17 +517,21 @@ const testBuildZip = async (zipPath) => {
     await fse.ensureDir(testDir);
     await decompress(zipPath, testDir);
 
-    const entryPoints = ['zapierwrapper.js', 'index.js'];
-    for (const entryPoint of entryPoints) {
-      const entryPath = path.join(testDir, entryPoint);
-      if (!fs.existsSync(entryPath)) {
-        throw new Error(`Entry point ${entryPoint} not found in build.zip`);
-      }
+    const wrapperPath = path.join(testDir, 'zapierwrapper.js');
+    if (!fs.existsSync(wrapperPath)) {
+      throw new Error('zapierwrapper.js not found in build.zip.');
     }
 
+    const indexPath = path.join(testDir, 'index.js');
+    const indexExists = fs.existsSync(indexPath);
+
     try {
-      for (const entryPoint of entryPoints) {
-        await runCommand(process.execPath, [entryPoint], {
+      await runCommand(process.execPath, ['zapierwrapper.js'], {
+        cwd: testDir,
+        timeout: 5000,
+      });
+      if (indexExists) {
+        await runCommand(process.execPath, ['index.js'], {
           cwd: testDir,
           timeout: 5000,
         });
