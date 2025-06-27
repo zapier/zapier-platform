@@ -749,6 +749,5 @@ module.exports = {
   makeBuildZip,
   makeSourceZip,
   maybeRunBuildScript,
-  testBuildZip,
   walkDirWithPresetBlocklist,
 };
