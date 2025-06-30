@@ -1,3 +1,33 @@
+## 17.3.0
+
+_unreleased_
+
+This release introduces two major improvements: `zapier build` and field grouping.
+
+The `zapier build` command has been revamped to:
+- Better support npm/yarn/pnpm workspaces
+- Run faster when the `--skip-npm-install` flag is enabled
+- Test the build.zip file to verify all load-time dependencies are included (not applicable on Windows)
+
+(Changelog for field grouping...)
+
+### cli
+
+- :nail_care: `zapier build` supports npm/yarn/pnpm workspaces and runs faster ([#1052](https://github.com/zapier/zapier-platform/pull/1052))
+- :bug: Fix a bug where `zapier build` can select the wrong entry point of a dependency ([#1052](https://github.com/zapier/zapier-platform/pull/1052) - [c004298](https://github.com/zapier/zapier-platform/pull/1052/commits/c004298a1b61b7de777f3c8222949c7d38d8826f))
+- :scroll: Update docs for new days before deprecation and sending emails ([#1056](https://github.com/zapier/zapier-platform/pull/1056))
+
+### core
+
+- :bug: Fix a bug where Fetch logger crashes when response doesn't have content-type ([#1062](https://github.com/zapier/zapier-platform/pull/1062))
+- :bug: Fix a bug where `text/xml` response content should be logged ([#1058](https://github.com/zapier/zapier-platform/pull/1058))
+- :nail_care: Typing update: allow overriding `id` requirement in polling triggers ([#1059](https://github.com/zapier/zapier-platform/pull/1059))
+- :nail_care: Typing update: allow test bundles to be recursively partial ([#1057](https://github.com/zapier/zapier-platform/pull/1057))
+
+### schema
+
+- :tada: Field grouping...
+
 ## 17.2.0
 
 _released `2025-06-11`_
