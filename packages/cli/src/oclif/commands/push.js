@@ -1,6 +1,7 @@
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { BUILD_PATH, SOURCE_PATH } = require('../../constants');
 const { Flags } = require('@oclif/core');
+const colors = require('colors/safe');
 
 const BuildCommand = require('./build');
 
@@ -8,10 +9,11 @@ const { buildAndOrUpload } = require('../../utils/build');
 
 class PushCommand extends ZapierBaseCommand {
   async perform() {
+    const skipNpmInstall = this.flags['skip-npm-install'];
     await buildAndOrUpload(
       { build: true, upload: true },
       {
-        skipNpmInstall: this.flags['skip-npm-install'],
+        skipNpmInstall,
         disableDependencyDetection: this.flags['disable-dependency-detection'],
         skipValidation: this.flags['skip-validation'],
         overwritePartnerChanges: this.flags['overwrite-partner-changes'],
@@ -20,6 +22,12 @@ class PushCommand extends ZapierBaseCommand {
     this.log(
       `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`,
     );
+
+    if (!skipNpmInstall) {
+      this.log(
+        `\nTip: Try ${colors.bold.underline('zapier push --skip-npm-install')} for faster builds.`,
+      );
+    }
   }
 }
 
