@@ -56,11 +56,16 @@ const isZapierUserAgent = (headers) =>
   _.get(headers, 'user-agent', []).indexOf('Zapier') !== -1;
 
 const shouldIncludeResponseContent = (contentType) => {
+  if (!contentType) {
+    return false;
+  }
+
   for (const ctype of ALLOWED_HTTP_DATA_CONTENT_TYPES) {
     if (contentType.includes(ctype)) {
       return true;
     }
   }
+
   return false;
 };
 
