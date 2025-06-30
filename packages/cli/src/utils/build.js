@@ -327,7 +327,9 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
     const appDirRelPath = path.relative(workspaceRoot, workingDir);
     const linkNames = ['zapierwrapper.js', 'index.js'];
     for (const name of linkNames) {
-      zip.symlink(name, path.join(appDirRelPath, name), 0o644);
+      if (fs.existsSync(path.join(workingDir, name))) {
+        zip.symlink(name, path.join(appDirRelPath, name), 0o644);
+      }
     }
 
     const filenames = ['package.json', 'definition.json'];
