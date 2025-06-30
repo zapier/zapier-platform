@@ -8,21 +8,30 @@ const {
 } = require('../../constants');
 
 const { buildAndOrUpload } = require('../../utils/build');
+const colors = require('colors/safe');
 
 class BuildCommand extends BaseCommand {
   async perform() {
+    const skipNpmInstall = this.flags['skip-npm-install'];
     await buildAndOrUpload(
       { build: true },
       {
-        skipNpmInstall: this.flags['skip-npm-install'],
+        skipNpmInstall,
         disableDependencyDetection: this.flags['disable-dependency-detection'],
         skipValidation: this.flags['skip-validation'],
       },
     );
 
     this.log(
-      `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}. Try the \`zapier upload\` command now.`,
+      `\nBuild complete! Created ${BUILD_PATH} and ${SOURCE_PATH}.\n` +
+        `Now you can upload them with the ${colors.bold.underline('zapier upload')} command.`,
     );
+
+    if (!skipNpmInstall) {
+      this.log(
+        `\nTip: Try ${colors.bold.underline('zapier build --skip-npm-install')} for faster builds.`,
+      );
+    }
   }
 }
 
