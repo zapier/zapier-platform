@@ -5,6 +5,7 @@ const RefResourceSchema = require('./RefResourceSchema');
 const FieldChoicesSchema = require('./FieldChoicesSchema');
 const PlainFieldSchema = require('./PlainFieldSchema');
 const FieldMetaSchema = require('./FieldMetaSchema');
+const KeySchema = require('./KeySchema');
 
 module.exports = makeSchema(
   {
@@ -70,6 +71,11 @@ module.exports = makeSchema(
           'Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).',
         $ref: FieldMetaSchema.id,
       },
+      group: {
+        description:
+          "References a group key from the operation's inputFieldGroups to organize this field with others.",
+        $ref: KeySchema.id,
+      },
     },
     examples: [
       { key: 'abc' },
@@ -89,6 +95,14 @@ module.exports = makeSchema(
           should_call_api: true,
           display_order: 1,
         },
+      },
+      {
+        key: 'name',
+        group: 'contact',
+      },
+      {
+        key: 'email',
+        group: 'contact',
       },
     ],
     antiExamples: [
@@ -132,5 +146,11 @@ module.exports = makeSchema(
     ],
     additionalProperties: false,
   },
-  [RefResourceSchema, FieldChoicesSchema, FieldMetaSchema, PlainFieldSchema],
+  [
+    RefResourceSchema,
+    FieldChoicesSchema,
+    FieldMetaSchema,
+    PlainFieldSchema,
+    KeySchema,
+  ],
 );

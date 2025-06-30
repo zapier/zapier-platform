@@ -31,6 +31,7 @@ BasicActionOperationSchema.properties = {
     oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   },
   inputFields: BasicActionOperationSchema.properties.inputFields,
+  inputFieldGroups: BasicActionOperationSchema.properties.inputFieldGroups,
   outputFields: BasicActionOperationSchema.properties.outputFields,
   sample: BasicActionOperationSchema.properties.sample,
   lock: BasicActionOperationSchema.properties.lock,
