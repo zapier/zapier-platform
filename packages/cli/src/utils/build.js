@@ -153,10 +153,11 @@ function* walkDirWithPresetBlocklist(dir) {
 // Yields files and symlinks (as fs.Direnv objects) from a directory recursively
 // that match any of the given or preset regex patterns.
 function* walkDirWithPatterns(dir, patterns) {
+  const sep = path.sep.replaceAll('\\', '\\\\'); // escape backslash for regex
   const presetPatterns = [
-    `${path.sep}definition\\.json$`,
-    `${path.sep}package\\.json$`,
-    `${path.sep}aws-sdk${path.sep}apis${path.sep}.*\\.json$`,
+    `${sep}definition\\.json$`,
+    `${sep}package\\.json$`,
+    `${sep}aws-sdk${sep}apis${sep}.*\\.json$`,
   ];
   patterns = [...presetPatterns, ...(patterns || [])].map(
     (x) => new RegExp(x, 'i'),
