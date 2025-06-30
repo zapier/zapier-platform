@@ -1,31 +1,34 @@
-const crypto = require('crypto');
-const os = require('os');
-const path = require('path');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const {
+  constants: { Z_BEST_COMPRESSION },
+} = require('node:zlib');
 
 const _ = require('lodash');
 const archiver = require('archiver');
-const esbuild = require('esbuild');
-const fs = require('fs');
-const fse = require('fs-extra');
-const klaw = require('klaw');
-const updateNotifier = require('update-notifier');
 const colors = require('colors/safe');
-const semver = require('semver');
-const { minimatch } = require('minimatch');
+const esbuild = require('esbuild');
+const fse = require('fs-extra');
+const updateNotifier = require('update-notifier');
+const decompress = require('decompress');
 
 const {
-  constants: { Z_BEST_COMPRESSION },
-} = require('zlib');
-
-const constants = require('../constants');
-
-const { writeFile, copyDir, ensureDir, removeDir } = require('./files');
+  BUILD_DIR,
+  BUILD_PATH,
+  PLATFORM_PACKAGE,
+  SOURCE_PATH,
+  UPDATE_NOTIFICATION_INTERVAL,
+} = require('../constants');
+const { copyDir, walkDir, walkDirLimitedLevels } = require('./files');
+const { iterfilter, itermap } = require('./itertools');
 
 const {
-  prettyJSONstringify,
-  startSpinner,
   endSpinner,
   flattenCheckResult,
+  prettyJSONstringify,
+  startSpinner,
 } = require('./display');
 
 const {
@@ -35,33 +38,23 @@ const {
   validateApp,
 } = require('./api');
 
-const { copyZapierWrapper } = require('./zapierwrapper');
+const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
 const checkMissingAppInfo = require('./check-missing-app-info');
 
-const { runCommand, isWindows, findCorePackageDir } = require('./misc');
-const { respectGitIgnore } = require('./ignore');
+const { findCorePackageDir, isWindows, runCommand } = require('./misc');
+const { isBlocklisted, respectGitIgnore } = require('./ignore');
 const { localAppCommand } = require('./local');
 
 const debug = require('debug')('zapier:build');
 
-const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
+// const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
 
-// given entry points in a directory, return a list of files that uses
-const requiredFiles = async ({ cwd, entryPoints }) => {
-  if (!_.endsWith(cwd, path.sep)) {
-    cwd += path.sep;
-  }
-
-  const appPackageJson = require(path.join(cwd, 'package.json'));
+// Given entry points in a directory, return an array of file paths that are
+// required for the build. The returned paths are relative to workingDir.
+const findRequiredFiles = async (workingDir, entryPoints) => {
+  const appPackageJson = require(path.join(workingDir, 'package.json'));
   const isESM = appPackageJson.type === 'module';
-  // Only include 'module' condition if the app is an ESM app (PDE-6187)
-  // otherwise exclude 'module' since it breaks the build for hybrid packages (like uuid)
-  // in CJS apps by only including ESM version of packages.
-  // An empty list is necessary because otherwise if `platform: node` is specified,
-  // the 'module' condition is included by default.
-  // https://esbuild.github.io/api/#conditions
-  const conditions = isESM ? ['module'] : [];
   const format = isESM ? 'esm' : 'cjs';
 
   const result = await esbuild.build({
@@ -71,111 +64,240 @@ const requiredFiles = async ({ cwd, entryPoints }) => {
     platform: 'node',
     metafile: true,
     logLevel: 'warning',
-    external: ['../test/userapp'],
+    external: [
+      '../test/userapp',
+      'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
+      './request-worker', // appears in zapier-platform-legacy-scripting-runner/zfactory.js
+      './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
+    ],
     format,
-    conditions,
+    // Setting conditions to an empty array to exclude 'module' condition,
+    // which Node.js doesn't use. https://esbuild.github.io/api/#conditions
+    conditions: [],
     write: false, // no need to write outfile
-    absWorkingDir: cwd,
+    absWorkingDir: workingDir,
     tsconfigRaw: '{}',
   });
 
-  return Object.keys(result.metafile.inputs).map((path) =>
-    stripPath(cwd, path),
-  );
+  let relPaths = Object.keys(result.metafile.inputs);
+  if (path.sep === '\\') {
+    // The paths in result.metafile.inputs use forward slashes even on Windows,
+    // path.normalize() will convert them to backslashes.
+    relPaths = relPaths.map((x) => path.normalize(x));
+  }
+  return relPaths;
 };
 
-const listFiles = (dir) => {
-  const isBlocklisted = (filePath) => {
-    return constants.BLOCKLISTED_PATHS.find((excluded) => {
-      return filePath.search(excluded) === 0;
-    });
+// From a file path relative to workingDir, traverse up the directory tree until
+// it finds a directory that looks like a package directory, which either
+// contains a package.json file or whose path matches a pattern like
+// 'node_modules/(@scope/)package-name'.
+// Returns null if no package directory is found.
+const getPackageDir = (workingDir, relPath) => {
+  const nm = `node_modules${path.sep}`;
+  let i = relPath.lastIndexOf(nm);
+  if (i < 0) {
+    let dir = path.dirname(relPath);
+    for (let j = 0; j < 100; j++) {
+      const packageJsonPath = path.resolve(workingDir, dir, 'package.json');
+      if (fs.existsSync(packageJsonPath)) {
+        return dir;
+      }
+      const nextDir = path.dirname(dir);
+      if (nextDir === dir) {
+        break;
+      }
+      dir = nextDir;
+    }
+    return null;
+  }
+
+  i += nm.length;
+  if (relPath[i] === '@') {
+    // For scoped package, e.g. node_modules/@zapier/package-name
+    const j = relPath.indexOf(path.sep, i + 1);
+    if (j < 0) {
+      return null;
+    }
+    i = j + 1; // skip the next path.sep
+  }
+  const j = relPath.indexOf(path.sep, i);
+  if (j < 0) {
+    return null;
+  }
+  return relPath.substring(0, j);
+};
+
+function expandRequiredFiles(workingDir, relPaths) {
+  const expandedPaths = new Set(relPaths);
+  for (const relPath of relPaths) {
+    const packageDir = getPackageDir(workingDir, relPath);
+    if (packageDir) {
+      expandedPaths.add(path.join(packageDir, 'package.json'));
+    }
+  }
+  return expandedPaths;
+}
+
+// Yields files and symlinks (as fs.Direnv objects) from a directory
+// recursively, excluding names that are typically not needed in the build,
+// such as .git, .env, build, etc.
+function* walkDirWithPresetBlocklist(dir) {
+  const shouldInclude = (entry) => {
+    const relPath = path.relative(dir, path.join(entry.parentPath, entry.name));
+    return !isBlocklisted(relPath);
   };
+  yield* iterfilter(shouldInclude, walkDir(dir));
+}
 
-  return new Promise((resolve, reject) => {
-    const paths = [];
-    const cwd = dir + path.sep;
-    klaw(dir, { preserveSymlinks: true })
-      .on('data', (item) => {
-        const strippedPath = stripPath(cwd, item.path);
-        if (!item.stats.isDirectory() && !isBlocklisted(strippedPath)) {
-          paths.push(strippedPath);
-        }
-      })
-      .on('error', reject)
-      .on('end', () => {
-        paths.sort();
-        resolve(paths);
-      });
-  });
-};
-
-const forceIncludeDumbPath = (appConfig, filePath) => {
-  let matchesConfigInclude = false;
-  const configIncludePaths = _.get(appConfig, 'includeInBuild', []);
-  _.each(configIncludePaths, (includePath) => {
-    if (filePath.match(RegExp(includePath, 'i'))) {
-      matchesConfigInclude = true;
+// Yields files and symlinks (as fs.Direnv objects) from a directory recursively
+// that match any of the given or preset regex patterns.
+function* walkDirWithPatterns(dir, patterns) {
+  const sep = path.sep.replaceAll('\\', '\\\\'); // escape backslash for regex
+  const presetPatterns = [
+    `${sep}definition\\.json$`,
+    `${sep}package\\.json$`,
+    `${sep}aws-sdk${sep}apis${sep}.*\\.json$`,
+  ];
+  patterns = [...presetPatterns, ...(patterns || [])].map(
+    (x) => new RegExp(x, 'i'),
+  );
+  const shouldInclude = (entry) => {
+    const relPath = path.join(entry.parentPath, entry.name);
+    if (isBlocklisted(relPath)) {
       return false;
     }
-    return true; // Because of consistent-return
-  });
-
-  const nodeMajorVersion = semver.coerce(constants.LAMBDA_VERSION).major;
-
-  return (
-    filePath.endsWith('package.json') ||
-    filePath.endsWith('definition.json') ||
-    // include old async deasync versions so this runs seamlessly across node versions
-    filePath.endsWith(path.join('bin', 'linux-x64-node-10', 'deasync.node')) ||
-    filePath.endsWith(path.join('bin', 'linux-x64-node-12', 'deasync.node')) ||
-    filePath.endsWith(path.join('bin', 'linux-x64-node-14', 'deasync.node')) ||
-    filePath.endsWith(
-      // Special, for zapier-platform-legacy-scripting-runner
-      path.join('bin', `linux-x64-node-${nodeMajorVersion}`, 'deasync.node'),
-    ) ||
-    filePath.match(
-      path.sep === '\\' ? /aws-sdk\\apis\\.*\.json/ : /aws-sdk\/apis\/.*\.json/,
-    ) ||
-    matchesConfigInclude
-  );
-};
-
-const writeZipFromPaths = (dir, zipPath, paths) => {
-  return new Promise((resolve, reject) => {
-    const output = fs.createWriteStream(zipPath);
-    const zip = archiver('zip', {
-      zlib: { level: Z_BEST_COMPRESSION },
-    });
-
-    // listen for all archive data to be written
-    output.on('close', function () {
-      resolve();
-    });
-
-    zip.on('error', function (err) {
-      reject(err);
-    });
-
-    // pipe archive data to the file
-    zip.pipe(output);
-
-    paths.forEach(function (filePath) {
-      let basePath = path.dirname(filePath);
-      if (basePath === '.') {
-        basePath = undefined;
+    for (const pattern of patterns) {
+      if (pattern.test(relPath)) {
+        return true;
       }
-      const name = path.join(dir, filePath);
-      zip.file(name, { name: filePath, mode: 0o755 });
-    });
+    }
+    return false;
+  };
+  yield* iterfilter(shouldInclude, walkDir(dir));
+}
 
-    zip.finalize();
+// Opens a zip file for writing. Returns an Archiver object.
+const openZip = (outputPath) => {
+  const output = fs.createWriteStream(outputPath);
+  const zip = archiver('zip', {
+    zlib: { level: Z_BEST_COMPRESSION }, // Sets the compression level.
   });
+
+  const streamCompletePromise = new Promise((resolve, reject) => {
+    output.on('close', resolve);
+    zip.on('error', reject);
+  });
+
+  zip.finish = async () => {
+    // zip.finalize() doesn't return a promise, so here we create a
+    // zip.finish() function so the caller can await it.
+    // So callers: Use `await zip.finish()` and avoid zip.finalize().
+    zip.finalize();
+    await streamCompletePromise;
+  };
+
+  if (path.sep === '\\') {
+    // On Windows, patch zip.file() and zip.symlink() so they normalize the path
+    // separator to '/' because we're supposed to use '/' in a zip file
+    // regardless of the OS platform. Those are the only two methods we're
+    // currently using. If you wanted to call other zip.xxx methods, you should
+    // patch them here as well.
+    const origFileMethod = zip.file;
+    zip.file = (filepath, data) => {
+      filepath = path.normalize(filepath);
+      return origFileMethod.call(zip, filepath, data);
+    };
+    const origSymlinkMethod = zip.symlink;
+    zip.symlink = (name, target, mode) => {
+      name = path.normalize(name);
+      target = path.normalize(target);
+      return origSymlinkMethod.call(zip, name, target, mode);
+    };
+  }
+
+  zip.pipe(output);
+  return zip;
 };
 
-const makeZip = async (dir, zipPath, disableDependencyDetection) => {
-  const entryPoints = [path.resolve(dir, 'zapierwrapper.js')];
+const looksLikeWorkspaceRoot = async (dir) => {
+  if (fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) {
+    return true;
+  }
 
-  const indexPath = path.resolve(dir, 'index.js');
+  const packageJsonPath = path.join(dir, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return false;
+  }
+
+  let packageJson;
+  try {
+    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  } catch (err) {
+    return false;
+  }
+
+  return packageJson?.workspaces != null;
+};
+
+// Traverses up the directory tree to find the workspace root. The workspace
+// root directory either contains pnpm-workspace.yaml or a package.json file
+// with a "workspaces" field. Returns the absolute path to the workspace root
+// directory, or null if not found.
+const findWorkspaceRoot = async (workingDir) => {
+  let dir = workingDir;
+  for (let i = 0; i < 500; i++) {
+    if (await looksLikeWorkspaceRoot(dir)) {
+      return dir;
+    }
+    if (dir === '/' || dir.match(/^[a-z]:\\$/i)) {
+      break;
+    }
+    dir = path.dirname(dir);
+  }
+  return null;
+};
+
+const getNearestNodeModulesDir = (workingDir, relPath) => {
+  if (path.basename(relPath) === 'package.json') {
+    const nmDir = path.resolve(
+      workingDir,
+      path.dirname(relPath),
+      'node_modules',
+    );
+    return fs.existsSync(nmDir) ? path.relative(workingDir, nmDir) : null;
+  } else {
+    let dir = path.dirname(relPath);
+    for (let i = 0; i < 100; i++) {
+      if (dir.endsWith(`${path.sep}node_modules`)) {
+        return dir;
+      }
+      const nextDir = path.dirname(dir);
+      if (nextDir === dir) {
+        break;
+      }
+      dir = nextDir;
+    }
+    return null;
+  }
+};
+
+const writeBuildZipDumbly = async (workingDir, zip) => {
+  for (const entry of walkDirWithPresetBlocklist(workingDir)) {
+    const absPath = path.resolve(entry.parentPath, entry.name);
+    const relPath = path.relative(workingDir, absPath);
+    if (entry.isFile()) {
+      zip.file(absPath, { name: relPath });
+    } else if (entry.isSymbolicLink()) {
+      const target = path.relative(entry.parentPath, fs.realpathSync(absPath));
+      zip.symlink(relPath, target, 0o644);
+    }
+  }
+};
+
+const writeBuildZipSmartly = async (workingDir, zip) => {
+  const entryPoints = [path.resolve(workingDir, 'zapierwrapper.js')];
+  const indexPath = path.resolve(workingDir, 'index.js');
   if (fs.existsSync(indexPath)) {
     // Necessary for CommonJS integrations. The zapierwrapper they use require()
     // the index.js file using a variable. esbuild can't detect it, so we need
@@ -183,39 +305,140 @@ const makeZip = async (dir, zipPath, disableDependencyDetection) => {
     entryPoints.push(indexPath);
   }
 
-  let paths;
+  const appConfig = await getLinkedAppConfig(workingDir, false);
+  const relPaths = Array.from(
+    new Set([
+      // Files found by esbuild and their package.json files
+      ...expandRequiredFiles(
+        workingDir,
+        await findRequiredFiles(workingDir, entryPoints),
+      ),
+      // Files matching includeInBuild and other preset patterns
+      ...itermap(
+        (entry) =>
+          path.relative(workingDir, path.join(entry.parentPath, entry.name)),
+        walkDirWithPatterns(workingDir, appConfig?.includeInBuild),
+      ),
+    ]),
+  ).sort();
 
-  const [dumbPaths, smartPaths, appConfig] = await Promise.all([
-    listFiles(dir),
-    requiredFiles({ cwd: dir, entryPoints }),
-    getLinkedAppConfig(dir).catch(() => ({})),
-  ]);
+  const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
 
-  if (disableDependencyDetection) {
-    paths = dumbPaths;
-  } else {
-    let finalPaths = smartPaths.concat(
-      dumbPaths.filter(forceIncludeDumbPath.bind(null, appConfig)),
-    );
-    finalPaths = _.uniq(finalPaths);
-    finalPaths.sort();
-    debug('\nZip files:');
-    finalPaths.forEach((filePath) => debug(`  ${filePath}`));
-    debug('');
-    paths = finalPaths;
+  if (workspaceRoot !== workingDir) {
+    const appDirRelPath = path.relative(workspaceRoot, workingDir);
+    const linkNames = ['zapierwrapper.js', 'index.js'];
+    for (const name of linkNames) {
+      if (fs.existsSync(path.join(workingDir, name))) {
+        zip.symlink(name, path.join(appDirRelPath, name), 0o644);
+      }
+    }
+
+    const filenames = ['package.json', 'definition.json'];
+    for (const name of filenames) {
+      const absPath = path.resolve(workingDir, name);
+      zip.file(absPath, { name, mode: 0o644 });
+    }
   }
 
-  await writeZipFromPaths(dir, zipPath, paths);
+  // Write required files to the zip
+  for (const relPath of relPaths) {
+    const absPath = path.resolve(workingDir, relPath);
+    const nameInZip = path.relative(workspaceRoot, absPath);
+    if (nameInZip === 'package.json' && workspaceRoot !== workingDir) {
+      // Ignore workspace root's package.json
+      continue;
+    }
+    zip.file(absPath, { name: nameInZip, mode: 0o644 });
+  }
+
+  // Next, find all symlinks that are either: (1) immediate children of any
+  // node_modules directory, or (2) located one directory level below a
+  // node_modules directory. (1) is for the case of node_modules/package_name.
+  // (2) is for the case of node_modules/@scope/package_name.
+  const nodeModulesDirs = new Set();
+  for (const relPath of relPaths) {
+    const nmDir = getNearestNodeModulesDir(workingDir, relPath);
+    if (nmDir) {
+      nodeModulesDirs.add(nmDir);
+    }
+  }
+
+  for (const relNmDir of nodeModulesDirs) {
+    const absNmDir = path.resolve(workingDir, relNmDir);
+    const symlinks = iterfilter(
+      (entry) => {
+        // Only include symlinks that are not in node_modules/.bin directories
+        return (
+          entry.isSymbolicLink() &&
+          !entry.parentPath.endsWith(`${path.sep}node_modules${path.sep}.bin`)
+        );
+      },
+      walkDirLimitedLevels(absNmDir, 2),
+    );
+    for (const symlink of symlinks) {
+      const absPath = path.resolve(
+        workingDir,
+        symlink.parentPath,
+        symlink.name,
+      );
+      const nameInZip = path.relative(workspaceRoot, absPath);
+      const targetInZip = path.relative(
+        symlink.parentPath,
+        fs.realpathSync(absPath),
+      );
+      zip.symlink(nameInZip, targetInZip, 0o644);
+    }
+  }
 };
 
-const makeSourceZip = async (dir, zipPath) => {
-  const paths = await listFiles(dir);
-  const finalPaths = respectGitIgnore(dir, paths);
-  finalPaths.sort();
-  debug('\nSource Zip files:');
-  finalPaths.forEach((filePath) => debug(`  ${filePath}`));
+// Creates the build.zip file.
+const makeBuildZip = async (
+  workingDir,
+  zipPath,
+  disableDependencyDetection,
+) => {
+  const zip = openZip(zipPath);
+
+  if (disableDependencyDetection) {
+    // Ideally, if dependency detection works really well, we don't need to
+    // support --disable-dependency-detection at all. We might want to phase out
+    // this code path over time. Also, this doesn't handle workspaces.
+    await writeBuildZipDumbly(workingDir, zip);
+  } else {
+    await writeBuildZipSmartly(workingDir, zip);
+  }
+
+  await zip.finish();
+};
+
+const makeSourceZip = async (workingDir, zipPath) => {
+  const relPaths = Array.from(
+    itermap(
+      (entry) =>
+        path.relative(workingDir, path.join(entry.parentPath, entry.name)),
+      walkDirWithPresetBlocklist(workingDir),
+    ),
+  );
+  const finalRelPaths = respectGitIgnore(workingDir, relPaths).sort();
+
+  const zip = openZip(zipPath);
+
+  debug('\nSource files:');
+  for (const relPath of finalRelPaths) {
+    if (relPath === 'definition.json' || relPath === 'zapierwrapper.js') {
+      // These two files are generated at build time;
+      // they're not part of the source code.
+      continue;
+    }
+
+    const absPath = path.resolve(workingDir, relPath);
+    debug(`  ${absPath}`);
+
+    zip.file(absPath, { name: relPath, mode: 0o644 });
+  }
   debug();
-  await writeZipFromPaths(dir, zipPath, finalPaths);
+
+  await zip.finish();
 };
 
 const maybeNotifyAboutOutdated = () => {
@@ -223,19 +446,19 @@ const maybeNotifyAboutOutdated = () => {
   // `build` won't run if package.json isn't there, so if we get to here we're good
   const requiredVersion = _.get(
     require(path.resolve('./package.json')),
-    `dependencies.${constants.PLATFORM_PACKAGE}`,
+    `dependencies.${PLATFORM_PACKAGE}`,
   );
 
   if (requiredVersion) {
     const notifier = updateNotifier({
-      pkg: { name: constants.PLATFORM_PACKAGE, version: requiredVersion },
-      updateCheckInterval: constants.UPDATE_NOTIFICATION_INTERVAL,
+      pkg: { name: PLATFORM_PACKAGE, version: requiredVersion },
+      updateCheckInterval: UPDATE_NOTIFICATION_INTERVAL,
     });
 
     if (notifier.update && notifier.update.latest !== requiredVersion) {
       notifier.notify({
         message: `There's a newer version of ${colors.cyan(
-          constants.PLATFORM_PACKAGE,
+          PLATFORM_PACKAGE,
         )} available.\nConsider updating the dependency in your\n${colors.cyan(
           'package.json',
         )} (${colors.grey(notifier.update.current)} → ${colors.green(
@@ -256,31 +479,82 @@ const maybeRunBuildScript = async (options = {}) => {
     );
 
     if (_.get(pJson, ['scripts', ZAPIER_BUILD_KEY])) {
-      startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
+      if (options.printProgress) {
+        startSpinner(`Running ${ZAPIER_BUILD_KEY} script`);
+      }
+
       await runCommand('npm', ['run', ZAPIER_BUILD_KEY], options);
-      endSpinner();
+
+      if (options.printProgress) {
+        endSpinner();
+      }
     }
   }
 };
 
-// Get `workspaces` from root package.json and convert them to absolute paths.
-// Returns an empty array if package.json can't be found.
-const listWorkspaces = (workspaceRoot) => {
-  const packageJsonPath = path.join(workspaceRoot, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return [];
+const extractMissingModulePath = (testDir, error) => {
+  // Extract relative path to print a more user-friendly error message
+  if (error.message && error.message.includes('MODULE_NOT_FOUND')) {
+    const searchString = `Cannot find module '${testDir}/`;
+    const idx = error.message.indexOf(searchString);
+    if (idx >= 0) {
+      const pathStart = idx + searchString.length;
+      const pathEnd = error.message.indexOf("'", pathStart);
+      if (pathEnd >= 0) {
+        const relPath = error.message.substring(pathStart, pathEnd);
+        return relPath;
+      }
+    }
   }
+  return null;
+};
 
-  let packageJson;
-  try {
-    packageJson = require(packageJsonPath);
-  } catch (err) {
-    return [];
-  }
-
-  return (packageJson.workspaces || []).map((relpath) =>
-    path.resolve(workspaceRoot, relpath),
+const testBuildZip = async (zipPath) => {
+  const osTmpDir = await fse.realpath(os.tmpdir());
+  const testDir = path.join(
+    osTmpDir,
+    'zapier-' + crypto.randomBytes(4).toString('hex'),
   );
+
+  try {
+    await fse.ensureDir(testDir);
+    await decompress(zipPath, testDir);
+
+    const wrapperPath = path.join(testDir, 'zapierwrapper.js');
+    if (!fs.existsSync(wrapperPath)) {
+      throw new Error('zapierwrapper.js not found in build.zip.');
+    }
+
+    const indexPath = path.join(testDir, 'index.js');
+    const indexExists = fs.existsSync(indexPath);
+
+    try {
+      await runCommand(process.execPath, ['zapierwrapper.js'], {
+        cwd: testDir,
+        timeout: 5000,
+      });
+      if (indexExists) {
+        await runCommand(process.execPath, ['index.js'], {
+          cwd: testDir,
+          timeout: 5000,
+        });
+      }
+    } catch (error) {
+      // Extract relative path to print a more user-friendly error message
+      const relPath = extractMissingModulePath(testDir, error);
+      if (relPath) {
+        throw new Error(
+          `Detected a missing file in build.zip: '${relPath}'\n` +
+            `You may have to add it to ${colors.bold.underline('includeInBuild')} ` +
+            `in your ${colors.bold.underline('.zapierapprc')} file.`,
+        );
+      }
+      throw error;
+    }
+  } finally {
+    // Clean up test directory
+    await fse.remove(testDir);
+  }
 };
 
 const _buildFunc = async ({
@@ -290,129 +564,83 @@ const _buildFunc = async ({
   printProgress = true,
   checkOutdated = true,
 } = {}) => {
-  const zipPath = constants.BUILD_PATH;
-  const sourceZipPath = constants.SOURCE_PATH;
-  const wdir = process.cwd();
-
-  const osTmpDir = await fse.realpath(os.tmpdir());
-  const tmpDir = path.join(
-    osTmpDir,
-    'zapier-' + crypto.randomBytes(4).toString('hex'),
-  );
-  debug('Using temp directory: ', tmpDir);
+  const maybeStartSpinner = printProgress ? startSpinner : () => {};
+  const maybeEndSpinner = printProgress ? endSpinner : () => {};
 
   if (checkOutdated) {
     maybeNotifyAboutOutdated();
   }
+  const appDir = process.cwd();
 
-  await maybeRunBuildScript();
+  let workingDir;
+  if (skipNpmInstall) {
+    workingDir = appDir;
+    debug('Building in app directory: ', workingDir);
+  } else {
+    const osTmpDir = await fse.realpath(os.tmpdir());
+    workingDir = path.join(
+      osTmpDir,
+      'zapier-' + crypto.randomBytes(4).toString('hex'),
+    );
+    debug('Building in temp directory: ', workingDir);
+  }
+
+  await maybeRunBuildScript({ printProgress });
 
   // make sure our directories are there
-  await ensureDir(tmpDir);
-  await ensureDir(constants.BUILD_DIR);
+  await fse.ensureDir(workingDir);
+  const buildDir = path.join(appDir, BUILD_DIR);
+  await fse.ensureDir(buildDir);
 
-  if (printProgress) {
-    startSpinner('Copying project to temp directory');
-  }
-
-  const copyFilter = skipNpmInstall
-    ? (src) => !src.endsWith('.zip')
-    : undefined;
-
-  await copyDir(wdir, tmpDir, { filter: copyFilter });
-
-  if (skipNpmInstall) {
-    const corePackageDir = findCorePackageDir();
-    const nodeModulesDir = path.dirname(corePackageDir);
-    const workspaceRoot = path.dirname(nodeModulesDir);
-    if (wdir !== workspaceRoot) {
-      // If we're in here, it means the user is using npm/yarn workspaces
-      const workspaces = listWorkspaces(workspaceRoot);
-
-      await copyDir(nodeModulesDir, path.join(tmpDir, 'node_modules'), {
-        filter: (src) => {
-          if (src.endsWith('.zip')) {
-            return false;
-          }
-          const stat = fse.lstatSync(src);
-          if (stat.isSymbolicLink()) {
-            const realPath = path.resolve(
-              path.dirname(src),
-              fse.readlinkSync(src),
-            );
-            for (const workspace of workspaces) {
-              // Use minimatch to do glob pattern match. If match, it means the
-              // symlink points to a workspace package, so we don't copy it.
-              if (minimatch(realPath, workspace)) {
-                return false;
-              }
-            }
-          }
-          return true;
-        },
-        onDirExists: (dir) => {
-          // Don't overwrite existing sub-directories in node_modules
-          return false;
-        },
-      });
-    }
-  }
-
-  let output = {};
   if (!skipNpmInstall) {
-    if (printProgress) {
-      endSpinner();
-      startSpinner('Installing project dependencies');
-    }
-    output = await runCommand('npm', ['install', '--production'], {
-      cwd: tmpDir,
+    maybeStartSpinner('Copying project to temp directory');
+    const copyFilter = (src) => !src.endsWith('.zip');
+    await copyDir(appDir, workingDir, { filter: copyFilter });
+
+    maybeEndSpinner();
+    maybeStartSpinner('Installing project dependencies');
+    const output = await runCommand('npm', ['install', '--production'], {
+      cwd: workingDir,
     });
+
+    // `npm install` may fail silently without returning a non-zero exit code,
+    // need to check further here
+    const corePath = path.join(workingDir, 'node_modules', PLATFORM_PACKAGE);
+    if (!fs.existsSync(corePath)) {
+      throw new Error(
+        'Could not install dependencies properly. Error log:\n' + output.stderr,
+      );
+    }
   }
 
-  // `npm install` may fail silently without returning a non-zero exit code, need to check further here
-  const corePath = path.join(
-    tmpDir,
-    'node_modules',
-    constants.PLATFORM_PACKAGE,
-  );
-  if (!fs.existsSync(corePath)) {
-    throw new Error(
-      'Could not install dependencies properly. Error log:\n' + output.stderr,
-    );
-  }
+  maybeEndSpinner();
+  maybeStartSpinner('Applying entry point files');
 
-  if (printProgress) {
-    endSpinner();
-    startSpinner('Applying entry point files');
-  }
+  const corePath = findCorePackageDir(workingDir);
+  await copyZapierWrapper(corePath, workingDir);
 
-  await copyZapierWrapper(corePath, tmpDir);
-
-  if (printProgress) {
-    endSpinner();
-    startSpinner('Building app definition.json');
-  }
+  maybeEndSpinner();
+  maybeStartSpinner('Building app definition.json');
 
   const rawDefinition = await localAppCommand(
     { command: 'definition' },
-    tmpDir,
+    workingDir,
     false,
   );
-  const fileWriteError = await writeFile(
-    path.join(tmpDir, 'definition.json'),
-    prettyJSONstringify(rawDefinition),
-  );
 
-  if (fileWriteError) {
-    debug('\nFile Write Error:\n', fileWriteError, '\n');
+  try {
+    fs.writeFileSync(
+      path.join(workingDir, 'definition.json'),
+      prettyJSONstringify(rawDefinition),
+    );
+  } catch (err) {
+    debug('\nFile Write Error:\n', err, '\n');
     throw new Error(
-      `Unable to write ${tmpDir}/definition.json, please check file permissions!`,
+      `Unable to write ${workingDir}/definition.json, please check file permissions!`,
     );
   }
 
-  if (printProgress) {
-    endSpinner();
-  }
+  maybeEndSpinner();
 
   if (!skipValidation) {
     /**
@@ -421,12 +649,10 @@ const _buildFunc = async ({
      * (Remote - `validateApp`) Both the Schema, AppVersion, and Auths are validated
      */
 
-    if (printProgress) {
-      startSpinner('Validating project schema and style');
-    }
+    maybeStartSpinner('Validating project schema and style');
     const validationErrors = await localAppCommand(
       { command: 'validate' },
-      tmpDir,
+      workingDir,
       false,
     );
     if (validationErrors.length) {
@@ -450,9 +676,8 @@ const _buildFunc = async ({
         'We hit some style validation errors, try running `zapier validate` to see them!',
       );
     }
-    if (printProgress) {
-      endSpinner();
-    }
+
+    maybeEndSpinner();
 
     if (_.get(styleChecksResponse, ['warnings', 'total_failures'])) {
       console.log(colors.yellow('WARNINGS:'));
@@ -468,43 +693,35 @@ const _buildFunc = async ({
     debug('\nWarning: Skipping Validation');
   }
 
-  if (printProgress) {
-    startSpinner('Zipping project and dependencies');
-  }
-  await makeZip(tmpDir, path.join(wdir, zipPath), disableDependencyDetection);
+  maybeStartSpinner('Zipping project and dependencies');
+
+  const zipPath = path.join(appDir, BUILD_PATH);
+  await makeBuildZip(workingDir, zipPath, disableDependencyDetection);
   await makeSourceZip(
-    tmpDir,
-    path.join(wdir, sourceZipPath),
+    workingDir,
+    path.join(appDir, SOURCE_PATH),
     disableDependencyDetection,
   );
 
-  if (printProgress) {
-    endSpinner();
-    startSpinner('Testing build');
+  maybeEndSpinner();
+
+  if (skipNpmInstall) {
+    maybeStartSpinner('Cleaning up temp files');
+    await deleteZapierWrapper(workingDir);
+    fs.rmSync(path.join(workingDir, 'definition.json'));
+    maybeEndSpinner();
+  } else {
+    maybeStartSpinner('Cleaning up temp directory');
+    await fse.remove(workingDir);
+    maybeEndSpinner();
   }
 
   if (!isWindows()) {
-    // TODO err, what should we do on windows?
-
-    // tries to do a reproducible build at least
-    // https://content.pivotal.io/blog/barriers-to-deterministic-reproducible-zip-files
-    // https://reproducible-builds.org/tools/ or strip-nondeterminism
-    await runCommand(
-      'find',
-      ['.', '-exec', 'touch', '-t', '201601010000', '{}', '+'],
-      { cwd: tmpDir },
-    );
-  }
-
-  if (printProgress) {
-    endSpinner();
-    startSpinner('Cleaning up temp directory');
-  }
-
-  await removeDir(tmpDir);
-
-  if (printProgress) {
-    endSpinner();
+    // "Testing build" doesn't work on Windows because of some permission issue
+    // with symlinks
+    maybeStartSpinner('Testing build');
+    await testBuildZip(zipPath);
+    maybeEndSpinner();
   }
 
   return zipPath;
@@ -535,9 +752,9 @@ const buildAndOrUpload = async (
 
 module.exports = {
   buildAndOrUpload,
-  makeZip,
+  findRequiredFiles,
+  makeBuildZip,
   makeSourceZip,
-  listFiles,
-  requiredFiles,
   maybeRunBuildScript,
+  walkDirWithPresetBlocklist,
 };

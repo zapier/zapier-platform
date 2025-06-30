@@ -1,10 +1,11 @@
-const _ = require('lodash');
-const crypto = require('crypto');
-const os = require('os');
-const path = require('path');
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 
-const fse = require('fs-extra');
+const _ = require('lodash');
 const colors = require('colors/safe');
+const fse = require('fs-extra');
 
 const fixHome = (dir) => {
   const home = process.env.HOME || process.env.USERPROFILE;
@@ -200,19 +201,52 @@ const makeTempDir = () => {
   return workdir;
 };
 
+// Iterates files and symlinks in a directory recursively.
+// Yields fs.Dirent objects.
+function* walkDir(dir) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const subDir = path.join(entry.parentPath, entry.name);
+      yield* walkDir(subDir);
+    } else if (entry.isFile() || entry.isSymbolicLink()) {
+      yield entry;
+    }
+  }
+}
+
+// Iterates files and symlinks in a directory recursively, up to a specified
+// number of levels deep (maxLevels). The minimum value for maxLevels is 1.
+// Yields fs.Dirent objects.
+function* walkDirLimitedLevels(dir, maxLevels, currentLevel = 1) {
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      if (currentLevel < maxLevels) {
+        const subDir = path.join(entry.parentPath, entry.name);
+        yield* walkDirLimitedLevels(subDir, maxLevels, currentLevel + 1);
+      }
+    } else if (entry.isFile() || entry.isSymbolicLink()) {
+      yield entry;
+    }
+  }
+}
+
 module.exports = {
   copyDir,
+  copyFile,
   deleteFile,
   ensureDir,
   fileExistsSync,
   isEmptyDir,
   isExistingEmptyDir,
+  makeTempDir,
   readFile,
   readFileStr,
   removeDir,
   removeDirSync,
   validateFileExists,
+  walkDir,
+  walkDirLimitedLevels,
   writeFile,
-  copyFile,
-  makeTempDir,
 };

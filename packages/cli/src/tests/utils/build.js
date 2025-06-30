@@ -47,10 +47,7 @@ describe('build (runs slowly)', function () {
   it('should list only required files', async function () {
     this.retries(3); // retry up to 3 times
 
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('index.js');
     smartPaths.should.containEql('dist/index.js');
@@ -63,18 +60,20 @@ describe('build (runs slowly)', function () {
   });
 
   it('should list all the files', () => {
-    return build.listFiles(tmpDir).then((dumbPaths) => {
-      // check that way more than the required package files are grabbed
-      dumbPaths.should.containEql('index.js');
-      dumbPaths.should.containEql('dist/index.js');
-      dumbPaths.should.containEql('dist/triggers/movie.js');
+    const dumbPaths = Array.from(build.walkDirWithPresetBlocklist(tmpDir)).map(
+      (entry) => path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
-      dumbPaths.should.containEql('src/index.ts');
-      dumbPaths.should.containEql('src/triggers/movie.ts');
-      dumbPaths.should.containEql('tsconfig.json');
+    // check that way more than the required package files are grabbed
+    dumbPaths.should.containEql('index.js');
+    dumbPaths.should.containEql('dist/index.js');
+    dumbPaths.should.containEql('dist/triggers/movie.js');
 
-      dumbPaths.length.should.be.within(3000, 10000);
-    });
+    dumbPaths.should.containEql('src/index.ts');
+    dumbPaths.should.containEql('src/triggers/movie.ts');
+    dumbPaths.should.containEql('tsconfig.json');
+
+    dumbPaths.length.should.be.within(3000, 10000);
   });
 
   it('list should not include blocklisted files', () => {
@@ -82,10 +81,11 @@ describe('build (runs slowly)', function () {
 
     [
       'safe.js',
+      '.DS_Store',
       '.env',
       '.environment',
-      '.git/HEAD',
-      'build/the-build.zip',
+      `.git${path.sep}HEAD`,
+      `build${path.sep}the-build.zip`,
     ].forEach((file) => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
@@ -95,16 +95,23 @@ describe('build (runs slowly)', function () {
       fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
-    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
-      dumbPaths.should.containEql('safe.js');
-      dumbPaths.should.not.containEql('.env');
-      dumbPaths.should.not.containEql('build/the-build.zip');
-      dumbPaths.should.not.containEql('.environment');
-      dumbPaths.should.not.containEql('.git/HEAD');
+    const dumbPaths = Array.from(
+      build.walkDirWithPresetBlocklist(tmpProjectDir),
+    ).map((entry) => {
+      return path.relative(
+        tmpProjectDir,
+        path.join(entry.parentPath, entry.name),
+      );
     });
+    dumbPaths.should.containEql('safe.js');
+    dumbPaths.should.not.containEql('.env');
+    dumbPaths.should.not.containEql('build/the-build.zip');
+    dumbPaths.should.not.containEql('.environment');
+    dumbPaths.should.not.containEql('.git/HEAD');
+    dumbPaths.should.not.containEql('.DS_Store');
   });
 
-  it('should make a build.zip', () => {
+  it('should make a build.zip', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -129,32 +136,24 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(3);
+    await build.makeBuildZip(tmpProjectDir, tmpZipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
-      });
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    files.length.should.equal(3);
+
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
-  it('should make a build.zip without .zapierapprc', () => {
+  it('should make a build.zip without .zapierapprc', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -178,32 +177,23 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(3);
+    await build.makeBuildZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    files.length.should.equal(3);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
-      });
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
-  it('should make a source.zip without .gitignore', () => {
+  it('should make a source.zip without .gitignore', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -223,37 +213,27 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeSourceZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(4);
+    await build.makeSourceZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
+    const filePaths = new Set(files.map((file) => file.path));
+    filePaths.should.deepEqual(
+      new Set(['index.js', 'README.md', '.zapierapprc']),
+    );
 
-        const readmeFile = files.find(
-          ({ path: filePath }) => filePath === 'README.md',
-        );
-        should.exist(readmeFile);
-      });
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
-  it('should make a source.zip with .gitignore', () => {
+  it('should make a source.zip with .gitignore', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -282,42 +262,13 @@ describe('build (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeSourceZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(4);
+    await build.makeSourceZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-
-        const readmeFile = files.find(
-          ({ path: filePath }) => filePath === 'README.md',
-        );
-        should.exist(readmeFile);
-
-        const gitIgnoreFile = files.find(
-          ({ path: filePath }) => filePath === '.gitignore',
-        );
-        should.not.exist(gitIgnoreFile);
-
-        const testLogFile = files.find(
-          ({ path: filePath }) => filePath === 'test.log',
-        );
-        should.not.exist(testLogFile);
-
-        const DSStoreFile = files.find(
-          ({ path: filePath }) => filePath === '.DS_Store',
-        );
-        should.not.exist(DSStoreFile);
-
-        const environmentFile = files.find(
-          ({ path: filePath }) => filePath === '.environment',
-        );
-        should.not.exist(environmentFile);
-      });
+    const filePaths = new Set(files.map((file) => file.path));
+    filePaths.should.deepEqual(
+      new Set(['index.js', 'README.md', '.zapierapprc', '.gitignore']),
+    );
   });
 
   it('should run the zapier-build script', async () => {
@@ -330,99 +281,110 @@ describe('build (runs slowly)', function () {
   });
 });
 
-describe('build in workspaces', function () {
-  let tmpDir, origCwd, coreVersion, corePackage;
+// Set up a monorepo project structure with two integrations as npm workspaces:
+//
+// (project root)
+// ├─ package.json
+// └─ packages/
+//    ├─ app-1/
+//    │  ├─ index.js
+//    │  └─ package.json
+//    └─ app-2/
+//       ├─ index.js
+//       └─ package.json
+//
+// where app-1 and app-2 depends on the same local version of platform-core
+// package, but they use different versions of uuid.
+const setupMonorepo = async () => {
+  const tmpDir = getNewTempDirPath();
 
-  before(async () => {
-    tmpDir = getNewTempDirPath();
+  // Get absolute paths to local packages
+  const corePath = path.resolve(__dirname, '../../../../core');
+  const corePackageJsonPath = path.join(corePath, 'package.json');
 
-    // Get absolute paths to local packages
-    const corePath = path.resolve(__dirname, '../../../../core');
-    const corePackageJsonPath = path.join(corePath, 'package.json');
+  const originalPackageJsonText = fs.readFileSync(corePackageJsonPath, 'utf8');
+  const corePackageJson = JSON.parse(originalPackageJsonText);
 
-    const originalPackageJsonText = fs.readFileSync(corePackageJsonPath, {
-      encoding: 'utf8',
-    });
-    const corePackageJson = JSON.parse(originalPackageJsonText);
+  // Get the actual version from the local core package
+  const coreVersion = corePackageJson.version;
 
-    // Get the actual version from the local core package
-    coreVersion = corePackageJson.version;
+  // Pack the local packages
+  const corePackage = await npmPackCore();
 
-    // Pack the local packages
-    corePackage = await npmPackCore();
+  // Create root package.json
+  fs.outputFileSync(
+    path.join(tmpDir, 'package.json'),
+    JSON.stringify({
+      name: 'my-monorepo',
+      workspaces: ['packages/*'],
+      private: true,
+    }),
+  );
 
-    // Set up a monorepo project structure with two integrations as npm
-    // workspaces:
-    //
-    // (project root)
-    // ├─ package.json
-    // └── packages/
-    //    ├─ app-1/
-    //    │  ├─ index.js
-    //    │  └─ package.json
-    //    └─ app-2/
-    // 	     ├─ index.js
-    // 	     └─ package.json
-
-    // Create root package.json
-    fs.outputFileSync(
-      path.join(tmpDir, 'package.json'),
-      JSON.stringify({
-        name: 'my-monorepo',
-        workspaces: ['packages/*'],
-        private: true,
-      }),
-    );
-
-    const defaultIndexJs = `module.exports = {
+  const defaultIndexJs = `const uuid = require('uuid');
+module.exports = {
 	version: require('./package.json').version,
 	platformVersion: require('zapier-platform-core').version,
 };`;
 
-    // First integration: app-1
-    fs.outputFileSync(
-      path.join(tmpDir, 'packages', 'app-1', 'index.js'),
-      defaultIndexJs,
-    );
-    fs.outputFileSync(
-      path.join(tmpDir, 'packages', 'app-1', 'package.json'),
-      JSON.stringify({
-        name: 'app-1',
-        version: '1.0.0',
-        main: 'index.js',
-        dependencies: {
-          uuid: '8.3.2',
-          'zapier-platform-core': corePackage.path,
-        },
-        private: true,
-      }),
-    );
+  // First integration: app-1
+  fs.outputFileSync(
+    path.join(tmpDir, 'packages', 'app-1', 'index.js'),
+    defaultIndexJs,
+  );
+  fs.outputFileSync(
+    path.join(tmpDir, 'packages', 'app-1', 'package.json'),
+    JSON.stringify({
+      name: 'app-1',
+      version: '1.0.0',
+      main: 'index.js',
+      dependencies: {
+        uuid: '8.3.2',
+        'zapier-platform-core': corePackage.path,
+      },
+      private: true,
+    }),
+  );
 
-    // Second integration: app-2
-    fs.outputFileSync(
-      path.join(tmpDir, 'packages', 'app-2', 'index.js'),
-      defaultIndexJs,
-    );
-    fs.outputFileSync(
-      path.join(tmpDir, 'packages', 'app-2', 'package.json'),
-      JSON.stringify({
-        name: 'app-2',
-        version: '1.0.0',
-        main: 'index.js',
-        dependencies: {
-          uuid: '9.0.1',
-          'zapier-platform-core': corePackage.path,
-        },
-        private: true,
-      }),
-    );
+  // Second integration: app-2
+  fs.outputFileSync(
+    path.join(tmpDir, 'packages', 'app-2', 'index.js'),
+    defaultIndexJs,
+  );
+  fs.outputFileSync(
+    path.join(tmpDir, 'packages', 'app-2', 'package.json'),
+    JSON.stringify({
+      name: 'app-2',
+      version: '1.0.0',
+      main: 'index.js',
+      dependencies: {
+        uuid: '9.0.1',
+        'zapier-platform-core': corePackage.path,
+      },
+      private: true,
+    }),
+  );
 
-    runCommand('yarn', ['install'], { cwd: tmpDir });
+  return {
+    repoDir: tmpDir,
+    coreVersion,
+    cleanup: () => {
+      fs.removeSync(tmpDir);
+      corePackage.cleanup();
+    },
+  };
+};
+
+describe('build in yarn workspaces', function () {
+  let monorepo, origCwd;
+
+  before(async () => {
+    monorepo = await setupMonorepo();
+    await runCommand('yarn', ['install'], { cwd: monorepo.repoDir });
   });
 
   after(() => {
-    fs.removeSync(tmpDir);
-    corePackage.cleanup();
+    monorepo.cleanup();
   });
 
   beforeEach(() => {
@@ -434,22 +396,22 @@ describe('build in workspaces', function () {
   });
 
   it('should build in app-1', async () => {
-    const workspaceDir = path.join(tmpDir, 'packages', 'app-1');
-    const zipPath = path.join(workspaceDir, 'build', 'build.zip');
-    const unzipPath = path.join(tmpDir, 'build', 'build');
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-1');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+    const unzipPath = path.join(monorepo.repoDir, 'app1_extracted');
 
-    // Make sure the zapier-platform-core dependency is installed in the root
-    // project directory
+    // Make sure the zapier-platform-core dependency is hoisted in the root
+    // node_modules directory
     fs.existsSync(
-      path.join(tmpDir, 'node_modules', 'zapier-platform-core'),
+      path.join(monorepo.repoDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.true();
     fs.existsSync(
-      path.join(workspaceDir, 'node_modules', 'zapier-platform-core'),
+      path.join(appDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.false();
 
     fs.ensureDirSync(path.dirname(zipPath));
 
-    process.chdir(workspaceDir);
+    process.chdir(appDir);
 
     await build.buildAndOrUpload(
       { build: true, upload: false },
@@ -472,7 +434,7 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal(coreVersion);
+    corePackageJson.version.should.equal(monorepo.coreVersion);
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
@@ -480,34 +442,25 @@ describe('build in workspaces', function () {
       ),
     );
     uuidPackageJson.version.should.equal('8.3.2');
-
-    // Make sure node_modules/app-1 and node_modules/app-2 are not included
-    // in the build
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-1'),
-    ).should.be.false();
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-2'),
-    ).should.be.false();
   });
 
   it('should build in app-2', async () => {
-    const workspaceDir = path.join(tmpDir, 'packages', 'app-2');
-    const zipPath = path.join(workspaceDir, 'build', 'build.zip');
-    const unzipPath = path.join(tmpDir, 'build', 'build');
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+    const unzipPath = path.join(monorepo.repoDir, 'app2_extracted');
 
-    // Make sure the zapier-platform-core dependency is installed in the root
-    // project directory
+    // Make sure the zapier-platform-core dependency is installed in the repo
+    // root directory
     fs.existsSync(
-      path.join(tmpDir, 'node_modules', 'zapier-platform-core'),
+      path.join(monorepo.repoDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.true();
     fs.existsSync(
-      path.join(workspaceDir, 'node_modules', 'zapier-platform-core'),
+      path.join(appDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.false();
 
     fs.ensureDirSync(path.dirname(zipPath));
 
-    process.chdir(workspaceDir);
+    process.chdir(appDir);
 
     await build.buildAndOrUpload(
       { build: true, upload: false },
@@ -530,23 +483,363 @@ describe('build in workspaces', function () {
         ),
       ),
     );
-    corePackageJson.version.should.equal(coreVersion);
+    corePackageJson.version.should.equal(monorepo.coreVersion);
 
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(
-        path.join(unzipPath, 'node_modules', 'uuid', 'package.json'),
+        path.join(
+          unzipPath,
+          'packages',
+          'app-2',
+          'node_modules',
+          'uuid',
+          'package.json',
+        ),
       ),
     );
     uuidPackageJson.version.should.equal('9.0.1');
+  });
+});
 
-    // Make sure node_modules/app-1 and node_modules/app-2 are not included
-    // in the build
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-1'),
-    ).should.be.false();
-    fs.existsSync(
-      path.join(unzipPath, 'node_modules', 'app-2'),
-    ).should.be.false();
+describe('build in pnpm workspaces', () => {
+  let monorepo, origCwd;
+
+  before(async () => {
+    monorepo = await setupMonorepo();
+
+    // pnpm has its own workspace file named pnpm-workspace.yaml
+    fs.outputFileSync(
+      path.join(monorepo.repoDir, 'pnpm-workspace.yaml'),
+      "packages:\n  - 'packages/*'\n",
+    );
+
+    await runCommand('pnpm', ['install'], { cwd: monorepo.repoDir });
+
+    // For context, after `pnpm install`, the directory tree looks like this:
+    //
+    // (project root)
+    // ├── node_modules/
+    // │   └── .pnpm/
+    // │       ├── zapier-platform-core@<version>/
+    // │       │   └── node_modules/
+    // │       │       ├── zapier-platform-core/
+    // │       │       │   ├── package.json
+    // │       │       │   └── ...
+    // │       │       ├── lodash/ -> ../../lodash@4.17.21/node_modules/lodash
+    // │       │       └── other dependencies of zapier-platform-core -> ...
+    // │       ├── uuid@8.3.2/
+    // │       │   └── node_modules/
+    // │       │       ├── uuid/
+    // │       │       │   ├── package.json
+    // │       │       │   └── ...
+    // │       │       └── other dependencies of uuid@8.3.2 -> ...
+    // │       └── uuid@9.0.1/
+    // │           └── node_modules/
+    // │               ├── uuid/
+    // │               │   ├── package.json
+    // │               │   └── ...
+    // │               └── other dependencies of uuid@9.0.1 -> ...
+    // ├── packages/
+    // │   ├── app-1/
+    // │   │   ├── node_modules/
+    // │   │   │   ├── zapier-platform-core -> ../../../node_modules/.pnpm/zapier-platform-core@<version>/node_modules/zapier-platform-core
+    // │   │   │   └── uuid -> ../../../node_modules/uuid@8.3.2/node_modules/uuid
+    // │   │   ├── package.json
+    // │   │   ├── index.js
+    // │   │   └── ...
+    // │   └── app-2/
+    // │       ├── node_modules/
+    // │       │   ├── zapier-platform-core -> ../../../node_modules/.pnpm/zapier-platform-core@<version>/node_modules/zapier-platform-core
+    // │       │   └── uuid -> ../../../node_modules/uuid@9.0.1/node_modules/uuid
+    // │       ├── package.json
+    // │       ├── index.js
+    // │       └── ...
+    // ├── package.json
+    // └── pnpm-workspace.yaml
+    //
+    // The following test cases in this test suite bascially verify the zip file
+    // has the same directory structure as the above.
+  });
+
+  after(() => {
+    monorepo.cleanup();
+  });
+
+  beforeEach(() => {
+    origCwd = process.cwd();
+  });
+
+  afterEach(() => {
+    process.chdir(origCwd);
+  });
+
+  it('should build in app-1', async () => {
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-1');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+    const unzipPath = path.join(monorepo.repoDir, 'app1_extracted');
+
+    const coreLinkPath = path.join(
+      appDir,
+      'node_modules',
+      'zapier-platform-core',
+    );
+    fs.lstatSync(coreLinkPath).isSymbolicLink().should.be.true();
+
+    // coreRelPath is relative to dirname(coreLinkPath)
+    const coreRelPath = fs.readlinkSync(coreLinkPath);
+    const match = coreRelPath.match(
+      /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/,
+    );
+    should.exist(match);
+
+    const coreAbsPath = path.resolve(path.dirname(coreLinkPath), coreRelPath);
+    fs.existsSync(coreAbsPath).should.be.true();
+
+    fs.ensureDirSync(path.dirname(zipPath));
+
+    process.chdir(appDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipPath);
+
+    // Root directory should have symlinks named zapierwrapper.js and index.js
+    // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
+    const wrapperLinkPath = path.join(unzipPath, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join('packages', 'app-1', 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipPath, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join('packages', 'app-1', 'index.js'),
+    );
+
+    // app-1/package.json should be copied to root directory
+    const appPackageJson = JSON.parse(
+      fs.readFileSync(path.join(unzipPath, 'package.json')),
+    );
+    appPackageJson.name.should.equal('app-1');
+
+    // coreDirName normally would look like "zapier-platform-core@<version>" in
+    // real usage, but here it's long and ugly like
+    // "zapier-platform-core@file+..+..+path+to+zapier-platform+pa_562..."
+    // because we're using a local version of the core package.
+    const coreDirName = match[1];
+    const pnpmNmDir = path.join(unzipPath, 'node_modules', '.pnpm');
+    const corePackageJson = JSON.parse(
+      fs.readFileSync(
+        path.join(
+          pnpmNmDir,
+          coreDirName,
+          'node_modules',
+          'zapier-platform-core',
+          'package.json',
+        ),
+      ),
+    );
+    corePackageJson.version.should.equal(monorepo.coreVersion);
+
+    const uuidPath = path.join(pnpmNmDir, 'uuid@8.3.2', 'node_modules', 'uuid');
+    const uuidPackageJson = JSON.parse(
+      fs.readFileSync(path.join(uuidPath, 'package.json')),
+    );
+    uuidPackageJson.version.should.equal('8.3.2');
+
+    // Make sure symlinks in app-1/node_modules are also copied to the zip
+    const appNmDirInZip = path.join(
+      unzipPath,
+      'packages',
+      'app-1',
+      'node_modules',
+    );
+    const coreLinkPathInZip = path.join(appNmDirInZip, 'zapier-platform-core');
+    fs.lstatSync(coreLinkPathInZip).isSymbolicLink().should.be.true();
+    fs.readlinkSync(coreLinkPathInZip).should.equal(
+      path.join(
+        '..',
+        '..',
+        '..',
+        'node_modules',
+        '.pnpm',
+        coreDirName,
+        'node_modules',
+        'zapier-platform-core',
+      ),
+    );
+
+    const uuidLinkPathInZip = path.join(appNmDirInZip, 'uuid');
+    fs.lstatSync(uuidLinkPathInZip).isSymbolicLink().should.be.true();
+    fs.readlinkSync(uuidLinkPathInZip).should.equal(
+      path.join(
+        '..',
+        '..',
+        '..',
+        'node_modules',
+        '.pnpm',
+        'uuid@8.3.2',
+        'node_modules',
+        'uuid',
+      ),
+    );
+
+    // Make sure symlinks for zapier-platform-core's dependencies, like lodash,
+    // are copied to the zip
+    const lodashLinkPathInZip = path.join(
+      pnpmNmDir,
+      coreDirName,
+      'node_modules',
+      'lodash',
+    );
+    fs.lstatSync(lodashLinkPathInZip).isSymbolicLink().should.be.true();
+    const lodashTargetPath = fs
+      .readlinkSync(lodashLinkPathInZip)
+      .replaceAll('\\', '/');
+    const lodashDirName = lodashTargetPath.match(
+      /\.\.\/\.\.\/(lodash@[^/]+)\/node_modules\/lodash$/,
+    )[1];
+    const lodashVersion = lodashDirName.split(/[@_]/)[1];
+    const lodashPackageJson = JSON.parse(
+      fs.readFileSync(
+        path.join(
+          pnpmNmDir,
+          lodashDirName,
+          'node_modules',
+          'lodash',
+          'package.json',
+        ),
+      ),
+    );
+    lodashPackageJson.version.should.equal(lodashVersion);
+  });
+
+  it('should build in app-2', async () => {
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+    const unzipPath = path.join(monorepo.repoDir, 'app2_extracted');
+
+    const coreLinkPath = path.join(
+      appDir,
+      'node_modules',
+      'zapier-platform-core',
+    );
+    fs.lstatSync(coreLinkPath).isSymbolicLink().should.be.true();
+
+    // coreRelPath is relative to dirname(coreLinkPath)
+    const coreRelPath = fs.readlinkSync(coreLinkPath);
+    const match = coreRelPath.match(
+      /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/,
+    );
+    should.exist(match);
+
+    const coreAbsPath = path.resolve(path.dirname(coreLinkPath), coreRelPath);
+    fs.existsSync(coreAbsPath).should.be.true();
+
+    fs.ensureDirSync(path.dirname(zipPath));
+
+    process.chdir(appDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipPath);
+
+    // Root directory should have symlinks named zapierwrapper.js and index.js
+    // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
+    const wrapperLinkPath = path.join(unzipPath, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join('packages', 'app-2', 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipPath, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join('packages', 'app-2', 'index.js'),
+    );
+
+    // app-2/package.json should be copied to root directory
+    const appPackageJson = JSON.parse(
+      fs.readFileSync(path.join(unzipPath, 'package.json')),
+    );
+    appPackageJson.name.should.equal('app-2');
+
+    // coreDirName normally would look like "zapier-platform-core@<version>" in
+    // real usage, but here it's long and ugly like
+    // "zapier-platform-core@file+..+..+path+to+zapier-platform+pa_562..."
+    // because we're using a local version of the core package.
+    const coreDirName = match[1];
+    const pnpmNmDir = path.join(unzipPath, 'node_modules', '.pnpm');
+    const corePackageJson = JSON.parse(
+      fs.readFileSync(
+        path.join(
+          pnpmNmDir,
+          coreDirName,
+          'node_modules',
+          'zapier-platform-core',
+          'package.json',
+        ),
+      ),
+    );
+    corePackageJson.version.should.equal(monorepo.coreVersion);
+
+    const uuidPath = path.join(pnpmNmDir, 'uuid@9.0.1', 'node_modules', 'uuid');
+    const uuidPackageJson = JSON.parse(
+      fs.readFileSync(path.join(uuidPath, 'package.json')),
+    );
+    uuidPackageJson.version.should.equal('9.0.1');
+
+    // Make sure symlinks in app-2/node_modules are also copied to the zip
+    const appNmDirInZip = path.join(
+      unzipPath,
+      'packages',
+      'app-2',
+      'node_modules',
+    );
+    const coreLinkPathInZip = path.join(appNmDirInZip, 'zapier-platform-core');
+    fs.lstatSync(coreLinkPathInZip).isSymbolicLink().should.be.true();
+    fs.readlinkSync(coreLinkPathInZip).should.equal(
+      path.join(
+        '..',
+        '..',
+        '..',
+        'node_modules',
+        '.pnpm',
+        coreDirName,
+        'node_modules',
+        'zapier-platform-core',
+      ),
+    );
+
+    const uuidLinkPathInZip = path.join(appNmDirInZip, 'uuid');
+    fs.lstatSync(uuidLinkPathInZip).isSymbolicLink().should.be.true();
+    fs.readlinkSync(uuidLinkPathInZip).should.equal(
+      path.join(
+        '..',
+        '..',
+        '..',
+        'node_modules',
+        '.pnpm',
+        'uuid@9.0.1',
+        'node_modules',
+        'uuid',
+      ),
+    );
   });
 });
 
@@ -588,10 +881,8 @@ describe('build ESM (runs slowly)', function () {
   it('should list only required files', async function () {
     this.retries(3); // retry up to 3 times
 
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
+
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('dist/index.js');
     smartPaths.should.containEql('dist/triggers/movie.js');
@@ -602,18 +893,20 @@ describe('build ESM (runs slowly)', function () {
     smartPaths.length.should.be.within(200, 306);
   });
 
-  it('should list all the files', () => {
-    return build.listFiles(tmpDir).then((dumbPaths) => {
-      // check that way more than the required package files are grabbed
-      dumbPaths.should.containEql('dist/index.js');
-      dumbPaths.should.containEql('dist/triggers/movie.js');
+  it('should list all the files', async () => {
+    const dumbPaths = Array.from(build.walkDirWithPresetBlocklist(tmpDir)).map(
+      (entry) => path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
-      dumbPaths.should.containEql('src/index.ts');
-      dumbPaths.should.containEql('src/triggers/movie.ts');
-      dumbPaths.should.containEql('tsconfig.json');
+    // check that way more than the required package files are grabbed
+    dumbPaths.should.containEql('dist/index.js');
+    dumbPaths.should.containEql('dist/triggers/movie.js');
 
-      dumbPaths.length.should.be.within(3000, 10000);
-    });
+    dumbPaths.should.containEql('src/index.ts');
+    dumbPaths.should.containEql('src/triggers/movie.ts');
+    dumbPaths.should.containEql('tsconfig.json');
+
+    dumbPaths.length.should.be.within(3000, 10000);
   });
 
   it('list should not include blocklisted files', () => {
@@ -621,10 +914,11 @@ describe('build ESM (runs slowly)', function () {
 
     [
       'safe.js',
+      '.DS_Store',
       '.env',
       '.environment',
-      '.git/HEAD',
-      'build/the-build.zip',
+      `.git${path.sep}HEAD`,
+      `build${path.sep}the-build.zip`,
     ].forEach((file) => {
       const fileDir = file.split(path.sep);
       fileDir.pop();
@@ -634,16 +928,19 @@ describe('build ESM (runs slowly)', function () {
       fs.outputFileSync(path.join(tmpProjectDir, file), 'the-file');
     });
 
-    return build.listFiles(tmpProjectDir).then((dumbPaths) => {
-      dumbPaths.should.containEql('safe.js');
-      dumbPaths.should.not.containEql('.env');
-      dumbPaths.should.not.containEql('build/the-build.zip');
-      dumbPaths.should.not.containEql('.environment');
-      dumbPaths.should.not.containEql('.git/HEAD');
-    });
+    const dumbPaths = Array.from(
+      build.walkDirWithPresetBlocklist(tmpProjectDir),
+    ).map((entry) =>
+      path.relative(tmpProjectDir, path.join(entry.parentPath, entry.name)),
+    );
+    dumbPaths.should.containEql('safe.js');
+    dumbPaths.should.not.containEql('.env');
+    dumbPaths.should.not.containEql('build/the-build.zip');
+    dumbPaths.should.not.containEql('.environment');
+    dumbPaths.should.not.containEql('.git/HEAD');
   });
 
-  it('should make a build.zip', () => {
+  it('should make a build.zip', async () => {
     const tmpProjectDir = getNewTempDirPath();
     const tmpZipPath = path.join(getNewTempDirPath(), 'build.zip');
     const tmpUnzipPath = getNewTempDirPath();
@@ -669,29 +966,24 @@ describe('build ESM (runs slowly)', function () {
 
     global.argOpts = {};
 
-    return build
-      .makeZip(tmpProjectDir, tmpZipPath)
-      .then(() => decompress(tmpZipPath, tmpUnzipPath))
-      .then((files) => {
-        files.length.should.equal(3);
+    await build.makeBuildZip(tmpProjectDir, tmpZipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
-        const indexFile = files.find(
-          ({ path: filePath }) => filePath === 'index.js',
-        );
-        should.exist(indexFile);
-        (indexFile.mode & 0o400).should.be.above(
-          0,
-          'no read permission for owner',
-        );
-        (indexFile.mode & 0o040).should.be.above(
-          0,
-          'no read permission for group',
-        );
-        (indexFile.mode & 0o004).should.be.above(
-          0,
-          'no read permission for public',
-        );
-      });
+    const filePaths = new Set(files.map((file) => file.path));
+    filePaths.should.deepEqual(
+      new Set(['index.js', 'zapierwrapper.js', 'package.json']),
+    );
+
+    const indexFile = files.find(
+      ({ path: filePath }) => filePath === 'index.js',
+    );
+    should.exist(indexFile);
+    (indexFile.mode & 0o400).should.be.above(0, 'no read permission for owner');
+    (indexFile.mode & 0o040).should.be.above(0, 'no read permission for group');
+    (indexFile.mode & 0o004).should.be.above(
+      0,
+      'no read permission for public',
+    );
   });
 
   it('should run the zapier-build script', async () => {
@@ -753,7 +1045,11 @@ module.exports = {
   });
 
   it('should list both CJS and ESM paths in dumbPaths', async function () {
-    const dumbPaths = await build.listFiles(tmpDir);
+    const dumbPaths = Array.from(
+      await build.walkDirWithPresetBlocklist(tmpDir),
+    ).map((entry) =>
+      path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
     // dumbPaths should contain both CJS and ESM paths since it's just listing all files
     dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
@@ -761,10 +1057,7 @@ module.exports = {
   });
 
   it('should only include CJS paths in smartPaths', async function () {
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
     // For CJS app, smartPaths should only contain CJS paths
     smartPaths.should.containEql('node_modules/uuid/dist/index.js');
@@ -826,21 +1119,28 @@ export default {
   });
 
   it('should list both CJS and ESM paths in dumbPaths', async function () {
-    const dumbPaths = await build.listFiles(tmpDir);
+    const dumbPaths = Array.from(
+      await build.walkDirWithPresetBlocklist(tmpDir),
+    ).map((entry) =>
+      path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
+    );
 
     // dumbPaths should contain both CJS and ESM paths since it's just listing all files
     dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
     dumbPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js'); // ESM path
+    dumbPaths.should.containEql('node_modules/uuid/wrapper.mjs'); // ESM path
   });
 
   it('should only include ESM paths in smartPaths', async function () {
-    const smartPaths = await build.requiredFiles({
-      cwd: tmpDir,
-      entryPoints: [entryPoint],
-    });
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
-    // For ESM app, smartPaths should only contain ESM paths
-    smartPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js');
-    smartPaths.should.not.containEql('node_modules/uuid/dist/index.js');
+    // For ESM app, smartPaths should contain the "exports/./node/import" entry
+    // point: './wrapper.mjs' (https://github.com/uuidjs/uuid/blob/v9.0.1/package.json#L30)
+    smartPaths.should.containEql('node_modules/uuid/wrapper.mjs');
+    smartPaths.should.containEql('node_modules/uuid/dist/index.js');
+
+    // This one, even though it's a ESM entry point, defined in
+    // "exports/./node/module", it isn't used by Node.js
+    smartPaths.should.not.containEql('node_modules/uuid/dist/esm-node/index.js');
   });
 });

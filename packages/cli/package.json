@@ -19,7 +19,7 @@
     "/oclif.manifest.json"
   ],
   "engines": {
-    "node": ">=18.18"
+    "node": ">=18.20"
   },
   "scripts": {
     "docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js",
@@ -46,6 +46,7 @@
     "@oclif/plugin-not-found": "3.2.51",
     "@oclif/plugin-version": "2.2.28",
     "adm-zip": "0.5.16",
+    "decompress": "4.2.1",
     "archiver": "7.0.1",
     "chrono-node": "2.8.0",
     "cli-table3": "0.6.5",
@@ -59,12 +60,10 @@
     "ignore": "5.2.4",
     "inquirer": "8.2.5",
     "jscodeshift": "^17.3.0",
-    "klaw": "4.1.0",
     "lodash": "4.17.21",
     "luxon": "3.6.1",
     "marked": "14.1.4",
     "marked-terminal": "7.2.1",
-    "minimatch": "9.0.3",
     "node-fetch": "2.7.0",
     "open": "10.1.2",
     "ora": "5.4.0",
@@ -85,7 +84,6 @@
     "@types/jscodeshift": "^0.12.0",
     "@types/mocha": "^10.0.9",
     "chai": "^4.3.7",
-    "decompress": "4.2.1",
     "mock-fs": "^5.5.0",
     "nock": "^14.0.4",
     "oclif": "^4.17.46",
