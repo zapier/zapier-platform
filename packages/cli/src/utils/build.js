@@ -42,7 +42,7 @@ const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
 const checkMissingAppInfo = require('./check-missing-app-info');
 
-const { findCorePackageDir, runCommand } = require('./misc');
+const { findCorePackageDir, isWindows, runCommand } = require('./misc');
 const { isBlocklisted, respectGitIgnore } = require('./ignore');
 const { localAppCommand } = require('./local');
 
@@ -715,9 +715,13 @@ const _buildFunc = async ({
     maybeEndSpinner();
   }
 
-  maybeStartSpinner('Testing build');
-  await testBuildZip(zipPath);
-  maybeEndSpinner();
+  if (!isWindows()) {
+    // "Testing build" doesn't work on Windows because of some permission issue
+    // with symlinks
+    maybeStartSpinner('Testing build');
+    await testBuildZip(zipPath);
+    maybeEndSpinner();
+  }
 
   return zipPath;
 };
