@@ -59,6 +59,7 @@ BasicHookToPollOperationSchema.properties = {
     oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   },
   inputFields: BasicHookToPollOperationSchema.properties.inputFields,
+  inputFieldGroups: BasicHookToPollOperationSchema.properties.inputFieldGroups,
   outputFields: BasicHookToPollOperationSchema.properties.outputFields,
   sample: BasicHookToPollOperationSchema.properties.sample,
   maxPollingDelay: {

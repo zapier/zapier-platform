@@ -31,6 +31,7 @@ BasicPollingOperationSchema.properties = {
     type: 'boolean',
   },
   inputFields: BasicPollingOperationSchema.properties.inputFields,
+  inputFieldGroups: BasicPollingOperationSchema.properties.inputFieldGroups,
   outputFields: BasicPollingOperationSchema.properties.outputFields,
   sample: BasicPollingOperationSchema.properties.sample,
   throttle: BasicPollingOperationSchema.properties.throttle,
