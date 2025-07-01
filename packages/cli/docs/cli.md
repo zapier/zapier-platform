@@ -43,7 +43,8 @@ This command does the following:
 This command is typically followed by `zapier upload`.
 
 **Flags**
-* `--disable-dependency-detection` | Disable "smart" file inclusion. By default, Zapier only includes files that are required by `index.js`. If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. See the docs about `includeInBuild` for more info.
+* `--disable-dependency-detection` | Disable "smart" file inclusion. By default, Zapier only includes files that are required by your entry point (`index.js` by default). If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. See the docs about `includeInBuild` for more info.
+* `--skip-npm-install` | Skips installing a fresh copy of npm dependencies for shorter build time. Helpful for using yarn, pnpm, or local copies of dependencies.
 * `-d, --debug` | Show extra debugging output.
 
 
@@ -659,7 +660,8 @@ Zapier may release new versions of your integration with bug fixes or new featur
 This command is the same as running `zapier build` and `zapier upload` in sequence. See those for more info.
 
 **Flags**
-* `--disable-dependency-detection` | Disable "smart" file inclusion. By default, Zapier only includes files that are required by `index.js`. If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. See the docs about `includeInBuild` for more info.
+* `--disable-dependency-detection` | Disable "smart" file inclusion. By default, Zapier only includes files that are required by your entry point (`index.js` by default). If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. See the docs about `includeInBuild` for more info.
+* `--skip-npm-install` | Skips installing a fresh copy of npm dependencies for shorter build time. Helpful for using yarn, pnpm, or local copies of dependencies.
 * `-d, --debug` | Show extra debugging output.
 
 
