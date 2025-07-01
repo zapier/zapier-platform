@@ -24,6 +24,7 @@ Input Field Grouping:
 - :bug: Fix a bug where `text/xml` response content should be logged ([#1058](https://github.com/zapier/zapier-platform/pull/1058))
 - :nail_care: Typing update: allow overriding `id` requirement in polling triggers ([#1059](https://github.com/zapier/zapier-platform/pull/1059))
 - :nail_care: Typing update: allow test bundles to be recursively partial ([#1057](https://github.com/zapier/zapier-platform/pull/1057))
+- :hammer: Bump fernet from 0.4.0 to 0.3.3 (latest) ([#1055](https://github.com/zapier/zapier-platform/pull/1055))
 
 ### schema
 
