@@ -1,15 +1,16 @@
 ## 17.3.0
 
-_unreleased_
+_released `2025-07-01`_
 
-This release introduces two major improvements: `zapier build` and field grouping.
+This release introduces two major improvements: `zapier build` and input field grouping.
 
 The `zapier build` command has been revamped to:
 - Better support npm/yarn/pnpm workspaces
 - Run faster when the `--skip-npm-install` flag is enabled
 - Test the build.zip file to verify all load-time dependencies are included (not applicable on Windows)
 
-(Changelog for field grouping...)
+Input Field Grouping:
+- Grouping support, intended for visual purpose in products, has been added to the input fields.
 
 ### cli
 
@@ -26,7 +27,7 @@ The `zapier build` command has been revamped to:
 
 ### schema
 
-- :tada: Field grouping...
+- :tada: Input fields now support visual grouping through the "group" property of the `/PlainInputFieldSchema` and the new `/InputFieldGroupsSchema` ([#1061](https://github.com/zapier/zapier-platform/pull/1061))
 
 ## 17.2.0
 
