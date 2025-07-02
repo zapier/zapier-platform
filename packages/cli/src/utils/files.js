@@ -202,10 +202,15 @@ const makeTempDir = () => {
 };
 
 // Iterates files and symlinks in a directory recursively.
-// Yields fs.Dirent objects.
+// Yields fs.Dirent objects with a parentPath property added.
 function* walkDir(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
+    // Add parentPath property to the entry for compatibility if it doesn't exist
+    if (!entry.parentPath) {
+      entry.parentPath = dir;
+    }
+
     if (entry.isDirectory()) {
       const subDir = path.join(entry.parentPath, entry.name);
       yield* walkDir(subDir);
@@ -217,10 +222,15 @@ function* walkDir(dir) {
 
 // Iterates files and symlinks in a directory recursively, up to a specified
 // number of levels deep (maxLevels). The minimum value for maxLevels is 1.
-// Yields fs.Dirent objects.
+// Yields fs.Dirent objects with a parentPath property added.
 function* walkDirLimitedLevels(dir, maxLevels, currentLevel = 1) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
+    // Add parentPath property to the entry for compatibility if it doesn't exist
+    if (!entry.parentPath) {
+      entry.parentPath = dir;
+    }
+
     if (entry.isDirectory()) {
       if (currentLevel < maxLevels) {
         const subDir = path.join(entry.parentPath, entry.name);

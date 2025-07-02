@@ -382,11 +382,44 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         symlink.name,
       );
       const nameInZip = path.relative(workspaceRoot, absPath);
-      const targetInZip = path.relative(
-        symlink.parentPath,
-        fs.realpathSync(absPath),
-      );
-      zip.symlink(nameInZip, targetInZip, 0o644);
+
+      try {
+        // Follow the symlink to get the real path
+        const realPath = fs.realpathSync(absPath);
+
+        // If the symlink points to a directory, include all files in that directory
+        if (fs.statSync(realPath).isDirectory()) {
+          for (const entry of walkDirWithPresetBlocklist(realPath)) {
+            const entryAbsPath = path.resolve(entry.parentPath, entry.name);
+            const entryRelPath = path.relative(realPath, entryAbsPath);
+            const entryNameInZip = path.join(nameInZip, entryRelPath);
+
+            if (entry.isFile()) {
+              zip.file(entryAbsPath, { name: entryNameInZip, mode: 0o644 });
+            } else if (entry.isSymbolicLink()) {
+              // Handle nested symlinks by following them
+              try {
+                const nestedRealPath = fs.realpathSync(entryAbsPath);
+                const nestedTargetInZip = path.relative(
+                  path.dirname(entryAbsPath),
+                  nestedRealPath,
+                );
+                zip.symlink(entryNameInZip, nestedTargetInZip, 0o644);
+              } catch (err) {
+                // If symlink is broken, skip it
+                debug(`Skipping broken symlink: ${entryAbsPath}`);
+              }
+            }
+            // Note: Directories are automatically created by archiver when files are added to them
+          }
+        } else {
+          // If the symlink points to a file, include that file
+          zip.file(realPath, { name: nameInZip, mode: 0o644 });
+        }
+      } catch (err) {
+        // If symlink is broken, skip it
+        debug(`Skipping broken symlink: ${absPath}`);
+      }
     }
   }
 };
@@ -719,9 +752,13 @@ const _buildFunc = async ({
   if (!isWindows()) {
     // "Testing build" doesn't work on Windows because of some permission issue
     // with symlinks
+    // Also skip testing when skipNpmInstall is true, as the build assumes
+    // workspace dependencies will be available at runtime
+    // if (!skipNpmInstall) {
     maybeStartSpinner('Testing build');
     await testBuildZip(zipPath);
     maybeEndSpinner();
+    // }
   }
 
   return zipPath;
