@@ -64,10 +64,12 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     platform: 'node',
     metafile: true,
     logLevel: 'warning',
+    logOverride: {
+      'require-resolve-not-external': 'silent',
+    },
     external: [
       '../test/userapp',
       'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
-      './request-worker', // appears in zapier-platform-legacy-scripting-runner/zfactory.js
       './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
     ],
     format,
