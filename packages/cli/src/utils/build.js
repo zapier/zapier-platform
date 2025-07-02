@@ -70,6 +70,7 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     external: [
       '../test/userapp',
       'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
+      './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
     ],
     format,
     // Setting conditions to an empty array to exclude 'module' condition,
