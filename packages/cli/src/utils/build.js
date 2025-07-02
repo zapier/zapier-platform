@@ -752,13 +752,9 @@ const _buildFunc = async ({
   if (!isWindows()) {
     // "Testing build" doesn't work on Windows because of some permission issue
     // with symlinks
-    // Also skip testing when skipNpmInstall is true, as the build assumes
-    // workspace dependencies will be available at runtime
-    // if (!skipNpmInstall) {
     maybeStartSpinner('Testing build');
     await testBuildZip(zipPath);
     maybeEndSpinner();
-    // }
   }
 
   return zipPath;
