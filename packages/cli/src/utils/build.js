@@ -371,23 +371,10 @@ const processSymlinksForWorkspace = async (
     }
   }
 
-  // Track what we've included to avoid duplicates and enable nested structure creation
-  const includedPackages = new Map(); // packageName -> { realPath, zipPath, dependencies }
-
   // Process each node_modules directory
   for (const relNmDir of nodeModulesDirs) {
-    await processNodeModulesDirectory(
-      workingDir,
-      workspaceRoot,
-      relNmDir,
-      zip,
-      includedPackages,
-      relPaths,
-    );
+    await processNodeModulesDirectory(workingDir, workspaceRoot, relNmDir, zip);
   }
-
-  // Create nested node_modules structures for Node.js resolution
-  await createNestedNodeModulesStructures(zip, includedPackages);
 };
 
 // Process a single node_modules directory
@@ -396,8 +383,6 @@ const processNodeModulesDirectory = async (
   workspaceRoot,
   relNmDir,
   zip,
-  includedPackages,
-  relPaths,
 ) => {
   const absNmDir = path.resolve(workingDir, relNmDir);
   const symlinks = Array.from(
@@ -416,76 +401,14 @@ const processNodeModulesDirectory = async (
     const nameInZip = path.relative(workspaceRoot, absPath);
 
     try {
-      const realPath = fs.realpathSync(absPath);
-      const packageName = getPackageNameFromSymlink(symlink, absPath);
-
-      if (!fs.statSync(realPath).isDirectory()) {
-        // Handle file symlinks
-        if (isPnpm) {
-          // For pnpm, create actual symlinks in the zip
-          const target = fs.readlinkSync(absPath);
-          zip.symlink(nameInZip, target, 0o644);
-        } else {
-          // For other package managers, include file content
-          zip.file(realPath, { name: nameInZip, mode: 0o644 });
-        }
-        continue;
-      }
-      console.log(`  DEBUG: Package ${nameInZip} - isPnpm: ${isPnpm}`);
       if (isPnpm) {
-        // For pnpm workspaces, create symlinks and also include the target content
-        // This ensures both symlink structure (for compatibility) and content (for runtime)
+        // For pnpm workspaces, use the 17.3.0 approach: create symlinks in zip
         const target = fs.readlinkSync(absPath);
         zip.symlink(nameInZip, target, 0o644);
-
-        // Also include the target content at the target location for runtime
-        const targetInZip = path.resolve(path.dirname(nameInZip), target);
-        const targetRelativeToWorkspace = path.relative(
-          workspaceRoot,
-          targetInZip,
-        );
-
-        // Only include target content if it's within the workspace
-        if (!targetRelativeToWorkspace.startsWith('..')) {
-          const { count, esbuildFiles } = await includePackageFiles(
-            realPath,
-            targetRelativeToWorkspace,
-            zip,
-            relPaths,
-            workingDir,
-          );
-
-          const packageInfo = await getPackageInfo(realPath);
-          includedPackages.set(packageName, {
-            realPath,
-            zipPath: targetRelativeToWorkspace,
-            dependencies: packageInfo.dependencies,
-            fileCount: count,
-            workspaceRoot,
-            isPnpmWorkspace: true,
-            esbuildFiles: esbuildFiles,
-          });
-        }
       } else {
-        // For yarn/npm workspaces, include file content directly at the symlink location
-        const { count, esbuildFiles } = await includePackageFiles(
-          realPath,
-          nameInZip,
-          zip,
-          relPaths,
-          workingDir,
-        );
-        const packageInfo = await getPackageInfo(realPath);
-
-        includedPackages.set(packageName, {
-          realPath,
-          zipPath: nameInZip,
-          dependencies: packageInfo.dependencies,
-          fileCount: count,
-          workspaceRoot,
-          isPnpmWorkspace: false,
-          esbuildFiles: esbuildFiles,
-        });
+        // For non-pnpm workspaces, use the 17.2.0 approach: include file content
+        const realPath = fs.realpathSync(absPath);
+        zip.file(realPath, { name: nameInZip, mode: 0o644 });
       }
     } catch (err) {
       // Skip broken symlinks silently
@@ -496,212 +419,6 @@ const processNodeModulesDirectory = async (
 // Detect if we're in a pnpm workspace
 const isPnpmWorkspace = async (workspaceRoot) => {
   return fs.existsSync(path.join(workspaceRoot, 'pnpm-workspace.yaml'));
-};
-
-// Include files from a package directory that are actually needed
-const includePackageFiles = async (
-  realPath,
-  nameInZip,
-  zip,
-  relPaths,
-  workingDir,
-) => {
-  let count = 0;
-
-  // Find all files from relPaths that belong to this package (esbuild analysis)
-  const esbuildFiles = new Set();
-  for (const relPath of relPaths) {
-    const absPath = path.resolve(workingDir, relPath);
-    try {
-      const realFilePath = fs.realpathSync(absPath);
-      if (
-        realFilePath.startsWith(realPath + path.sep) ||
-        realFilePath === realPath
-      ) {
-        const relativePath = path.relative(realPath, realFilePath);
-        esbuildFiles.add(relativePath);
-      }
-    } catch (err) {
-      // File might not exist or be a symlink, skip
-    }
-  }
-
-  // Also include files that match preset patterns
-  const presetPatternFiles = new Set();
-  for (const entry of walkDirWithPatterns(realPath)) {
-    if (entry.isFile()) {
-      const relativePath = path.relative(
-        realPath,
-        path.join(entry.parentPath, entry.name),
-      );
-      presetPatternFiles.add(relativePath);
-    }
-  }
-
-  // Combine both sets
-  const allFiles = new Set([...esbuildFiles, ...presetPatternFiles]);
-
-  // Include the files
-  for (const relativePath of allFiles) {
-    const fullPath = path.join(realPath, relativePath);
-    if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
-      zip.file(fullPath, {
-        name: path.join(nameInZip, relativePath),
-        mode: 0o644,
-      });
-      count++;
-    }
-  }
-
-  return { count, esbuildFiles: Array.from(esbuildFiles) };
-};
-
-// Get package name from symlink info
-const getPackageNameFromSymlink = (symlink, absPath) => {
-  const parts = absPath.split(path.sep);
-  const nodeModulesIndex = parts.lastIndexOf('node_modules');
-  if (nodeModulesIndex >= 0 && nodeModulesIndex < parts.length - 1) {
-    const packagePart = parts[nodeModulesIndex + 1];
-    if (packagePart.startsWith('@') && nodeModulesIndex < parts.length - 2) {
-      // Scoped package: @scope/name
-      return `${packagePart}/${parts[nodeModulesIndex + 2]}`;
-    }
-    return packagePart;
-  }
-  return symlink.name;
-};
-
-// Get package info including dependencies
-const getPackageInfo = async (packagePath) => {
-  const packageJsonPath = path.join(packagePath, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return { dependencies: [] };
-  }
-
-  try {
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    const dependencies = Object.keys({
-      ...(packageJson.dependencies || {}),
-      ...(packageJson.peerDependencies || {}),
-    });
-    return { dependencies };
-  } catch (err) {
-    return { dependencies: [] };
-  }
-};
-
-// Create nested node_modules structures that Node.js expects
-const createNestedNodeModulesStructures = async (zip, includedPackages) => {
-  // Create a set to track what we've already processed to avoid infinite recursion
-  const processedPaths = new Set();
-
-  for (const [packageName, packageInfo] of includedPackages) {
-    await createDependenciesRecursively(
-      zip,
-      packageName,
-      packageInfo,
-      includedPackages,
-      processedPaths,
-    );
-  }
-};
-
-// Recursively create dependencies for a package
-const createDependenciesRecursively = async (
-  zip,
-  packageName,
-  packageInfo,
-  includedPackages,
-  processedPaths,
-) => {
-  const processKey = packageInfo.zipPath;
-  if (processedPaths.has(processKey) || packageInfo.dependencies.length === 0) {
-    return;
-  }
-
-  processedPaths.add(processKey);
-
-  for (const depName of packageInfo.dependencies) {
-    const depInfo = includedPackages.get(depName);
-    if (!depInfo) {
-      continue;
-    }
-
-    // Create the nested structure: packagePath/node_modules/depName
-    const nestedPath = path.join(packageInfo.zipPath, 'node_modules', depName);
-    await copyPackageToNestedLocation(zip, depInfo, nestedPath);
-
-    // Recursively create dependencies for this nested package
-    if (depInfo.dependencies.length > 0) {
-      const nestedPackageInfo = {
-        ...depInfo,
-        zipPath: nestedPath,
-      };
-      await createDependenciesRecursively(
-        zip,
-        depName,
-        nestedPackageInfo,
-        includedPackages,
-        processedPaths,
-      );
-    }
-  }
-};
-
-// Copy a package's files to a nested node_modules location
-const copyPackageToNestedLocation = async (
-  zip,
-  sourcePackageInfo,
-  targetPath,
-) => {
-  // Include the esbuild-detected files that were originally processed for this package
-  const filesToInclude = new Set(['package.json']);
-
-  // Add the esbuild files that were detected for this package
-  if (sourcePackageInfo.esbuildFiles) {
-    for (const file of sourcePackageInfo.esbuildFiles) {
-      filesToInclude.add(file);
-    }
-  }
-
-  // Add main entry files from package.json
-  try {
-    const packageJsonPath = path.join(
-      sourcePackageInfo.realPath,
-      'package.json',
-    );
-    if (fs.existsSync(packageJsonPath)) {
-      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-      if (packageJson.main) {
-        filesToInclude.add(packageJson.main);
-      }
-      if (packageJson.module) {
-        filesToInclude.add(packageJson.module);
-      }
-    }
-  } catch (err) {
-    // If we can't read package.json, continue with what we have
-  }
-
-  // Include files that match preset patterns (same as original processing)
-  for (const entry of walkDirWithPatterns(sourcePackageInfo.realPath)) {
-    if (entry.isFile()) {
-      const relativePath = path.relative(
-        sourcePackageInfo.realPath,
-        path.join(entry.parentPath, entry.name),
-      );
-      filesToInclude.add(relativePath);
-    }
-  }
-
-  // Include the files
-  for (const relativePath of filesToInclude) {
-    const fullPath = path.join(sourcePackageInfo.realPath, relativePath);
-    if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
-      const targetFilePath = path.join(targetPath, relativePath);
-      zip.file(fullPath, { name: targetFilePath, mode: 0o644 });
-    }
-  }
 };
 
 // Creates the build.zip file.
