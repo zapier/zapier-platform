@@ -373,7 +373,13 @@ const processSymlinksForWorkspace = async (
 
   // Process each node_modules directory
   for (const relNmDir of nodeModulesDirs) {
-    await processNodeModulesDirectory(workingDir, workspaceRoot, relNmDir, zip);
+    await processNodeModulesDirectory(
+      workingDir,
+      workspaceRoot,
+      relNmDir,
+      zip,
+      relPaths,
+    );
   }
 };
 
@@ -383,6 +389,7 @@ const processNodeModulesDirectory = async (
   workspaceRoot,
   relNmDir,
   zip,
+  relPaths,
 ) => {
   const absNmDir = path.resolve(workingDir, relNmDir);
   const symlinks = Array.from(
@@ -402,13 +409,125 @@ const processNodeModulesDirectory = async (
 
     try {
       if (isPnpm) {
-        // For pnpm workspaces, use the 17.3.0 approach: create symlinks in zip
+        // For pnpm workspaces, use hybrid approach:
+        // 1. Create symlinks in zip (for test compatibility)
         const target = fs.readlinkSync(absPath);
         zip.symlink(nameInZip, target, 0o644);
+
+        // 2. Also include the target content (for runtime functionality)
+        const realPath = fs.realpathSync(absPath);
+        const targetInZip = path.resolve(path.dirname(nameInZip), target);
+        const targetRelativeToWorkspace = path.relative(
+          workspaceRoot,
+          targetInZip,
+        );
+
+        // Include target content if the real path is within the workspace root
+        const realPathRelativeToWorkspace = path.relative(
+          workspaceRoot,
+          realPath,
+        );
+        if (!realPathRelativeToWorkspace.startsWith('..')) {
+          if (fs.statSync(realPath).isDirectory()) {
+            // Include files that esbuild detected as needed for this package
+            const esbuildFilesForPackage = new Set();
+            for (const relPath of relPaths) {
+              const absFilePath = path.resolve(workingDir, relPath);
+              try {
+                const realFilePath = fs.realpathSync(absFilePath);
+                if (
+                  realFilePath.startsWith(realPath + path.sep) ||
+                  realFilePath === realPath
+                ) {
+                  const relativePath = path.relative(realPath, realFilePath);
+                  esbuildFilesForPackage.add(relativePath);
+                }
+              } catch (err) {
+                // File might not exist or be a symlink, skip
+              }
+            }
+
+            // Also include files matching preset patterns
+            for (const entry of walkDirWithPatterns(realPath)) {
+              if (entry.isFile()) {
+                const fileRelPath = path.relative(
+                  realPath,
+                  path.join(entry.parentPath, entry.name),
+                );
+                esbuildFilesForPackage.add(fileRelPath);
+              }
+            }
+
+            // Include all the detected files
+            for (const fileRelPath of esbuildFilesForPackage) {
+              const fileAbsPath = path.join(realPath, fileRelPath);
+              if (
+                fs.existsSync(fileAbsPath) &&
+                fs.statSync(fileAbsPath).isFile()
+              ) {
+                const fileInZip = path.join(
+                  targetRelativeToWorkspace,
+                  fileRelPath,
+                );
+                zip.file(fileAbsPath, { name: fileInZip, mode: 0o644 });
+              }
+            }
+          } else {
+            // If target is a file, include it directly
+            zip.file(realPath, {
+              name: targetRelativeToWorkspace,
+              mode: 0o644,
+            });
+          }
+        }
       } else {
         // For non-pnpm workspaces, use the 17.2.0 approach: include file content
         const realPath = fs.realpathSync(absPath);
-        zip.file(realPath, { name: nameInZip, mode: 0o644 });
+        if (fs.statSync(realPath).isDirectory()) {
+          // If it's a directory, include all files from it (like Lerna workspaces)
+          const esbuildFilesForPackage = new Set();
+          for (const relPath of relPaths) {
+            const absFilePath = path.resolve(workingDir, relPath);
+            try {
+              const realFilePath = fs.realpathSync(absFilePath);
+              if (
+                realFilePath.startsWith(realPath + path.sep) ||
+                realFilePath === realPath
+              ) {
+                const relativePath = path.relative(realPath, realFilePath);
+                esbuildFilesForPackage.add(relativePath);
+              }
+            } catch (err) {
+              // File might not exist or be a symlink, skip
+            }
+          }
+
+          // Also include files matching preset patterns
+          for (const entry of walkDirWithPatterns(realPath)) {
+            if (entry.isFile()) {
+              const fileRelPath = path.relative(
+                realPath,
+                path.join(entry.parentPath, entry.name),
+              );
+              esbuildFilesForPackage.add(fileRelPath);
+            }
+          }
+
+          // Include all the detected files at the symlink location
+          for (const fileRelPath of esbuildFilesForPackage) {
+            const fileAbsPath = path.join(realPath, fileRelPath);
+            if (
+              fs.existsSync(fileAbsPath) &&
+              fs.statSync(fileAbsPath).isFile()
+            ) {
+              const fileInZip = path.join(nameInZip, fileRelPath);
+              zip.file(fileAbsPath, { name: fileInZip, mode: 0o644 });
+            }
+          }
+        } else {
+          // If it's a file, include it directly
+          zip.file(realPath, { name: nameInZip, mode: 0o644 });
+        }
       }
     } catch (err) {
       // Skip broken symlinks silently
