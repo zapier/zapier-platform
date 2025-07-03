@@ -157,6 +157,14 @@ const file = (...statements) =>
     ${statements.join('\n\n')}
 `.trim();
 
+// TODO dynamically import auth type i.e. AuthenticationOAuth2Config
+const tsFile = (typesToImport = [], ...statements) =>
+  `
+    import type { ${typesToImport.join(', ')} } from 'zapier-platform-core';
+
+    ${statements.join('\n\n')}
+`.trim();
+
 module.exports = {
   arr,
   assignmentStatement,
@@ -174,6 +182,7 @@ module.exports = {
   RESPONSE_VAR,
   returnStatement,
   strLiteral,
+  tsFile,
   variableAssignmentDeclaration,
   zRequest,
   zResponseErr,
