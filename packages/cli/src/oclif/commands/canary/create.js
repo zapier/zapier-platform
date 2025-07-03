@@ -8,9 +8,28 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     const { versionFrom, versionTo } = this.args;
     const percent = this.flags.percent;
     const duration = this.flags.duration;
+    const user = this.flags.user;
+    const account = this.flags.account;
+
+    let flagType;
+
+    if (user || account) {
+      flagType = user ? 'user' : 'account';
+    }
+
+    if (user && account) {
+      this.error(
+        'Cannot specify both `--user` and `--account`. Use only one or the other.',
+      );
+    }
+
+    if ((user || account) && percent !== undefined) {
+      this.error(
+        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`,
+      );
+    }
 
     this.validateVersions(versionFrom, versionTo);
-    this.validatePercent(percent);
     this.validateDuration(duration);
 
     const activeCanaries = await listCanaries();
@@ -25,13 +44,36 @@ If you would like to stop this canary now, run \`zapier canary:delete ${existing
       return;
     }
 
+    const body = {
+      duration,
+    };
+
+    if (user || account) {
+      this.startSpinner(
+        `Starting migration from ${versionFrom} to ${versionTo} for ${
+          user || account
+        }`,
+      );
+      body.email = user || account;
+      body.email_type = flagType;
+    } else {
+      this.startSpinner(
+        `Starting migration from ${versionFrom} to ${versionTo} for ${percent}%`,
+      );
+      body.percent = percent;
+    }
+
+    if (this.flags.includeEnterprise) {
+      body.include_enterprise = true;
+    }
+
     this.startSpinner(`Creating canary deployment
     - From version: ${versionFrom}
     - To version: ${versionTo}
-    - Traffic amount: ${percent}%
-    - Duration: ${duration} seconds`);
+    - Duration: ${duration} seconds
+    - ${flagType ? `User: ${user || account}` : `Percent: ${percent}%`}`);
 
-    await createCanary(versionFrom, versionTo, percent, duration);
+    await createCanary(versionFrom, versionTo, body);
 
     this.stopSpinner();
     this.log('Canary deployment created successfully.');
@@ -64,12 +106,23 @@ CanaryCreateCommand.flags = buildFlags({
     percent: Flags.integer({
       char: 'p',
       description: 'Percent of traffic to route to new version',
-      required: true,
+      required: false,
     }),
     duration: Flags.integer({
       char: 'd',
       description: 'Duration of the canary in seconds',
       required: true,
+    }),
+    user: Flags.string({
+      description: 'Specify a user within all accounts to canary',
+    }),
+    account: Flags.string({
+      description:
+        'Canary all accounts for which the specified user is a member',
+    }),
+    includeEnterprise: Flags.boolean({
+      description: 'Include enterprise accounts',
+      required: false,
     }),
   },
 });

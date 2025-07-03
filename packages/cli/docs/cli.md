@@ -64,8 +64,11 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * (required) `versionTo` | Version to canary traffic to
 
 **Flags**
-* (required) `-p, --percent` | Percent of traffic to route to new version
+* `-p, --percent` | Percent of traffic to route to new version
 * (required) `-d, --duration` | Duration of the canary in seconds
+* `--user` | Specify a user within all accounts to canary
+* `--account` | Canary all accounts for which the specified user is a member
+* `--includeEnterprise` | Include enterprise accounts
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
