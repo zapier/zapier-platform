@@ -48,8 +48,6 @@ const { localAppCommand } = require('./local');
 
 const debug = require('debug')('zapier:build');
 
-// const stripPath = (cwd, filePath) => filePath.split(cwd).pop();
-
 // Given entry points in a directory, return an array of file paths that are
 // required for the build. The returned paths are relative to workingDir.
 const findRequiredFiles = async (workingDir, entryPoints) => {
@@ -355,6 +353,178 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
   await processSymlinksForWorkspace(workingDir, workspaceRoot, relPaths, zip);
 };
 
+// Helper function to include files from a directory with deduplication
+const includeFilesFromDirectory = (
+  zip,
+  sourceDir,
+  targetDir,
+  processedFiles,
+  relPaths = null,
+  workingDir = null,
+) => {
+  if (relPaths) {
+    // For workspace dependencies, use selective inclusion like the main app
+    const sourceDirNormalized = path.normalize(sourceDir);
+    const relevantFiles = new Set();
+
+    // Add esbuild-detected files that are within this source directory
+    for (const relPath of relPaths) {
+      try {
+        const baseDir = workingDir || process.cwd();
+        const absFilePath = path.resolve(baseDir, relPath);
+        const realFilePath = fs.realpathSync(absFilePath);
+
+        if (
+          realFilePath.startsWith(sourceDirNormalized + path.sep) ||
+          realFilePath === sourceDirNormalized
+        ) {
+          const relativePath = path.relative(sourceDirNormalized, realFilePath);
+          relevantFiles.add(relativePath);
+        }
+      } catch (err) {
+        // Skip files that can't be resolved
+      }
+    }
+
+    // Add files matching preset patterns (package.json, definition.json, aws-sdk APIs)
+    for (const entry of walkDirWithPatterns(sourceDir)) {
+      if (entry.isFile()) {
+        const fileRelPath = path.relative(
+          sourceDir,
+          path.join(entry.parentPath, entry.name),
+        );
+        relevantFiles.add(fileRelPath);
+      }
+    }
+
+    // Include all the relevant files
+    for (const fileRelPath of relevantFiles) {
+      const fileInZip = path.join(targetDir, fileRelPath);
+      if (!processedFiles.has(fileInZip)) {
+        const fullPath = path.join(sourceDir, fileRelPath);
+        if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+          processedFiles.add(fileInZip);
+          zip.file(fullPath, { name: fileInZip, mode: 0o644 });
+        }
+      }
+    }
+  } else {
+    // Use the original blocklist approach for non-workspace packages
+    for (const entry of walkDirWithPresetBlocklist(sourceDir)) {
+      if (entry.isFile()) {
+        const fileRelPath = path.relative(
+          sourceDir,
+          path.join(entry.parentPath, entry.name),
+        );
+        const fileInZip = path.join(targetDir, fileRelPath);
+        if (!processedFiles.has(fileInZip)) {
+          processedFiles.add(fileInZip);
+          zip.file(path.join(sourceDir, fileRelPath), {
+            name: fileInZip,
+            mode: 0o644,
+          });
+        }
+      }
+    }
+  }
+};
+
+// Helper function to include a single file with deduplication
+const includeFile = (zip, sourceFile, targetFile, processedFiles) => {
+  if (!processedFiles.has(targetFile)) {
+    processedFiles.add(targetFile);
+    zip.file(sourceFile, { name: targetFile, mode: 0o644 });
+  }
+};
+
+// Helper function to process a symlink and include its content
+const processSymlink = (
+  zip,
+  symlinkPath,
+  targetDir,
+  processedFiles,
+  relPaths = null,
+  workingDir = null,
+) => {
+  try {
+    const realPath = fs.realpathSync(symlinkPath);
+    if (fs.statSync(realPath).isDirectory()) {
+      includeFilesFromDirectory(
+        zip,
+        realPath,
+        targetDir,
+        processedFiles,
+        relPaths,
+        workingDir,
+      );
+
+      // Also process dependencies from the package's node_modules
+      const packageNodeModulesPath = path.join(realPath, 'node_modules');
+      if (fs.existsSync(packageNodeModulesPath)) {
+        const dependencies = collectDependencies(packageNodeModulesPath);
+
+        for (const dep of dependencies) {
+          const depInZip = path.join(targetDir, 'node_modules', dep.name);
+
+          if (dep.isSymlink) {
+            processSymlink(
+              zip,
+              dep.path,
+              depInZip,
+              processedFiles,
+              relPaths,
+              workingDir,
+            );
+          } else {
+            // Use selective inclusion for dependencies too
+            includeFilesFromDirectory(
+              zip,
+              dep.path,
+              depInZip,
+              processedFiles,
+              relPaths,
+              workingDir,
+            );
+          }
+        }
+      }
+    } else {
+      includeFile(zip, realPath, targetDir, processedFiles);
+    }
+  } catch (err) {
+    // Skip broken symlinks
+  }
+};
+
+// Helper function to collect all dependencies from a node_modules directory
+const collectDependencies = (nodeModulesPath) => {
+  const dependencies = new Set();
+
+  for (const entry of walkDirLimitedLevels(nodeModulesPath, 4)) {
+    if (
+      entry.name === '.bin' ||
+      entry.name === '.ignored' ||
+      entry.name === '.modules.yaml' ||
+      entry.name === '.package-lock.json'
+    ) {
+      continue;
+    }
+
+    const depPath = path.join(entry.parentPath, entry.name);
+    const depRelPath = path.relative(nodeModulesPath, depPath);
+
+    if (entry.isSymbolicLink()) {
+      const depName = path.basename(depRelPath);
+      dependencies.add({ name: depName, path: depPath, isSymlink: true });
+    } else if (entry.isDirectory() && !depRelPath.includes(path.sep)) {
+      const depName = path.basename(depRelPath);
+      dependencies.add({ name: depName, path: depPath, isSymlink: false });
+    }
+  }
+
+  return dependencies;
+};
+
 // Process symlinks and create proper nested node_modules structure
 const processSymlinksForWorkspace = async (
   workingDir,
@@ -371,6 +541,9 @@ const processSymlinksForWorkspace = async (
     }
   }
 
+  // Prefetch workspace type to avoid repeated checks
+  const isPnpm = await isPnpmWorkspace(workspaceRoot);
+
   // Process each node_modules directory
   for (const relNmDir of nodeModulesDirs) {
     await processNodeModulesDirectory(
@@ -379,6 +552,7 @@ const processSymlinksForWorkspace = async (
       relNmDir,
       zip,
       relPaths,
+      isPnpm, // Pass the prefetched value
     );
   }
 };
@@ -390,6 +564,7 @@ const processNodeModulesDirectory = async (
   relNmDir,
   zip,
   relPaths,
+  isPnpm,
 ) => {
   const absNmDir = path.resolve(workingDir, relNmDir);
   const symlinks = Array.from(
@@ -397,141 +572,25 @@ const processNodeModulesDirectory = async (
       (entry) =>
         entry.isSymbolicLink() &&
         !entry.parentPath.endsWith(`${path.sep}node_modules${path.sep}.bin`),
-      walkDirLimitedLevels(absNmDir, 2),
+      walkDirLimitedLevels(absNmDir, 4),
     ),
   );
 
-  const isPnpm = await isPnpmWorkspace(workspaceRoot);
+  const processedFiles = new Set(); // Track processed files to avoid duplicates
 
   for (const symlink of symlinks) {
     const absPath = path.resolve(workingDir, symlink.parentPath, symlink.name);
     const nameInZip = path.relative(workspaceRoot, absPath);
 
-    try {
-      if (isPnpm) {
-        // For pnpm workspaces, use hybrid approach:
-        // 1. Create symlinks in zip (for test compatibility)
-        const target = fs.readlinkSync(absPath);
-        zip.symlink(nameInZip, target, 0o644);
-
-        // 2. Also include the target content (for runtime functionality)
-        const realPath = fs.realpathSync(absPath);
-        const targetInZip = path.resolve(path.dirname(nameInZip), target);
-        const targetRelativeToWorkspace = path.relative(
-          workspaceRoot,
-          targetInZip,
-        );
-
-        // Include target content if the real path is within the workspace root
-        const realPathRelativeToWorkspace = path.relative(
-          workspaceRoot,
-          realPath,
-        );
-        if (!realPathRelativeToWorkspace.startsWith('..')) {
-          if (fs.statSync(realPath).isDirectory()) {
-            // Include files that esbuild detected as needed for this package
-            const esbuildFilesForPackage = new Set();
-            for (const relPath of relPaths) {
-              const absFilePath = path.resolve(workingDir, relPath);
-              try {
-                const realFilePath = fs.realpathSync(absFilePath);
-                if (
-                  realFilePath.startsWith(realPath + path.sep) ||
-                  realFilePath === realPath
-                ) {
-                  const relativePath = path.relative(realPath, realFilePath);
-                  esbuildFilesForPackage.add(relativePath);
-                }
-              } catch (err) {
-                // File might not exist or be a symlink, skip
-              }
-            }
-
-            // Also include files matching preset patterns
-            for (const entry of walkDirWithPatterns(realPath)) {
-              if (entry.isFile()) {
-                const fileRelPath = path.relative(
-                  realPath,
-                  path.join(entry.parentPath, entry.name),
-                );
-                esbuildFilesForPackage.add(fileRelPath);
-              }
-            }
-
-            // Include all the detected files
-            for (const fileRelPath of esbuildFilesForPackage) {
-              const fileAbsPath = path.join(realPath, fileRelPath);
-              if (
-                fs.existsSync(fileAbsPath) &&
-                fs.statSync(fileAbsPath).isFile()
-              ) {
-                const fileInZip = path.join(
-                  targetRelativeToWorkspace,
-                  fileRelPath,
-                );
-                zip.file(fileAbsPath, { name: fileInZip, mode: 0o644 });
-              }
-            }
-          } else {
-            // If target is a file, include it directly
-            zip.file(realPath, {
-              name: targetRelativeToWorkspace,
-              mode: 0o644,
-            });
-          }
-        }
-      } else {
-        // For non-pnpm workspaces, use the 17.2.0 approach: include file content
-        const realPath = fs.realpathSync(absPath);
-        if (fs.statSync(realPath).isDirectory()) {
-          // If it's a directory, include all files from it (like Lerna workspaces)
-          const esbuildFilesForPackage = new Set();
-          for (const relPath of relPaths) {
-            const absFilePath = path.resolve(workingDir, relPath);
-            try {
-              const realFilePath = fs.realpathSync(absFilePath);
-              if (
-                realFilePath.startsWith(realPath + path.sep) ||
-                realFilePath === realPath
-              ) {
-                const relativePath = path.relative(realPath, realFilePath);
-                esbuildFilesForPackage.add(relativePath);
-              }
-            } catch (err) {
-              // File might not exist or be a symlink, skip
-            }
-          }
-
-          // Also include files matching preset patterns
-          for (const entry of walkDirWithPatterns(realPath)) {
-            if (entry.isFile()) {
-              const fileRelPath = path.relative(
-                realPath,
-                path.join(entry.parentPath, entry.name),
-              );
-              esbuildFilesForPackage.add(fileRelPath);
-            }
-          }
-
-          // Include all the detected files at the symlink location
-          for (const fileRelPath of esbuildFilesForPackage) {
-            const fileAbsPath = path.join(realPath, fileRelPath);
-            if (
-              fs.existsSync(fileAbsPath) &&
-              fs.statSync(fileAbsPath).isFile()
-            ) {
-              const fileInZip = path.join(nameInZip, fileRelPath);
-              zip.file(fileAbsPath, { name: fileInZip, mode: 0o644 });
-            }
-          }
-        } else {
-          // If it's a file, include it directly
-          zip.file(realPath, { name: nameInZip, mode: 0o644 });
-        }
-      }
-    } catch (err) {
-      // Skip broken symlinks silently
-    }
+    // Process the symlink content with selective inclusion
+    processSymlink(
+      zip,
+      absPath,
+      nameInZip,
+      processedFiles,
+      relPaths,
+      workingDir,
+    );
   }
 };
 
