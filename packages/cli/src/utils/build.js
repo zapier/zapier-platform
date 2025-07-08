@@ -67,11 +67,7 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     logOverride: {
       'require-resolve-not-external': 'silent',
     },
-    external: [
-      '../test/userapp',
-      'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
-      './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
-    ],
+    external: ['../test/userapp'],
     format,
     // Setting conditions to an empty array to exclude 'module' condition,
     // which Node.js doesn't use. https://esbuild.github.io/api/#conditions
@@ -242,11 +238,27 @@ const looksLikeWorkspaceRoot = async (dir) => {
   return packageJson?.workspaces != null;
 };
 
+const countStartingDoubleDots = (relPath) => {
+  let count = 0;
+  const parts = relPath.split(path.sep);
+  for (const part of parts) {
+    if (part === '..') {
+      count += 1;
+    } else {
+      break;
+    }
+  }
+  return count;
+};
+
 // Traverses up the directory tree to find the workspace root. The workspace
-// root directory either contains pnpm-workspace.yaml or a package.json file
-// with a "workspaces" field. Returns the absolute path to the workspace root
-// directory, or null if not found.
-const findWorkspaceRoot = async (workingDir) => {
+// root directory either:
+// - contains pnpm-workspace.yaml
+// - contains a package.json file with a "workspaces" field
+// - contains local packages
+// Returns the absolute path to the workspace root directory, or null if not
+// found.
+const findWorkspaceRoot = async (workingDir, relPaths) => {
   let dir = workingDir;
   for (let i = 0; i < 500; i++) {
     if (await looksLikeWorkspaceRoot(dir)) {
@@ -257,6 +269,22 @@ const findWorkspaceRoot = async (workingDir) => {
     }
     dir = path.dirname(dir);
   }
+
+  // Check if any relPaths match something like '../../common/utils/file.js'
+  let maxNumDoubleDots = 0;
+  for (const relPath of relPaths) {
+    const numDoubleDots = countStartingDoubleDots(relPath);
+    maxNumDoubleDots = Math.max(maxNumDoubleDots, numDoubleDots);
+  }
+
+  if (maxNumDoubleDots > 0) {
+    let rootDir = workingDir;
+    for (let i = 0; i < maxNumDoubleDots; i++) {
+      rootDir = path.dirname(rootDir);
+    }
+    return rootDir;
+  }
+
   return null;
 };
 
@@ -324,7 +352,8 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
     ]),
   ).sort();
 
-  const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
+  const workspaceRoot =
+    (await findWorkspaceRoot(workingDir, relPaths)) || workingDir;
 
   if (workspaceRoot !== workingDir) {
     const appDirRelPath = path.relative(workspaceRoot, workingDir);
