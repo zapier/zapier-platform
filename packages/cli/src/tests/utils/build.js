@@ -375,6 +375,10 @@ module.exports = {
   };
 };
 
+describe('build in lerna monorepo', function () {
+  // TODO
+});
+
 describe('build in yarn workspaces', function () {
   let monorepo, origCwd;
 

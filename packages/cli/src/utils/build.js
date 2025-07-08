@@ -223,6 +223,10 @@ const looksLikeWorkspaceRoot = async (dir) => {
     return true;
   }
 
+  if (fs.existsSync(path.join(dir, 'lerna.json'))) {
+    return true;
+  }
+
   const packageJsonPath = path.join(dir, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
     return false;
@@ -238,24 +242,11 @@ const looksLikeWorkspaceRoot = async (dir) => {
   return packageJson?.workspaces != null;
 };
 
-const countStartingDoubleDots = (relPath) => {
-  let count = 0;
-  const parts = relPath.split(path.sep);
-  for (const part of parts) {
-    if (part === '..') {
-      count += 1;
-    } else {
-      break;
-    }
-  }
-  return count;
-};
-
 // Traverses up the directory tree to find the workspace root. The workspace
 // root directory either:
 // - contains pnpm-workspace.yaml
 // - contains a package.json file with a "workspaces" field
-// - contains local packages
+// - contains lerna.json
 // Returns the absolute path to the workspace root directory, or null if not
 // found.
 const findWorkspaceRoot = async (workingDir, relPaths) => {
@@ -269,22 +260,6 @@ const findWorkspaceRoot = async (workingDir, relPaths) => {
     }
     dir = path.dirname(dir);
   }
-
-  // Check if any relPaths match something like '../../common/utils/file.js'
-  let maxNumDoubleDots = 0;
-  for (const relPath of relPaths) {
-    const numDoubleDots = countStartingDoubleDots(relPath);
-    maxNumDoubleDots = Math.max(maxNumDoubleDots, numDoubleDots);
-  }
-
-  if (maxNumDoubleDots > 0) {
-    let rootDir = workingDir;
-    for (let i = 0; i < maxNumDoubleDots; i++) {
-      rootDir = path.dirname(rootDir);
-    }
-    return rootDir;
-  }
-
   return null;
 };
 
