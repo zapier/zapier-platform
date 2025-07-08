@@ -249,7 +249,7 @@ const looksLikeWorkspaceRoot = async (dir) => {
 // - contains lerna.json
 // Returns the absolute path to the workspace root directory, or null if not
 // found.
-const findWorkspaceRoot = async (workingDir, relPaths) => {
+const findWorkspaceRoot = async (workingDir) => {
   let dir = workingDir;
   for (let i = 0; i < 500; i++) {
     if (await looksLikeWorkspaceRoot(dir)) {
@@ -327,8 +327,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
     ]),
   ).sort();
 
-  const workspaceRoot =
-    (await findWorkspaceRoot(workingDir, relPaths)) || workingDir;
+  const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
 
   if (workspaceRoot !== workingDir) {
     const appDirRelPath = path.relative(workspaceRoot, workingDir);
