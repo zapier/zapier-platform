@@ -67,11 +67,7 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     logOverride: {
       'require-resolve-not-external': 'silent',
     },
-    external: [
-      '../test/userapp',
-      'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
-      './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
-    ],
+    external: ['../test/userapp'],
     format,
     // Setting conditions to an empty array to exclude 'module' condition,
     // which Node.js doesn't use. https://esbuild.github.io/api/#conditions
@@ -227,6 +223,10 @@ const looksLikeWorkspaceRoot = async (dir) => {
     return true;
   }
 
+  if (fs.existsSync(path.join(dir, 'lerna.json'))) {
+    return true;
+  }
+
   const packageJsonPath = path.join(dir, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
     return false;
@@ -243,9 +243,12 @@ const looksLikeWorkspaceRoot = async (dir) => {
 };
 
 // Traverses up the directory tree to find the workspace root. The workspace
-// root directory either contains pnpm-workspace.yaml or a package.json file
-// with a "workspaces" field. Returns the absolute path to the workspace root
-// directory, or null if not found.
+// root directory either:
+// - contains pnpm-workspace.yaml
+// - contains a package.json file with a "workspaces" field
+// - contains lerna.json
+// Returns the absolute path to the workspace root directory, or null if not
+// found.
 const findWorkspaceRoot = async (workingDir) => {
   let dir = workingDir;
   for (let i = 0; i < 500; i++) {
