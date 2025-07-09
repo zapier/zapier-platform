@@ -281,21 +281,25 @@ describe('build (runs slowly)', function () {
   });
 });
 
-// Set up a monorepo project structure with two integrations as npm workspaces:
+// Set up a generic monorepo with two integrations and a common local package:
 //
 // (project root)
 // ├─ package.json
-// └─ packages/
-//    ├─ app-1/
-//    │  ├─ index.js
-//    │  └─ package.json
-//    └─ app-2/
+// ├─ packages/
+// │  ├─ app-1/
+// │  │  ├─ index.js
+// │  │  └─ package.json
+// │  └─ app-2/
+// │     ├─ index.js
+// │     └─ package.json
+// └─ common/
+//    └─ hello/
 //       ├─ index.js
 //       └─ package.json
 //
-// where app-1 and app-2 depends on the same local version of platform-core
-// package, but they use different versions of uuid.
-const setupMonorepo = async () => {
+// where both app-1 and app-2 depend on the same local version of platform-core
+// package and common/hello, but they use different versions of uuid.
+const setupGenericMonorepo = async () => {
   const tmpDir = getNewTempDirPath();
 
   // Get absolute paths to local packages
@@ -316,21 +320,34 @@ const setupMonorepo = async () => {
     path.join(tmpDir, 'package.json'),
     JSON.stringify({
       name: 'my-monorepo',
-      workspaces: ['packages/*'],
       private: true,
     }),
   );
 
-  const defaultIndexJs = `const uuid = require('uuid');
+  // common-hello is a local package
+  fs.outputFileSync(
+    path.join(tmpDir, 'common', 'hello', 'index.js'),
+    "module.exports = { hello: () => 'Hello from common!' };",
+  );
+  fs.outputFileSync(
+    path.join(tmpDir, 'common', 'hello', 'package.json'),
+    JSON.stringify({
+      name: 'common-hello',
+      version: '1.0.0',
+      main: 'index.js',
+      private: true,
+    }),
+  );
+
+  // First integration: app-1, CJS, depending on uuid and common-hello
+  fs.outputFileSync(
+    path.join(tmpDir, 'packages', 'app-1', 'index.js'),
+    `const uuid = require('uuid');
+const { hello } = require('common-hello');
 module.exports = {
 	version: require('./package.json').version,
 	platformVersion: require('zapier-platform-core').version,
-};`;
-
-  // First integration: app-1
-  fs.outputFileSync(
-    path.join(tmpDir, 'packages', 'app-1', 'index.js'),
-    defaultIndexJs,
+};`,
   );
   fs.outputFileSync(
     path.join(tmpDir, 'packages', 'app-1', 'package.json'),
@@ -341,33 +358,46 @@ module.exports = {
       dependencies: {
         uuid: '8.3.2',
         'zapier-platform-core': corePackage.path,
+        'common-hello': '1.0.0',
       },
       private: true,
     }),
   );
 
-  // Second integration: app-2
+  // Second integration: app-2, an ESM, depending on uuid and common-hello
   fs.outputFileSync(
     path.join(tmpDir, 'packages', 'app-2', 'index.js'),
-    defaultIndexJs,
+    `import { v4 as uuidv4 } from 'uuid';
+import hello from 'common-hello';
+import packageJson from './package.json' with { type: 'json' };
+import zapier from 'zapier-platform-core';
+export default {
+  version: packageJson.version,
+  platformVersion: zapier.version,
+};`,
   );
   fs.outputFileSync(
     path.join(tmpDir, 'packages', 'app-2', 'package.json'),
     JSON.stringify({
       name: 'app-2',
       version: '1.0.0',
-      main: 'index.js',
+      exports: './index.js',
       dependencies: {
         uuid: '9.0.1',
         'zapier-platform-core': corePackage.path,
+        'common-hello': '1.0.0',
       },
+      type: 'module', // this makes app-1 an ESM
       private: true,
     }),
   );
 
   return {
     repoDir: tmpDir,
-    coreVersion,
+    corePackage: {
+      version: coreVersion,
+      path: corePackage.path,
+    },
     cleanup: () => {
       fs.removeSync(tmpDir);
       corePackage.cleanup();
@@ -375,15 +405,247 @@ module.exports = {
   };
 };
 
+const setupLernaMonorepo = async () => {
+  const monorepo = await setupGenericMonorepo();
+
+  fs.outputFileSync(
+    path.join(monorepo.repoDir, 'lerna.json'),
+    JSON.stringify({
+      packages: ['packages/*', 'common/*'],
+      version: 'independent',
+      npmClient: 'npm',
+    }),
+  );
+
+  return monorepo;
+};
+
+const setupYarnMonorepo = async () => {
+  const monorepo = await setupGenericMonorepo();
+
+  // Root package.json. npm or yarn workspaces use the 'workspaces' field in
+  // package.json.
+  fs.outputFileSync(
+    path.join(monorepo.repoDir, 'package.json'),
+    JSON.stringify({
+      name: 'my-monorepo',
+      workspaces: ['packages/*', 'common/*'],
+      private: true,
+    }),
+  );
+
+  return monorepo;
+};
+
+const setupPnpmMonorepo = async () => {
+  const monorepo = await setupGenericMonorepo();
+
+  // pnpm has its own workspace file named pnpm-workspace.yaml
+  fs.outputFileSync(
+    path.join(monorepo.repoDir, 'pnpm-workspace.yaml'),
+    `packages:
+  - 'packages/*'
+  - 'common/*'
+linkWorkspacePackages: true`,
+  );
+
+  return monorepo;
+};
+
 describe('build in lerna monorepo', function () {
-  // TODO
+  let monorepo, origCwd, unzipDir;
+
+  before(async () => {
+    monorepo = await setupLernaMonorepo();
+
+    // lerna@7 removed the bootstrap command, so we use lerna@6.
+    // Lerna now actually recommends using the workspace feature from your
+    // package manager, so this test suite is more of a regression test.
+    await runCommand('npx', ['lerna@6', 'bootstrap'], {
+      cwd: monorepo.repoDir,
+    });
+  });
+
+  after(() => {
+    monorepo.cleanup();
+  });
+
+  beforeEach(() => {
+    origCwd = process.cwd();
+    unzipDir = getNewTempDirPath();
+  });
+
+  afterEach(() => {
+    process.chdir(origCwd);
+
+    fs.removeSync(unzipDir);
+    unzipDir = null;
+  });
+
+  it('should build in app-1', async () => {
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-1');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+
+    process.chdir(appDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipDir);
+
+    // Root directory should have symlinks named zapierwrapper.js and index.js
+    // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join('packages', 'app-1', 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipDir, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join('packages', 'app-1', 'index.js'),
+    );
+
+    // app-1/package.json should be copied to root directory
+    const appPackageJson = fs.readJsonSync(path.join(unzipDir, 'package.json'));
+    appPackageJson.name.should.equal('app-1');
+
+    const corePackageJson = fs.readJsonSync(
+      path.join(
+        unzipDir,
+        'packages',
+        'app-1',
+        'node_modules',
+        'zapier-platform-core',
+        'package.json',
+      ),
+    );
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
+
+    const uuidPackageJson = fs.readJsonSync(
+      path.join(
+        unzipDir,
+        'packages',
+        'app-1',
+        'node_modules',
+        'uuid',
+        'package.json',
+      ),
+    );
+    uuidPackageJson.version.should.equal('8.3.2');
+
+    // Make sure local dependency common-hello is included and symlinked
+    fs.lstatSync(
+      path.join(unzipDir, 'packages', 'app-1', 'node_modules', 'common-hello'),
+    )
+      .isSymbolicLink()
+      .should.be.true();
+    fs.realpathSync(
+      path.join(unzipDir, 'packages', 'app-1', 'node_modules', 'common-hello'),
+    ).should.equal(path.join(unzipDir, 'common', 'hello'));
+    fs.existsSync(
+      path.join(unzipDir, 'common', 'hello', 'index.js'),
+    ).should.be.true();
+
+    const helloPackageJson = fs.readJsonSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    );
+    helloPackageJson.name.should.equal('common-hello');
+    helloPackageJson.version.should.equal('1.0.0');
+  });
+
+  it('should build in app-2', async () => {
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+
+    process.chdir(appDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipDir);
+
+    // Root directory should have symlinks named zapierwrapper.js and index.js
+    // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join('packages', 'app-2', 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipDir, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join('packages', 'app-2', 'index.js'),
+    );
+
+    // app-2/package.json should be copied to root directory
+    const appPackageJson = fs.readJsonSync(path.join(unzipDir, 'package.json'));
+    appPackageJson.name.should.equal('app-2');
+
+    const corePackageJson = fs.readJsonSync(
+      path.join(
+        unzipDir,
+        'packages',
+        'app-2',
+        'node_modules',
+        'zapier-platform-core',
+        'package.json',
+      ),
+    );
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
+
+    const uuidPackageJson = fs.readJsonSync(
+      path.join(
+        unzipDir,
+        'packages',
+        'app-2',
+        'node_modules',
+        'uuid',
+        'package.json',
+      ),
+    );
+    uuidPackageJson.version.should.equal('9.0.1');
+
+    // Make sure local dependency common-hello is included and symlinked
+    fs.lstatSync(
+      path.join(unzipDir, 'packages', 'app-2', 'node_modules', 'common-hello'),
+    )
+      .isSymbolicLink()
+      .should.be.true();
+    fs.realpathSync(
+      path.join(unzipDir, 'packages', 'app-2', 'node_modules', 'common-hello'),
+    ).should.equal(path.join(unzipDir, 'common', 'hello'));
+    fs.existsSync(
+      path.join(unzipDir, 'common', 'hello', 'index.js'),
+    ).should.be.true();
+
+    const helloPackageJson = fs.readJsonSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    );
+    helloPackageJson.name.should.equal('common-hello');
+    helloPackageJson.version.should.equal('1.0.0');
+  });
 });
 
 describe('build in yarn workspaces', function () {
-  let monorepo, origCwd;
+  let monorepo, origCwd, unzipDir;
 
   before(async () => {
-    monorepo = await setupMonorepo();
+    monorepo = await setupYarnMonorepo();
     await runCommand('yarn', ['install'], { cwd: monorepo.repoDir });
   });
 
@@ -393,19 +655,22 @@ describe('build in yarn workspaces', function () {
 
   beforeEach(() => {
     origCwd = process.cwd();
+    unzipDir = getNewTempDirPath();
   });
 
   afterEach(() => {
     process.chdir(origCwd);
+
+    fs.removeSync(unzipDir);
+    unzipDir = null;
   });
 
   it('should build in app-1', async () => {
     const appDir = path.join(monorepo.repoDir, 'packages', 'app-1');
     const zipPath = path.join(appDir, 'build', 'build.zip');
-    const unzipPath = path.join(monorepo.repoDir, 'app1_extracted');
 
-    // Make sure the zapier-platform-core dependency is hoisted in the root
-    // node_modules directory
+    // yarn hoists zapier-platform-core dependency to the root node_modules
+    // directory
     fs.existsSync(
       path.join(monorepo.repoDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.true();
@@ -426,35 +691,68 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipPath);
+    await decompress(zipPath, unzipDir);
 
-    const corePackageJson = JSON.parse(
-      fs.readFileSync(
-        path.join(
-          unzipPath,
-          'node_modules',
-          'zapier-platform-core',
-          'package.json',
-        ),
+    // Root directory should have symlinks named zapierwrapper.js and index.js
+    // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join('packages', 'app-1', 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipDir, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join('packages', 'app-1', 'index.js'),
+    );
+
+    // app-1/package.json should be copied to root directory
+    const appPackageJson = fs.readJsonSync(path.join(unzipDir, 'package.json'));
+    appPackageJson.name.should.equal('app-1');
+
+    const corePackageJson = fs.readJsonSync(
+      path.join(
+        unzipDir,
+        'node_modules',
+        'zapier-platform-core',
+        'package.json',
       ),
     );
-    corePackageJson.version.should.equal(monorepo.coreVersion);
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
 
-    const uuidPackageJson = JSON.parse(
-      fs.readFileSync(
-        path.join(unzipPath, 'node_modules', 'uuid', 'package.json'),
-      ),
+    const uuidPackageJson = fs.readJsonSync(
+      path.join(unzipDir, 'node_modules', 'uuid', 'package.json'),
     );
     uuidPackageJson.version.should.equal('8.3.2');
+
+    // Make sure local dependency common-hello is included and symlinked
+    fs.lstatSync(path.join(unzipDir, 'node_modules', 'common-hello'))
+      .isSymbolicLink()
+      .should.be.true();
+    fs.realpathSync(
+      path.join(unzipDir, 'node_modules', 'common-hello'),
+    ).should.equal(path.join(unzipDir, 'common', 'hello'));
+    fs.existsSync(
+      path.join(unzipDir, 'common', 'hello', 'index.js'),
+    ).should.be.true();
+    fs.existsSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    ).should.be.true();
+
+    const helloPackageJson = fs.readJsonSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    );
+    helloPackageJson.name.should.equal('common-hello');
+    helloPackageJson.version.should.equal('1.0.0');
   });
 
   it('should build in app-2', async () => {
     const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
     const zipPath = path.join(appDir, 'build', 'build.zip');
-    const unzipPath = path.join(monorepo.repoDir, 'app2_extracted');
 
-    // Make sure the zapier-platform-core dependency is installed in the repo
-    // root directory
+    // yarn hoists zapier-platform-core dependency to the root node_modules
+    // directory
     fs.existsSync(
       path.join(monorepo.repoDir, 'node_modules', 'zapier-platform-core'),
     ).should.be.true();
@@ -475,48 +773,75 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipPath);
+    await decompress(zipPath, unzipDir);
 
-    const corePackageJson = JSON.parse(
-      fs.readFileSync(
-        path.join(
-          unzipPath,
-          'node_modules',
-          'zapier-platform-core',
-          'package.json',
-        ),
+    // Root directory should have symlinks named zapierwrapper.js and index.js
+    // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join('packages', 'app-2', 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipDir, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join('packages', 'app-2', 'index.js'),
+    );
+
+    // app-1/package.json should be copied to root directory
+    const appPackageJson = fs.readJsonSync(path.join(unzipDir, 'package.json'));
+    appPackageJson.name.should.equal('app-2');
+
+    const corePackageJson = fs.readJsonSync(
+      path.join(
+        unzipDir,
+        'node_modules',
+        'zapier-platform-core',
+        'package.json',
       ),
     );
-    corePackageJson.version.should.equal(monorepo.coreVersion);
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
 
-    const uuidPackageJson = JSON.parse(
-      fs.readFileSync(
-        path.join(
-          unzipPath,
-          'packages',
-          'app-2',
-          'node_modules',
-          'uuid',
-          'package.json',
-        ),
+    const uuidPackageJson = fs.readJsonSync(
+      path.join(
+        unzipDir,
+        'packages',
+        'app-2',
+        'node_modules',
+        'uuid',
+        'package.json',
       ),
     );
     uuidPackageJson.version.should.equal('9.0.1');
+
+    // Make sure local dependency common-hello is included and symlinked
+    fs.lstatSync(path.join(unzipDir, 'node_modules', 'common-hello'))
+      .isSymbolicLink()
+      .should.be.true();
+    fs.realpathSync(
+      path.join(unzipDir, 'node_modules', 'common-hello'),
+    ).should.equal(path.join(unzipDir, 'common', 'hello'));
+    fs.existsSync(
+      path.join(unzipDir, 'common', 'hello', 'index.js'),
+    ).should.be.true();
+    fs.existsSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    ).should.be.true();
+
+    const helloPackageJson = fs.readJsonSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    );
+    helloPackageJson.name.should.equal('common-hello');
+    helloPackageJson.version.should.equal('1.0.0');
   });
 });
 
 describe('build in pnpm workspaces', () => {
-  let monorepo, origCwd;
+  let monorepo, origCwd, unzipDir;
 
   before(async () => {
-    monorepo = await setupMonorepo();
-
-    // pnpm has its own workspace file named pnpm-workspace.yaml
-    fs.outputFileSync(
-      path.join(monorepo.repoDir, 'pnpm-workspace.yaml'),
-      "packages:\n  - 'packages/*'\n",
-    );
-
+    monorepo = await setupPnpmMonorepo();
     await runCommand('pnpm', ['install'], { cwd: monorepo.repoDir });
 
     // For context, after `pnpm install`, the directory tree looks like this:
@@ -543,18 +868,24 @@ describe('build in pnpm workspaces', () => {
     // │               │   ├── package.json
     // │               │   └── ...
     // │               └── other dependencies of uuid@9.0.1 -> ...
+    // ├── common/
+    // │   └── hello/
+    // │       ├── index.js
+    // │       └── package.json
     // ├── packages/
     // │   ├── app-1/
     // │   │   ├── node_modules/
     // │   │   │   ├── zapier-platform-core -> ../../../node_modules/.pnpm/zapier-platform-core@<version>/node_modules/zapier-platform-core
-    // │   │   │   └── uuid -> ../../../node_modules/uuid@8.3.2/node_modules/uuid
+    // │   │   │   ├── uuid -> ../../../node_modules/uuid@8.3.2/node_modules/uuid
+    // │   │   │   └── common-hello -> ../../../common/hello
     // │   │   ├── package.json
     // │   │   ├── index.js
     // │   │   └── ...
     // │   └── app-2/
     // │       ├── node_modules/
     // │       │   ├── zapier-platform-core -> ../../../node_modules/.pnpm/zapier-platform-core@<version>/node_modules/zapier-platform-core
-    // │       │   └── uuid -> ../../../node_modules/uuid@9.0.1/node_modules/uuid
+    // │       │   ├── uuid -> ../../../node_modules/uuid@9.0.1/node_modules/uuid
+    // │       │   └── common-hello -> ../../../common/hello
     // │       ├── package.json
     // │       ├── index.js
     // │       └── ...
@@ -571,17 +902,22 @@ describe('build in pnpm workspaces', () => {
 
   beforeEach(() => {
     origCwd = process.cwd();
+    unzipDir = getNewTempDirPath();
   });
 
   afterEach(() => {
     process.chdir(origCwd);
+
+    fs.removeSync(unzipDir);
+    unzipDir = null;
   });
 
   it('should build in app-1', async () => {
     const appDir = path.join(monorepo.repoDir, 'packages', 'app-1');
     const zipPath = path.join(appDir, 'build', 'build.zip');
-    const unzipPath = path.join(monorepo.repoDir, 'app1_extracted');
 
+    // Just a quick sanity check that pnpm does what we expect it to do --
+    // zapier-platform-core should be symlinked in app-1/node_modules
     const coreLinkPath = path.join(
       appDir,
       'node_modules',
@@ -589,18 +925,10 @@ describe('build in pnpm workspaces', () => {
     );
     fs.lstatSync(coreLinkPath).isSymbolicLink().should.be.true();
 
-    // coreRelPath is relative to dirname(coreLinkPath)
-    const coreRelPath = fs.readlinkSync(coreLinkPath);
-    const match = coreRelPath.match(
-      /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/,
-    );
-    should.exist(match);
-
-    const coreAbsPath = path.resolve(path.dirname(coreLinkPath), coreRelPath);
+    const coreAbsPath = fs.realpathSync(coreLinkPath);
     fs.existsSync(coreAbsPath).should.be.true();
 
     fs.ensureDirSync(path.dirname(zipPath));
-
     process.chdir(appDir);
 
     await build.buildAndOrUpload(
@@ -612,17 +940,17 @@ describe('build in pnpm workspaces', () => {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipPath);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
-    const wrapperLinkPath = path.join(unzipPath, 'zapierwrapper.js');
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
     fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
     fs.readlinkSync(wrapperLinkPath).should.equal(
       path.join('packages', 'app-1', 'zapierwrapper.js'),
     );
 
-    const indexLinkPath = path.join(unzipPath, 'index.js');
+    const indexLinkPath = path.join(unzipDir, 'index.js');
     fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
     fs.readlinkSync(indexLinkPath).should.equal(
       path.join('packages', 'app-1', 'index.js'),
@@ -630,38 +958,46 @@ describe('build in pnpm workspaces', () => {
 
     // app-1/package.json should be copied to root directory
     const appPackageJson = JSON.parse(
-      fs.readFileSync(path.join(unzipPath, 'package.json')),
+      fs.readFileSync(path.join(unzipDir, 'package.json')),
     );
     appPackageJson.name.should.equal('app-1');
+
+    // coreRelPath is relative to dirname(coreLinkPath)
+    const coreRelPath = fs.readlinkSync(coreLinkPath);
+    const match = coreRelPath.match(
+      /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/,
+    );
+    should.exist(match);
 
     // coreDirName normally would look like "zapier-platform-core@<version>" in
     // real usage, but here it's long and ugly like
     // "zapier-platform-core@file+..+..+path+to+zapier-platform+pa_562..."
-    // because we're using a local version of the core package.
+    // because we're using the local copy of the core package.
     const coreDirName = match[1];
-    const pnpmNmDir = path.join(unzipPath, 'node_modules', '.pnpm');
-    const corePackageJson = JSON.parse(
-      fs.readFileSync(
-        path.join(
-          pnpmNmDir,
-          coreDirName,
-          'node_modules',
-          'zapier-platform-core',
-          'package.json',
-        ),
+    const pnpmNmDir = path.join(unzipDir, 'node_modules', '.pnpm');
+    const corePackageJson = fs.readJsonSync(
+      path.join(
+        pnpmNmDir,
+        coreDirName,
+        'node_modules',
+        'zapier-platform-core',
+        'package.json',
       ),
     );
-    corePackageJson.version.should.equal(monorepo.coreVersion);
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
 
+    // Make sure we only copy uuid@8.3.2, not uuid@9.0.1
     const uuidPath = path.join(pnpmNmDir, 'uuid@8.3.2', 'node_modules', 'uuid');
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(path.join(uuidPath, 'package.json')),
     );
     uuidPackageJson.version.should.equal('8.3.2');
+    fs.existsSync(path.join(uuidPath, 'dist', 'index.js')).should.be.true();
+    fs.existsSync(path.join(pnpmNmDir, 'uuid@9.0.1')).should.be.false();
 
     // Make sure symlinks in app-1/node_modules are also copied to the zip
     const appNmDirInZip = path.join(
-      unzipPath,
+      unzipDir,
       'packages',
       'app-1',
       'node_modules',
@@ -712,24 +1048,34 @@ describe('build in pnpm workspaces', () => {
       /\.\.\/\.\.\/(lodash@[^/]+)\/node_modules\/lodash$/,
     )[1];
     const lodashVersion = lodashDirName.split(/[@_]/)[1];
-    const lodashPackageJson = JSON.parse(
-      fs.readFileSync(
-        path.join(
-          pnpmNmDir,
-          lodashDirName,
-          'node_modules',
-          'lodash',
-          'package.json',
-        ),
+    const lodashPackageJson = fs.readJsonSync(
+      path.join(
+        pnpmNmDir,
+        lodashDirName,
+        'node_modules',
+        'lodash',
+        'package.json',
       ),
     );
     lodashPackageJson.version.should.equal(lodashVersion);
+
+    // Make sure local dependency common-hello is included and symlinked
+    const helloLinkPathInZip = path.join(appNmDirInZip, 'common-hello');
+    fs.lstatSync(helloLinkPathInZip).isSymbolicLink().should.be.true();
+    fs.readlinkSync(helloLinkPathInZip).should.equal(
+      path.join('..', '..', '..', 'common', 'hello'),
+    );
+    const helloPackageJson = fs.readJsonSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    );
+    helloPackageJson.name.should.equal('common-hello');
+    helloPackageJson.version.should.equal('1.0.0');
+    fs.existsSync(path.join(unzipDir, 'common', 'hello', 'index.js'));
   });
 
   it('should build in app-2', async () => {
     const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
     const zipPath = path.join(appDir, 'build', 'build.zip');
-    const unzipPath = path.join(monorepo.repoDir, 'app2_extracted');
 
     const coreLinkPath = path.join(
       appDir,
@@ -761,17 +1107,17 @@ describe('build in pnpm workspaces', () => {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipPath);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
-    const wrapperLinkPath = path.join(unzipPath, 'zapierwrapper.js');
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
     fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
     fs.readlinkSync(wrapperLinkPath).should.equal(
       path.join('packages', 'app-2', 'zapierwrapper.js'),
     );
 
-    const indexLinkPath = path.join(unzipPath, 'index.js');
+    const indexLinkPath = path.join(unzipDir, 'index.js');
     fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
     fs.readlinkSync(indexLinkPath).should.equal(
       path.join('packages', 'app-2', 'index.js'),
@@ -779,7 +1125,7 @@ describe('build in pnpm workspaces', () => {
 
     // app-2/package.json should be copied to root directory
     const appPackageJson = JSON.parse(
-      fs.readFileSync(path.join(unzipPath, 'package.json')),
+      fs.readFileSync(path.join(unzipDir, 'package.json')),
     );
     appPackageJson.name.should.equal('app-2');
 
@@ -788,7 +1134,7 @@ describe('build in pnpm workspaces', () => {
     // "zapier-platform-core@file+..+..+path+to+zapier-platform+pa_562..."
     // because we're using a local version of the core package.
     const coreDirName = match[1];
-    const pnpmNmDir = path.join(unzipPath, 'node_modules', '.pnpm');
+    const pnpmNmDir = path.join(unzipDir, 'node_modules', '.pnpm');
     const corePackageJson = JSON.parse(
       fs.readFileSync(
         path.join(
@@ -800,17 +1146,19 @@ describe('build in pnpm workspaces', () => {
         ),
       ),
     );
-    corePackageJson.version.should.equal(monorepo.coreVersion);
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
 
     const uuidPath = path.join(pnpmNmDir, 'uuid@9.0.1', 'node_modules', 'uuid');
     const uuidPackageJson = JSON.parse(
       fs.readFileSync(path.join(uuidPath, 'package.json')),
     );
     uuidPackageJson.version.should.equal('9.0.1');
+    fs.existsSync(path.join(uuidPath, 'dist', 'index.js')).should.be.true();
+    fs.existsSync(path.join(pnpmNmDir, 'uuid@8.3.2')).should.be.false();
 
     // Make sure symlinks in app-2/node_modules are also copied to the zip
     const appNmDirInZip = path.join(
-      unzipPath,
+      unzipDir,
       'packages',
       'app-2',
       'node_modules',
@@ -844,6 +1192,46 @@ describe('build in pnpm workspaces', () => {
         'uuid',
       ),
     );
+
+    // Make sure symlinks for zapier-platform-core's dependencies, like lodash,
+    // are copied to the zip
+    const lodashLinkPathInZip = path.join(
+      pnpmNmDir,
+      coreDirName,
+      'node_modules',
+      'lodash',
+    );
+    fs.lstatSync(lodashLinkPathInZip).isSymbolicLink().should.be.true();
+    const lodashTargetPath = fs
+      .readlinkSync(lodashLinkPathInZip)
+      .replaceAll('\\', '/');
+    const lodashDirName = lodashTargetPath.match(
+      /\.\.\/\.\.\/(lodash@[^/]+)\/node_modules\/lodash$/,
+    )[1];
+    const lodashVersion = lodashDirName.split(/[@_]/)[1];
+    const lodashPackageJson = fs.readJsonSync(
+      path.join(
+        pnpmNmDir,
+        lodashDirName,
+        'node_modules',
+        'lodash',
+        'package.json',
+      ),
+    );
+    lodashPackageJson.version.should.equal(lodashVersion);
+
+    // Make sure local dependency common-hello is included and symlinked
+    const helloLinkPathInZip = path.join(appNmDirInZip, 'common-hello');
+    fs.lstatSync(helloLinkPathInZip).isSymbolicLink().should.be.true();
+    fs.readlinkSync(helloLinkPathInZip).should.equal(
+      path.join('..', '..', '..', 'common', 'hello'),
+    );
+    const helloPackageJson = fs.readJsonSync(
+      path.join(unzipDir, 'common', 'hello', 'package.json'),
+    );
+    helloPackageJson.name.should.equal('common-hello');
+    helloPackageJson.version.should.equal('1.0.0');
+    fs.existsSync(path.join(unzipDir, 'common', 'hello', 'index.js'));
   });
 });
 
@@ -1145,6 +1533,8 @@ export default {
 
     // This one, even though it's a ESM entry point, defined in
     // "exports/./node/module", it isn't used by Node.js
-    smartPaths.should.not.containEql('node_modules/uuid/dist/esm-node/index.js');
+    smartPaths.should.not.containEql(
+      'node_modules/uuid/dist/esm-node/index.js',
+    );
   });
 });
