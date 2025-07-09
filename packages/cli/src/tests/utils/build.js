@@ -1538,3 +1538,49 @@ export default {
     );
   });
 });
+
+describe('build legacy scripting dependencies', function () {
+  let tmpDir, entryPoint, corePackage;
+
+  before(async () => {
+    tmpDir = getNewTempDirPath();
+
+    // Create a basic app that uses legacy-scripting-runner
+    fs.outputFileSync(
+      path.join(tmpDir, 'index.js'),
+      `const { run } = require('zapier-platform-legacy-scripting-runner');
+run();`,
+    );
+
+    // Create package.json
+    corePackage = await npmPackCore();
+    fs.outputFileSync(
+      path.join(tmpDir, 'package.json'),
+      JSON.stringify({
+        name: 'legacy-scripting-test',
+        version: '1.0.0',
+        main: 'index.js',
+        dependencies: {
+          'zapier-platform-core': corePackage.path,
+          'zapier-platform-legacy-scripting-runner': 'latest',
+        },
+      }),
+    );
+
+    runCommand('npm', ['install'], { cwd: tmpDir });
+    entryPoint = path.resolve(tmpDir, 'index.js');
+  });
+
+  after(() => {
+    fs.removeSync(tmpDir);
+    corePackage.cleanup();
+  });
+
+  it('should include certain legacy paths in smartPaths', async function () {
+    const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
+
+    smartPaths.should.containEql(
+      'node_modules/zapier-platform-legacy-scripting-runner/request-worker.js',
+    );
+  });
+});
