@@ -461,7 +461,7 @@ describe('build in lerna monorepo', function () {
     // lerna@7 removed the bootstrap command, so we use lerna@6.
     // Lerna now actually recommends using the workspace feature from your
     // package manager, so this test suite is more of a regression test.
-    await runCommand('npx', ['lerna@6', 'bootstrap'], {
+    await runCommand('npx', ['lerna@6', 'bootstrap', '--no-ci'], {
       cwd: monorepo.repoDir,
     });
   });
