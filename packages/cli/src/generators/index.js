@@ -67,7 +67,48 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
   );
 };
 
-const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
+const writeGenericTypeScriptPackageJson = (
+  gen,
+  packageJsonExtension,
+  write = false,
+) => {
+  const basePackageJson = {
+    name: gen.options.packageName,
+    version: '1.0.0',
+    description: '',
+    scripts: {
+      test: 'npm run build && vitest --run',
+      clean: 'rimraf ./dist ./build',
+      build: 'npm run clean && tsc',
+      '_zapier-build': 'npm run build',
+    },
+    dependencies: {
+      [PLATFORM_PACKAGE]: PACKAGE_VERSION,
+    },
+    devDependencies: {
+      rimraf: '^5.0.10',
+      typescript: '5.6.2',
+      vitest: '^2.1.2',
+    },
+    private: true,
+  };
+
+  const contents = merge(basePackageJson, packageJsonExtension);
+
+  if (write) {
+    gen.fs.writeJSON(gen.destinationPath('package.json'), contents);
+  }
+
+  return contents;
+};
+
+const writeStandaloneTypeScriptPackageJson = (gen, packageJsonExtension) => {
+  const contents = writeGenericTypeScriptPackageJson(
+    gen,
+    packageJsonExtension,
+    false,
+  );
+
   const moduleExtension =
     gen.options.module === 'esm'
       ? {
@@ -78,28 +119,9 @@ const writeTypeScriptPackageJson = (gen, packageJsonExtension) => {
           main: 'index.js',
         };
 
-  const fullExtension = merge(moduleExtension, packageJsonExtension);
-
   gen.fs.writeJSON(
     gen.destinationPath('package.json'),
-    merge(
-      {
-        name: gen.options.packageName,
-        version: '1.0.0',
-        description: '',
-        scripts: {
-          test: 'vitest',
-        },
-        dependencies: {
-          [PLATFORM_PACKAGE]: PACKAGE_VERSION,
-        },
-        devDependencies: {
-          vitest: '^2.1.2',
-        },
-        private: true,
-      },
-      fullExtension,
-    ),
+    merge(contents, moduleExtension, packageJsonExtension),
   );
 };
 
@@ -115,7 +137,15 @@ const writeGenericIndex = (gen, hasAuth) => {
   );
 };
 
-const writeTypeScriptIndex = (gen) => {
+const writeGenericTypescriptIndex = (gen) => {
+  gen.fs.copyTpl(
+    gen.templatePath('index-generic.template.ts'),
+    gen.destinationPath('src/index.ts'),
+    { corePackageName: PLATFORM_PACKAGE },
+  );
+};
+
+const writeStandaloneTypeScriptIndex = (gen) => {
   const templatePath =
     gen.options.module === 'esm'
       ? 'index-esm.template.ts'
@@ -143,15 +173,23 @@ const authTypes = {
 
 const writeGenericAuth = (gen) => {
   const authType = authTypes[gen.options.template];
-  const content = authFilesCodegen[authType]();
-  gen.fs.write(gen.destinationPath('authentication.js'), content);
+  const content = authFilesCodegen[authType](gen.options.language);
+  const destPath =
+    gen.options.language === 'typescript'
+      ? 'src/authentication.ts'
+      : 'authentication.js';
+  gen.fs.write(gen.destinationPath(destPath), content);
 };
 
 const writeGenericAuthTest = (gen) => {
   const authType = authTypes[gen.options.template];
+  const fileExtension = gen.options.language === 'typescript' ? 'ts' : 'js';
+  const destPath = gen.options.language === 'typescript' ? 'src/test' : 'test';
   gen.fs.copyTpl(
-    gen.templatePath(`authTests/${authType || 'generic'}.test.js`),
-    gen.destinationPath('test/authentication.test.js'),
+    gen.templatePath(
+      `authTests/${authType || 'generic'}.test.${fileExtension}`,
+    ),
+    gen.destinationPath(`${destPath}/authentication.test.${fileExtension}`),
   );
 };
 
@@ -166,8 +204,21 @@ const writeGenericTest = (gen) => {
 const writeForAuthTemplate = (gen) => {
   writeGitignore(gen);
   writeGenericReadme(gen);
-  writeGenericPackageJson(gen);
-  writeGenericIndex(gen, true);
+  if (gen.options.language === 'typescript') {
+    const packageJsonExtension = {
+      exports: './dist/index.js',
+      type: 'module',
+    };
+    writeGenericTypescriptIndex(gen);
+    writeGenericTypeScriptPackageJson(gen, packageJsonExtension, true);
+    gen.fs.copyTpl(
+      gen.templatePath('typescript/tsconfig.json'),
+      gen.destinationPath('tsconfig.json'),
+    );
+  } else {
+    writeGenericIndex(gen, true);
+    writeGenericPackageJson(gen);
+  }
   writeGenericAuth(gen);
   writeGenericAuthTest(gen);
 };
@@ -210,29 +261,13 @@ const writeForStandaloneTypeScriptTemplate = (gen) => {
   writeGenericReadme(gen);
   appendReadme(gen);
 
-  const packageJsonExtension = {
-    typescript: {
-      scripts: {
-        test: 'vitest --run',
-        clean: 'rimraf ./dist ./build',
-        build: 'npm run clean && tsc',
-        '_zapier-build': 'npm run build',
-      },
-      devDependencies: {
-        rimraf: '^5.0.10',
-        typescript: '5.6.2',
-        vitest: '^2.1.2',
-      },
-    },
-  }[gen.options.template];
-
-  writeTypeScriptPackageJson(gen, packageJsonExtension);
+  writeStandaloneTypeScriptPackageJson(gen);
 
   gen.fs.copy(
     gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
     gen.destinationPath(),
   );
-  writeTypeScriptIndex(gen);
+  writeStandaloneTypeScriptIndex(gen);
 };
 
 const TEMPLATE_ROUTES = {
@@ -253,6 +288,8 @@ const TEMPLATE_ROUTES = {
 
 const ESM_SUPPORTED_TEMPLATES = ['minimal', 'typescript'];
 
+const TS_SUPPORTED_TEMPLATES = ['oauth2'];
+
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
 
 class ProjectGenerator extends Generator {
@@ -260,7 +297,7 @@ class ProjectGenerator extends Generator {
     this.sourceRoot(path.resolve(__dirname, 'templates'));
     this.destinationRoot(path.resolve(this.options.path));
 
-    const jsFilter = filter(['*.js', '*.json'], { restore: true });
+    const jsFilter = filter(['*.js', '*.json', '*.ts'], { restore: true });
     this.queueTransformStream([
       jsFilter,
       prettier({ singleQuote: true }),
@@ -305,6 +342,25 @@ class ProjectGenerator extends Generator {
       throw new Error(
         'ESM is not supported for this template, please use a different template or set the module to commonjs',
       );
+    }
+
+    if (this.options.language) {
+      if (this.options.language === 'typescript') {
+        // check if the template supports typescript
+        if (!TS_SUPPORTED_TEMPLATES.includes(this.options.template)) {
+          throw new Error(
+            'Typescript is not supported for this template, please use a different template or set the language to javascript. Supported templates: ' +
+              TS_SUPPORTED_TEMPLATES.join(', '),
+          );
+        }
+        // if they try to combine typescript with commonjs, throw an error
+        if (this.options.module === 'commonjs') {
+          throw new Error('Typescript is not supported for commonjs');
+        }
+      }
+    } else {
+      // default to javascript for the language if it's not set
+      this.options.language = 'javascript';
     }
   }
 

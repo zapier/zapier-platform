@@ -23,19 +23,30 @@ const obj = (...properties) =>
       .join('')}}
   `.trim();
 
-const exportStatement = (obj) => `
-module.exports = ${obj}`;
+// TypeScript version of obj that supports satisfies clause
+const objTS = (type, ...properties) =>
+  `
+    {${properties
+      .map((p) => (p.startsWith('/') ? `\n\n${p}\n` : p + ','))
+      .join('')}}
+  `.trim() + ` satisfies ${type}`;
+
+const exportStatement = (obj, language) =>
+  language === 'typescript'
+    ? `export default ${obj}`
+    : `module.exports = ${obj}`;
 
 /**
  * @param {string} key could be a variable name or string value
  * @param {string | undefined} value can either be a variable or actual string. or could be missing, in which case the input is treated as a variable
+ * @param {string | undefined} satisfiesType if provided, the property will be typed with the given type
  */
-const objProperty = (key, value) => {
+const objProperty = (key, value, satisfiesType) => {
   if (value === undefined) {
     return `${key}`;
   }
   // wrap key in quotes here in case the key isn't a valid property. prettier will remove if needed
-  return `'${key}': ${value}`;
+  return `'${key}': ${value}${satisfiesType ? ` satisfies ${satisfiesType}` : ''}`;
 };
 
 const variableAssignmentDeclaration = (varName, value) =>
@@ -157,8 +168,7 @@ const file = (...statements) =>
     ${statements.join('\n\n')}
 `.trim();
 
-// TODO dynamically import auth type i.e. AuthenticationOAuth2Config
-const tsFile = (typesToImport = [], ...statements) =>
+const fileTS = (typesToImport = [], ...statements) =>
   `
     import type { ${typesToImport.join(', ')} } from 'zapier-platform-core';
 
@@ -174,15 +184,16 @@ module.exports = {
   exportStatement,
   fatArrowReturnFunctionDeclaration,
   file,
+  fileTS,
   functionDeclaration,
   ifStatement,
   interpLiteral,
   obj,
   objProperty,
+  objTS,
   RESPONSE_VAR,
   returnStatement,
   strLiteral,
-  tsFile,
   variableAssignmentDeclaration,
   zRequest,
   zResponseErr,

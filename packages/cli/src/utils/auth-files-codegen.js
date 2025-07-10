@@ -9,10 +9,12 @@ const {
   exportStatement,
   fatArrowReturnFunctionDeclaration,
   file,
+  fileTS,
   functionDeclaration,
   ifStatement,
   interpLiteral,
   obj,
+  objTS,
   objProperty,
   RESPONSE_VAR,
   returnStatement,
@@ -22,9 +24,19 @@ const {
   zResponseErr,
 } = require('./codegen');
 
-const standardArgs = ['z', 'bundle'];
-const beforeMiddlewareArgs = ['request', ...standardArgs];
-const afterMiddlewareArgs = [RESPONSE_VAR, ...standardArgs];
+const standardArgs = (language) =>
+  language === 'typescript'
+    ? ['z: ZObject', 'bundle: Bundle']
+    : ['z', 'bundle'];
+const standardTypes = ['ZObject', 'Bundle', 'Authentication'];
+const beforeMiddlewareArgs = (language) => [
+  'request',
+  ...standardArgs(language),
+];
+const afterMiddlewareArgs = (language) => [
+  RESPONSE_VAR,
+  ...standardArgs(language),
+];
 
 // used for both oauth1 and oauth2
 const getOauthAccessTokenFuncName = 'getAccessToken';
@@ -34,6 +46,7 @@ const authJsonUrl = (path) =>
   `https://auth-json-server.zapier-staging.com/${path}`;
 
 const authFileExport = (
+  language,
   authType,
   authDescription,
   {
@@ -45,37 +58,44 @@ const authFileExport = (
     authFields = [],
   } = {},
 ) => {
+  const configProps = [
+    comment(authDescription),
+    objProperty('type', strLiteral(authType)),
+    ...extraConfigProps,
+    comment(
+      "Define any input app's auth requires here. The user will be prompted to enter this info when they connect their account.",
+    ),
+    objProperty('fields', arr(...authFields)),
+    comment(
+      "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenever a user connects their account for the first time.",
+    ),
+    test,
+    comment(
+      `This template string can access all the data returned from the auth test. If you return the test object, you'll access the returned data with a label like \`{{json.X}}\`. If you return \`response.data\` from your test, then your label can be \`{{X}}\`. This can also be a function that returns a label. That function has the standard args \`(${standardArgs(
+        language,
+      ).join(
+        ', ',
+      )})\` and data returned from the test can be accessed in \`bundle.inputData.X\`.`,
+    ),
+    objProperty('connectionLabel', connectionLabel),
+  ];
+
+  const configObj =
+    language === 'typescript'
+      ? objTS('Authentication', ...configProps)
+      : obj(...configProps);
+
   return exportStatement(
     obj(
-      objProperty(
-        'config',
-        obj(
-          comment(authDescription),
-          objProperty('type', strLiteral(authType)),
-          ...extraConfigProps,
-          comment(
-            "Define any input app's auth requires here. The user will be prompted to enter this info when they connect their account.",
-          ),
-          objProperty('fields', arr(...authFields)),
-          comment(
-            "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenever a user connects their account for the first time.",
-          ),
-          test,
-          comment(
-            `This template string can access all the data returned from the auth test. If you return the test object, you'll access the returned data with a label like \`{{json.X}}\`. If you return \`response.data\` from your test, then your label can be \`{{X}}\`. This can also be a function that returns a label. That function has the standard args \`(${standardArgs.join(
-              ', ',
-            )})\` and data returned from the test can be accessed in \`bundle.inputData.X\`.`,
-          ),
-          objProperty('connectionLabel', connectionLabel),
-        ),
-      ),
+      objProperty('config', configObj),
       objProperty('befores', arr(...beforeFuncNames)),
       objProperty('afters', arr(...afterFuncNames)),
     ),
+    language,
   );
 };
 
-const authTestFunc = (testUrl = strLiteral(authJsonUrl('me'))) =>
+const authTestFunc = (language, testUrl = strLiteral(authJsonUrl('me'))) =>
   block(
     comment(
       'You want to make a request to an endpoint that is either specifically designed to test auth, or one that every user will have access to. eg: `/me`.',
@@ -83,7 +103,11 @@ const authTestFunc = (testUrl = strLiteral(authJsonUrl('me'))) =>
     comment(
       'By returning the entire request object, you have access to the request and response data for testing purposes. Your connection label can access any data from the returned response using the `json.` prefix. eg: `{{json.username}}`.',
     ),
-    fatArrowReturnFunctionDeclaration('test', standardArgs, zRequest(testUrl)),
+    fatArrowReturnFunctionDeclaration(
+      'test',
+      standardArgs(language),
+      zRequest(testUrl),
+    ),
   );
 
 const handleBadResponsesFunc = (
@@ -115,14 +139,14 @@ const basicAuthFile = () => {
 /**
  * boilerplate for a "before" middleware. No need to return the requst at the end
  */
-const beforeMiddlewareFunc = (funcName, ...statements) =>
+const beforeMiddlewareFunc = (funcName, language, ...statements) =>
   block(
     comment(
       "This function runs before every outbound request. You can have as many as you need. They'll need to each be registered in your index.js file.",
     ),
     functionDeclaration(
       funcName,
-      { args: beforeMiddlewareArgs },
+      { args: beforeMiddlewareArgs(language) },
       ...statements,
       // auto include the return if it's not here already
       statements[statements.length - 1].includes('return')
@@ -136,12 +160,17 @@ const afterMiddlewareFunc = (funcName, ...statements) =>
     comment(
       "This function runs after every outbound request. You can use it to check for errors or modify the response. You can have as many as you need. They'll need to each be registered in your index.js file.",
     ),
-    functionDeclaration(funcName, { args: afterMiddlewareArgs }, ...statements),
+    functionDeclaration(
+      funcName,
+      { args: afterMiddlewareArgs() },
+      ...statements,
+    ),
   );
 
-const includeBearerFunc = (funcName) =>
+const includeBearerFunc = (funcName, language) =>
   beforeMiddlewareFunc(
     funcName,
+    language,
     ifStatement(
       'bundle.authData.access_token',
       assignmentStatement(
@@ -157,11 +186,11 @@ const tokenExchangeFunc = (
   requestUrl,
   bodyProps,
   returnProps,
-  { requestProps = [], returnComments = [] } = {},
+  { requestProps = [], returnComments = [], language } = {},
 ) =>
   functionDeclaration(
     funcName,
-    { args: standardArgs, isAsync: true },
+    { args: standardArgs(language), isAsync: true },
     variableAssignmentDeclaration(
       RESPONSE_VAR,
       awaitStatement(
@@ -183,7 +212,7 @@ const tokenExchangeFunc = (
 
 const oauth2TokenExchangeFunc = (
   funcName,
-  { path, grantType, bodyProps = [], returnComments = [] },
+  { path, grantType, bodyProps = [], returnComments = [], language },
 ) => {
   return tokenExchangeFunc(
     funcName,
@@ -214,11 +243,12 @@ const oauth2TokenExchangeFunc = (
           ),
         ),
       ],
+      language,
     },
   );
 };
 
-const getAccessTokenFunc = () => {
+const getAccessTokenFunc = (language) => {
   return oauth2TokenExchangeFunc(getOauthAccessTokenFuncName, {
     path: 'oauth/access-token',
     bodyProps: [
@@ -236,10 +266,11 @@ const getAccessTokenFunc = () => {
         'If your app does an app refresh, then `refresh_token` should be returned here as well',
       ),
     ],
+    language,
   });
 };
 
-const refreshTokenFunc = () => {
+const refreshTokenFunc = (language) => {
   return oauth2TokenExchangeFunc(refreshOath2AccessTokenFuncName, {
     path: 'oauth/refresh-token',
     bodyProps: [objProperty('refresh_token', 'bundle.authData.refresh_token')],
@@ -250,17 +281,19 @@ const refreshTokenFunc = () => {
         'If the refresh token does change, return it here to update the stored value in Zapier',
       ),
     ],
+    language,
   });
 };
 
-const oauth2AuthFile = () => {
+const oauth2AuthFile = (language) => {
   const bearerFuncName = 'includeBearerToken';
-  return file(
-    getAccessTokenFunc(),
-    refreshTokenFunc(),
-    includeBearerFunc(bearerFuncName),
-    authTestFunc(),
+  const fileInput = [
+    getAccessTokenFunc(language),
+    refreshTokenFunc(language),
+    includeBearerFunc(bearerFuncName, language),
+    authTestFunc(language),
     authFileExport(
+      language,
       'oauth2',
       'OAuth2 is a web authentication standard. There are a lot of configuration options that will fit most any situation.',
       {
@@ -306,7 +339,11 @@ const oauth2AuthFile = () => {
         ],
       },
     ),
-  );
+  ];
+  // TODO determine if we need to import AuthenticationOAuth2Config
+  return language === 'typescript'
+    ? fileTS(['AuthenticationOAuth2Config', ...standardTypes], ...fileInput)
+    : file(...fileInput);
 };
 const customAuthFile = () => {
   const includeApiKeyFuncName = 'includeApiKey';
@@ -428,7 +465,7 @@ const sessionAuthFile = () => {
 const oauth1TokenExchangeFunc = (funcName, url, ...authProperties) => {
   return functionDeclaration(
     funcName,
-    { args: standardArgs, isAsync: true },
+    { args: standardArgs(), isAsync: true },
     variableAssignmentDeclaration(
       RESPONSE_VAR,
       awaitStatement(
