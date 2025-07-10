@@ -31,7 +31,7 @@ const copyZapierWrapper = async (corePackageDir, appDir) => {
     );
   }
 
-  const wrapperText = (await readFile(wrapperPath, 'utf8')).replace(
+  const wrapperText = (await readFile(wrapperPath, 'utf8')).replaceAll(
     '{REPLACE_ME_PACKAGE_NAME}',
     appPackageJson.name,
   );

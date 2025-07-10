@@ -82,7 +82,7 @@ describe('zapierwrapper.mjs in ESM', () => {
     tempDir = await realpath(await mkdtemp(join(tmpdir(), 'zapier-test-')));
 
     const wrapperPath = resolve(__dirname, '../include/zapierwrapper.mjs');
-    const wrapperText = (await readFile(wrapperPath, 'utf8')).replace(
+    const wrapperText = (await readFile(wrapperPath, 'utf8')).replaceAll(
       '{REPLACE_ME_PACKAGE_NAME}',
       'test-app',
     );
