@@ -417,11 +417,11 @@ const digestAuthFile = (language) => {
     : file(...fileInput);
 };
 
-const sessionAuthFile = () => {
+const sessionAuthFile = (language) => {
   const getSessionKeyName = 'getSessionKey';
   const includeSessionKeyName = 'includeSessionKeyHeader';
-  return file(
-    authTestFunc(),
+  const fileInput = [
+    authTestFunc(language),
     tokenExchangeFunc(
       getSessionKeyName,
       'https://httpbin.zapier-tooling.com/post',
@@ -435,9 +435,11 @@ const sessionAuthFile = () => {
         ),
         objProperty('sessionKey', 'response.data.sessionKey || "secret"'),
       ],
+      { language },
     ),
     beforeMiddlewareFunc(
       includeSessionKeyName,
+      language,
       ifStatement(
         'bundle.authData.sessionKey',
         assignmentStatement('request.headers', 'request.headers || {}'),
@@ -448,6 +450,7 @@ const sessionAuthFile = () => {
       ),
     ),
     authFileExport(
+      language,
       'session',
       '"session" auth exchanges user data for a different session token (that may be periodically refreshed")',
       {
@@ -475,13 +478,22 @@ const sessionAuthFile = () => {
         ],
       },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
+
 // just different enough from oauth2 that it gets its own function
-const oauth1TokenExchangeFunc = (funcName, url, ...authProperties) => {
+const oauth1TokenExchangeFunc = (
+  funcName,
+  url,
+  language,
+  ...authProperties
+) => {
   return functionDeclaration(
     funcName,
-    { args: standardArgs(), isAsync: true },
+    { args: standardArgs(language), isAsync: true },
     variableAssignmentDeclaration(
       RESPONSE_VAR,
       awaitStatement(
@@ -502,13 +514,14 @@ const oauth1TokenExchangeFunc = (funcName, url, ...authProperties) => {
     returnStatement(`querystring.parse(${RESPONSE_VAR}.content)`),
   );
 };
-const oauth1AuthFile = () => {
+
+const oauth1AuthFile = (language) => {
   const requestTokenVarName = 'REQUEST_TOKEN_URL';
   const accessTokenVarName = 'ACCESS_TOKEN_URL';
   const authorizeUrlVarName = 'AUTHORIZE_URL';
   const getRequestTokenFuncName = 'getRequestToken';
   const includeAccessTokenFuncName = 'includeAccessToken';
-  return file(
+  const fileInput = [
     variableAssignmentDeclaration('querystring', "require('querystring')"),
     block(
       variableAssignmentDeclaration(
@@ -527,6 +540,7 @@ const oauth1AuthFile = () => {
     oauth1TokenExchangeFunc(
       getRequestTokenFuncName,
       requestTokenVarName,
+      language,
       objProperty('oauth_signature_method', strLiteral('HMAC-SHA1')),
       objProperty('oauth_callback', 'bundle.inputData.redirect_uri'),
       comment("oauth_version: '1.0' // sometimes required"),
@@ -534,12 +548,14 @@ const oauth1AuthFile = () => {
     oauth1TokenExchangeFunc(
       getOauthAccessTokenFuncName,
       accessTokenVarName,
+      language,
       objProperty('oauth_token', 'bundle.inputData.oauth_token'),
       objProperty('oauth_token_secret', 'bundle.inputData.oauth_token_secret'),
       objProperty('oauth_verifier', 'bundle.inputData.oauth_verifier'),
     ),
     beforeMiddlewareFunc(
       includeAccessTokenFuncName,
+      language,
       ifStatement(
         'bundle.authData && bundle.authData.oauth_token && bundle.authData.oauth_token_secret',
         comment(
@@ -561,8 +577,8 @@ const oauth1AuthFile = () => {
         ),
       ),
     ),
-    authTestFunc(strLiteral('https://api.trello.com/1/members/me/')),
-    authFileExport('oauth1', 'OAuth1 is an older form of OAuth', {
+    authTestFunc(language, strLiteral('https://api.trello.com/1/members/me/')),
+    authFileExport(language, 'oauth1', 'OAuth1 is an older form of OAuth', {
       beforeFuncNames: [includeAccessTokenFuncName],
       extraConfigProps: [
         objProperty(
@@ -597,7 +613,10 @@ const oauth1AuthFile = () => {
       ],
       connectionLabel: strLiteral('{{username}}'),
     }),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
 module.exports = {

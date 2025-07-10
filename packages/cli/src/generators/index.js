@@ -292,7 +292,9 @@ const TS_SUPPORTED_TEMPLATES = [
   'basic-auth',
   'custom-auth',
   'digest-auth',
+  'oauth1-trello',
   'oauth2',
+  'session-auth',
 ];
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
