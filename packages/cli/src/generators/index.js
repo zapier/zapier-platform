@@ -288,7 +288,12 @@ const TEMPLATE_ROUTES = {
 
 const ESM_SUPPORTED_TEMPLATES = ['minimal', 'typescript'];
 
-const TS_SUPPORTED_TEMPLATES = ['basic-auth', 'oauth2'];
+const TS_SUPPORTED_TEMPLATES = [
+  'basic-auth',
+  'custom-auth',
+  'digest-auth',
+  'oauth2',
+];
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
 

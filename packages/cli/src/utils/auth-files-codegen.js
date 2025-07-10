@@ -351,14 +351,15 @@ const oauth2AuthFile = (language) => {
     ? fileTS(standardTypes, ...fileInput)
     : file(...fileInput);
 };
-const customAuthFile = () => {
+const customAuthFile = (language) => {
   const includeApiKeyFuncName = 'includeApiKey';
   const handleResponseFuncName = 'handleBadResponses';
-  return file(
-    authTestFunc(),
-    handleBadResponsesFunc(handleResponseFuncName, 'API Key'),
+  const fileInput = [
+    authTestFunc(language),
+    handleBadResponsesFunc(handleResponseFuncName, language, 'API Key'),
     beforeMiddlewareFunc(
       includeApiKeyFuncName,
+      language,
       ifStatement(
         'bundle.authData.apiKey',
         comment('Use these lines to include the API key in the querystring'),
@@ -372,6 +373,7 @@ const customAuthFile = () => {
       ),
     ),
     authFileExport(
+      language,
       'custom',
       '"custom" is the catch-all auth type. The user supplies some info and Zapier can make authenticated requests with it',
       {
@@ -386,25 +388,33 @@ const customAuthFile = () => {
         ],
       },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
-const digestAuthFile = () => {
+const digestAuthFile = (language) => {
   const badFuncName = 'handleBadResponses';
-  return file(
+  const fileInput = [
     // special digest auth
     authTestFunc(
+      language,
       strLiteral(
         'https://httpbin.zapier-tooling.com/digest-auth/auth/myuser/mypass',
       ),
     ),
-    handleBadResponsesFunc(badFuncName),
+    handleBadResponsesFunc(badFuncName, language),
     authFileExport(
+      language,
       'digest',
       '"digest" auth automatically creates "username" and "password" input fields. It also registers default middleware to create the authentication header.',
       { afterFuncNames: [badFuncName] },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
 const sessionAuthFile = () => {
