@@ -112,10 +112,12 @@ const authTestFunc = (language, testUrl = strLiteral(authJsonUrl('me'))) =>
 
 const handleBadResponsesFunc = (
   funcName,
+  language,
   invalidInfo = 'username and/or password',
 ) =>
   afterMiddlewareFunc(
     funcName,
+    language,
     ifStatement(
       'response.status === 401',
       zResponseErr(strLiteral(`The ${invalidInfo} you supplied is incorrect`)),
@@ -123,17 +125,21 @@ const handleBadResponsesFunc = (
     returnStatement(RESPONSE_VAR),
   );
 
-const basicAuthFile = () => {
+const basicAuthFile = (language) => {
   const badFuncName = 'handleBadResponses';
-  return file(
-    authTestFunc(),
-    handleBadResponsesFunc(badFuncName),
+  const fileInput = [
+    authTestFunc(language),
+    handleBadResponsesFunc(badFuncName, language),
     authFileExport(
+      language,
       'basic',
       '"basic" auth automatically creates "username" and "password" input fields. It also registers default middleware to create the authentication header.',
       { afterFuncNames: [badFuncName] },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
 /**
@@ -155,14 +161,14 @@ const beforeMiddlewareFunc = (funcName, language, ...statements) =>
     ),
   );
 
-const afterMiddlewareFunc = (funcName, ...statements) =>
+const afterMiddlewareFunc = (funcName, language, ...statements) =>
   block(
     comment(
       "This function runs after every outbound request. You can use it to check for errors or modify the response. You can have as many as you need. They'll need to each be registered in your index.js file.",
     ),
     functionDeclaration(
       funcName,
-      { args: afterMiddlewareArgs() },
+      { args: afterMiddlewareArgs(language) },
       ...statements,
     ),
   );
@@ -342,7 +348,7 @@ const oauth2AuthFile = (language) => {
   ];
   // TODO determine if we need to import AuthenticationOAuth2Config
   return language === 'typescript'
-    ? fileTS(['AuthenticationOAuth2Config', ...standardTypes], ...fileInput)
+    ? fileTS(standardTypes, ...fileInput)
     : file(...fileInput);
 };
 const customAuthFile = () => {

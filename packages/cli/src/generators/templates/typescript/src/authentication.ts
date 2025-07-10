@@ -1,4 +1,4 @@
-import type { Authentication, AuthenticationOAuth2Config } from 'zapier-platform-core';
+import type { Authentication } from 'zapier-platform-core';
 
 import { API_URL, SCOPES } from './constants.js';
 
@@ -44,5 +44,5 @@ export default {
         grant_type: 'refresh_token',
       },
     },
-  } satisfies AuthenticationOAuth2Config,
+  }
 } satisfies Authentication;
