@@ -10,12 +10,12 @@ const { TEMPLATE_CHOICES, ProjectGenerator } = require('../../generators');
 class InitCommand extends BaseCommand {
   async perform() {
     const { path } = this.args;
-    const { template, module } = this.flags;
+    const { template, module, language } = this.flags;
 
     const env = yeoman.createEnv();
     env.registerStub(ProjectGenerator, 'zapier:integration');
 
-    await env.run('zapier:integration', { path, template, module });
+    await env.run('zapier:integration', { path, template, module, language });
 
     this.log();
     this.log(`A new integration has been created in directory "${path}".`);
@@ -36,6 +36,12 @@ InitCommand.flags = buildFlags({
         'Choose module type: CommonJS or ES Modules. Only enabled for Typescript and Minimal templates.',
       options: ['commonjs', 'esm'],
     }),
+    language: Flags.string({
+      char: 'l',
+      description:
+        'Choose the language to use for your new integration. Defaults to JavaScript.',
+      options: ['javascript', 'typescript'],
+    }),
   },
 });
 InitCommand.args = {
@@ -49,6 +55,7 @@ InitCommand.examples = [
   'zapier init myapp',
   'zapier init ./path/myapp --template oauth2',
   'zapier init ./path/myapp --template minimal --module esm',
+  'zapier init ./path/myapp --template oauth2 --language typescript',
 ];
 InitCommand.description = `Initialize a new Zapier integration with a project template.
 

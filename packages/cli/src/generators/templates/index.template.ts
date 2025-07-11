@@ -1,24 +1,21 @@
-import { version as platformVersion, defineApp } from 'zapier-platform-core';
+import zapier, { defineApp } from 'zapier-platform-core';
 
-import packageJson from '../package.json';
+import packageJson from '../package.json' with { type: 'json' };
 
-import MovieCreate from './creates/movie';
-import MovieTrigger from './triggers/movie';
-import authentication from './authentication';
-import { addBearerHeader } from './middleware';
+import authenticationModule from './authentication.js';
+const { config: authentication, befores, afters } = authenticationModule;
 
 export default defineApp({
   version: packageJson.version,
-  platformVersion,
+  platformVersion: zapier.version,
 
   authentication,
-  beforeRequest: [addBearerHeader],
+  beforeRequest: [...befores],
+  afterResponse: [...afters],
 
-  triggers: {
-    [MovieTrigger.key]: MovieTrigger,
-  },
+  // Add your triggers here for them to show up!
+  triggers: {},
 
-  creates: {
-    [MovieCreate.key]: MovieCreate,
-  },
+  // Add your creates here for them to show up!
+  creates: {},
 });
