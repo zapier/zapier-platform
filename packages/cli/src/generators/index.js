@@ -67,61 +67,32 @@ const writeGenericPackageJson = (gen, packageJsonExtension) => {
   );
 };
 
-const writeGenericTypeScriptPackageJson = (
-  gen,
-  packageJsonExtension,
-  write = false,
-) => {
-  const basePackageJson = {
-    name: gen.options.packageName,
-    version: '1.0.0',
-    description: '',
-    scripts: {
-      test: 'npm run build && vitest --run',
-      clean: 'rimraf ./dist ./build',
-      build: 'npm run clean && tsc',
-      '_zapier-build': 'npm run build',
-    },
-    dependencies: {
-      [PLATFORM_PACKAGE]: PACKAGE_VERSION,
-    },
-    devDependencies: {
-      rimraf: '^5.0.10',
-      typescript: '5.6.2',
-      vitest: '^2.1.2',
-    },
-    private: true,
-  };
-
-  const contents = merge(basePackageJson, packageJsonExtension);
-
-  if (write) {
-    gen.fs.writeJSON(gen.destinationPath('package.json'), contents);
-  }
-
-  return contents;
-};
-
-const writeStandaloneTypeScriptPackageJson = (gen, packageJsonExtension) => {
-  const contents = writeGenericTypeScriptPackageJson(
-    gen,
-    packageJsonExtension,
-    false,
-  );
-
-  const moduleExtension =
-    gen.options.module === 'esm'
-      ? {
-          exports: './dist/index.js',
-          type: 'module',
-        }
-      : {
-          main: 'index.js',
-        };
-
+const writeGenericTypeScriptPackageJson = (gen, packageJsonExtension) => {
   gen.fs.writeJSON(
     gen.destinationPath('package.json'),
-    merge(contents, moduleExtension, packageJsonExtension),
+    merge(
+      {
+        name: gen.options.packageName,
+        version: '1.0.0',
+        description: '',
+        scripts: {
+          test: 'npm run build && vitest --run',
+          clean: 'rimraf ./dist ./build',
+          build: 'npm run clean && tsc',
+          '_zapier-build': 'npm run build',
+        },
+        dependencies: {
+          [PLATFORM_PACKAGE]: PACKAGE_VERSION,
+        },
+        devDependencies: {
+          rimraf: '^5.0.10',
+          typescript: '5.6.2',
+          vitest: '^2.1.2',
+        },
+        private: true,
+      },
+      packageJsonExtension,
+    ),
   );
 };
 
@@ -139,27 +110,10 @@ const writeGenericIndex = (gen, hasAuth) => {
 
 const writeGenericTypescriptIndex = (gen) => {
   gen.fs.copyTpl(
-    gen.templatePath('index-generic.template.ts'),
+    gen.templatePath('index.template.ts'),
     gen.destinationPath('src/index.ts'),
     { corePackageName: PLATFORM_PACKAGE },
   );
-};
-
-const writeStandaloneTypeScriptIndex = (gen) => {
-  const templatePath =
-    gen.options.module === 'esm'
-      ? 'index-esm.template.ts'
-      : 'index.template.ts';
-  gen.fs.copyTpl(
-    gen.templatePath(templatePath),
-    gen.destinationPath('src/index.ts'),
-  );
-
-  // create root directory index.js if it's commonjs
-  if (gen.options.module === 'commonjs') {
-    const content = `module.exports = require('./dist').default;`;
-    gen.fs.write(gen.destinationPath('index.js'), content);
-  }
 };
 
 const authTypes = {
@@ -212,7 +166,7 @@ const writeForAuthTemplate = (gen) => {
     writeGenericTypescriptIndex(gen);
     writeGenericTypeScriptPackageJson(gen, packageJsonExtension, true);
     gen.fs.copyTpl(
-      gen.templatePath('typescript/tsconfig.json'),
+      gen.templatePath('tsconfig.template.json'),
       gen.destinationPath('tsconfig.json'),
     );
   } else {
@@ -256,20 +210,6 @@ const writeForStandaloneTemplate = (gen) => {
   );
 };
 
-const writeForStandaloneTypeScriptTemplate = (gen) => {
-  writeGitignore(gen);
-  writeGenericReadme(gen);
-  appendReadme(gen);
-
-  writeStandaloneTypeScriptPackageJson(gen);
-
-  gen.fs.copy(
-    gen.templatePath(gen.options.template, '**', '*.{js,json,ts}'),
-    gen.destinationPath(),
-  );
-  writeStandaloneTypeScriptIndex(gen);
-};
-
 const TEMPLATE_ROUTES = {
   'basic-auth': writeForAuthTemplate,
   callback: writeForStandaloneTemplate,
@@ -283,11 +223,11 @@ const TEMPLATE_ROUTES = {
   openai: writeForStandaloneTemplate,
   'search-or-create': writeForStandaloneTemplate,
   'session-auth': writeForAuthTemplate,
-  typescript: writeForStandaloneTypeScriptTemplate,
 };
 
-const ESM_SUPPORTED_TEMPLATES = ['minimal', 'typescript'];
+const ESM_SUPPORTED_TEMPLATES = ['minimal'];
 
+// Which templates can be used with the --language typescript flag
 const TS_SUPPORTED_TEMPLATES = [
   'basic-auth',
   'custom-auth',

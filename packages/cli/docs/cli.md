@@ -296,7 +296,7 @@ This doesn't register or deploy the integration with Zapier - try the `zapier re
 * (required) `path` | Where to create the new integration. If the directory doesn't exist, it will be created. If the directory isn't empty, we'll ask for confirmation
 
 **Flags**
-* `-t, --template` | The template to start your integration with. One of `[basic-auth | callback | custom-auth | digest-auth | dynamic-dropdown | files | minimal | oauth1-trello | oauth2 | openai | search-or-create | session-auth | typescript]`.
+* `-t, --template` | The template to start your integration with. One of `[basic-auth | callback | custom-auth | digest-auth | dynamic-dropdown | files | minimal | oauth1-trello | oauth2 | openai | search-or-create | session-auth]`.
 * `-m, --module` | Choose module type: CommonJS or ES Modules. Only enabled for Typescript and Minimal templates. One of `[commonjs | esm]`.
 * `-l, --language` | Choose the language to use for your new integration. Defaults to JavaScript. One of `[javascript | typescript]`.
 * `-d, --debug` | Show extra debugging output.
