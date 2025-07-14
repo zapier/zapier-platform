@@ -331,7 +331,10 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
 
   if (workspaceRoot !== workingDir) {
     const appDirRelPath = path.relative(workspaceRoot, workingDir);
-    const linkNames = ['zapierwrapper.js', 'index.js'];
+    // zapierwrapper.js and index.js are entry points.
+    // 'config' is the default directory that the 'config' npm package expects
+    // to find config files at the root directory.
+    const linkNames = ['zapierwrapper.js', 'index.js', 'config'];
     for (const name of linkNames) {
       if (fs.existsSync(path.join(workingDir, name))) {
         zip.symlink(name, path.join(appDirRelPath, name), 0o644);
