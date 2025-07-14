@@ -243,7 +243,7 @@ describe('smoke tests - setup will take some time', function () {
   it('zapier scaffold trigger neat (TS)', () => {
     runCommand(
       context.cliBin,
-      ['init', 'scaffold-town-ts', '-t', 'typescript', '-m', 'commonjs'],
+      ['init', 'scaffold-town-ts', '-t', 'oauth2', '-l', 'typescript'],
       { cwd: context.workdir },
     );
 
@@ -302,8 +302,7 @@ describe('smoke tests - setup will take some time', function () {
       { name: 'minimal', module: 'commonjs' },
       { name: 'minimal', module: 'esm' },
       { name: 'search-or-create' },
-      { name: 'typescript', module: 'commonjs' },
-      { name: 'typescript', module: 'esm' },
+      { name: 'oauth2', language: 'typescript' },
     ];
 
     const invokeCommandsByTemplate = {
@@ -425,9 +424,9 @@ describe('smoke tests - setup will take some time', function () {
 
     testableTemplates.forEach((template) => {
       let testName, appDirName;
-      if (template.module) {
-        testName = `${template.name} (${template.module})`;
-        appDirName = `${template.name}-${template.module}`;
+      if (template.module || template.language) {
+        testName = `${template.name} (${template.module || template.language})`;
+        appDirName = `${template.name}-${template.module || template.language}`;
       } else {
         testName = template.name;
         appDirName = template.name;
