@@ -556,6 +556,11 @@ const testBuildZip = async (zipPath) => {
             `You may have to add it to ${colors.bold.underline('includeInBuild')} ` +
             `in your ${colors.bold.underline('.zapierapprc')} file.`,
         );
+      } else if (error.message) {
+        // Hide the unzipped temporary directory
+        error.message = error.message
+          .replaceAll(`file://${testDir}/`, '')
+          .replaceAll(`${testDir}/`, '');
       }
       throw error;
     }
