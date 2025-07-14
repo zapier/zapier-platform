@@ -554,7 +554,7 @@ const testBuildZip = async (zipPath) => {
             `in your ${colors.bold.underline('.zapierapprc')} file.`,
         );
       } else if (error.message) {
-        // Hide the unzip tempoary directory
+        // Hide the unzipped temporary directory
         error.message = error.message
           .replaceAll(`file://${testDir}/`, '')
           .replaceAll(`${testDir}/`, '');
