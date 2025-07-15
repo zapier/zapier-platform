@@ -90,6 +90,8 @@ const writeGenericTypeScriptPackageJson = (gen, packageJsonExtension) => {
           vitest: '^2.1.2',
         },
         private: true,
+        exports: './dist/index.js',
+        type: 'module',
       },
       packageJsonExtension,
     ),
@@ -159,12 +161,8 @@ const writeForAuthTemplate = (gen) => {
   writeGitignore(gen);
   writeGenericReadme(gen);
   if (gen.options.language === 'typescript') {
-    const packageJsonExtension = {
-      exports: './dist/index.js',
-      type: 'module',
-    };
     writeGenericTypescriptIndex(gen);
-    writeGenericTypeScriptPackageJson(gen, packageJsonExtension, true);
+    writeGenericTypeScriptPackageJson(gen);
     gen.fs.copyTpl(
       gen.templatePath('tsconfig.template.json'),
       gen.destinationPath('tsconfig.json'),

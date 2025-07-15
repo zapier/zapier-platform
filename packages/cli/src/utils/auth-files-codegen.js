@@ -189,10 +189,11 @@ const includeBearerFunc = (funcName, language) =>
 
 const tokenExchangeFunc = (
   funcName,
+  language,
   requestUrl,
   bodyProps,
   returnProps,
-  { requestProps = [], returnComments = [], language } = {},
+  { requestProps = [], returnComments = [] } = {},
 ) =>
   functionDeclaration(
     funcName,
@@ -218,10 +219,12 @@ const tokenExchangeFunc = (
 
 const oauth2TokenExchangeFunc = (
   funcName,
-  { path, grantType, bodyProps = [], returnComments = [], language },
+  language,
+  { path, grantType, bodyProps = [], returnComments = [] },
 ) => {
   return tokenExchangeFunc(
     funcName,
+    language,
     authJsonUrl(path),
     [
       objProperty('client_id', 'process.env.CLIENT_ID'),
@@ -249,13 +252,12 @@ const oauth2TokenExchangeFunc = (
           ),
         ),
       ],
-      language,
     },
   );
 };
 
 const getAccessTokenFunc = (language) => {
-  return oauth2TokenExchangeFunc(getOauthAccessTokenFuncName, {
+  return oauth2TokenExchangeFunc(getOauthAccessTokenFuncName, language, {
     path: 'oauth/access-token',
     bodyProps: [
       objProperty('code', 'bundle.inputData.code'),
@@ -272,12 +274,11 @@ const getAccessTokenFunc = (language) => {
         'If your app does an app refresh, then `refresh_token` should be returned here as well',
       ),
     ],
-    language,
   });
 };
 
 const refreshTokenFunc = (language) => {
-  return oauth2TokenExchangeFunc(refreshOath2AccessTokenFuncName, {
+  return oauth2TokenExchangeFunc(refreshOath2AccessTokenFuncName, language, {
     path: 'oauth/refresh-token',
     bodyProps: [objProperty('refresh_token', 'bundle.authData.refresh_token')],
     grantType: 'refresh_token',
@@ -287,7 +288,6 @@ const refreshTokenFunc = (language) => {
         'If the refresh token does change, return it here to update the stored value in Zapier',
       ),
     ],
-    language,
   });
 };
 
@@ -424,6 +424,7 @@ const sessionAuthFile = (language) => {
     authTestFunc(language),
     tokenExchangeFunc(
       getSessionKeyName,
+      language,
       'https://httpbin.zapier-tooling.com/post',
       [
         objProperty('username', 'bundle.authData.username'),
@@ -435,7 +436,6 @@ const sessionAuthFile = (language) => {
         ),
         objProperty('sessionKey', 'response.data.sessionKey || "secret"'),
       ],
-      { language },
     ),
     beforeMiddlewareFunc(
       includeSessionKeyName,
@@ -487,8 +487,8 @@ const sessionAuthFile = (language) => {
 // just different enough from oauth2 that it gets its own function
 const oauth1TokenExchangeFunc = (
   funcName,
-  url,
   language,
+  url,
   ...authProperties
 ) => {
   return functionDeclaration(
@@ -539,16 +539,16 @@ const oauth1AuthFile = (language) => {
     ),
     oauth1TokenExchangeFunc(
       getRequestTokenFuncName,
-      requestTokenVarName,
       language,
+      requestTokenVarName,
       objProperty('oauth_signature_method', strLiteral('HMAC-SHA1')),
       objProperty('oauth_callback', 'bundle.inputData.redirect_uri'),
       comment("oauth_version: '1.0' // sometimes required"),
     ),
     oauth1TokenExchangeFunc(
       getOauthAccessTokenFuncName,
-      accessTokenVarName,
       language,
+      accessTokenVarName,
       objProperty('oauth_token', 'bundle.inputData.oauth_token'),
       objProperty('oauth_token_secret', 'bundle.inputData.oauth_token_secret'),
       objProperty('oauth_verifier', 'bundle.inputData.oauth_verifier'),
