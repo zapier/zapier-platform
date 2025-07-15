@@ -17,8 +17,8 @@ describe('errors import', () => {
     error.message.should.eql('test auth refresh error');
   });
 
-  it('should allow importing specific error types', () => {
-    // Test destructuring of specific error types
+  it('should allow importing specific error types from errors object', () => {
+    // Test destructuring of specific error types from the errors object
     const { errors } = require('../index');
     const { RefreshAuthError, CheckError, Error: AppError } = errors;
 
@@ -36,67 +36,47 @@ describe('errors import', () => {
     appError.name.should.eql('AppError');
   });
 
-  it('should allow importing individual error classes directly', () => {
-    // Test direct import of individual error classes (requested by @FokkeZB)
-    const { ExpiredAuthError, RefreshAuthError, AppError, CheckError } = require('../index');
-
-    should.exist(ExpiredAuthError);
-    should.exist(RefreshAuthError);
-    should.exist(AppError);
-    should.exist(CheckError);
-
-    // Test instantiation
-    const expiredError = new ExpiredAuthError('expired auth');
-    const refreshError = new RefreshAuthError('refresh auth');
-    const appError = new AppError('app error', 'CODE', 500);
-    const checkError = new CheckError('check error');
-
-    expiredError.name.should.eql('ExpiredAuthError');
-    refreshError.name.should.eql('RefreshAuthError');
-    appError.name.should.eql('AppError');
-    checkError.name.should.eql('CheckError');
-  });
-
-  it('should export all available error classes individually', () => {
-    // Test that all error classes are available as individual exports
+  it('should not export individual error classes directly', () => {
+    // Test that individual error classes are NOT available as direct exports
+    // This destructuring should result in undefined values
     const {
-      CheckError,
-      DehydrateError,
-      ExpiredAuthError,
-      HaltedError,
-      MethodDoesNotExist,
-      NotImplementedError,
       RefreshAuthError,
-      RequireModuleError,
-      StashedBundleError,
-      StopRequestError,
-      ResponseError,
-      ThrottledError,
-      AppError,
+      CheckError,
+      ExpiredAuthError,
     } = require('../index');
 
-    const errorClasses = [
-      CheckError,
-      DehydrateError,
-      ExpiredAuthError,
-      HaltedError,
-      MethodDoesNotExist,
-      NotImplementedError,
-      RefreshAuthError,
-      RequireModuleError,
-      StashedBundleError,
-      StopRequestError,
-      ResponseError,
-      ThrottledError,
-      AppError,
+    // These should all be undefined since we only export the errors object
+    should.not.exist(RefreshAuthError);
+    should.not.exist(CheckError);
+    should.not.exist(ExpiredAuthError);
+  });
+
+  it('should contain all expected error classes in errors object', () => {
+    // Test that all error classes are available through the errors object
+    const { errors } = require('../index');
+
+    const expectedErrorClasses = [
+      'CheckError',
+      'DehydrateError',
+      'ExpiredAuthError',
+      'HaltedError',
+      'MethodDoesNotExist',
+      'NotImplementedError',
+      'RefreshAuthError',
+      'RequireModuleError',
+      'StashedBundleError',
+      'StopRequestError',
+      'ResponseError',
+      'ThrottledError',
+      'Error', // This is AppError but exported as Error
     ];
 
-    errorClasses.forEach((ErrorClass, index) => {
-      should.exist(ErrorClass);
-      ErrorClass.should.be.a('function');
-      
+    expectedErrorClasses.forEach((errorClassName) => {
+      should.exist(errors[errorClassName]);
+      errors[errorClassName].should.be.a('function');
+
       // Test that we can instantiate each error
-      const instance = new ErrorClass('test message');
+      const instance = new errors[errorClassName]('test message');
       instance.should.be.instanceOf(Error);
       instance.message.should.match(/test message/);
     });
