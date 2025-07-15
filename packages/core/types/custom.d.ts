@@ -44,20 +44,7 @@ export const errors: {
   StopRequestError: typeof StopRequestError;
 };
 
-// Export individual error classes for direct import
-export const CheckError: typeof CheckError;
-export const DehydrateError: typeof DehydrateError;
-export const ExpiredAuthError: typeof ExpiredAuthError;
-export const HaltedError: typeof HaltedError;
-export const MethodDoesNotExist: typeof MethodDoesNotExist;
-export const NotImplementedError: typeof NotImplementedError;
-export const RefreshAuthError: typeof RefreshAuthError;
-export const RequireModuleError: typeof RequireModuleError;
-export const StashedBundleError: typeof StashedBundleError;
-export const StopRequestError: typeof StopRequestError;
-export const ResponseError: typeof ResponseError;
-export const ThrottledError: typeof ThrottledError;
-export const AppError: typeof AppError;
+
 
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
