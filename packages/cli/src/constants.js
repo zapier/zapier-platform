@@ -20,7 +20,7 @@ const BUILD_PATH = `${BUILD_DIR}/build.zip`;
 const SOURCE_PATH = `${BUILD_DIR}/source.zip`;
 const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;
-const NODE_VERSION_CLI_REQUIRES = '>=18'; // should be the oldest non-ETL version
+const NODE_VERSION_CLI_REQUIRES = '>=22'; // should be the oldest non-ETL version
 const AUTH_KEY = 'deployKey';
 const ANALYTICS_KEY = 'analyticsMode';
 const ANALYTICS_MODES = {
