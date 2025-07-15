@@ -64,12 +64,10 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     platform: 'node',
     metafile: true,
     logLevel: 'warning',
-    external: [
-      '../test/userapp',
-      'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
-      './request-worker', // appears in zapier-platform-legacy-scripting-runner/zfactory.js
-      './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
-    ],
+    logOverride: {
+      'require-resolve-not-external': 'silent',
+    },
+    external: ['../test/userapp'],
     format,
     // Setting conditions to an empty array to exclude 'module' condition,
     // which Node.js doesn't use. https://esbuild.github.io/api/#conditions
@@ -225,6 +223,10 @@ const looksLikeWorkspaceRoot = async (dir) => {
     return true;
   }
 
+  if (fs.existsSync(path.join(dir, 'lerna.json'))) {
+    return true;
+  }
+
   const packageJsonPath = path.join(dir, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
     return false;
@@ -241,9 +243,12 @@ const looksLikeWorkspaceRoot = async (dir) => {
 };
 
 // Traverses up the directory tree to find the workspace root. The workspace
-// root directory either contains pnpm-workspace.yaml or a package.json file
-// with a "workspaces" field. Returns the absolute path to the workspace root
-// directory, or null if not found.
+// root directory either:
+// - contains pnpm-workspace.yaml
+// - contains a package.json file with a "workspaces" field
+// - contains lerna.json
+// Returns the absolute path to the workspace root directory, or null if not
+// found.
 const findWorkspaceRoot = async (workingDir) => {
   let dir = workingDir;
   for (let i = 0; i < 500; i++) {
@@ -326,7 +331,10 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
 
   if (workspaceRoot !== workingDir) {
     const appDirRelPath = path.relative(workspaceRoot, workingDir);
-    const linkNames = ['zapierwrapper.js', 'index.js'];
+    // zapierwrapper.js and index.js are entry points.
+    // 'config' is the default directory that the 'config' npm package expects
+    // to find config files at the root directory.
+    const linkNames = ['zapierwrapper.js', 'index.js', 'config'];
     for (const name of linkNames) {
       if (fs.existsSync(path.join(workingDir, name))) {
         zip.symlink(name, path.join(appDirRelPath, name), 0o644);
@@ -548,6 +556,11 @@ const testBuildZip = async (zipPath) => {
             `You may have to add it to ${colors.bold.underline('includeInBuild')} ` +
             `in your ${colors.bold.underline('.zapierapprc')} file.`,
         );
+      } else if (error.message) {
+        // Hide the unzipped temporary directory
+        error.message = error.message
+          .replaceAll(`file://${testDir}/`, '')
+          .replaceAll(`${testDir}/`, '');
       }
       throw error;
     }
