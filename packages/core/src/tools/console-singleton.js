@@ -1,140 +1,101 @@
 'use strict';
 
-const stream = require('stream');
-const Console = require('console').Console;
+const createLoggerConsole = require('./create-logger-console');
 
 /**
  * Singleton console instance that can be used standalone or initialized by middleware.
  * Before initialization, methods are no-ops. After initialization, they behave like z.console.
+ * Uses the same createLoggerConsole function as z.console for consistency.
  */
-class ConsoleSingleton {
-  constructor() {
-    this._isInitialized = false;
-    this._console = null;
 
-    // Create no-op implementations for all Console methods
-    this._createNoOpMethods();
+// Shared console instance - will be initialized by middleware
+let sharedConsoleInstance = null;
+let isInitialized = false;
+
+// Standard console methods that should be available
+const consoleMethods = [
+  'log',
+  'warn',
+  'error',
+  'info',
+  'debug',
+  'trace',
+  'dir',
+  'dirxml',
+  'table',
+  'time',
+  'timeEnd',
+  'timeLog',
+  'assert',
+  'clear',
+  'count',
+  'countReset',
+  'group',
+  'groupEnd',
+  'groupCollapsed',
+];
+
+// Create the singleton console object
+const consoleSingleton = {};
+
+// Add backward compatibility property for tests
+Object.defineProperty(consoleSingleton, '_isInitialized', {
+  get: () => isInitialized,
+  configurable: true
+});
+
+// Initialize with no-op methods
+consoleMethods.forEach((method) => {
+  consoleSingleton[method] = () => {
+    // No-op when not initialized
+    // We could optionally fall back to regular console here:
+    // console[method](...arguments);
+  };
+});
+
+/**
+ * Initialize the console with the input context from middleware.
+ * This is called by the z-object middleware and uses createLoggerConsole.
+ */
+consoleSingleton.initialize = (input) => {
+  if (isInitialized) {
+    return sharedConsoleInstance; // Already initialized, return existing instance
   }
 
-  /**
-   * Initialize the console with the input context from middleware.
-   * This is called by the z-object middleware.
-   */
-  initialize(input) {
-    if (this._isInitialized) {
-      return; // Already initialized
+  // Create the logger console using the existing function
+  sharedConsoleInstance = createLoggerConsole(input);
+  isInitialized = true;
+
+  // Replace no-op methods with real console methods
+  consoleMethods.forEach((method) => {
+    if (typeof sharedConsoleInstance[method] === 'function') {
+      consoleSingleton[method] = sharedConsoleInstance[method].bind(sharedConsoleInstance);
     }
+  });
 
-    const doWrite = (data, chunk, encoding, next) => {
-      const promise = input._zapier.logger(chunk.toString(), data);
+  return sharedConsoleInstance;
+};
 
-      // stash the promise in input, so we can wait on it later
-      input._zapier.promises.push(promise);
+/**
+ * Get the shared console instance (for z.console to use the same instance)
+ */
+consoleSingleton.getSharedInstance = () => {
+  return sharedConsoleInstance;
+};
 
-      next();
-
-      // Use the original console from Node.js, not the zapier console to avoid circular reference
-      const nodeConsole = require('console');
-      (nodeConsole[data.log_type] || nodeConsole.log)(chunk.toString());
+/**
+ * Reset the singleton for testing purposes
+ */
+consoleSingleton._reset = () => {
+  isInitialized = false;
+  sharedConsoleInstance = null;
+  
+  // Reset to no-op methods
+  consoleMethods.forEach((method) => {
+    consoleSingleton[method] = () => {
+      // No-op when not initialized
     };
-
-    const stdout = new stream.Writable({
-      write: doWrite.bind(undefined, { log_type: 'console' }),
-    });
-
-    const stderr = new stream.Writable({
-      write: doWrite.bind(undefined, { log_type: 'error' }),
-    });
-
-    this._console = new Console(stdout, stderr);
-    this._isInitialized = true;
-
-    // Replace no-op methods with real console methods
-    this._bindConsoleMethods();
-  }
-
-  /**
-   * Reset the singleton for testing purposes
-   */
-  _reset() {
-    this._isInitialized = false;
-    this._console = null;
-    this._createNoOpMethods();
-  }
-
-  /**
-   * Create no-op implementations for all Console methods
-   */
-  _createNoOpMethods() {
-    // Standard console methods that should be no-ops before initialization
-    const consoleMethods = [
-      'log',
-      'warn',
-      'error',
-      'info',
-      'debug',
-      'trace',
-      'dir',
-      'dirxml',
-      'table',
-      'time',
-      'timeEnd',
-      'timeLog',
-      'assert',
-      'clear',
-      'count',
-      'countReset',
-      'group',
-      'groupEnd',
-      'groupCollapsed',
-    ];
-
-    consoleMethods.forEach((method) => {
-      this[method] = () => {
-        // No-op when not initialized
-        // We could optionally fall back to regular console here:
-        // console[method](...arguments);
-      };
-    });
-  }
-
-  /**
-   * Bind the real console methods once initialized
-   */
-  _bindConsoleMethods() {
-    if (!this._console) return;
-
-    const consoleMethods = [
-      'log',
-      'warn',
-      'error',
-      'info',
-      'debug',
-      'trace',
-      'dir',
-      'dirxml',
-      'table',
-      'time',
-      'timeEnd',
-      'timeLog',
-      'assert',
-      'clear',
-      'count',
-      'countReset',
-      'group',
-      'groupEnd',
-      'groupCollapsed',
-    ];
-
-    consoleMethods.forEach((method) => {
-      if (typeof this._console[method] === 'function') {
-        this[method] = this._console[method].bind(this._console);
-      }
-    });
-  }
-}
-
-// Create and export the singleton instance
-const consoleSingleton = new ConsoleSingleton();
+  });
+};
 
 module.exports = consoleSingleton;

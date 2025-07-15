@@ -21,12 +21,12 @@ const hashing = require('../../tools/hashing');
 const injectZObject = (input) => {
   const bundle = _.get(input, '_zapier.event.bundle', {});
 
-  // Initialize the console singleton when creating z.console
-  consoleSingleton.initialize(input);
+  // Initialize the console singleton and use the shared instance for z.console
+  const sharedConsole = consoleSingleton.initialize(input);
 
   const zRoot = {
     cache: createCache(input),
-    console: createLoggerConsole(input),
+    console: sharedConsole,
     cursor: createStoreKeyTool(input),
     dehydrate: createDehydrator(input, 'method'),
     dehydrateFile: createDehydrator(input, 'file'),
