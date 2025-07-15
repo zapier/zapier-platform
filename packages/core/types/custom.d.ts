@@ -10,7 +10,25 @@ import { Headers } from 'node-fetch';
 
 // The EXPORTED OBJECT
 export const version: string;
-export const tools: { env: { inject: (filename?: string) => void } };
+export const tools: { 
+  env: { inject: (filename?: string) => void };
+  errors: {
+    Error: typeof AppError;
+    HaltedError: typeof HaltedError;
+    ExpiredAuthError: typeof ExpiredAuthError;
+    RefreshAuthError: typeof RefreshAuthError;
+    ThrottledError: typeof ThrottledError;
+    ResponseError: typeof ResponseError;
+  };
+};
+export const errors: {
+  Error: typeof AppError;
+  HaltedError: typeof HaltedError;
+  ExpiredAuthError: typeof ExpiredAuthError;
+  RefreshAuthError: typeof RefreshAuthError;
+  ThrottledError: typeof ThrottledError;
+  ResponseError: typeof ResponseError;
+};
 
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
