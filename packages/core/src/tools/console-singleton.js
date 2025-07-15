@@ -33,7 +33,9 @@ class ConsoleSingleton {
 
       next();
 
-      (console[data.log_type] || console.log)(chunk.toString());
+      // Use the original console from Node.js, not the zapier console to avoid circular reference
+      const nodeConsole = require('console');
+      (nodeConsole[data.log_type] || nodeConsole.log)(chunk.toString());
     };
 
     const stdout = new stream.Writable({
