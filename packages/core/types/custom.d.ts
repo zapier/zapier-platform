@@ -19,6 +19,13 @@ export const tools: {
     RefreshAuthError: typeof RefreshAuthError;
     ThrottledError: typeof ThrottledError;
     ResponseError: typeof ResponseError;
+    CheckError: typeof CheckError;
+    DehydrateError: typeof DehydrateError;
+    MethodDoesNotExist: typeof MethodDoesNotExist;
+    NotImplementedError: typeof NotImplementedError;
+    RequireModuleError: typeof RequireModuleError;
+    StashedBundleError: typeof StashedBundleError;
+    StopRequestError: typeof StopRequestError;
   };
 };
 export const errors: {
@@ -28,7 +35,29 @@ export const errors: {
   RefreshAuthError: typeof RefreshAuthError;
   ThrottledError: typeof ThrottledError;
   ResponseError: typeof ResponseError;
+  CheckError: typeof CheckError;
+  DehydrateError: typeof DehydrateError;
+  MethodDoesNotExist: typeof MethodDoesNotExist;
+  NotImplementedError: typeof NotImplementedError;
+  RequireModuleError: typeof RequireModuleError;
+  StashedBundleError: typeof StashedBundleError;
+  StopRequestError: typeof StopRequestError;
 };
+
+// Export individual error classes for direct import
+export const CheckError: typeof CheckError;
+export const DehydrateError: typeof DehydrateError;
+export const ExpiredAuthError: typeof ExpiredAuthError;
+export const HaltedError: typeof HaltedError;
+export const MethodDoesNotExist: typeof MethodDoesNotExist;
+export const NotImplementedError: typeof NotImplementedError;
+export const RefreshAuthError: typeof RefreshAuthError;
+export const RequireModuleError: typeof RequireModuleError;
+export const StashedBundleError: typeof StashedBundleError;
+export const StopRequestError: typeof StopRequestError;
+export const ResponseError: typeof ResponseError;
+export const ThrottledError: typeof ThrottledError;
+export const AppError: typeof AppError;
 
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
@@ -168,6 +197,13 @@ declare class ThrottledError extends Error {
 declare class ResponseError extends Error {
   constructor(response: HttpResponse);
 }
+declare class CheckError extends Error {}
+declare class DehydrateError extends Error {}
+declare class MethodDoesNotExist extends Error {}
+declare class NotImplementedError extends Error {}
+declare class RequireModuleError extends Error {}
+declare class StashedBundleError extends Error {}
+declare class StopRequestError extends Error {}
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {

@@ -20,5 +20,23 @@ export const {
   version,
   errors,
 } = zapier;
+
+// Export individual error classes for direct import
+export const {
+  CheckError,
+  DehydrateError,
+  ExpiredAuthError,
+  HaltedError,
+  MethodDoesNotExist,
+  NotImplementedError,
+  RefreshAuthError,
+  RequireModuleError,
+  StashedBundleError,
+  StopRequestError,
+  ResponseError,
+  ThrottledError,
+} = _errors;
+// Export Error with alias to avoid conflict with global Error
+export const AppError = _errors.Error;
 // Allows `import zapier from 'zapier-platform-core'`
 export default zapier;
