@@ -5,4 +5,5 @@ module.exports = {
   env: {
     inject: injectEnvironmentFile,
   },
+  errors: require('../errors'),
 };
