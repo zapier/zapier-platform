@@ -12,37 +12,9 @@ import { Headers } from 'node-fetch';
 export const version: string;
 export const tools: { 
   env: { inject: (filename?: string) => void };
-  errors: {
-    Error: typeof AppError;
-    HaltedError: typeof HaltedError;
-    ExpiredAuthError: typeof ExpiredAuthError;
-    RefreshAuthError: typeof RefreshAuthError;
-    ThrottledError: typeof ThrottledError;
-    ResponseError: typeof ResponseError;
-    CheckError: typeof CheckError;
-    DehydrateError: typeof DehydrateError;
-    MethodDoesNotExist: typeof MethodDoesNotExist;
-    NotImplementedError: typeof NotImplementedError;
-    RequireModuleError: typeof RequireModuleError;
-    StashedBundleError: typeof StashedBundleError;
-    StopRequestError: typeof StopRequestError;
-  };
+  errors: ErrorsModule;
 };
-export const errors: {
-  Error: typeof AppError;
-  HaltedError: typeof HaltedError;
-  ExpiredAuthError: typeof ExpiredAuthError;
-  RefreshAuthError: typeof RefreshAuthError;
-  ThrottledError: typeof ThrottledError;
-  ResponseError: typeof ResponseError;
-  CheckError: typeof CheckError;
-  DehydrateError: typeof DehydrateError;
-  MethodDoesNotExist: typeof MethodDoesNotExist;
-  NotImplementedError: typeof NotImplementedError;
-  RequireModuleError: typeof RequireModuleError;
-  StashedBundleError: typeof StashedBundleError;
-  StopRequestError: typeof StopRequestError;
-};
+export const errors: ErrorsModule;
 
 
 
@@ -172,25 +144,29 @@ export interface Bundle<
   targetUrl?: string;
 }
 
-declare class AppError extends Error {
-  constructor(message: string, code?: string, status?: number);
+// Error class types that match the runtime structure from src/errors.js
+type ErrorConstructor = new (message?: string) => Error;
+type AppErrorConstructor = new (message: string, code?: string, status?: number) => Error;
+type ThrottledErrorConstructor = new (message: string, delay?: number) => Error;
+type ResponseErrorConstructor = new (response: HttpResponse) => Error;
+
+interface ErrorsModule {
+  Error: AppErrorConstructor;
+  HaltedError: ErrorConstructor;
+  ExpiredAuthError: ErrorConstructor;
+  RefreshAuthError: ErrorConstructor;
+  ThrottledError: ThrottledErrorConstructor;
+  ResponseError: ResponseErrorConstructor;
+  CheckError: ErrorConstructor;
+  DehydrateError: ErrorConstructor;
+  MethodDoesNotExist: ErrorConstructor;
+  NotImplementedError: ErrorConstructor;
+  RequireModuleError: ErrorConstructor;
+  StashedBundleError: ErrorConstructor;
+  StopRequestError: ErrorConstructor;
+  handleError: (...args: any[]) => never;
 }
-declare class HaltedError extends Error {}
-declare class ExpiredAuthError extends Error {}
-declare class RefreshAuthError extends Error {}
-declare class ThrottledError extends Error {
-  constructor(message: string, delay?: number);
-}
-declare class ResponseError extends Error {
-  constructor(response: HttpResponse);
-}
-declare class CheckError extends Error {}
-declare class DehydrateError extends Error {}
-declare class MethodDoesNotExist extends Error {}
-declare class NotImplementedError extends Error {}
-declare class RequireModuleError extends Error {}
-declare class StashedBundleError extends Error {}
-declare class StopRequestError extends Error {}
+
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {
@@ -327,14 +303,7 @@ export interface ZObject {
     input_encoding?: string,
   ) => string;
 
-  errors: {
-    Error: typeof AppError;
-    HaltedError: typeof HaltedError;
-    ExpiredAuthError: typeof ExpiredAuthError;
-    RefreshAuthError: typeof RefreshAuthError;
-    ThrottledError: typeof ThrottledError;
-    ResponseError: typeof ResponseError;
-  };
+  errors: ErrorsModule;
 
   cache: {
     get: (key: string) => Promise<any>;
