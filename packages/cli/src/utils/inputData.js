@@ -180,12 +180,4 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
 
 module.exports = {
   resolveInputDataTypes,
-  parseInteger,
-  parseDecimal,
-  parseBoolean,
-  parseDatetime,
-  parseTimestamp,
-  maybeImplyTimeInfo,
-  parsingCompsToString,
-  hasTimeInfo,
 };
