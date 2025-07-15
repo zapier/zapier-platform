@@ -1,5 +1,5 @@
 const should = require('should');
-const { resolveInputDataTypes } = require('../../oclif/commands/invoke');
+const { resolveInputDataTypes } = require('../../utils/inputData');
 
 describe('InvokeCommand', () => {
   describe('inputDataRaw preservation', () => {
