@@ -314,19 +314,15 @@ const refreshTokenFunc = (language) => {
 };
 
 const oauth2AuthFile = (language) => {
-  // const bearerFuncName = 'includeBearerToken';
   const fileInput = [
     getAccessTokenFunc(language),
     refreshTokenFunc(language),
-    // includeBearerFunc(bearerFuncName, language),
     authTestFunc(language),
     authFileExport(
       language,
       'oauth2',
       'OAuth2 is a web authentication standard. There are a lot of configuration options that will fit most any situation.',
       {
-        // beforeFuncNames: [bearerFuncName],
-        // afterFuncNames: [],
         extraConfigProps: [
           objProperty(
             'oauth2Config',
