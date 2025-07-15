@@ -1498,3 +1498,8 @@ The following is a non-exhaustive list of current limitations and may be support
 `;
 
 module.exports = InvokeCommand;
+
+// Export for testing
+if (process.env.NODE_ENV === 'test') {
+  module.exports.resolveInputDataTypes = resolveInputDataTypes;
+}
