@@ -11,7 +11,7 @@ _To be released_
 
 ### core
 
-None!
+- :nail_care: Improve the error message when the app module fails to import ([#1070](https://github.com/zapier/zapier-platform/pull/1070))
 
 ### schema
 
