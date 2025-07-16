@@ -7,7 +7,7 @@ _To be released_
 - :bug: Fix regression bugs with `zapier build --skip-npm-install`, where:
   - it can miss local packages files when building in a Lerna monorepo ([#1068](https://github.com/zapier/zapier-platform/pull/1068))
   - it can fail with "Configuration property ... is not defined" when [config](https://www.npmjs.com/package/config) package is used ([#1071](https://github.com/zapier/zapier-platform/pull/1071))
-- :nail_care: Improve some error messages in `zapier build` ([#1071](https://github.com/zapier/zapier-platform/pull/1070))
+- :nail_care: Improve some error messages in `zapier build` ([#1070](https://github.com/zapier/zapier-platform/pull/1070))
 
 ### core
 
