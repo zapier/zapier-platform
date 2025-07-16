@@ -12,7 +12,6 @@ import { Headers } from 'node-fetch';
 export const version: string;
 export const tools: { 
   env: { inject: (filename?: string) => void };
-  errors: ErrorsModule;
 };
 export const errors: ErrorsModule;
 
