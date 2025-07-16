@@ -1185,6 +1185,12 @@ export interface BasicSearchOperation<
    */
   performGet?: Request | SearchPerformGet<InferInputData<$InputFields>>;
 
+  /**
+   * Does this endpoint support pagination via temporary cursor
+   * storage?
+   */
+  canPaginate?: boolean;
+
   /** What should the form a user sees and configures look like? */
   inputFields?: $InputFields;
 
