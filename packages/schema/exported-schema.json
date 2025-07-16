@@ -1660,6 +1660,10 @@
             }
           ]
         },
+        "canPaginate": {
+          "description": "Does this endpoint support pagination via temporary cursor storage?",
+          "type": "boolean"
+        },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
