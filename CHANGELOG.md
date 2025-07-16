@@ -1,3 +1,21 @@
+## 17.3.1
+
+_To be released_
+
+### cli
+
+- Fix regression bugs with `zapier build --skip-npm-install`, where:
+  - it can miss local packages files when building in a Lerna monorepo ([#1068](https://github.com/zapier/zapier-platform/pull/1068))
+  - it can fail with "Configuration property ... is not defined" when [config](https://www.npmjs.com/package/config) package is used ([#1071](https://github.com/zapier/zapier-platform/pull/1071))
+
+### core
+
+None!
+
+### schema
+
+None!
+
 ## 17.3.0
 
 _released `2025-07-01`_
