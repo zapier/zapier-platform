@@ -1,3 +1,9 @@
+## 3.8.18
+
+_Released 2025-07-17_
+
+- :bug: Make `sanitizeHeaders` middleware an optional import ([#1050](https://github.com/zapier/zapier-platform/pull/1050))
+
 ## 3.8.17
 
 - :bug: Ensure `z.request` renders `{{curlies}}` on different zapier-platform-core versions ([#1037](https://github.com/zapier/zapier-platform/pull/1037))
