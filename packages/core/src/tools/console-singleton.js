@@ -3,16 +3,33 @@
 const createLoggerConsole = require('./create-logger-console');
 
 /**
- * Singleton console instance that can be used standalone or initialized by middleware.
- * Before initialization, methods are no-ops. After initialization, they behave like z.console.
- * Uses the same createLoggerConsole function as z.console for consistency.
+ * Shared console instance that can be used standalone or as z.console.
+ * Uses createLoggerConsole to create the single instance shared between both.
  */
 
 // Shared console instance - will be initialized by middleware
 let sharedConsoleInstance = null;
-let isInitialized = false;
 
-// Standard console methods that should be available
+/**
+ * Initialize the console with the input context from middleware.
+ * This is called by the z-object middleware and uses createLoggerConsole.
+ * Returns the shared console instance for z.console to use.
+ */
+const initialize = (input) => {
+  if (!sharedConsoleInstance) {
+    sharedConsoleInstance = createLoggerConsole(input);
+  }
+  return sharedConsoleInstance;
+};
+
+/**
+ * Reset the singleton for testing purposes
+ */
+const reset = () => {
+  sharedConsoleInstance = null;
+};
+
+// Standard console methods that forward to the shared instance or no-op
 const consoleMethods = [
   'log',
   'warn',
@@ -35,67 +52,29 @@ const consoleMethods = [
   'groupCollapsed',
 ];
 
-// Create the singleton console object
-const consoleSingleton = {};
+// Create the exported console object that forwards to shared instance
+const exportedConsole = {};
 
-// Add backward compatibility property for tests
-Object.defineProperty(consoleSingleton, '_isInitialized', {
-  get: () => isInitialized,
-  configurable: true
+// Add _isInitialized property that checks if shared instance exists
+Object.defineProperty(exportedConsole, '_isInitialized', {
+  get: () => Boolean(sharedConsoleInstance),
+  configurable: true,
 });
 
-// Initialize with no-op methods
 consoleMethods.forEach((method) => {
-  consoleSingleton[method] = () => {
+  exportedConsole[method] = (...args) => {
+    if (
+      sharedConsoleInstance &&
+      typeof sharedConsoleInstance[method] === 'function'
+    ) {
+      return sharedConsoleInstance[method](...args);
+    }
     // No-op when not initialized
-    // We could optionally fall back to regular console here:
-    // console[method](...arguments);
   };
 });
 
-/**
- * Initialize the console with the input context from middleware.
- * This is called by the z-object middleware and uses createLoggerConsole.
- */
-consoleSingleton.initialize = (input) => {
-  if (isInitialized) {
-    return sharedConsoleInstance; // Already initialized, return existing instance
-  }
+// Expose initialize and reset methods for middleware and tests
+exportedConsole.initialize = initialize;
+exportedConsole._reset = reset;
 
-  // Create the logger console using the existing function
-  sharedConsoleInstance = createLoggerConsole(input);
-  isInitialized = true;
-
-  // Replace no-op methods with real console methods
-  consoleMethods.forEach((method) => {
-    if (typeof sharedConsoleInstance[method] === 'function') {
-      consoleSingleton[method] = sharedConsoleInstance[method].bind(sharedConsoleInstance);
-    }
-  });
-
-  return sharedConsoleInstance;
-};
-
-/**
- * Get the shared console instance (for z.console to use the same instance)
- */
-consoleSingleton.getSharedInstance = () => {
-  return sharedConsoleInstance;
-};
-
-/**
- * Reset the singleton for testing purposes
- */
-consoleSingleton._reset = () => {
-  isInitialized = false;
-  sharedConsoleInstance = null;
-  
-  // Reset to no-op methods
-  consoleMethods.forEach((method) => {
-    consoleSingleton[method] = () => {
-      // No-op when not initialized
-    };
-  });
-};
-
-module.exports = consoleSingleton;
+module.exports = exportedConsole;
