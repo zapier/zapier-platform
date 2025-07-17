@@ -10,20 +10,12 @@ describe('console singleton', () => {
     consoleSingleton._reset();
   });
 
-  it('should provide no-op methods before initialization', () => {
-    // These should not throw errors and not output anything
-    consoleSingleton.log('test message');
-    consoleSingleton.error('test error');
-    consoleSingleton.warn('test warning');
-    consoleSingleton.info('test info');
-    consoleSingleton.debug('test debug');
-    consoleSingleton.trace('test trace');
-
-    // Check that singleton is not initialized
-    consoleSingleton._isInitialized.should.equal(false);
+  it('should return global console before initialization', () => {
+    const consoleInstance = consoleSingleton.get();
+    consoleInstance.should.equal(console);
   });
 
-  it('should initialize with input and work like regular console', () => {
+  it('should initialize with input and return logger console', () => {
     const logs = [];
     const mockLogger = (message, data) => {
       logs.push({ message, data });
@@ -38,14 +30,16 @@ describe('console singleton', () => {
     };
 
     // Initialize the singleton
-    consoleSingleton.initialize(mockInput);
+    const loggerConsole = consoleSingleton.initialize(mockInput);
 
-    // Check that singleton is now initialized
-    consoleSingleton._isInitialized.should.equal(true);
+    // Check that singleton now returns the logger console
+    const consoleInstance = consoleSingleton.get();
+    consoleInstance.should.equal(loggerConsole);
+    consoleInstance.should.not.equal(console);
 
     // Test that console methods work
-    consoleSingleton.log('test message');
-    consoleSingleton.error('test error');
+    consoleInstance.log('test message');
+    consoleInstance.error('test error');
 
     // Verify promises were pushed to input
     mockInput._zapier.promises.length.should.be.greaterThan(0);
@@ -70,48 +64,31 @@ describe('console singleton', () => {
     };
 
     // Initialize the singleton
-    consoleSingleton.initialize(mockInput1);
-    consoleSingleton._isInitialized.should.equal(true);
+    const firstInstance = consoleSingleton.initialize(mockInput1);
+    consoleSingleton.get().should.equal(firstInstance);
 
     // Try to initialize again with different input
-    consoleSingleton.initialize(mockInput2);
+    const secondInstance = consoleSingleton.initialize(mockInput2);
 
-    // Should still be initialized and should use the first logger
-    consoleSingleton._isInitialized.should.equal(true);
+    // Should return the same instance and should use the first logger
+    secondInstance.should.equal(firstInstance);
+    consoleSingleton.get().should.equal(firstInstance);
   });
 
-  it('should have all expected console methods', () => {
-    const expectedMethods = [
-      'log',
-      'warn',
-      'error',
-      'info',
-      'debug',
-      'trace',
-      'dir',
-      'dirxml',
-      'table',
-      'time',
-      'timeEnd',
-      'timeLog',
-      'assert',
-      'clear',
-      'count',
-      'countReset',
-      'group',
-      'groupEnd',
-      'groupCollapsed',
-    ];
-
-    expectedMethods.forEach((method) => {
-      consoleSingleton.should.have.property(method);
-      consoleSingleton[method].should.be.a.Function();
-    });
+  it('should have expected structure', () => {
+    consoleSingleton.should.have.property('get');
+    consoleSingleton.should.have.property('initialize');
+    consoleSingleton.should.have.property('_reset');
+    
+    consoleSingleton.get.should.be.a.Function();
+    consoleSingleton.initialize.should.be.a.Function();
+    consoleSingleton._reset.should.be.a.Function();
   });
 
   describe('when initialized', () => {
     let mockInput;
     let logs;
+    let consoleInstance;
 
     beforeEach(() => {
       logs = [];
@@ -128,10 +105,11 @@ describe('console singleton', () => {
       };
 
       consoleSingleton.initialize(mockInput);
+      consoleInstance = consoleSingleton.get();
     });
 
     it('should use console log type for log method', () => {
-      consoleSingleton.log('test log');
+      consoleInstance.log('test log');
 
       // Find the log entry for our message
       const logEntry = logs.find((log) => log.message.includes('test log'));
@@ -140,7 +118,7 @@ describe('console singleton', () => {
     });
 
     it('should use error log type for error method', () => {
-      consoleSingleton.error('test error');
+      consoleInstance.error('test error');
 
       // Find the log entry for our message
       const logEntry = logs.find((log) => log.message.includes('test error'));
