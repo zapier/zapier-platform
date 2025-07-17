@@ -39,12 +39,17 @@ const decryptBundleWithSecret = (bundle, secret) => {
       ttl: 0,
     });
 
-    const decrypted = token.decode();
+    let decrypted = token.decode();
 
-    // Parse JSON
+    // Parse JSON and release decrypted string immediately
     try {
-      return JSON.parse(decrypted);
+      const result = JSON.parse(decrypted);
+      // Release the decrypted string from memory
+      decrypted = null;
+      return result;
     } catch (error) {
+      // Release memory on error
+      decrypted = null;
       throw new Error('Invalid JSON in decrypted bundle');
     }
   } catch (error) {
