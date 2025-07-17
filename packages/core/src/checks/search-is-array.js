@@ -23,8 +23,6 @@ const searchIsArrayOrObject = {
   name: 'searchIsArrayOrObject',
   shouldRun: isSearch,
   run: (method, results, compiledApp) => {
-    console.log('searchIsArray', method, results, 'compiledApp', compiledApp);
-
     const searchKey = method.split('.', 2)[1];
     const truncatedResults = simpleTruncate(JSON.stringify(results), 50);
 
