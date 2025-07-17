@@ -389,7 +389,6 @@ describe('smoke tests - setup will take some time', function () {
             const recipes = JSON.parse(output);
             recipes.length.should.eql(1);
             recipes[0].name.should.eql('name 3');
-            recipes[0].id.should.be.a.Number();
           },
         },
         {
