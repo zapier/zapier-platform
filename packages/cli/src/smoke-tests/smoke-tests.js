@@ -292,18 +292,18 @@ describe('smoke tests - setup will take some time', function () {
 
   describe('zapier init w/ templates (runs very slowly)', () => {
     const testableTemplates = [
-      // { name: 'basic-auth' },
-      // { name: 'custom-auth' },
-      // { name: 'digest-auth' },
-      // { name: 'oauth2' },
-      // { name: 'session-auth' },
-      // { name: 'dynamic-dropdown' },
-      // { name: 'files' },
-      // { name: 'minimal', module: 'commonjs' },
-      // { name: 'minimal', module: 'esm' },
+      { name: 'basic-auth' },
+      { name: 'custom-auth' },
+      { name: 'digest-auth' },
+      { name: 'oauth2' },
+      { name: 'session-auth' },
+      { name: 'dynamic-dropdown' },
+      { name: 'files' },
+      { name: 'minimal', module: 'commonjs' },
+      { name: 'minimal', module: 'esm' },
       { name: 'search-or-create' },
-      // { name: 'typescript', module: 'commonjs' },
-      // { name: 'typescript', module: 'esm' },
+      { name: 'typescript', module: 'commonjs' },
+      { name: 'typescript', module: 'esm' },
     ];
 
     const invokeCommandsByTemplate = {
@@ -386,14 +386,10 @@ describe('smoke tests - setup will take some time', function () {
             '--non-interactive',
           ],
           verify: (output, appDir) => {
-            try {
-              const recipes = JSON.parse(output);
-              recipes.length.should.eql(1);
-              recipes[0].name.should.eql('name 3');
-            } catch (e) {
-              console.log('output', output);
-              throw new Error('Error: ' + output);
-            }
+            const recipes = JSON.parse(output);
+            recipes.length.should.eql(1);
+            recipes[0].name.should.eql('name 3');
+            recipes[0].id.should.be.a.Number();
           },
         },
         {
