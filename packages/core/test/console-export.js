@@ -2,7 +2,14 @@
 
 require('should');
 
+const { reset } = require('../src/tools/console-singleton');
+
 describe('console export', () => {
+  beforeEach(() => {
+    // Reset singleton before each test
+    reset();
+  });
+
   it('should export console from the main package', () => {
     const zapier = require('../index');
 
@@ -34,16 +41,11 @@ describe('console export', () => {
 
   it('should work before and after initialization', () => {
     const { console } = require('../index');
+    const { initialize } = require('../src/tools/console-singleton');
 
-    // Reset first to ensure clean state
-    console._reset();
-
-    // Before initialization, should be no-ops (shouldn't throw)
+    // Before initialization, should forward to global console (shouldn't throw)
     console.log('test before init');
     console.error('test error before init');
-
-    // Should not be initialized yet
-    console._isInitialized.should.equal(false);
 
     // Mock initialization
     const mockLogger = () => Promise.resolve();
@@ -54,14 +56,10 @@ describe('console export', () => {
       },
     };
 
-    console.initialize(mockInput);
+    initialize(mockInput);
 
-    // After initialization, should work
-    console._isInitialized.should.equal(true);
+    // After initialization, should work with logger console
     console.log('test after init');
     console.error('test error after init');
-
-    // Clean up for other tests
-    console._reset();
   });
 });
