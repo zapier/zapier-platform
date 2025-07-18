@@ -1,9 +1,6 @@
 <% if (hasAuth) { %>
-const {
-  config: authentication,
-  befores = [],
-  afters = [],
-} = require('./authentication');
+const authentication = require('./authentication');
+const { befores = [], afters = [] } = require('./middleware');
 <% } %>
 
 module.exports = {

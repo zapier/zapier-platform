@@ -21,4 +21,14 @@ zapier link
 zapier push
 ```
 
+Then, to add more features, you can use the `zapier scaffold` command, for example:
+
+```bash
+# Add a trigger
+zapier scaffold trigger contact
+
+# Add an action
+zapier scaffold create contact
+``` 
+
 Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md.

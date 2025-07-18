@@ -2,8 +2,8 @@ import zapier, { defineApp } from 'zapier-platform-core';
 
 import packageJson from '../package.json' with { type: 'json' };
 
-import authenticationModule from './authentication.js';
-const { config: authentication, befores, afters } = authenticationModule;
+import authentication from './authentication.js';
+import { befores, afters } from './middleware.js';
 
 export default defineApp({
   version: packageJson.version,
