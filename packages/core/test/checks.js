@@ -24,10 +24,65 @@ describe('checks', () => {
     checks.createIsObject.run(testMethod, [{}, {}]).length.should.eql(1);
   });
 
-  it('should error for objects via searchIsArray', () => {
-    checks.searchIsArray.run(testMethod, [{}, {}]).length.should.eql(0);
-    checks.searchIsArray.run(testMethod, [{}]).length.should.eql(0);
-    checks.searchIsArray.run(testMethod, {}).length.should.eql(1);
+  describe('searchIsArrayOrObject', () => {
+    let app;
+    let searchMethod;
+    beforeEach(() => {
+      app = {
+        searches: {
+          find_task: {
+            operation: {
+              canPaginate: true,
+            },
+          },
+        },
+      };
+      searchMethod = 'searches.find_task.operation.perform';
+    });
+
+    it('should error for objects when canPaginate is not set', () => {
+      app.searches.find_task.operation.canPaginate = false;
+
+      checks.searchIsArrayOrObject
+        .run(searchMethod, [{}, {}])
+        .length.should.eql(0);
+      checks.searchIsArrayOrObject.run(searchMethod, [{}]).length.should.eql(0);
+      checks.searchIsArrayOrObject.run(searchMethod, {}).length.should.eql(1);
+    });
+
+    it('should pass when object has correct shape with results array and paging_token when canPaginate is true', () => {
+      checks.searchIsArrayOrObject.shouldRun(searchMethod).should.be.true();
+      checks.searchIsArrayOrObject
+        .run(
+          searchMethod,
+          {
+            results: [{ id: 1 }, { name: 'foo' }, { name: 'bar' }],
+            paging_token: '123',
+          },
+          app,
+        )
+        .length.should.eql(0);
+    });
+
+    it('should error when paging_token is missing when canPaginate is true', () => {
+      checks.searchIsArrayOrObject
+        .run(
+          searchMethod,
+          { results: [{ id: 1 }, { name: 'foo' }, { name: 'bar' }] },
+          app,
+        )
+        .length.should.eql(1);
+    });
+
+    it('should error when results is not an array when canPaginate is true', () => {
+      checks.searchIsArrayOrObject
+        .run(
+          searchMethod,
+          { results: { name: 'bar' }, paging_token: '123' },
+          app,
+        )
+        .length.should.eql(1);
+    });
   });
 
   it('should check for ids via triggerHasId', () => {

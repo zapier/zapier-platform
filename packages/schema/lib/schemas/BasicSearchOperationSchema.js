@@ -30,6 +30,11 @@ BasicSearchOperationSchema.properties = {
       'How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.',
     oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   },
+  canPaginate: {
+    description:
+      'Does this endpoint support pagination via temporary cursor storage?',
+    type: 'boolean',
+  },
   inputFields: BasicSearchOperationSchema.properties.inputFields,
   inputFieldGroups: BasicSearchOperationSchema.properties.inputFieldGroups,
   outputFields: BasicSearchOperationSchema.properties.outputFields,

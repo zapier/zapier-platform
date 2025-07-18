@@ -120,7 +120,11 @@ export type CreatePerformGet<
 /**
  * Search for objects on a partner API.
  *
- * Returns an 1-item array of objects, matching the search query.
+ * Returns either:
+ * - an array of objects, matching the search query.
+ * - an object with a `results` array of objects and a `paging_token` string.
+ *
+ * When `canPaginate` is true, the object shape is required.
  *
  * @remarks
  * This type requires a one-item array. Multiple items *can* be
@@ -130,7 +134,7 @@ export type CreatePerformGet<
 export type SearchPerform<
   $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | Promise<$Return[]>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | $Return | Promise<$Return[] | $Return>;
 
 /**
  * Follow up a search's perform with additional data.
