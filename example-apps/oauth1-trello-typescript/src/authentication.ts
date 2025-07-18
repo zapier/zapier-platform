@@ -1,64 +1,61 @@
 import type { ZObject, Bundle, Authentication } from 'zapier-platform-core';
 
-const getAccessToken = async (z: ZObject, bundle: Bundle) => {
+const querystring = require('querystring');
+
+const REQUEST_TOKEN_URL = 'https://trello.com/1/OAuthGetRequestToken';
+const ACCESS_TOKEN_URL = 'https://trello.com/1/OAuthGetAccessToken';
+const AUTHORIZE_URL = 'https://trello.com/1/OAuthAuthorizeToken';
+
+const getRequestToken = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request({
-    url: 'https://auth-json-server.zapier-staging.com/oauth/access-token',
+    url: REQUEST_TOKEN_URL,
     method: 'POST',
-    body: {
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      grant_type: 'authorization_code',
-      code: bundle.inputData.code,
+    auth: {
+      oauth_consumer_key: process.env.CLIENT_ID,
+      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_signature_method: 'HMAC-SHA1',
+      oauth_callback: bundle.inputData.redirect_uri,
 
-      // Extra data can be pulled from the querystring. For instance:
-      // 'accountDomain': bundle.cleanedRequest.querystring.accountDomain
+      // oauth_version: '1.0' // sometimes required
     },
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
   });
-
-  // If you're using core v9.x or older, you should call response.throwForStatus()
-  // or verify response.status === 200 before you continue.
-
-  // This function should return `access_token`.
-  // If your app does an app refresh, then `refresh_token` should be returned here
-  // as well
-  return {
-    access_token: response.data.access_token,
-    refresh_token: response.data.refresh_token,
-  };
+  return querystring.parse(response.content);
 };
 
-const refreshAccessToken = async (z: ZObject, bundle: Bundle) => {
+const getAccessToken = async (z: ZObject, bundle: Bundle) => {
   const response = await z.request({
-    url: 'https://auth-json-server.zapier-staging.com/oauth/refresh-token',
+    url: ACCESS_TOKEN_URL,
     method: 'POST',
-    body: {
-      client_id: process.env.CLIENT_ID,
-      client_secret: process.env.CLIENT_SECRET,
-      grant_type: 'refresh_token',
-      refresh_token: bundle.authData.refresh_token,
+    auth: {
+      oauth_consumer_key: process.env.CLIENT_ID,
+      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_token: bundle.inputData.oauth_token,
+      oauth_token_secret: bundle.inputData.oauth_token_secret,
+      oauth_verifier: bundle.inputData.oauth_verifier,
     },
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
   });
-
-  // If you're using core v9.x or older, you should call response.throwForStatus()
-  // or verify response.status === 200 before you continue.
-
-  // This function should return `access_token`.
-  // If the refresh token stays constant, no need to return it.
-  // If the refresh token does change, return it here to update the stored value in
-  // Zapier
-  return {
-    access_token: response.data.access_token,
-    refresh_token: response.data.refresh_token,
-  };
+  return querystring.parse(response.content);
 };
 
 // This function runs before every outbound request. You can have as many as you
 // need. They'll need to each be registered in your index.js file.
-const includeBearerToken = (request, z: ZObject, bundle: Bundle) => {
-  if (bundle.authData.access_token) {
-    request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+const includeAccessToken = (request, z: ZObject, bundle: Bundle) => {
+  if (
+    bundle.authData &&
+    bundle.authData.oauth_token &&
+    bundle.authData.oauth_token_secret
+  ) {
+    // Put your OAuth1 credentials in `req.auth`, Zapier will sign the request for
+    // you.
+    request.auth = {
+      oauth_consumer_key: process.env.CLIENT_ID,
+      oauth_consumer_secret: process.env.CLIENT_SECRET,
+      oauth_token: bundle.authData.oauth_token,
+      oauth_token_secret: bundle.authData.oauth_token_secret,
+
+      // oauth_version: '1.0', // sometimes required
+      ...(request.auth || {}),
+    };
   }
 
   return request;
@@ -70,26 +67,25 @@ const includeBearerToken = (request, z: ZObject, bundle: Bundle) => {
 // response data for testing purposes. Your connection label can access any data
 // from the returned response using the `json.` prefix. eg: `{{json.username}}`.
 const test = (z: ZObject, bundle: Bundle) =>
-  z.request({ url: 'https://auth-json-server.zapier-staging.com/me' });
+  z.request({ url: 'https://api.trello.com/1/members/me/' });
 
 export default {
   config: {
-    // OAuth2 is a web authentication standard. There are a lot of configuration
-    // options that will fit most any situation.
-    type: 'oauth2',
-    oauth2Config: {
+    // OAuth1 is an older form of OAuth
+    type: 'oauth1',
+    oauth1Config: {
+      // We have to define getRequestToken and getAccessToken functions to explicitly
+      // parse the response like it has a form body here, since Trello responds
+      // 'text/plain' for the Content-Type header
+      getRequestToken,
+      getAccessToken,
       authorizeUrl: {
-        url: 'https://auth-json-server.zapier-staging.com/oauth/authorize',
+        url: AUTHORIZE_URL,
         params: {
-          client_id: '{{process.env.CLIENT_ID}}',
-          state: '{{bundle.inputData.state}}',
-          redirect_uri: '{{bundle.inputData.redirect_uri}}',
-          response_type: 'code',
+          oauth_token: '{{bundle.inputData.oauth_token}}',
+          name: 'Zapier/Trello OAuth1 Test',
         },
       },
-      getAccessToken,
-      refreshAccessToken,
-      autoRefresh: true,
     },
 
     // Define any input app's auth requires here. The user will be prompted to enter
@@ -107,8 +103,8 @@ export default {
     // be `{{X}}`. This can also be a function that returns a label. That function has
     // the standard args `(z: ZObject, bundle: Bundle)` and data returned from the
     // test can be accessed in `bundle.inputData.X`.
-    connectionLabel: '{{json.username}}',
+    connectionLabel: '{{username}}',
   } satisfies Authentication,
-  befores: [includeBearerToken],
+  befores: [includeAccessToken],
   afters: [],
 };
