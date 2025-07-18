@@ -10,6 +10,16 @@ class VersionCommand extends BaseCommand {
     this.startSpinner('Loading versions');
     const { versions } = await listVersions();
     this.stopSpinner();
+
+    // Helper function to format text based on output format
+    const formatText = (text) => {
+      // JSON escapes ANSI codes as \u001b[1m and \u001b[22m so
+      // we don't apply bold to them
+      const isJsonFormat =
+        this.flags.format === 'json' || this.flags.format === 'raw';
+      return isJsonFormat ? text : colors.bold(text);
+    };
+
     const rows = versions.map((v) => ({
       ...v,
       state: v.lifecycle.status,
@@ -35,20 +45,23 @@ class VersionCommand extends BaseCommand {
     });
 
     this.logTable({
-      headers: [],
+      headers: [
+        ['ErrorType', 'version'],
+        ['Description', 'platform_version'],
+      ],
       rows: [
         {
-          version: `- ${colors.bold('Errors')}`,
+          version: `- ${formatText('Errors')}`,
           platform_version:
             'Issues that will prevent your integration from functioning properly. They block you from pushing.',
         },
         {
-          version: `- ${colors.bold('Publishing Tasks')}`,
+          version: `- ${formatText('Publishing Tasks')}`,
           platform_version:
             'To-dos that must be addressed before your integration can be included in the App Directory. They block you from promoting and publishing.',
         },
         {
-          version: `- ${colors.bold('Warnings')}`,
+          version: `- ${formatText('Warnings')}`,
           platform_version:
             "Issues and recommendations that need human reviews by Zapier before publishing your integration. They don't block.",
         },
