@@ -1,18 +1,34 @@
-import type { PerformFunction, Resource } from 'zapier-platform-core';
+import {
+  defineInputFields,
+  type CreatePerform,
+  type InferInputData,
+  type PollingTriggerPerform,
+  type Resource,
+  type SearchPerform,
+} from 'zapier-platform-core';
 
 // get a list of <%= LOWER_NOUN %>s
-const performList: PerformFunction = async (z, bundle) => {
+const performList = (async (z, bundle) => {
   const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
       order_by: 'id desc',
+      tag: bundle.inputData.tagName,
     },
   });
   return response.data;
-};
+}) satisfies PollingTriggerPerform;
+
+const searchInputFields = defineInputFields([
+  {
+    key: 'name',
+    required: true,
+    helpText: 'Find the <%= NOUN %> with this name.',
+  },
+]);
 
 // find a particular <%= LOWER_NOUN %> by name (or other search criteria)
-const performSearch: PerformFunction = async (z, bundle) => {
+const performSearch = (async (z, bundle) => {
   const response = await z.request({
     url: 'https://jsonplaceholder.typicode.com/posts',
     params: {
@@ -20,10 +36,15 @@ const performSearch: PerformFunction = async (z, bundle) => {
     },
   });
   return response.data;
-};
+}) satisfies SearchPerform<InferInputData<typeof searchInputFields>>;
+
+const createInputFields = defineInputFields([
+  { key: 'name', required: true },
+  { key: 'fave_meal', label: 'Favorite Meal', required: false },
+]);
 
 // creates a new <%= LOWER_NOUN %>
-const performCreate: PerformFunction = async (z, bundle) => {
+const performCreate = (async (z, bundle) => {
   const response = await z.request({
     method: 'POST',
     url: 'https://jsonplaceholder.typicode.com/posts',
@@ -32,7 +53,7 @@ const performCreate: PerformFunction = async (z, bundle) => {
     },
   });
   return response.data;
-};
+}) satisfies CreatePerform<InferInputData<typeof createInputFields>>;
 
 export default {
   // see here for a full list of available properties:
@@ -78,7 +99,7 @@ export default {
       description: 'Finds a <%= LOWER_NOUN %> give.',
     },
     operation: {
-      inputFields: [{ key: 'name', required: true }],
+      inputFields: searchInputFields,
       perform: performSearch,
     },
   },
@@ -89,7 +110,7 @@ export default {
       description: 'Creates a new <%= LOWER_NOUN %>.',
     },
     operation: {
-      inputFields: [{ key: 'name', required: true }],
+      inputFields: createInputFields,
       perform: performCreate,
     },
   },
