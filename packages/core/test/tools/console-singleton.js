@@ -2,7 +2,11 @@
 
 require('should');
 
-const { consoleProxy, initialize, reset } = require('../../src/tools/console-singleton');
+const {
+  consoleProxy,
+  initialize,
+  reset,
+} = require('../../src/tools/console-singleton');
 
 describe('console singleton', () => {
   beforeEach(() => {
@@ -16,7 +20,7 @@ describe('console singleton', () => {
     consoleProxy.should.have.property('error');
     consoleProxy.should.have.property('warn');
     consoleProxy.should.have.property('info');
-    
+
     // Should be functions
     consoleProxy.log.should.be.a.Function();
     consoleProxy.error.should.be.a.Function();
@@ -37,7 +41,7 @@ describe('console singleton', () => {
     };
 
     // Initialize the singleton
-    const loggerConsole = initialize(mockInput);
+    initialize(mockInput);
 
     // Test that console methods work and use the logger
     consoleProxy.log('test message');
@@ -81,10 +85,10 @@ describe('console singleton', () => {
     consoleProxy.should.have.property('error');
     consoleProxy.should.have.property('warn');
     consoleProxy.should.have.property('info');
-    
+
     consoleProxy.log.should.be.a.Function();
     consoleProxy.error.should.be.a.Function();
-    
+
     // Initialize and reset should be functions
     initialize.should.be.a.Function();
     reset.should.be.a.Function();
