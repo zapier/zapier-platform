@@ -38,9 +38,11 @@ const consoleProxy = new Proxy(console, {
     // Use loggerConsole if initialized, otherwise fall back to global console
     const actualConsole = loggerConsole || target;
     return actualConsole[prop];
-  }
+  },
 });
 
-module.exports = consoleProxy;
-module.exports.initialize = initialize;
-module.exports._reset = reset;
+module.exports = {
+  consoleProxy,
+  initialize,
+  reset,
+};
