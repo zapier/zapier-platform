@@ -28,14 +28,8 @@ describe('z.console and console singleton integration', () => {
       },
     };
 
-    // Before middleware runs, singleton should not be initialized
-    consoleSingleton._isInitialized.should.equal(false);
-
     // Run the z-object middleware
     const result = injectZObject(mockInput);
-
-    // After middleware runs, singleton should be initialized
-    consoleSingleton._isInitialized.should.equal(true);
 
     // Both z.console and singleton should work
     result.z.console.log('test z.console');

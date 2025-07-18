@@ -16,8 +16,6 @@ module.exports = {
   createAppHandler: createLambdaHandler,
   createAppTester,
   integrationTestHandler,
-  get console() {
-    return consoleSingleton.get();
-  },
+  console: consoleSingleton,
   ...require('./typeHelpers'),
 };
