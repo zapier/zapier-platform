@@ -15,8 +15,7 @@ class VersionCommand extends BaseCommand {
     const formatText = (text) => {
       // JSON escapes ANSI codes as \u001b[1m and \u001b[22m so
       // we don't apply bold to them
-      const isJsonFormat =
-        this.flags.format === 'json' || this.flags.format === 'raw';
+      const isJsonFormat = this.flags.format === 'json';
       return isJsonFormat ? text : colors.bold(text);
     };
 
