@@ -2,24 +2,24 @@
 
 require('should');
 
-const consoleSingleton = require('../../src/tools/console-singleton');
+const { consoleProxy, initialize, reset } = require('../../src/tools/console-singleton');
 
 describe('console singleton', () => {
   beforeEach(() => {
     // Reset the singleton before each test
-    consoleSingleton._reset();
+    reset();
   });
 
   it('should behave like global console before initialization', () => {
     // Before initialization, console methods should work (forwarding to global console)
-    consoleSingleton.should.have.property('log');
-    consoleSingleton.should.have.property('error');
-    consoleSingleton.should.have.property('warn');
-    consoleSingleton.should.have.property('info');
+    consoleProxy.should.have.property('log');
+    consoleProxy.should.have.property('error');
+    consoleProxy.should.have.property('warn');
+    consoleProxy.should.have.property('info');
     
     // Should be functions
-    consoleSingleton.log.should.be.a.Function();
-    consoleSingleton.error.should.be.a.Function();
+    consoleProxy.log.should.be.a.Function();
+    consoleProxy.error.should.be.a.Function();
   });
 
   it('should initialize with input and use logger console', () => {
@@ -37,11 +37,11 @@ describe('console singleton', () => {
     };
 
     // Initialize the singleton
-    const loggerConsole = consoleSingleton.initialize(mockInput);
+    const loggerConsole = initialize(mockInput);
 
     // Test that console methods work and use the logger
-    consoleSingleton.log('test message');
-    consoleSingleton.error('test error');
+    consoleProxy.log('test message');
+    consoleProxy.error('test error');
 
     // Verify promises were pushed to input
     mockInput._zapier.promises.length.should.be.greaterThan(0);
@@ -66,29 +66,28 @@ describe('console singleton', () => {
     };
 
     // Initialize the singleton
-    const firstInstance = consoleSingleton.initialize(mockInput1);
+    const firstInstance = initialize(mockInput1);
 
     // Try to initialize again with different input
-    const secondInstance = consoleSingleton.initialize(mockInput2);
+    const secondInstance = initialize(mockInput2);
 
     // Should return the same instance
     secondInstance.should.equal(firstInstance);
   });
 
   it('should have expected structure', () => {
-    consoleSingleton.should.have.property('initialize');
-    consoleSingleton.should.have.property('_reset');
-    
     // Should behave like a console object
-    consoleSingleton.should.have.property('log');
-    consoleSingleton.should.have.property('error');
-    consoleSingleton.should.have.property('warn');
-    consoleSingleton.should.have.property('info');
+    consoleProxy.should.have.property('log');
+    consoleProxy.should.have.property('error');
+    consoleProxy.should.have.property('warn');
+    consoleProxy.should.have.property('info');
     
-    consoleSingleton.initialize.should.be.a.Function();
-    consoleSingleton._reset.should.be.a.Function();
-    consoleSingleton.log.should.be.a.Function();
-    consoleSingleton.error.should.be.a.Function();
+    consoleProxy.log.should.be.a.Function();
+    consoleProxy.error.should.be.a.Function();
+    
+    // Initialize and reset should be functions
+    initialize.should.be.a.Function();
+    reset.should.be.a.Function();
   });
 
   describe('when initialized', () => {
@@ -109,11 +108,11 @@ describe('console singleton', () => {
         },
       };
 
-      consoleSingleton.initialize(mockInput);
+      initialize(mockInput);
     });
 
     it('should use console log type for log method', () => {
-      consoleSingleton.log('test log');
+      consoleProxy.log('test log');
 
       // Find the log entry for our message
       const logEntry = logs.find((log) => log.message.includes('test log'));
@@ -122,7 +121,7 @@ describe('console singleton', () => {
     });
 
     it('should use error log type for error method', () => {
-      consoleSingleton.error('test error');
+      consoleProxy.error('test error');
 
       // Find the log entry for our message
       const logEntry = logs.find((log) => log.message.includes('test error'));

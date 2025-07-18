@@ -3,12 +3,12 @@
 require('should');
 
 const injectZObject = require('../src/app-middlewares/before/z-object');
-const consoleSingleton = require('../src/tools/console-singleton');
+const { consoleProxy, reset } = require('../src/tools/console-singleton');
 
 describe('z.console and console singleton integration', () => {
   beforeEach(() => {
     // Reset singleton before each test
-    consoleSingleton._reset();
+    reset();
   });
 
   it('should initialize singleton when z.console is created', () => {
@@ -33,7 +33,7 @@ describe('z.console and console singleton integration', () => {
 
     // Both z.console and singleton should work
     result.z.console.log('test z.console');
-    consoleSingleton.log('test singleton');
+    consoleProxy.log('test singleton');
 
     // Both should have logged messages
     logs.length.should.be.greaterThan(0);
@@ -64,7 +64,7 @@ describe('z.console and console singleton integration', () => {
 
     // Test both console types with the same message
     result.z.console.log('test message');
-    consoleSingleton.log('test message');
+    consoleProxy.log('test message');
 
     // Should have two log entries
     logs.length.should.equal(2);
