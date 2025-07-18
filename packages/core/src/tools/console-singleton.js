@@ -30,15 +30,17 @@ const reset = () => {
 };
 
 /**
- * Get the console instance.
- * Returns the logger console if initialized, otherwise the global console as fallback.
+ * Proxy that behaves like a console object.
+ * Forwards calls to loggerConsole if initialized, otherwise to global console.
  */
-const get = () => {
-  return loggerConsole || console;
-};
+const consoleProxy = new Proxy(console, {
+  get(target, prop, receiver) {
+    // Use loggerConsole if initialized, otherwise fall back to global console
+    const actualConsole = loggerConsole || target;
+    return actualConsole[prop];
+  }
+});
 
-module.exports = {
-  get,
-  initialize,
-  _reset: reset,
-};
+module.exports = consoleProxy;
+module.exports.initialize = initialize;
+module.exports._reset = reset;
