@@ -109,17 +109,5 @@ describe('errors', () => {
       refreshError.name.should.eql('RefreshAuthError');
       refreshError.message.should.eql('test message');
     });
-
-    it('should export errors from tools', () => {
-      const zapierPlatformCore = require('../index');
-
-      // Check that errors are also available through tools
-      zapierPlatformCore.should.have.property('tools');
-      zapierPlatformCore.tools.should.have.property('errors');
-      should.exist(zapierPlatformCore.tools.errors);
-
-      // Verify it's the same errors object
-      zapierPlatformCore.tools.errors.should.eql(zapierPlatformCore.errors);
-    });
   });
 });

@@ -73,12 +73,35 @@ describe('errors import', () => {
 
     expectedErrorClasses.forEach((errorClassName) => {
       should.exist(errors[errorClassName]);
-      errors[errorClassName].should.be.a('function');
+      should(typeof errors[errorClassName]).equal('function');
 
       // Test that we can instantiate each error
-      const instance = new errors[errorClassName]('test message');
+      let instance;
+      if (errorClassName === 'ResponseError') {
+        // ResponseError expects a response object
+        const mockResponse = {
+          status: 500,
+          headers: {
+            get: () => 'application/json',
+          },
+          content: 'test message',
+          request: { url: 'http://example.com' },
+        };
+        instance = new errors[errorClassName](mockResponse);
+      } else if (errorClassName === 'ThrottledError') {
+        // ThrottledError expects message and delay
+        instance = new errors[errorClassName]('test message', 60);
+      } else {
+        instance = new errors[errorClassName]('test message');
+      }
+
       instance.should.be.instanceOf(Error);
-      instance.message.should.match(/test message/);
+      if (
+        errorClassName !== 'ResponseError' &&
+        errorClassName !== 'ThrottledError'
+      ) {
+        instance.message.should.match(/test message/);
+      }
     });
   });
 });

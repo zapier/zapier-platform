@@ -39,15 +39,16 @@ describe('Final Feature Verification', () => {
     error.name.should.eql('RefreshAuthError');
   });
 
-  it('should provide errors through tools as well', () => {
+  it('should provide errors through direct import only', () => {
     const zapier = require('../index');
 
-    should.exist(zapier.tools.errors);
-    const error = new zapier.tools.errors.CheckError('via tools');
+    // Verify errors are available directly from main export
+    should.exist(zapier.errors);
+    const error = new zapier.errors.CheckError('direct import');
     error.name.should.eql('CheckError');
 
-    // Verify tools.errors is the same object as the main errors export
-    zapier.tools.errors.should.equal(zapier.errors);
+    // Verify tools.errors is NOT available (per feedback)
+    zapier.tools.should.not.have.property('errors');
   });
 
   it('should solve the original issue use case', () => {
