@@ -386,12 +386,12 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
     for (const symlink of symlinks) {
       const absPath = path.resolve(
         workingDir,
-        symlink.parentPath || symlink.path,
+        symlink.parentPath,
         symlink.name,
       );
       const nameInZip = path.relative(workspaceRoot, absPath);
       const targetInZip = path.relative(
-        symlink.parentPath || symlink.path,
+        symlink.parentPath,
         fs.realpathSync(absPath),
       );
       zip.symlink(nameInZip, targetInZip, 0o644);
