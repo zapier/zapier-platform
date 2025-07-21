@@ -142,10 +142,7 @@ function expandRequiredFiles(workingDir, relPaths) {
 // such as .git, .env, build, etc.
 function* walkDirWithPresetBlocklist(dir) {
   const shouldInclude = (entry) => {
-    const relPath = path.relative(
-      dir,
-      path.join(entry.parentPath || entry.path, entry.name),
-    );
+    const relPath = path.relative(dir, path.join(entry.parentPath, entry.name));
     return !isBlocklisted(relPath);
   };
   yield* iterfilter(shouldInclude, walkDir(dir));
@@ -164,7 +161,7 @@ function* walkDirWithPatterns(dir, patterns) {
     (x) => new RegExp(x, 'i'),
   );
   const shouldInclude = (entry) => {
-    const relPath = path.join(entry.parentPath || entry.path, entry.name);
+    const relPath = path.join(entry.parentPath, entry.name);
     if (isBlocklisted(relPath)) {
       return false;
     }
@@ -292,15 +289,12 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
 
 const writeBuildZipDumbly = async (workingDir, zip) => {
   for (const entry of walkDirWithPresetBlocklist(workingDir)) {
-    const absPath = path.resolve(entry.parentPath || entry.path, entry.name);
+    const absPath = path.resolve(entry.parentPath, entry.name);
     const relPath = path.relative(workingDir, absPath);
     if (entry.isFile()) {
       zip.file(absPath, { name: relPath });
     } else if (entry.isSymbolicLink()) {
-      const target = path.relative(
-        entry.parentPath || entry.path,
-        fs.realpathSync(absPath),
-      );
+      const target = path.relative(entry.parentPath, fs.realpathSync(absPath));
       zip.symlink(relPath, target, 0o644);
     }
   }
@@ -327,10 +321,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
       // Files matching includeInBuild and other preset patterns
       ...itermap(
         (entry) =>
-          path.relative(
-            workingDir,
-            path.join(entry.parentPath || entry.path, entry.name),
-          ),
+          path.relative(workingDir, path.join(entry.parentPath, entry.name)),
         walkDirWithPatterns(workingDir, appConfig?.includeInBuild),
       ),
     ]),
@@ -387,9 +378,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         // Only include symlinks that are not in node_modules/.bin directories
         return (
           entry.isSymbolicLink() &&
-          !(entry.parentPath || entry.path).endsWith(
-            `${path.sep}node_modules${path.sep}.bin`,
-          )
+          !entry.parentPath.endsWith(`${path.sep}node_modules${path.sep}.bin`)
         );
       },
       walkDirLimitedLevels(absNmDir, 2),
@@ -434,10 +423,7 @@ const makeSourceZip = async (workingDir, zipPath) => {
   const relPaths = Array.from(
     itermap(
       (entry) =>
-        path.relative(
-          workingDir,
-          path.join(entry.parentPath || entry.path, entry.name),
-        ),
+        path.relative(workingDir, path.join(entry.parentPath, entry.name)),
       walkDirWithPresetBlocklist(workingDir),
     ),
   );
