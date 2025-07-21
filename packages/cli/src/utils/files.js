@@ -217,8 +217,8 @@ function* walkDir(dir) {
         // dirent.parentPath is only available since Node.js 18.20, 20.12, and
         // 21.4, while dirent.path is available since Node.js 18.17.
         entry.parentPath = entry.path || dir;
-        yield entry;
       }
+      yield entry;
     }
   }
 }
