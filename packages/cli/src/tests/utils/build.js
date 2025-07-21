@@ -16,7 +16,7 @@ describe('build (runs slowly)', function () {
     // basically does what `zapier init` does
     tmpDir = getNewTempDirPath();
     await copyDir(
-      path.resolve(__dirname, '../../../../../example-apps/typescript'),
+      path.resolve(__dirname, '../../../../../example-apps/oauth2'),
       tmpDir,
     );
 
@@ -31,11 +31,6 @@ describe('build (runs slowly)', function () {
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
 
     runCommand('npm', ['i'], { cwd: tmpDir });
-    // TODO: This test depends on how "typescript" example is set up, which
-    // isn't good. Should refactor not to rely on that.
-    runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], {
-      cwd: tmpDir,
-    });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -48,13 +43,17 @@ describe('build (runs slowly)', function () {
     this.retries(3); // retry up to 3 times
 
     const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
-    // check that only the required lodash files are grabbed
+    // check that required integration files are grabbed
     smartPaths.should.containEql('index.js');
-    smartPaths.should.containEql('dist/index.js');
-    smartPaths.should.containEql('dist/triggers/movie.js');
+    smartPaths.should.containEql('authentication.js');
 
-    smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
-    smartPaths.should.not.containEql('tsconfig.json');
+    // check that required package files are grabbed
+    smartPaths.should.containEql('node_modules/zapier-platform-core/index.js');
+    smartPaths.should.containEql('node_modules/node-fetch/lib/index.js');
+
+    // check that unnecessary package files are omitted
+    smartPaths.should.not.containEql('node_modules/jest/package.json');
+    smartPaths.should.not.containEql('node_modules/node-fetch/README.md');
 
     smartPaths.length.should.be.within(200, 306);
   });
@@ -64,14 +63,16 @@ describe('build (runs slowly)', function () {
       (entry) => path.relative(tmpDir, path.join(entry.parentPath, entry.name)),
     );
 
-    // check that way more than the required package files are grabbed
+    // check that required files are present
     dumbPaths.should.containEql('index.js');
-    dumbPaths.should.containEql('dist/index.js');
-    dumbPaths.should.containEql('dist/triggers/movie.js');
+    dumbPaths.should.containEql('authentication.js');
+    dumbPaths.should.containEql('node_modules/zapier-platform-core/index.js');
+    dumbPaths.should.containEql('node_modules/node-fetch/lib/index.js');
 
-    dumbPaths.should.containEql('src/index.ts');
-    dumbPaths.should.containEql('src/triggers/movie.ts');
-    dumbPaths.should.containEql('tsconfig.json');
+    // check that non-required files are also present
+    dumbPaths.should.containEql('node_modules/jest/package.json');
+    dumbPaths.should.containEql('node_modules/jest/README.md');
+    dumbPaths.should.containEql('node_modules/node-fetch/README.md');
 
     dumbPaths.length.should.be.within(3000, 10000);
   });
@@ -269,15 +270,6 @@ describe('build (runs slowly)', function () {
     filePaths.should.deepEqual(
       new Set(['index.js', 'README.md', '.zapierapprc', '.gitignore']),
     );
-  });
-
-  it('should run the zapier-build script', async () => {
-    runCommand('npm', ['run', 'clean'], { cwd: tmpDir });
-
-    await build.maybeRunBuildScript({ cwd: tmpDir });
-
-    const buildExists = await fs.pathExists(path.join(tmpDir, 'dist'));
-    should.equal(buildExists, true);
   });
 });
 
@@ -1242,7 +1234,7 @@ describe('build ESM (runs slowly)', function () {
     // basically does what `zapier init` does
     tmpDir = getNewTempDirPath();
     await copyDir(
-      path.resolve(__dirname, '../../../../../example-apps/typescript-esm'),
+      path.resolve(__dirname, '../../../../../example-apps/oauth2-typescript'),
       tmpDir,
     );
 
@@ -1257,7 +1249,7 @@ describe('build ESM (runs slowly)', function () {
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
 
     runCommand('npm', ['i'], { cwd: tmpDir });
-    // TODO: This test depends on how "typescript" example is set up, which
+    // TODO: This test depends on how "oauth2-typescript" example is set up, which
     // isn't good. Should refactor not to rely on that.
     runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], {
       cwd: tmpDir,
@@ -1277,7 +1269,7 @@ describe('build ESM (runs slowly)', function () {
 
     // check that only the required lodash files are grabbed
     smartPaths.should.containEql('dist/index.js');
-    smartPaths.should.containEql('dist/triggers/movie.js');
+    smartPaths.should.containEql('dist/authentication.js');
 
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
@@ -1292,10 +1284,10 @@ describe('build ESM (runs slowly)', function () {
 
     // check that way more than the required package files are grabbed
     dumbPaths.should.containEql('dist/index.js');
-    dumbPaths.should.containEql('dist/triggers/movie.js');
+    dumbPaths.should.containEql('dist/authentication.js');
 
     dumbPaths.should.containEql('src/index.ts');
-    dumbPaths.should.containEql('src/triggers/movie.ts');
+    dumbPaths.should.containEql('src/authentication.ts');
     dumbPaths.should.containEql('tsconfig.json');
 
     dumbPaths.length.should.be.within(3000, 10000);

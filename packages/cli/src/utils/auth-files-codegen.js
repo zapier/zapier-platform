@@ -9,10 +9,12 @@ const {
   exportStatement,
   fatArrowReturnFunctionDeclaration,
   file,
+  fileTS,
   functionDeclaration,
   ifStatement,
   interpLiteral,
   obj,
+  objTS,
   objProperty,
   RESPONSE_VAR,
   returnStatement,
@@ -22,9 +24,19 @@ const {
   zResponseErr,
 } = require('./codegen');
 
-const standardArgs = ['z', 'bundle'];
-const beforeMiddlewareArgs = ['request', ...standardArgs];
-const afterMiddlewareArgs = [RESPONSE_VAR, ...standardArgs];
+const standardArgs = (language) =>
+  language === 'typescript'
+    ? ['z: ZObject', 'bundle: Bundle']
+    : ['z', 'bundle'];
+const standardTypes = ['ZObject', 'Bundle', 'Authentication'];
+const beforeMiddlewareArgs = (language) => [
+  'request',
+  ...standardArgs(language),
+];
+const afterMiddlewareArgs = (language) => [
+  RESPONSE_VAR,
+  ...standardArgs(language),
+];
 
 // used for both oauth1 and oauth2
 const getOauthAccessTokenFuncName = 'getAccessToken';
@@ -34,6 +46,7 @@ const authJsonUrl = (path) =>
   `https://auth-json-server.zapier-staging.com/${path}`;
 
 const authFileExport = (
+  language,
   authType,
   authDescription,
   {
@@ -45,37 +58,44 @@ const authFileExport = (
     authFields = [],
   } = {},
 ) => {
+  const configProps = [
+    comment(authDescription),
+    objProperty('type', strLiteral(authType)),
+    ...extraConfigProps,
+    comment(
+      "Define any input app's auth requires here. The user will be prompted to enter this info when they connect their account.",
+    ),
+    objProperty('fields', arr(...authFields)),
+    comment(
+      "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenever a user connects their account for the first time.",
+    ),
+    test,
+    comment(
+      `This template string can access all the data returned from the auth test. If you return the test object, you'll access the returned data with a label like \`{{json.X}}\`. If you return \`response.data\` from your test, then your label can be \`{{X}}\`. This can also be a function that returns a label. That function has the standard args \`(${standardArgs(
+        language,
+      ).join(
+        ', ',
+      )})\` and data returned from the test can be accessed in \`bundle.inputData.X\`.`,
+    ),
+    objProperty('connectionLabel', connectionLabel),
+  ];
+
+  const configObj =
+    language === 'typescript'
+      ? objTS('Authentication', ...configProps)
+      : obj(...configProps);
+
   return exportStatement(
     obj(
-      objProperty(
-        'config',
-        obj(
-          comment(authDescription),
-          objProperty('type', strLiteral(authType)),
-          ...extraConfigProps,
-          comment(
-            "Define any input app's auth requires here. The user will be prompted to enter this info when they connect their account.",
-          ),
-          objProperty('fields', arr(...authFields)),
-          comment(
-            "The test method allows Zapier to verify that the credentials a user provides are valid. We'll execute this method whenever a user connects their account for the first time.",
-          ),
-          test,
-          comment(
-            `This template string can access all the data returned from the auth test. If you return the test object, you'll access the returned data with a label like \`{{json.X}}\`. If you return \`response.data\` from your test, then your label can be \`{{X}}\`. This can also be a function that returns a label. That function has the standard args \`(${standardArgs.join(
-              ', ',
-            )})\` and data returned from the test can be accessed in \`bundle.inputData.X\`.`,
-          ),
-          objProperty('connectionLabel', connectionLabel),
-        ),
-      ),
+      objProperty('config', configObj),
       objProperty('befores', arr(...beforeFuncNames)),
       objProperty('afters', arr(...afterFuncNames)),
     ),
+    language,
   );
 };
 
-const authTestFunc = (testUrl = strLiteral(authJsonUrl('me'))) =>
+const authTestFunc = (language, testUrl = strLiteral(authJsonUrl('me'))) =>
   block(
     comment(
       'You want to make a request to an endpoint that is either specifically designed to test auth, or one that every user will have access to. eg: `/me`.',
@@ -83,15 +103,21 @@ const authTestFunc = (testUrl = strLiteral(authJsonUrl('me'))) =>
     comment(
       'By returning the entire request object, you have access to the request and response data for testing purposes. Your connection label can access any data from the returned response using the `json.` prefix. eg: `{{json.username}}`.',
     ),
-    fatArrowReturnFunctionDeclaration('test', standardArgs, zRequest(testUrl)),
+    fatArrowReturnFunctionDeclaration(
+      'test',
+      standardArgs(language),
+      zRequest(testUrl),
+    ),
   );
 
 const handleBadResponsesFunc = (
   funcName,
+  language,
   invalidInfo = 'username and/or password',
 ) =>
   afterMiddlewareFunc(
     funcName,
+    language,
     ifStatement(
       'response.status === 401',
       zResponseErr(strLiteral(`The ${invalidInfo} you supplied is incorrect`)),
@@ -99,30 +125,34 @@ const handleBadResponsesFunc = (
     returnStatement(RESPONSE_VAR),
   );
 
-const basicAuthFile = () => {
+const basicAuthFile = (language) => {
   const badFuncName = 'handleBadResponses';
-  return file(
-    authTestFunc(),
-    handleBadResponsesFunc(badFuncName),
+  const fileInput = [
+    authTestFunc(language),
+    handleBadResponsesFunc(badFuncName, language),
     authFileExport(
+      language,
       'basic',
       '"basic" auth automatically creates "username" and "password" input fields. It also registers default middleware to create the authentication header.',
       { afterFuncNames: [badFuncName] },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
 /**
  * boilerplate for a "before" middleware. No need to return the requst at the end
  */
-const beforeMiddlewareFunc = (funcName, ...statements) =>
+const beforeMiddlewareFunc = (funcName, language, ...statements) =>
   block(
     comment(
       "This function runs before every outbound request. You can have as many as you need. They'll need to each be registered in your index.js file.",
     ),
     functionDeclaration(
       funcName,
-      { args: beforeMiddlewareArgs },
+      { args: beforeMiddlewareArgs(language) },
       ...statements,
       // auto include the return if it's not here already
       statements[statements.length - 1].includes('return')
@@ -131,17 +161,22 @@ const beforeMiddlewareFunc = (funcName, ...statements) =>
     ),
   );
 
-const afterMiddlewareFunc = (funcName, ...statements) =>
+const afterMiddlewareFunc = (funcName, language, ...statements) =>
   block(
     comment(
       "This function runs after every outbound request. You can use it to check for errors or modify the response. You can have as many as you need. They'll need to each be registered in your index.js file.",
     ),
-    functionDeclaration(funcName, { args: afterMiddlewareArgs }, ...statements),
+    functionDeclaration(
+      funcName,
+      { args: afterMiddlewareArgs(language) },
+      ...statements,
+    ),
   );
 
-const includeBearerFunc = (funcName) =>
+const includeBearerFunc = (funcName, language) =>
   beforeMiddlewareFunc(
     funcName,
+    language,
     ifStatement(
       'bundle.authData.access_token',
       assignmentStatement(
@@ -154,6 +189,7 @@ const includeBearerFunc = (funcName) =>
 
 const tokenExchangeFunc = (
   funcName,
+  language,
   requestUrl,
   bodyProps,
   returnProps,
@@ -161,7 +197,7 @@ const tokenExchangeFunc = (
 ) =>
   functionDeclaration(
     funcName,
-    { args: standardArgs, isAsync: true },
+    { args: standardArgs(language), isAsync: true },
     variableAssignmentDeclaration(
       RESPONSE_VAR,
       awaitStatement(
@@ -183,10 +219,12 @@ const tokenExchangeFunc = (
 
 const oauth2TokenExchangeFunc = (
   funcName,
+  language,
   { path, grantType, bodyProps = [], returnComments = [] },
 ) => {
   return tokenExchangeFunc(
     funcName,
+    language,
     authJsonUrl(path),
     [
       objProperty('client_id', 'process.env.CLIENT_ID'),
@@ -218,8 +256,8 @@ const oauth2TokenExchangeFunc = (
   );
 };
 
-const getAccessTokenFunc = () => {
-  return oauth2TokenExchangeFunc(getOauthAccessTokenFuncName, {
+const getAccessTokenFunc = (language) => {
+  return oauth2TokenExchangeFunc(getOauthAccessTokenFuncName, language, {
     path: 'oauth/access-token',
     bodyProps: [
       objProperty('code', 'bundle.inputData.code'),
@@ -239,8 +277,8 @@ const getAccessTokenFunc = () => {
   });
 };
 
-const refreshTokenFunc = () => {
-  return oauth2TokenExchangeFunc(refreshOath2AccessTokenFuncName, {
+const refreshTokenFunc = (language) => {
+  return oauth2TokenExchangeFunc(refreshOath2AccessTokenFuncName, language, {
     path: 'oauth/refresh-token',
     bodyProps: [objProperty('refresh_token', 'bundle.authData.refresh_token')],
     grantType: 'refresh_token',
@@ -253,14 +291,15 @@ const refreshTokenFunc = () => {
   });
 };
 
-const oauth2AuthFile = () => {
+const oauth2AuthFile = (language) => {
   const bearerFuncName = 'includeBearerToken';
-  return file(
-    getAccessTokenFunc(),
-    refreshTokenFunc(),
-    includeBearerFunc(bearerFuncName),
-    authTestFunc(),
+  const fileInput = [
+    getAccessTokenFunc(language),
+    refreshTokenFunc(language),
+    includeBearerFunc(bearerFuncName, language),
+    authTestFunc(language),
     authFileExport(
+      language,
       'oauth2',
       'OAuth2 is a web authentication standard. There are a lot of configuration options that will fit most any situation.',
       {
@@ -306,16 +345,21 @@ const oauth2AuthFile = () => {
         ],
       },
     ),
-  );
+  ];
+  // TODO determine if we need to import AuthenticationOAuth2Config
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
-const customAuthFile = () => {
+const customAuthFile = (language) => {
   const includeApiKeyFuncName = 'includeApiKey';
   const handleResponseFuncName = 'handleBadResponses';
-  return file(
-    authTestFunc(),
-    handleBadResponsesFunc(handleResponseFuncName, 'API Key'),
+  const fileInput = [
+    authTestFunc(language),
+    handleBadResponsesFunc(handleResponseFuncName, language, 'API Key'),
     beforeMiddlewareFunc(
       includeApiKeyFuncName,
+      language,
       ifStatement(
         'bundle.authData.apiKey',
         comment('Use these lines to include the API key in the querystring'),
@@ -329,6 +373,7 @@ const customAuthFile = () => {
       ),
     ),
     authFileExport(
+      language,
       'custom',
       '"custom" is the catch-all auth type. The user supplies some info and Zapier can make authenticated requests with it',
       {
@@ -343,34 +388,43 @@ const customAuthFile = () => {
         ],
       },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
-const digestAuthFile = () => {
+const digestAuthFile = (language) => {
   const badFuncName = 'handleBadResponses';
-  return file(
+  const fileInput = [
     // special digest auth
     authTestFunc(
+      language,
       strLiteral(
         'https://httpbin.zapier-tooling.com/digest-auth/auth/myuser/mypass',
       ),
     ),
-    handleBadResponsesFunc(badFuncName),
+    handleBadResponsesFunc(badFuncName, language),
     authFileExport(
+      language,
       'digest',
       '"digest" auth automatically creates "username" and "password" input fields. It also registers default middleware to create the authentication header.',
       { afterFuncNames: [badFuncName] },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
-const sessionAuthFile = () => {
+const sessionAuthFile = (language) => {
   const getSessionKeyName = 'getSessionKey';
   const includeSessionKeyName = 'includeSessionKeyHeader';
-  return file(
-    authTestFunc(),
+  const fileInput = [
+    authTestFunc(language),
     tokenExchangeFunc(
       getSessionKeyName,
+      language,
       'https://httpbin.zapier-tooling.com/post',
       [
         objProperty('username', 'bundle.authData.username'),
@@ -385,6 +439,7 @@ const sessionAuthFile = () => {
     ),
     beforeMiddlewareFunc(
       includeSessionKeyName,
+      language,
       ifStatement(
         'bundle.authData.sessionKey',
         assignmentStatement('request.headers', 'request.headers || {}'),
@@ -395,6 +450,7 @@ const sessionAuthFile = () => {
       ),
     ),
     authFileExport(
+      language,
       'session',
       '"session" auth exchanges user data for a different session token (that may be periodically refreshed")',
       {
@@ -422,13 +478,22 @@ const sessionAuthFile = () => {
         ],
       },
     ),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
+
 // just different enough from oauth2 that it gets its own function
-const oauth1TokenExchangeFunc = (funcName, url, ...authProperties) => {
+const oauth1TokenExchangeFunc = (
+  funcName,
+  language,
+  url,
+  ...authProperties
+) => {
   return functionDeclaration(
     funcName,
-    { args: standardArgs, isAsync: true },
+    { args: standardArgs(language), isAsync: true },
     variableAssignmentDeclaration(
       RESPONSE_VAR,
       awaitStatement(
@@ -449,13 +514,14 @@ const oauth1TokenExchangeFunc = (funcName, url, ...authProperties) => {
     returnStatement(`querystring.parse(${RESPONSE_VAR}.content)`),
   );
 };
-const oauth1AuthFile = () => {
+
+const oauth1AuthFile = (language) => {
   const requestTokenVarName = 'REQUEST_TOKEN_URL';
   const accessTokenVarName = 'ACCESS_TOKEN_URL';
   const authorizeUrlVarName = 'AUTHORIZE_URL';
   const getRequestTokenFuncName = 'getRequestToken';
   const includeAccessTokenFuncName = 'includeAccessToken';
-  return file(
+  const fileInput = [
     variableAssignmentDeclaration('querystring', "require('querystring')"),
     block(
       variableAssignmentDeclaration(
@@ -473,6 +539,7 @@ const oauth1AuthFile = () => {
     ),
     oauth1TokenExchangeFunc(
       getRequestTokenFuncName,
+      language,
       requestTokenVarName,
       objProperty('oauth_signature_method', strLiteral('HMAC-SHA1')),
       objProperty('oauth_callback', 'bundle.inputData.redirect_uri'),
@@ -480,6 +547,7 @@ const oauth1AuthFile = () => {
     ),
     oauth1TokenExchangeFunc(
       getOauthAccessTokenFuncName,
+      language,
       accessTokenVarName,
       objProperty('oauth_token', 'bundle.inputData.oauth_token'),
       objProperty('oauth_token_secret', 'bundle.inputData.oauth_token_secret'),
@@ -487,6 +555,7 @@ const oauth1AuthFile = () => {
     ),
     beforeMiddlewareFunc(
       includeAccessTokenFuncName,
+      language,
       ifStatement(
         'bundle.authData && bundle.authData.oauth_token && bundle.authData.oauth_token_secret',
         comment(
@@ -508,8 +577,8 @@ const oauth1AuthFile = () => {
         ),
       ),
     ),
-    authTestFunc(strLiteral('https://api.trello.com/1/members/me/')),
-    authFileExport('oauth1', 'OAuth1 is an older form of OAuth', {
+    authTestFunc(language, strLiteral('https://api.trello.com/1/members/me/')),
+    authFileExport(language, 'oauth1', 'OAuth1 is an older form of OAuth', {
       beforeFuncNames: [includeAccessTokenFuncName],
       extraConfigProps: [
         objProperty(
@@ -544,7 +613,10 @@ const oauth1AuthFile = () => {
       ],
       connectionLabel: strLiteral('{{username}}'),
     }),
-  );
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
 };
 
 module.exports = {
