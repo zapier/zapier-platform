@@ -13,12 +13,13 @@ let loggerConsole = null;
 /**
  * Initialize the console with the input context from middleware.
  * This is called by the z-object middleware and uses createLoggerConsole.
+ * Creates a new logger console for each Lambda invocation to ensure proper isolation.
  * Returns the shared console instance for z.console to use.
  */
 const initialize = (input) => {
-  if (!loggerConsole) {
-    loggerConsole = createLoggerConsole(input);
-  }
+  // Always create a new logger console for each invocation to ensure
+  // log context isolation between Lambda invocations
+  loggerConsole = createLoggerConsole(input);
   return loggerConsole;
 };
 
