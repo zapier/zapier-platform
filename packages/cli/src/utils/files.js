@@ -207,16 +207,13 @@ function* walkDir(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     if (entry.isDirectory()) {
-      const subDir = path.join(
-        entry.parentPath || entry.path || dir,
-        entry.name,
-      );
+      const subDir = path.join(dir, entry.name);
       yield* walkDir(subDir);
     } else if (entry.isFile() || entry.isSymbolicLink()) {
       if (!entry.parentPath) {
         // dirent.parentPath is only available since Node.js 18.20, 20.12, and
-        // 21.4, while dirent.path is available since Node.js 18.17.
-        entry.parentPath = entry.path || dir;
+        // 21.4. Re-assigning it so the caller can use dirent.parentPath.
+        entry.parentPath = dir;
       }
       yield entry;
     }
@@ -231,17 +228,14 @@ function* walkDirLimitedLevels(dir, maxLevels, currentLevel = 1) {
   for (const entry of entries) {
     if (entry.isDirectory()) {
       if (currentLevel < maxLevels) {
-        const subDir = path.join(
-          entry.parentPath || entry.path || dir,
-          entry.name,
-        );
+        const subDir = path.join(dir, entry.name);
         yield* walkDirLimitedLevels(subDir, maxLevels, currentLevel + 1);
       }
     } else if (entry.isFile() || entry.isSymbolicLink()) {
       if (!entry.parentPath) {
         // dirent.parentPath is only available since Node.js 18.20, 20.12, and
-        // 21.4, while dirent.path is available since Node.js 18.17.
-        entry.parentPath = entry.path || dir;
+        // 21.4. Re-assigning it so the caller can use dirent.parentPath.
+        entry.parentPath = dir;
       }
       yield entry;
     }
