@@ -18,6 +18,8 @@ const crypto = require('crypto');
 const fernet = require('fernet');
 const zlib = require('zlib');
 
+const { createLargeBundleTestData } = require('./helpers/test-data');
+
 describe('app middleware', () => {
   const createTestInput = (method, appDefinition) => {
     const event = {
@@ -339,13 +341,11 @@ describe('app middleware', () => {
 
     it('should decrypt and set stashed bundle with new compressed format', async () => {
       const testSecret = 'test-secret-key';
-      const testData = {
-        compressed: 'data'.repeat(500), // Large data that benefits from compression
-        nested: {
-          values: [1, 2, 3, 4, 5],
-          metadata: { created: '2023-01-01', type: 'test' },
-        },
-      };
+
+      // Create a realistic large bundle that would benefit from compression
+      const testData = createLargeBundleTestData({
+        stringSize: 1024 * 1024 * 100,
+      }); // ~100MB
 
       // Set up environment variable
       process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
@@ -419,36 +419,11 @@ describe('app middleware', () => {
 
     it('should handle large compressed bundles efficiently', async () => {
       const testSecret = 'test-secret-key';
-      const testData = {
-        users: Array.from({ length: 50 }, (_, i) => ({
-          id: i + 1,
-          name: `User ${i + 1}`,
-          email: `user${i + 1}@example.com`,
-          description: `This is a long description for user ${i + 1}. `.repeat(
-            20,
-          ),
-          metadata: {
-            created: `2023-01-${String(i + 1).padStart(2, '0')}`,
-            roles: ['user', 'member', 'contributor'],
-            settings: {
-              theme: 'dark',
-              notifications: true,
-              language: 'en',
-              preferences: {
-                email: true,
-                push: false,
-                sms: true,
-              },
-            },
-          },
-        })),
-        pagination: {
-          page: 1,
-          limit: 50,
-          total: 1000,
-          hasMore: true,
-        },
-      };
+
+      // Create a very large realistic bundle to test compression efficiency
+      const testData = createLargeBundleTestData({
+        stringSize: 1024 * 1024 * 200,
+      }); // ~200MB
 
       // Set up environment variable
       process.env._ZAPIER_ONE_TIME_SECRET = testSecret;

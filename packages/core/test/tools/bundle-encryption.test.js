@@ -6,6 +6,7 @@ const zlib = require('zlib');
 const {
   decryptBundleWithSecret,
 } = require('../../src/tools/bundle-encryption');
+const { createLargeBundleTestData } = require('../helpers/test-data');
 
 describe('bundle-encryption', () => {
   describe('decryptBundleWithSecret', () => {
@@ -172,13 +173,9 @@ describe('bundle-encryption', () => {
 
     it('should decrypt new compressed format with gzip compression', () => {
       const testSecret = 'test-secret-key';
-      const testData = {
-        large: 'data'.repeat(1000),
-        nested: {
-          values: [1, 2, 3, 4, 5],
-          metadata: { created: '2023-01-01', type: 'test' },
-        },
-      };
+      const testData = createLargeBundleTestData({
+        stringSize: 1024 * 1024 * 100,
+      }); // ~100MB
 
       // Create Fernet key same way as the function does
       const keyHash = crypto.createHash('sha256').update(testSecret).digest();
@@ -242,53 +239,6 @@ describe('bundle-encryption', () => {
 
       // Create data that could be interpreted as both formats
       // First create a JSON string that when base64 decoded and decompressed gives our test data
-      const jsonString = JSON.stringify(testData);
-      const compressedData = zlib.gzipSync(jsonString);
-      const base64EncodedData = compressedData.toString('base64');
-
-      const secret = new fernet.Secret(fernetKey);
-      const token = new fernet.Token({
-        secret: secret,
-        token: '',
-        ttl: 0,
-      });
-      const encryptedToken = token.encode(base64EncodedData);
-
-      const result = decryptBundleWithSecret(encryptedToken, testSecret);
-      result.should.eql(testData);
-    });
-
-    it('should handle compression of large nested objects', () => {
-      const testSecret = 'test-secret-key';
-      const testData = {
-        users: Array.from({ length: 100 }, (_, i) => ({
-          id: i + 1,
-          name: `User ${i + 1}`,
-          email: `user${i + 1}@example.com`,
-          metadata: {
-            created: `2023-01-${String(i + 1).padStart(2, '0')}`,
-            roles: ['user', 'member'],
-            settings: {
-              theme: 'dark',
-              notifications: true,
-              language: 'en',
-            },
-          },
-        })),
-        pagination: {
-          page: 1,
-          limit: 100,
-          total: 1000,
-          hasMore: true,
-        },
-      };
-
-      // Create Fernet key
-      const keyHash = crypto.createHash('sha256').update(testSecret).digest();
-      const keyBytes = keyHash.subarray(0, 32);
-      const fernetKey = keyBytes.toString('base64url');
-
-      // Create compressed encrypted token
       const jsonString = JSON.stringify(testData);
       const compressedData = zlib.gzipSync(jsonString);
       const base64EncodedData = compressedData.toString('base64');

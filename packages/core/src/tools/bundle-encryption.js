@@ -66,6 +66,10 @@ const decryptBundleWithSecret = (bundle, secret) => {
     } catch (decompressionError) {
       // If decompression fails, assume it's the old format without compression
       // This provides backward compatibility
+      console.warn(
+        'Bundle decompression failed, falling back to uncompressed format:',
+        decompressionError.message,
+      );
       decompressed = decryptedString;
     }
 
