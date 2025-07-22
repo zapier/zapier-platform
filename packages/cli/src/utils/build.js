@@ -218,51 +218,6 @@ const openZip = (outputPath) => {
   return zip;
 };
 
-const looksLikeWorkspaceRoot = async (dir) => {
-  if (fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) {
-    return true;
-  }
-
-  if (fs.existsSync(path.join(dir, 'lerna.json'))) {
-    return true;
-  }
-
-  const packageJsonPath = path.join(dir, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return false;
-  }
-
-  let packageJson;
-  try {
-    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  } catch (err) {
-    return false;
-  }
-
-  return packageJson?.workspaces != null;
-};
-
-// Traverses up the directory tree to find the workspace root. The workspace
-// root directory either:
-// - contains pnpm-workspace.yaml
-// - contains a package.json file with a "workspaces" field
-// - contains lerna.json
-// Returns the absolute path to the workspace root directory, or null if not
-// found.
-const findWorkspaceRoot = async (workingDir) => {
-  let dir = workingDir;
-  for (let i = 0; i < 500; i++) {
-    if (await looksLikeWorkspaceRoot(dir)) {
-      return dir;
-    }
-    if (dir === '/' || dir.match(/^[a-z]:\\$/i)) {
-      break;
-    }
-    dir = path.dirname(dir);
-  }
-  return null;
-};
-
 const getNearestNodeModulesDir = (workingDir, relPath) => {
   if (path.basename(relPath) === 'package.json') {
     const nmDir = path.resolve(
@@ -285,6 +240,33 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
     }
     return null;
   }
+};
+
+const countLeadingDoubleDots = (relPath) => {
+  const parts = relPath.split(path.sep);
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i] !== '..') {
+      return i;
+    }
+  }
+  return 0;
+};
+
+// Join all relPaths with workingDir and return the common ancestor directory.
+const findCommonAncestor = (workingDir, relPaths) => {
+  let maxLeadingDoubleDots = 0;
+  for (const relPath of relPaths) {
+    maxLeadingDoubleDots = Math.max(
+      maxLeadingDoubleDots,
+      countLeadingDoubleDots(relPath),
+    );
+  }
+
+  let commonAncestor = workingDir;
+  for (let i = 0; i < maxLeadingDoubleDots; i++) {
+    commonAncestor = path.dirname(commonAncestor);
+  }
+  return commonAncestor;
 };
 
 const writeBuildZipDumbly = async (workingDir, zip) => {
@@ -327,10 +309,10 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
     ]),
   ).sort();
 
-  const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
+  const zipRoot = findCommonAncestor(workingDir, relPaths) || workingDir;
 
-  if (workspaceRoot !== workingDir) {
-    const appDirRelPath = path.relative(workspaceRoot, workingDir);
+  if (zipRoot !== workingDir) {
+    const appDirRelPath = path.relative(zipRoot, workingDir);
     // zapierwrapper.js and index.js are entry points.
     // 'config' is the default directory that the 'config' npm package expects
     // to find config files at the root directory.
@@ -351,8 +333,8 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
   // Write required files to the zip
   for (const relPath of relPaths) {
     const absPath = path.resolve(workingDir, relPath);
-    const nameInZip = path.relative(workspaceRoot, absPath);
-    if (nameInZip === 'package.json' && workspaceRoot !== workingDir) {
+    const nameInZip = path.relative(zipRoot, absPath);
+    if (nameInZip === 'package.json' && zipRoot !== workingDir) {
       // Ignore workspace root's package.json
       continue;
     }
@@ -389,7 +371,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         symlink.parentPath,
         symlink.name,
       );
-      const nameInZip = path.relative(workspaceRoot, absPath);
+      const nameInZip = path.relative(zipRoot, absPath);
       const targetInZip = path.relative(
         symlink.parentPath,
         fs.realpathSync(absPath),
