@@ -174,8 +174,8 @@ describe('bundle-encryption', () => {
     it('should decrypt new compressed format with gzip compression', () => {
       const testSecret = 'test-secret-key';
       const testData = createLargeBundleTestData({
-        stringSize: 1024 * 1024 * 100,
-      }); // ~100MB
+        stringSize: 1024 * 1024, // Reduced to ~1MB to avoid memory issues and improve test efficiency
+      });
 
       // Create Fernet key same way as the function does
       const keyHash = crypto.createHash('sha256').update(testSecret).digest();
