@@ -420,10 +420,8 @@ describe('app middleware', () => {
     it('should handle large compressed bundles efficiently', async () => {
       const testSecret = 'test-secret-key';
 
-      // Create a very large realistic bundle to test compression efficiency
-      const largeTestSizeMB = parseInt(process.env.LARGE_BUNDLE_TEST_SIZE_MB, 10) || 1; // Default to 1MB
       const testData = createLargeBundleTestData({
-        stringSize: 1024 * 1024 * largeTestSizeMB,
+        stringSize: 1024 * 1024 * 1,
       }); // Configurable size, default ~1MB
 
       // Set up environment variable
