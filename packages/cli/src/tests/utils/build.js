@@ -641,7 +641,9 @@ describe('build in yarn workspaces', function () {
     await runCommand('yarn', ['install'], { cwd: monorepo.repoDir });
 
     // Will be used to test yarn-linked zapier-platform-core package works
-    await runCommand('yarn', ['link'], { cwd: monorepo.corePackage.path });
+    await runCommand('yarn', ['link'], {
+      cwd: path.join(monorepo.repoDir, 'packages', 'core'),
+    });
   });
 
   after(() => {
