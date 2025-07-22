@@ -642,7 +642,7 @@ describe('build in yarn workspaces', function () {
 
     // Will be used to test yarn-linked zapier-platform-core package works
     await runCommand('yarn', ['link'], {
-      cwd: path.join(monorepo.repoDir, 'packages', 'core'),
+      cwd: path.dirname(monorepo.corePackage.path),
     });
   });
 
