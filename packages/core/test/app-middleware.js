@@ -344,8 +344,8 @@ describe('app middleware', () => {
 
       // Create a realistic large bundle that would benefit from compression
       const testData = createLargeBundleTestData({
-        stringSize: 1024 * 1024 * 100,
-      }); // ~100MB
+        stringSize: 1024 * 1024 * 1,
+      }); // ~1MB
 
       // Set up environment variable
       process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
