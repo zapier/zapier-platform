@@ -226,7 +226,7 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
       'node_modules',
     );
     return fs.existsSync(nmDir) ? path.relative(workingDir, nmDir) : null;
-  } else {
+  } else if (relPath.includes('node_modules')) {
     let dir = path.dirname(relPath);
     for (let i = 0; i < 100; i++) {
       if (dir.endsWith(`${path.sep}node_modules`)) {
@@ -238,8 +238,22 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
       }
       dir = nextDir;
     }
-    return null;
   }
+
+  let dir = path.dirname(relPath);
+  for (let i = 0; i < 100; i++) {
+    const nmDir = path.join(dir, 'node_modules');
+    if (fs.existsSync(nmDir)) {
+      return nmDir;
+    }
+    const nextDir = path.dirname(dir);
+    if (nextDir === dir) {
+      break;
+    }
+    dir = nextDir;
+  }
+
+  return null;
 };
 
 const countLeadingDoubleDots = (relPath) => {

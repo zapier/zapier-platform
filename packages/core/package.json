@@ -9,9 +9,9 @@
   "types": "types/index.d.ts",
   "exports": {
     ".": {
+      "types": "./types/index.d.ts",
       "require": "./index.js",
-      "import": "./index.mjs",
-      "types": "./types/index.d.ts"
+      "import": "./index.mjs"
     },
     "./src/*": {
       "require": "./src/*.js"
