@@ -308,25 +308,6 @@ class ProjectGenerator extends Generator {
         'ESM is not supported for this template, please use a different template, set the module to commonjs, or try setting the language to Typescript',
       );
     }
-
-    if (this.options.language) {
-      if (this.options.language === 'typescript') {
-        // check if the template supports typescript
-        if (!TS_SUPPORTED_TEMPLATES.includes(this.options.template)) {
-          throw new Error(
-            'Typescript is not supported for this template, please use a different template or set the language to javascript. Supported templates: ' +
-              TS_SUPPORTED_TEMPLATES.join(', '),
-          );
-        }
-        // if they try to combine typescript with commonjs, throw an error
-        if (this.options.module === 'commonjs') {
-          throw new Error('Typescript is not supported for commonjs');
-        }
-      }
-    } else {
-      // default to javascript for the language if it's not set
-      this.options.language = 'javascript';
-    }
   }
 
   writing() {
