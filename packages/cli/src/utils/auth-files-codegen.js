@@ -83,20 +83,37 @@ const authFileExport = (
       ? objTS('Authentication', ...configProps)
       : obj(...configProps);
 
-  return exportStatement(configObj);
+  return exportStatement(configObj, language);
 };
 
 const middlewareFileExport = (
   language,
   { beforeFuncNames = [], afterFuncNames = [] },
 ) => {
-  return exportStatement(
-    obj(
-      objProperty('befores', arr(...beforeFuncNames)),
-      objProperty('afters', arr(...afterFuncNames)),
-    ),
-    language,
-  );
+  const exportConst = language === 'typescript';
+  return language === 'typescript'
+    ? [
+        // for Typescript, export the befores and afters separately as consts
+        variableAssignmentDeclaration(
+          'befores',
+          arr(...beforeFuncNames),
+          exportConst,
+        ),
+        variableAssignmentDeclaration(
+          'afters',
+          arr(...afterFuncNames),
+          exportConst,
+        ),
+      ]
+    : [
+        // for Javascript, export the befores and afters together using module.exports
+        exportStatement(
+          obj(
+            objProperty('befores', arr(...beforeFuncNames)),
+            objProperty('afters', arr(...afterFuncNames)),
+          ),
+        ),
+      ];
 };
 
 const authTestFunc = (language, testUrl = strLiteral(authJsonUrl('me'))) =>
@@ -147,7 +164,7 @@ const basicMiddlewareFile = (language) => {
   const badFuncName = 'handleBadResponses';
   const fileInput = [
     handleBadResponsesFunc(badFuncName, language),
-    middlewareFileExport(language, {
+    ...middlewareFileExport(language, {
       beforeFuncNames: [],
       afterFuncNames: [badFuncName],
     }),
@@ -376,7 +393,7 @@ const oauth2MiddlewareFile = (language) => {
   const bearerFuncName = 'includeBearerToken';
   const fileInput = [
     includeBearerFunc(bearerFuncName, language),
-    middlewareFileExport(language, {
+    ...middlewareFileExport(language, {
       beforeFuncNames: [bearerFuncName],
       afterFuncNames: [],
     }),
@@ -436,7 +453,7 @@ const customMiddlewareFile = (language) => {
         comment('request.headers.Authorization = bundle.authData.apiKey;'),
       ),
     ),
-    middlewareFileExport(language, {
+    ...middlewareFileExport(language, {
       beforeFuncNames: [includeApiKeyFuncName],
       afterFuncNames: [handleResponseFuncName],
     }),
@@ -477,7 +494,7 @@ const digestMiddlewareFile = (language) => {
   const badFuncName = 'handleBadResponses';
   const fileInput = [
     handleBadResponsesFunc(badFuncName, language),
-    middlewareFileExport(language, {
+    ...middlewareFileExport(language, {
       beforeFuncNames: [],
       afterFuncNames: [badFuncName],
     }),
@@ -561,7 +578,7 @@ const sessionMiddlewareFile = (language) => {
         ),
       ),
     ),
-    middlewareFileExport(language, {
+    ...middlewareFileExport(language, {
       beforeFuncNames: [includeSessionKeyName],
       afterFuncNames: [],
     }),
@@ -714,7 +731,7 @@ const oauth1MiddlewareFile = (language) => {
         ),
       ),
     ),
-    middlewareFileExport(language, {
+    ...middlewareFileExport(language, {
       beforeFuncNames: [includeAccessTokenFuncName],
       afterFuncNames: [],
     }),
