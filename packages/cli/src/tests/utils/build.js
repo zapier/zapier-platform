@@ -639,6 +639,11 @@ describe('build in yarn workspaces', function () {
   before(async () => {
     monorepo = await setupYarnMonorepo();
     await runCommand('yarn', ['install'], { cwd: monorepo.repoDir });
+
+    // Will be used to test yarn-linked zapier-platform-core package works
+    await runCommand('yarn', ['link'], {
+      cwd: path.dirname(monorepo.corePackage.path),
+    });
   });
 
   after(() => {
@@ -826,6 +831,79 @@ describe('build in yarn workspaces', function () {
     );
     helloPackageJson.name.should.equal('common-hello');
     helloPackageJson.version.should.equal('1.0.0');
+  });
+
+  it('should build in app-2 with linked core', async () => {
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
+    const coreDir = path.dirname(monorepo.corePackage.path);
+
+    await runCommand('yarn', ['link', 'zapier-platform-core'], { cwd: appDir });
+
+    fs.lstatSync(path.join(appDir, 'node_modules', 'zapier-platform-core'))
+      .isSymbolicLink()
+      .should.be.true();
+    fs.realpathSync(
+      path.join(appDir, 'node_modules', 'zapier-platform-core'),
+    ).should.equal(coreDir);
+
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+    fs.ensureDirSync(path.dirname(zipPath));
+
+    process.chdir(appDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipDir);
+
+    // Since now app-2/node_modules/zapier-platform-core links to packages/core
+    // of the zapier-platform repo, the zip file's root is the common ancestor
+    // directory of appDir and the zapier-platform repo, which is the root
+    // directory '/' on Linux/MacOS essentially when this test is run.
+    // So we expect <zip_root>/zapierwrapper.js links to a very deep path of
+    // app-2.
+    const appDirInZip = path.relative(
+      '/',
+      path.join(monorepo.repoDir, 'packages', 'app-2'),
+    );
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join(appDirInZip, 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipDir, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join(appDirInZip, 'index.js'),
+    );
+
+    // app-2/package.json should be copied to root directory
+    const appPackageJson = fs.readJsonSync(path.join(unzipDir, 'package.json'));
+    appPackageJson.name.should.equal('app-2');
+
+    const coreDirInZip = path.relative('/', coreDir);
+    const corePackageJson = fs.readJsonSync(
+      path.join(unzipDir, coreDirInZip, 'package.json'),
+    );
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
+
+    const coreLinkPath = path.join(
+      unzipDir,
+      appDirInZip,
+      'node_modules',
+      'zapier-platform-core',
+    );
+    fs.lstatSync(coreLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(coreLinkPath).should.equal(
+      path.relative(path.join(appDirInZip, 'node_modules'), coreDirInZip),
+    );
   });
 });
 
