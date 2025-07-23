@@ -90,6 +90,8 @@ const writeGenericTypeScriptPackageJson = (gen, packageJsonExtension) => {
           vitest: '^2.1.2',
         },
         private: true,
+        exports: './dist/index.js',
+        type: 'module',
       },
       packageJsonExtension,
     ),
@@ -159,12 +161,8 @@ const writeForAuthTemplate = (gen) => {
   writeGitignore(gen);
   writeGenericReadme(gen);
   if (gen.options.language === 'typescript') {
-    const packageJsonExtension = {
-      exports: './dist/index.js',
-      type: 'module',
-    };
     writeGenericTypescriptIndex(gen);
-    writeGenericTypeScriptPackageJson(gen, packageJsonExtension, true);
+    writeGenericTypeScriptPackageJson(gen);
     gen.fs.copyTpl(
       gen.templatePath('tsconfig.template.json'),
       gen.destinationPath('tsconfig.json'),
@@ -282,12 +280,32 @@ class ProjectGenerator extends Generator {
       this.options.module = this.answers.module;
     }
 
+    if (this.options.language) {
+      if (this.options.language === 'typescript') {
+        // check if the template supports typescript
+        if (!TS_SUPPORTED_TEMPLATES.includes(this.options.template)) {
+          throw new Error(
+            'Typescript is not supported for this template, please use a different template or set the language to javascript. Supported templates: ' +
+              TS_SUPPORTED_TEMPLATES.join(', '),
+          );
+        }
+        // if they try to combine typescript with commonjs, throw an error
+        if (this.options.module === 'commonjs') {
+          throw new Error('Typescript is not supported for commonjs');
+        } // esm is supported for typescript templates
+      }
+    } else {
+      // default to javascript for the language if it's not set
+      this.options.language = 'javascript';
+    }
+
     if (
       !ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
-      this.options.module === 'esm'
+      this.options.module === 'esm' &&
+      this.options.language === 'javascript'
     ) {
       throw new Error(
-        'ESM is not supported for this template, please use a different template or set the module to commonjs',
+        'ESM is not supported for this template, please use a different template, set the module to commonjs, or try setting the language to Typescript',
       );
     }
 

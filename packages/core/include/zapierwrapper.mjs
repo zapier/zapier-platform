@@ -5,9 +5,14 @@ let _appRaw;
 try {
   _appRaw = await import('{REPLACE_ME_PACKAGE_NAME}');
 } catch (err) {
-  if (err.code === 'ERR_MODULE_NOT_FOUND') {
-    err.message +=
-      '\nMake sure you specify a valid entry point using `exports` in package.json.';
+  if (
+    err.code === 'ERR_MODULE_NOT_FOUND' &&
+    err.message?.includes('{REPLACE_ME_PACKAGE_NAME}')
+  ) {
+    err.message =
+      'It seems you are using ESM because your package.json has `"type": "module"`. ' +
+      'For ESM to work, make sure you specify a valid entry point using `exports` (instead of `main`) in package.json.\n\n' +
+      err.message;
   }
   throw err;
 }

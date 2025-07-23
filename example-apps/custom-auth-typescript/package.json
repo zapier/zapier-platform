@@ -1,0 +1,22 @@
+{
+  "name": "custom-auth-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "npm run build && vitest --run",
+    "clean": "rimraf ./dist ./build",
+    "build": "npm run clean && tsc",
+    "_zapier-build": "npm run build"
+  },
+  "dependencies": {
+    "zapier-platform-core": "17.4.0"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.10",
+    "typescript": "5.6.2",
+    "vitest": "^2.1.2"
+  },
+  "private": true,
+  "exports": "./dist/index.js",
+  "type": "module"
+}

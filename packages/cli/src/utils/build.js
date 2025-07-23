@@ -64,12 +64,10 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     platform: 'node',
     metafile: true,
     logLevel: 'warning',
-    external: [
-      '../test/userapp',
-      'zapier-platform-core/src/http-middlewares/before/sanatize-headers', // appears in zapier-platform-legacy-scripting-runner/index.js
-      './request-worker', // appears in zapier-platform-legacy-scripting-runner/zfactory.js
-      './xhr-sync-worker.js', // appears in jsdom/living/xmlhttprequest.js
-    ],
+    logOverride: {
+      'require-resolve-not-external': 'silent',
+    },
+    external: ['../test/userapp'],
     format,
     // Setting conditions to an empty array to exclude 'module' condition,
     // which Node.js doesn't use. https://esbuild.github.io/api/#conditions
@@ -220,44 +218,6 @@ const openZip = (outputPath) => {
   return zip;
 };
 
-const looksLikeWorkspaceRoot = async (dir) => {
-  if (fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) {
-    return true;
-  }
-
-  const packageJsonPath = path.join(dir, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return false;
-  }
-
-  let packageJson;
-  try {
-    packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  } catch (err) {
-    return false;
-  }
-
-  return packageJson?.workspaces != null;
-};
-
-// Traverses up the directory tree to find the workspace root. The workspace
-// root directory either contains pnpm-workspace.yaml or a package.json file
-// with a "workspaces" field. Returns the absolute path to the workspace root
-// directory, or null if not found.
-const findWorkspaceRoot = async (workingDir) => {
-  let dir = workingDir;
-  for (let i = 0; i < 500; i++) {
-    if (await looksLikeWorkspaceRoot(dir)) {
-      return dir;
-    }
-    if (dir === '/' || dir.match(/^[a-z]:\\$/i)) {
-      break;
-    }
-    dir = path.dirname(dir);
-  }
-  return null;
-};
-
 const getNearestNodeModulesDir = (workingDir, relPath) => {
   if (path.basename(relPath) === 'package.json') {
     const nmDir = path.resolve(
@@ -266,7 +226,7 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
       'node_modules',
     );
     return fs.existsSync(nmDir) ? path.relative(workingDir, nmDir) : null;
-  } else {
+  } else if (relPath.includes('node_modules')) {
     let dir = path.dirname(relPath);
     for (let i = 0; i < 100; i++) {
       if (dir.endsWith(`${path.sep}node_modules`)) {
@@ -278,8 +238,49 @@ const getNearestNodeModulesDir = (workingDir, relPath) => {
       }
       dir = nextDir;
     }
-    return null;
   }
+
+  let dir = path.dirname(relPath);
+  for (let i = 0; i < 100; i++) {
+    const nmDir = path.join(dir, 'node_modules');
+    if (fs.existsSync(path.resolve(workingDir, nmDir))) {
+      return nmDir;
+    }
+    const nextDir = path.dirname(dir);
+    if (nextDir === dir) {
+      break;
+    }
+    dir = nextDir;
+  }
+
+  return null;
+};
+
+const countLeadingDoubleDots = (relPath) => {
+  const parts = relPath.split(path.sep);
+  for (let i = 0; i < parts.length; i++) {
+    if (parts[i] !== '..') {
+      return i;
+    }
+  }
+  return 0;
+};
+
+// Join all relPaths with workingDir and return the common ancestor directory.
+const findCommonAncestor = (workingDir, relPaths) => {
+  let maxLeadingDoubleDots = 0;
+  for (const relPath of relPaths) {
+    maxLeadingDoubleDots = Math.max(
+      maxLeadingDoubleDots,
+      countLeadingDoubleDots(relPath),
+    );
+  }
+
+  let commonAncestor = workingDir;
+  for (let i = 0; i < maxLeadingDoubleDots; i++) {
+    commonAncestor = path.dirname(commonAncestor);
+  }
+  return commonAncestor;
 };
 
 const writeBuildZipDumbly = async (workingDir, zip) => {
@@ -322,11 +323,14 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
     ]),
   ).sort();
 
-  const workspaceRoot = (await findWorkspaceRoot(workingDir)) || workingDir;
+  const zipRoot = findCommonAncestor(workingDir, relPaths) || workingDir;
 
-  if (workspaceRoot !== workingDir) {
-    const appDirRelPath = path.relative(workspaceRoot, workingDir);
-    const linkNames = ['zapierwrapper.js', 'index.js'];
+  if (zipRoot !== workingDir) {
+    const appDirRelPath = path.relative(zipRoot, workingDir);
+    // zapierwrapper.js and index.js are entry points.
+    // 'config' is the default directory that the 'config' npm package expects
+    // to find config files at the root directory.
+    const linkNames = ['zapierwrapper.js', 'index.js', 'config'];
     for (const name of linkNames) {
       if (fs.existsSync(path.join(workingDir, name))) {
         zip.symlink(name, path.join(appDirRelPath, name), 0o644);
@@ -343,8 +347,8 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
   // Write required files to the zip
   for (const relPath of relPaths) {
     const absPath = path.resolve(workingDir, relPath);
-    const nameInZip = path.relative(workspaceRoot, absPath);
-    if (nameInZip === 'package.json' && workspaceRoot !== workingDir) {
+    const nameInZip = path.relative(zipRoot, absPath);
+    if (nameInZip === 'package.json' && zipRoot !== workingDir) {
       // Ignore workspace root's package.json
       continue;
     }
@@ -381,7 +385,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         symlink.parentPath,
         symlink.name,
       );
-      const nameInZip = path.relative(workspaceRoot, absPath);
+      const nameInZip = path.relative(zipRoot, absPath);
       const targetInZip = path.relative(
         symlink.parentPath,
         fs.realpathSync(absPath),
@@ -548,6 +552,11 @@ const testBuildZip = async (zipPath) => {
             `You may have to add it to ${colors.bold.underline('includeInBuild')} ` +
             `in your ${colors.bold.underline('.zapierapprc')} file.`,
         );
+      } else if (error.message) {
+        // Hide the unzipped temporary directory
+        error.message = error.message
+          .replaceAll(`file://${testDir}/`, '')
+          .replaceAll(`${testDir}/`, '');
       }
       throw error;
     }
