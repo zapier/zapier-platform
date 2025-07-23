@@ -16,6 +16,9 @@ const exampleAppDefinition = require('./userapp');
 const fetchStashedBundle = require('../src/app-middlewares/before/fetch-stashed-bundle');
 const crypto = require('crypto');
 const fernet = require('fernet');
+const zlib = require('zlib');
+
+const { createLargeBundleTestData } = require('./helpers/test-data');
 
 describe('app middleware', () => {
   const createTestInput = (method, appDefinition) => {
@@ -334,6 +337,176 @@ describe('app middleware', () => {
       await fetchStashedBundle(input).should.be.rejectedWith(
         /Invalid JSON in decrypted bundle/,
       );
+    });
+
+    it('should decrypt and set stashed bundle with new compressed format', async () => {
+      const testSecret = 'test-secret-key';
+
+      // Create a realistic large bundle that would benefit from compression
+      const testData = createLargeBundleTestData({
+        stringSize: 1024 * 1024 * 1,
+      }); // ~1MB
+
+      // Set up environment variable
+      process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
+
+      // Create Fernet key same way as the function does
+      const keyHash = crypto.createHash('sha256').update(testSecret).digest();
+      const keyBytes = keyHash.subarray(0, 32);
+      const fernetKey = keyBytes.toString('base64url');
+
+      // Create compressed encrypted token (new format)
+      const jsonString = JSON.stringify(testData);
+      const compressedData = zlib.gzipSync(jsonString);
+      const base64EncodedData = compressedData.toString('base64');
+
+      const secret = new fernet.Secret(fernetKey);
+      const token = new fernet.Token({
+        secret: secret,
+        token: '',
+        ttl: 0,
+      });
+      const encryptedToken = token.encode(base64EncodedData);
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
+
+      // Set up nock to return compressed encrypted data
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, encryptedToken);
+
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      input._zapier.rpc = rpc;
+
+      const output = await fetchStashedBundle(input);
+      output._zapier.event.bundle.should.eql(testData);
+    });
+
+    it('should handle backward compatibility with old uncompressed format in fetchStashedBundle', async () => {
+      const testSecret = 'test-secret-key';
+      const testData = { old: 'format', without: 'compression' };
+
+      // Set up environment variable
+      process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
+
+      // Create Fernet key same way as the function does
+      const keyHash = crypto.createHash('sha256').update(testSecret).digest();
+      const keyBytes = keyHash.subarray(0, 32);
+      const fernetKey = keyBytes.toString('base64url');
+
+      // Create encrypted token in old format (JSON string directly)
+      const secret = new fernet.Secret(fernetKey);
+      const token = new fernet.Token({
+        secret: secret,
+        token: '',
+        ttl: 0,
+      });
+      const encryptedToken = token.encode(JSON.stringify(testData));
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
+
+      // Set up nock to return encrypted data in old format
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, encryptedToken);
+
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      input._zapier.rpc = rpc;
+
+      const output = await fetchStashedBundle(input);
+      output._zapier.event.bundle.should.eql(testData);
+    });
+
+    it('should handle large compressed bundles efficiently', async () => {
+      const testSecret = 'test-secret-key';
+
+      const testData = createLargeBundleTestData({
+        stringSize: 1024 * 1024 * 1,
+      }); // Configurable size, default ~1MB
+
+      // Set up environment variable
+      process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
+
+      // Create Fernet key same way as the function does
+      const keyHash = crypto.createHash('sha256').update(testSecret).digest();
+      const keyBytes = keyHash.subarray(0, 32);
+      const fernetKey = keyBytes.toString('base64url');
+
+      // Create compressed encrypted token
+      const jsonString = JSON.stringify(testData);
+      const compressedData = zlib.gzipSync(jsonString);
+      const base64EncodedData = compressedData.toString('base64');
+
+      // Verify compression is effective
+      const compressionRatio =
+        compressedData.length / Buffer.byteLength(jsonString, 'utf8');
+      compressionRatio.should.be.lessThan(0.5); // Should compress to less than 50%
+
+      const secret = new fernet.Secret(fernetKey);
+      const token = new fernet.Token({
+        secret: secret,
+        token: '',
+        ttl: 0,
+      });
+      const encryptedToken = token.encode(base64EncodedData);
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/some-key/` });
+
+      // Set up nock to return compressed encrypted data
+      nock(FAKE_S3_URL).get('/some-key/').reply(200, encryptedToken);
+
+      const input = createTestInput('some.method', exampleAppDefinition);
+      input._zapier.event.stashedBundleKey = 'some-key';
+      input._zapier.rpc = rpc;
+
+      const output = await fetchStashedBundle(input);
+      output._zapier.event.bundle.should.eql(testData);
+    });
+
+    it('should handle mixed scenarios with different compression states', async () => {
+      const testSecret = 'test-secret-key';
+      const testData = {
+        scenario: 'mixed',
+        data: 'test',
+        special: 'characters: éñ中文🎉',
+      };
+
+      // Set up environment variable
+      process.env._ZAPIER_ONE_TIME_SECRET = testSecret;
+
+      // Create Fernet key same way as the function does
+      const keyHash = crypto.createHash('sha256').update(testSecret).digest();
+      const keyBytes = keyHash.subarray(0, 32);
+      const fernetKey = keyBytes.toString('base64url');
+
+      // Test both compressed and uncompressed formats work
+      const secret = new fernet.Secret(fernetKey);
+
+      // Test compressed format
+      const jsonString = JSON.stringify(testData);
+      const compressedData = zlib.gzipSync(jsonString);
+      const base64EncodedData = compressedData.toString('base64');
+
+      const token1 = new fernet.Token({
+        secret: secret,
+        token: '',
+        ttl: 0,
+      });
+      const encryptedToken1 = token1.encode(base64EncodedData);
+
+      const rpc = makeRpc();
+      mockRpcCall({ url: `${FAKE_S3_URL}/compressed-key/` });
+
+      // Set up nock to return compressed encrypted data
+      nock(FAKE_S3_URL).get('/compressed-key/').reply(200, encryptedToken1);
+
+      const input1 = createTestInput('some.method', exampleAppDefinition);
+      input1._zapier.event.stashedBundleKey = 'compressed-key';
+      input1._zapier.rpc = rpc;
+
+      const output1 = await fetchStashedBundle(input1);
+      output1._zapier.event.bundle.should.eql(testData);
     });
   });
 });
