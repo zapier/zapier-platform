@@ -54,7 +54,7 @@ describe('console singleton', () => {
   it('should create new logger for each initialization to ensure Lambda invocation isolation', () => {
     const logs1 = [];
     const logs2 = [];
-    
+
     const mockLogger1 = (message, data) => {
       logs1.push({ message, data });
       return Promise.resolve();
@@ -79,17 +79,17 @@ describe('console singleton', () => {
     };
 
     // Initialize for first "Lambda invocation"
-    const firstInstance = initialize(mockInput1);
+    initialize(mockInput1);
     consoleProxy.log('message from first invocation');
 
     // Initialize for second "Lambda invocation"
-    const secondInstance = initialize(mockInput2);
+    initialize(mockInput2);
     consoleProxy.log('message from second invocation');
 
     // Each invocation should use its own logger
     logs1.length.should.equal(1);
     logs2.length.should.equal(1);
-    
+
     logs1[0].message.should.containEql('first invocation');
     logs2[0].message.should.containEql('second invocation');
   });
@@ -97,12 +97,12 @@ describe('console singleton', () => {
   it('should ensure proper Lambda invocation isolation with different contexts', () => {
     const invocation1Logs = [];
     const invocation2Logs = [];
-    
+
     const logger1 = (message, data) => {
       invocation1Logs.push({ message, data, context: 'user1_account1' });
       return Promise.resolve();
     };
-    
+
     const logger2 = (message, data) => {
       invocation2Logs.push({ message, data, context: 'user2_account2' });
       return Promise.resolve();
@@ -127,7 +127,7 @@ describe('console singleton', () => {
     // Simulate Lambda invocation 1
     initialize(input1);
     consoleProxy.log('Action performed for user1');
-    
+
     // Simulate Lambda invocation 2 (in same container)
     initialize(input2);
     consoleProxy.log('Action performed for user2');
@@ -135,7 +135,7 @@ describe('console singleton', () => {
     // Verify no cross-contamination of logs
     invocation1Logs.length.should.equal(1);
     invocation2Logs.length.should.equal(1);
-    
+
     // Each logger should only have received its own invocation's logs
     invocation1Logs[0].context.should.equal('user1_account1');
     invocation2Logs[0].context.should.equal('user2_account2');
