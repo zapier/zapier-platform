@@ -34,7 +34,7 @@ describe('app', () => {
       delete appCopy.triggers.contact_by_tag;
       const results = schema.validateAppDefinition(appCopy);
       results.errors[0].stack.should.eql(
-        'instance.triggers additionalProperty "3contact_by_tag" exists in instance when not allowed',
+        'instance.triggers is not allowed to have the additional property "3contact_by_tag"',
       );
       results.errors.length.should.eql(2); // additional property error + top-level key doesn't match trigger key
     });
@@ -45,7 +45,7 @@ describe('app', () => {
       delete appCopy.creates.tag_create;
       const results = schema.validateAppDefinition(appCopy);
       results.errors[0].stack.should.eql(
-        'instance.creates additionalProperty "3contact_by_tag" exists in instance when not allowed',
+        'instance.creates is not allowed to have the additional property "3contact_by_tag"',
       );
       results.errors.length.should.eql(2); // additional property error + top-level key doesn't match create key
     });
