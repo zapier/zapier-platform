@@ -50,7 +50,7 @@
     "chrono-node": "2.8.3",
     "cli-table3": "0.6.5",
     "colors": "1.4.0",
-    "debug": "4.4.0",
+    "debug": "4.4.1",
     "decompress": "4.2.1",
     "dotenv": "16.5.0",
     "esbuild": "0.25.4",
