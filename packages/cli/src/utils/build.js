@@ -75,6 +75,9 @@ const findRequiredFiles = async (workingDir, entryPoints) => {
     write: false, // no need to write outfile
     absWorkingDir: workingDir,
     tsconfigRaw: '{}',
+    loader: {
+      '.node': 'file',
+    },
   });
 
   let relPaths = Object.keys(result.metafile.inputs);
