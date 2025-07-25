@@ -24,7 +24,7 @@
     "pino-pretty": "^13.0.0",
     "prettier": "^3.6.2",
     "ts-morph": "^25.0.1",
-    "tsx": "^4.19.3",
+    "tsx": "^4.20.3",
     "word-wrap": "^1.2.5"
   },
   "devDependencies": {
