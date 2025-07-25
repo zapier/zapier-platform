@@ -64,16 +64,19 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * (required) `versionTo` | Version to canary traffic to
 
 **Flags**
-* `-p, --percent` | Percent of traffic to route to new version
+* (required) `-p, --percent` | Percent of traffic to route to new version
 * (required) `-d, --duration` | Duration of the canary in seconds
-* `--user` | Specify a user within all accounts to canary
-* `--account` | Canary all accounts for which the specified user is a member
-* `--includeEnterprise` | Include enterprise accounts
+* `--user` | Canary this user across all accounts, unless account_id is specified.
+* `--owner` | Canary the account_id. Only used when account_id is also used.
+* `--accountId` | The account id to target. If owner is specified, Canary applies to all traffic for the account. If user is specified, only canary the user within this account.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier canary:create 1.0.0 1.1.0 -p 25 -d 720`
 * `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300`
+* `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300 --user user@example.com`
+* `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300 --account_id 123 --owner admin@example.com`
+* `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300 --account_id 123 --user user@example.com`
 
 
 ## canary:delete

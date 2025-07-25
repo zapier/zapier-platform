@@ -9,27 +9,23 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     const percent = this.flags.percent;
     const duration = this.flags.duration;
     const user = this.flags.user;
-    const account = this.flags.account;
+    const owner = this.flags.owner;
+    const accountId = this.flags.accountId;
 
-    let flagType;
-
-    if (user || account) {
-      flagType = user ? 'user' : 'account';
-    }
-
-    if (user && account) {
+    if (user && owner) {
       this.error(
-        'Cannot specify both `--user` and `--account`. Use only one or the other.',
+        'Cannot specify both `--user` and `--owner`. Use only one or the other.',
       );
     }
 
-    if ((user || account) && percent !== undefined) {
+    if (accountId && !user && !owner) {
       this.error(
-        `Cannot specify both \`PERCENT\` and \`--${flagType}\`. Use only one or the other.`,
+        'Cannot specify `--accountId` without either `--user` or `--owner`.',
       );
     }
 
     this.validateVersions(versionFrom, versionTo);
+    this.validatePercent(percent);
     this.validateDuration(duration);
 
     const activeCanaries = await listCanaries();
@@ -44,35 +40,31 @@ If you would like to stop this canary now, run \`zapier canary:delete ${existing
       return;
     }
 
+    let createCanaryMessage = `Creating canary deployment
+    - From version: ${versionFrom}
+    - To version: ${versionTo}
+    - Percentage: ${percent}%
+    - Duration: ${duration} seconds`;
+
     const body = {
+      percent,
       duration,
     };
 
-    if (user || account) {
-      this.startSpinner(
-        `Starting migration from ${versionFrom} to ${versionTo} for ${
-          user || account
-        }`,
-      );
-      body.email = user || account;
-      body.email_type = flagType;
-    } else {
-      this.startSpinner(
-        `Starting migration from ${versionFrom} to ${versionTo} for ${percent}%`,
-      );
-      body.percent = percent;
+    if (user) {
+      body.user = user;
+      createCanaryMessage += `\n    - User: ${user}`;
+    } else if (owner) {
+      body.owner = owner;
+      createCanaryMessage += `\n    - Owner: ${owner}`;
     }
 
-    if (this.flags.includeEnterprise) {
-      body.include_enterprise = true;
+    if (accountId) {
+      body.account_id = accountId;
+      createCanaryMessage += `\n    - Account ID: ${accountId}`;
     }
 
-    this.startSpinner(`Creating canary deployment
-    - From version: ${versionFrom}
-    - To version: ${versionTo}
-    - Duration: ${duration} seconds
-    - ${flagType ? `User: ${user || account}` : `Percent: ${percent}%`}`);
-
+    this.startSpinner(createCanaryMessage);
     await createCanary(versionFrom, versionTo, body);
 
     this.stopSpinner();
@@ -106,7 +98,7 @@ CanaryCreateCommand.flags = buildFlags({
     percent: Flags.integer({
       char: 'p',
       description: 'Percent of traffic to route to new version',
-      required: false,
+      required: true,
     }),
     duration: Flags.integer({
       char: 'd',
@@ -114,15 +106,16 @@ CanaryCreateCommand.flags = buildFlags({
       required: true,
     }),
     user: Flags.string({
-      description: 'Specify a user within all accounts to canary',
-    }),
-    account: Flags.string({
       description:
-        'Canary all accounts for which the specified user is a member',
+        'Canary this user across all accounts, unless account_id is specified.',
     }),
-    includeEnterprise: Flags.boolean({
-      description: 'Include enterprise accounts',
-      required: false,
+    owner: Flags.string({
+      description:
+        'Canary the account_id. Only used when account_id is also used.',
+    }),
+    accountId: Flags.string({
+      description:
+        'The account id to target. If owner is specified, Canary applies to all traffic for the account. If user is specified, only canary the user within this account.',
     }),
   },
 });
@@ -149,6 +142,9 @@ Note: this is similar to \`zapier migrate\` but different in that this is tempor
 CanaryCreateCommand.examples = [
   'zapier canary:create 1.0.0 1.1.0 -p 25 -d 720',
   'zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300',
+  'zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300 --user user@example.com',
+  'zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300 --account_id 123 --owner admin@example.com',
+  'zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300 --account_id 123 --user user@example.com',
 ];
 CanaryCreateCommand.skipValidInstallCheck = true;
 
