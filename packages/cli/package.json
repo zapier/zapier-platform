@@ -65,7 +65,7 @@
     "marked": "14.1.4",
     "marked-terminal": "7.3.0",
     "node-fetch": "2.7.0",
-    "open": "10.1.2",
+    "open": "10.2.0",
     "ora": "5.4.0",
     "parse-gitignore": "0.5.1",
     "prettier": "3.5.3",
