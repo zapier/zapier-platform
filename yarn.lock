@@ -2357,13 +2357,13 @@
     lodash "^4.17.21"
     registry-auth-token "^5.1.0"
 
-"@oclif/test@^4.1.12":
-  version "4.1.12"
-  resolved "https://registry.yarnpkg.com/@oclif/test/-/test-4.1.12.tgz#896a8b9b630218042160da271221d771d11f2527"
-  integrity sha512-EExENu6DOjAGJPx2VRFI2ZNR3dBMep5Q+pBhk+4f2OdKxEqrY8/Fr7lXBn9jq7n9w28r8sn5LZ8P4tn3oVd20w==
+"@oclif/test@^4.1.13":
+  version "4.1.13"
+  resolved "https://registry.yarnpkg.com/@oclif/test/-/test-4.1.13.tgz#b39b541f2edf45828aafb8d7df635516e0356b83"
+  integrity sha512-pulrTiJRhoAKizFf6y5WeHvM2JyoRiZKV0H8qqYEoE0UHDKqInNmfGJyp8Ip6lTVQeMv1U8YCAXOS/HiWPVWeg==
   dependencies:
     ansis "^3.17.0"
-    debug "^4.4.0"
+    debug "^4.4.1"
 
 "@octokit/auth-token@^2.4.4":
   version "2.5.0"
