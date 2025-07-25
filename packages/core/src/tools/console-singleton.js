@@ -38,7 +38,7 @@ const consoleProxy = new Proxy(console, {
   get(target, prop, receiver) {
     // Use loggerConsole if initialized, otherwise fall back to global console
     const actualConsole = loggerConsole || target;
-    return actualConsole[prop];
+    return Reflect.get(actualConsole, prop, actualConsole);
   },
 });
 
