@@ -2031,14 +2031,14 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/plugin-autocomplete@3.2.28":
-  version "3.2.28"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-autocomplete/-/plugin-autocomplete-3.2.28.tgz#d9a4c543bf3462fbc23c9f7802128804d06f5320"
-  integrity sha512-6CaLO/SHMx1GVn8gAVGOZ3TPoj+hf88BvLTafp86MnNGxdYr5+YrSbh29py1j+ROIuUIj1KIodJB3yNTd0o6ow==
+"@oclif/plugin-autocomplete@3.2.33":
+  version "3.2.33"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-autocomplete/-/plugin-autocomplete-3.2.33.tgz#4a1af039d5c107d404d2640192dce5d2a6326688"
+  integrity sha512-/RuTqQUZQlc05rBVzUZQ9ilc+dqYee35f+Axm7yyV1+OomAuLpIyCTvv8f07Su6kiQf9SHTNvxTdi44cZVBsxQ==
   dependencies:
     "@oclif/core" "^4"
     ansis "^3.16.0"
-    debug "^4.4.0"
+    debug "^4.4.1"
     ejs "^3.1.10"
 
 "@oclif/plugin-help@6.2.28", "@oclif/plugin-help@^6.2.27":
@@ -4968,6 +4968,13 @@ debug@^3.2.7:
   integrity sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==
   dependencies:
     ms "^2.1.1"
+
+debug@^4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.4.1.tgz#e5a8bc6cbc4c6cd3e64308b0693a3d4fa550189b"
+  integrity sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==
+  dependencies:
+    ms "^2.1.3"
 
 debuglog@^1.0.1:
   version "1.0.1"
