@@ -54,7 +54,7 @@
     "decompress": "4.2.1",
     "dotenv": "16.5.0",
     "esbuild": "0.25.8",
-    "fs-extra": "11.2.0",
+    "fs-extra": "11.3.0",
     "gulp-filter": "7.0.0",
     "gulp-prettier": "5.0.0",
     "ignore": "5.2.4",
