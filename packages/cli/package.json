@@ -47,7 +47,7 @@
     "@oclif/plugin-version": "2.2.31",
     "adm-zip": "0.5.16",
     "archiver": "7.0.1",
-    "chrono-node": "2.8.0",
+    "chrono-node": "2.8.3",
     "cli-table3": "0.6.5",
     "colors": "1.4.0",
     "debug": "4.4.0",
