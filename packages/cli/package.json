@@ -57,7 +57,7 @@
     "fs-extra": "11.3.0",
     "gulp-filter": "7.0.0",
     "gulp-prettier": "5.0.0",
-    "ignore": "5.2.4",
+    "ignore": "7.0.5",
     "inquirer": "8.2.5",
     "jscodeshift": "^17.3.0",
     "lodash": "4.17.21",
