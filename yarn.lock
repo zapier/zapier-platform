@@ -2207,10 +2207,10 @@
     ansis "^3.17.0"
     fast-levenshtein "^3.0.0"
 
-"@oclif/plugin-version@2.2.28":
-  version "2.2.28"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-version/-/plugin-version-2.2.28.tgz#d4df44e841803961d3d66cfa2b7c25a6d09ad6a7"
-  integrity sha512-nzLzHcs8KkNexQJcWsAq5fuGPXVMIwIRTgQbMhJy5okZMvLxREb7V8ZiDPN+NHXOqUYtDDhTsN+tJx0XttvJJA==
+"@oclif/plugin-version@2.2.31":
+  version "2.2.31"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-version/-/plugin-version-2.2.31.tgz#d5d564d290d754739a9a39c7e49a75525334e32b"
+  integrity sha512-BMEq/zI5i8B/qqStls0eiza35WSlDx9C9Kx9fmj97uvnyn0Uaa2R+DlS+pg26nqoWWKH8177L/WbI7ujKGwfog==
   dependencies:
     "@oclif/core" "^4"
     ansis "^3.17.0"
