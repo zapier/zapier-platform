@@ -2041,7 +2041,14 @@
     debug "^4.4.1"
     ejs "^3.1.10"
 
-"@oclif/plugin-help@6.2.28", "@oclif/plugin-help@^6.2.27":
+"@oclif/plugin-help@6.2.31":
+  version "6.2.31"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.2.31.tgz#0fb80dd1bd8c63e4349a6c0d53046a4d44cec9c1"
+  integrity sha512-o4xR98DEFf+VqY+M9B3ZooTm2T/mlGvyBHwHcnsPJCEnvzHqEA9xUlCUK4jm7FBXHhkppziMgCC2snsueLoIpQ==
+  dependencies:
+    "@oclif/core" "^4"
+
+"@oclif/plugin-help@^6.2.27":
   version "6.2.28"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.2.28.tgz#acb361d7577008b0b6e3dd028bfd9f052b2dc217"
   integrity sha512-eFLP2yjiK+xMRGcv9k9jOWV08HB+/Cgg1ND91zS4Uwgp1krMoL39Is+hIqnZOKkmiEMtiv8k5EDqCVv+DTRywg==
