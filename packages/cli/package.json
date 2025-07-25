@@ -61,7 +61,7 @@
     "inquirer": "8.2.5",
     "jscodeshift": "^17.3.0",
     "lodash": "4.17.21",
-    "luxon": "3.6.1",
+    "luxon": "3.7.1",
     "marked": "14.1.4",
     "marked-terminal": "7.2.1",
     "node-fetch": "2.7.0",
