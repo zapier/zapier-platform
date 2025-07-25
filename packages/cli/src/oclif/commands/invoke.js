@@ -982,6 +982,7 @@ class InvokeCommand extends BaseCommand {
       method: methodName,
       bundle: {
         inputData,
+        inputDataRaw: inputData, // At this point, inputData hasn't been transformed yet
         authData,
         meta,
       },
@@ -1013,6 +1014,8 @@ class InvokeCommand extends BaseCommand {
       );
     }
 
+    // Preserve original inputData as inputDataRaw before type resolution
+    const inputDataRaw = { ...inputData };
     inputData = resolveInputDataTypes(inputData, inputFields, timezone);
     methodName = `${actionTypePlural}.${action.key}.operation.perform`;
 
@@ -1022,6 +1025,7 @@ class InvokeCommand extends BaseCommand {
       method: methodName,
       bundle: {
         inputData,
+        inputDataRaw,
         authData,
         meta,
       },
