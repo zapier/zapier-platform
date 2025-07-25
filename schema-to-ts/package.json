@@ -15,8 +15,8 @@
     "precommit": "yarn generate-types && yarn git-add"
   },
   "dependencies": {
-    "@commander-js/extra-typings": "^13.1.0",
-    "commander": "^13.1.0",
+    "@commander-js/extra-typings": "^14.0.0",
+    "commander": "^14.0.0",
     "deepmerge": "^4.3.1",
     "json-schema-to-typescript": "15.0.4",
     "marked": "^15.0.7",
