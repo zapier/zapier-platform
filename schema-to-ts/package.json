@@ -19,7 +19,7 @@
     "commander": "^14.0.0",
     "deepmerge": "^4.3.1",
     "json-schema-to-typescript": "15.0.4",
-    "marked": "^15.0.7",
+    "marked": "^16.1.1",
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
     "prettier": "^3.6.2",
