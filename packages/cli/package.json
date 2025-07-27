@@ -62,7 +62,7 @@
     "jscodeshift": "^17.3.0",
     "lodash": "4.17.21",
     "luxon": "3.7.1",
-    "marked": "16.1.1",
+    "marked": "15.0.12",
     "marked-terminal": "7.3.0",
     "node-fetch": "2.7.0",
     "open": "10.2.0",
