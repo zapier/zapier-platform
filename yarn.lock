@@ -8820,12 +8820,7 @@ marked-terminal@7.3.0:
     node-emoji "^2.2.0"
     supports-hyperlinks "^3.1.0"
 
-marked@14.1.4:
-  version "14.1.4"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-14.1.4.tgz#5e348de817bfa35a11e71de7e41dd7c3fdb186a9"
-  integrity sha512-vkVZ8ONmUdPnjCKc5uTRvmkRbx4EAi2OkTOXmfTDhZz3OFqMNBM1oTTWwTr4HY4uAEojhzPf+Fy8F1DWa3Sndg==
-
-marked@^16.1.1:
+marked@16.1.1, marked@^16.1.1:
   version "16.1.1"
   resolved "https://registry.yarnpkg.com/marked/-/marked-16.1.1.tgz#a7839dcf19fa5e349cad12c561f231320690acd4"
   integrity sha512-ij/2lXfCRT71L6u0M29tJPhP0bM5shLL3u5BePhFwPELj2blMJ6GDtD7PfJhRLhJ/c2UwrK17ySVcDzy2YHjHQ==
