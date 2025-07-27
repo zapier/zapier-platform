@@ -52,7 +52,7 @@
     "colors": "1.4.0",
     "debug": "4.4.1",
     "decompress": "4.2.1",
-    "dotenv": "16.5.0",
+    "dotenv": "17.2.1",
     "esbuild": "0.25.8",
     "fs-extra": "11.3.0",
     "gulp-filter": "7.0.0",
