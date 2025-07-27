@@ -1451,7 +1451,7 @@
     "@inquirer/type" "^3.0.8"
     ansi-escapes "^4.3.2"
 
-"@inquirer/prompts@^7.6.0":
+"@inquirer/prompts@^7.6.0", "@inquirer/prompts@^7.7.1":
   version "7.7.1"
   resolved "https://registry.yarnpkg.com/@inquirer/prompts/-/prompts-7.7.1.tgz#e735651b28c6d6a4f6e90b950d3fbd0ad26d20e8"
   integrity sha512-XDxPrEWeWUBy8scAXzXuFY45r/q49R0g72bUzgQXZ1DY/xEFX+ESDMkTQolcb5jRBzaNJX2W8XQl6krMNDTjaA==
@@ -2130,7 +2130,7 @@
   resolved "https://registry.yarnpkg.com/@nx/nx-win32-x64-msvc/-/nx-win32-x64-msvc-20.8.1.tgz#e96da173984a5b28093b4b1b4c74568223f54e48"
   integrity sha512-6c2fVEPdPwJdnRbckBatRDF/g6JAp6p3Mfl90DpuaEF2DZC5pmCXKOsXE0aSIZ+gODom2JIchM++2KmDZPJUoA==
 
-"@oclif/core@4.5.2", "@oclif/core@^4.5.1":
+"@oclif/core@4.5.2", "@oclif/core@^4.5.1", "@oclif/core@^4.5.2":
   version "4.5.2"
   resolved "https://registry.yarnpkg.com/@oclif/core/-/core-4.5.2.tgz#4db8a365fa7e9e33af272294f710a7f3f25538e2"
   integrity sha512-eQcKyrEcDYeZJKu4vUWiu0ii/1Gfev6GF4FsLSgNez5/+aQyAUCjg3ZWlurf491WiYZTXCWyKAxyPWk8DKv2MA==
@@ -2178,24 +2178,41 @@
     wordwrap "^1.0.0"
     wrap-ansi "^7.0.0"
 
-"@oclif/plugin-autocomplete@3.2.33":
-  version "3.2.33"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-autocomplete/-/plugin-autocomplete-3.2.33.tgz#4a1af039d5c107d404d2640192dce5d2a6326688"
-  integrity sha512-/RuTqQUZQlc05rBVzUZQ9ilc+dqYee35f+Axm7yyV1+OomAuLpIyCTvv8f07Su6kiQf9SHTNvxTdi44cZVBsxQ==
+"@oclif/plugin-autocomplete@3.2.34":
+  version "3.2.34"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-autocomplete/-/plugin-autocomplete-3.2.34.tgz#1669fb16bfa887a465bf30181bb69cf14437fbd4"
+  integrity sha512-KhbPcNjitAU7jUojMXJ3l7duWVub0L0pEr3r3bLrpJBNuIJhoIJ7p56Ropcb7OMH2xcaz5B8HGq56cTOe1FHEg==
   dependencies:
     "@oclif/core" "^4"
     ansis "^3.16.0"
     debug "^4.4.1"
     ejs "^3.1.10"
 
-"@oclif/plugin-help@6.2.31", "@oclif/plugin-help@^6.2.29":
+"@oclif/plugin-help@6.2.32":
+  version "6.2.32"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.2.32.tgz#b903d845b271737811383fed879cf6c379bf23fa"
+  integrity sha512-LrmMdo9EMJciOvF8UurdoTcTMymv5npKtxMAyonZvhSvGR8YwCKnuHIh00+SO2mNtGOYam7f4xHnUmj2qmanyA==
+  dependencies:
+    "@oclif/core" "^4"
+
+"@oclif/plugin-help@^6.2.29":
   version "6.2.31"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-help/-/plugin-help-6.2.31.tgz#0fb80dd1bd8c63e4349a6c0d53046a4d44cec9c1"
   integrity sha512-o4xR98DEFf+VqY+M9B3ZooTm2T/mlGvyBHwHcnsPJCEnvzHqEA9xUlCUK4jm7FBXHhkppziMgCC2snsueLoIpQ==
   dependencies:
     "@oclif/core" "^4"
 
-"@oclif/plugin-not-found@3.2.60", "@oclif/plugin-not-found@^3.2.59":
+"@oclif/plugin-not-found@3.2.62":
+  version "3.2.62"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-3.2.62.tgz#10047ce522c5d6cee8ea3240627938f1f121b2dd"
+  integrity sha512-hwUdpeExF4ZhIf0mTeegnznpfSICOr4tnk8VZ6POmEcvNEhK8OtU/zbfCQbiGNa0Zjp1oMncD1Oxh585GHUSog==
+  dependencies:
+    "@inquirer/prompts" "^7.7.1"
+    "@oclif/core" "^4.5.2"
+    ansis "^3.17.0"
+    fast-levenshtein "^3.0.0"
+
+"@oclif/plugin-not-found@^3.2.59":
   version "3.2.60"
   resolved "https://registry.yarnpkg.com/@oclif/plugin-not-found/-/plugin-not-found-3.2.60.tgz#aea1a6d597fe44193707e0824b716a71e509d757"
   integrity sha512-TK+o2gdFK/IEOR/A9lk2Ob7qm7Z+fEaaHlNls4AfKcEgxfSGaDwGu6cF9lxtMq87pVJ47uiAjjZaBtGYmS01Wg==
@@ -2205,10 +2222,10 @@
     ansis "^3.17.0"
     fast-levenshtein "^3.0.0"
 
-"@oclif/plugin-version@2.2.31":
-  version "2.2.31"
-  resolved "https://registry.yarnpkg.com/@oclif/plugin-version/-/plugin-version-2.2.31.tgz#d5d564d290d754739a9a39c7e49a75525334e32b"
-  integrity sha512-BMEq/zI5i8B/qqStls0eiza35WSlDx9C9Kx9fmj97uvnyn0Uaa2R+DlS+pg26nqoWWKH8177L/WbI7ujKGwfog==
+"@oclif/plugin-version@2.2.32":
+  version "2.2.32"
+  resolved "https://registry.yarnpkg.com/@oclif/plugin-version/-/plugin-version-2.2.32.tgz#394f4a67e9c98c3c8a21714c3f4160c6ea4cc928"
+  integrity sha512-KwsEKjb202nthRIwigyvRNQ5vK8mUr/FnPzBjkLX7SbgPMLM7iqoaWDPZqBvq5/A/226Ey4vCf64y3zJh4eaWA==
   dependencies:
     "@oclif/core" "^4"
     ansis "^3.17.0"
