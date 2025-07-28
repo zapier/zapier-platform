@@ -26,51 +26,36 @@ const getSessionKey = async (z, bundle) => {
   };
 };
 
-// This function runs before every outbound request. You can have as many as you
-// need. They'll need to each be registered in your index.js file.
-const includeSessionKeyHeader = (request, z, bundle) => {
-  if (bundle.authData.sessionKey) {
-    request.headers = request.headers || {};
-    request.headers['X-API-Key'] = bundle.authData.sessionKey;
-  }
-
-  return request;
-};
-
 module.exports = {
-  config: {
-    // "session" auth exchanges user data for a different session token (that may be
-    // periodically refreshed")
-    type: 'session',
-    sessionConfig: { perform: getSessionKey },
+  // "session" auth exchanges user data for a different session token (that may be
+  // periodically refreshed")
+  type: 'session',
+  sessionConfig: { perform: getSessionKey },
 
-    // Define any input app's auth requires here. The user will be prompted to enter
-    // this info when they connect their account.
-    fields: [
-      { key: 'username', label: 'Username', required: true },
-      {
-        key: 'password',
-        label: 'Password',
-        required: true,
+  // Define any input app's auth requires here. The user will be prompted to enter
+  // this info when they connect their account.
+  fields: [
+    { key: 'username', label: 'Username', required: true },
+    {
+      key: 'password',
+      label: 'Password',
+      required: true,
 
-        // this lets the user enter masked data
-        type: 'password',
-      },
-    ],
+      // this lets the user enter masked data
+      type: 'password',
+    },
+  ],
 
-    // The test method allows Zapier to verify that the credentials a user provides
-    // are valid. We'll execute this method whenever a user connects their account for
-    // the first time.
-    test,
+  // The test method allows Zapier to verify that the credentials a user provides
+  // are valid. We'll execute this method whenever a user connects their account for
+  // the first time.
+  test,
 
-    // This template string can access all the data returned from the auth test. If
-    // you return the test object, you'll access the returned data with a label like
-    // `{{json.X}}`. If you return `response.data` from your test, then your label can
-    // be `{{X}}`. This can also be a function that returns a label. That function has
-    // the standard args `(z, bundle)` and data returned from the test can be accessed
-    // in `bundle.inputData.X`.
-    connectionLabel: '{{json.username}}',
-  },
-  befores: [includeSessionKeyHeader],
-  afters: [],
+  // This template string can access all the data returned from the auth test. If
+  // you return the test object, you'll access the returned data with a label like
+  // `{{json.X}}`. If you return `response.data` from your test, then your label can
+  // be `{{X}}`. This can also be a function that returns a label. That function has
+  // the standard args `(z, bundle)` and data returned from the test can be accessed
+  // in `bundle.inputData.X`.
+  connectionLabel: '{{json.username}}',
 };
