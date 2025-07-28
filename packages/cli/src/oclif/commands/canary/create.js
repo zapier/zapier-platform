@@ -108,12 +108,12 @@ CanaryCreateCommand.flags = buildFlags({
     user: Flags.string({
       char: 'u',
       description:
-        'Canary this user across all accounts, unless `accountId` is specified.',
+        'Canary this user (email) across all accounts, unless `accountId` is specified.',
     }),
     owner: Flags.string({
       char: 'o',
       description:
-        'Canary the accountId. Only used when `--accountId` is also used.',
+        'The owner (email) of the account to target. This canaries all traffic for the specified account. Only used when `--accountId` is also used. This differs from the `user` flag, which targets specific users within an account.',
     }),
     accountId: Flags.string({
       char: 'a',

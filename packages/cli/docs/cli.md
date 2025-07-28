@@ -72,8 +72,8 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 **Flags**
 * (required) `-p, --percent` | Percent of traffic to route to new version
 * (required) `-d, --duration` | Duration of the canary in seconds
-* `-u, --user` | Canary this user across all accounts, unless `accountId` is specified.
-* `-o, --owner` | Canary the accountId. Only used when `--accountId` is also used.
+* `-u, --user` | Canary this user (email) across all accounts, unless `accountId` is specified.
+* `-o, --owner` | The owner (email) of the account to target. This canaries all traffic for the specified account. Only used when `--accountId` is also used. This differs from the `user` flag, which targets specific users within an account.
 * `-a, --accountId` | The account ID to target. If owner is specified, canary applies to all traffic for the account. If user is specified, only canary the user within this account.
 * `-d, --debug` | Show extra debugging output.
 
