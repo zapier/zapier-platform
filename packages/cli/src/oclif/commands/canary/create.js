@@ -106,14 +106,17 @@ CanaryCreateCommand.flags = buildFlags({
       required: true,
     }),
     user: Flags.string({
+      char: 'u',
       description:
         'Canary this user across all accounts, unless account_id is specified.',
     }),
     owner: Flags.string({
+      char: 'o',
       description:
         'Canary the account_id. Only used when account_id is also used.',
     }),
     accountId: Flags.string({
+      char: 'a',
       description:
         'The account id to target. If owner is specified, Canary applies to all traffic for the account. If user is specified, only canary the user within this account.',
     }),
@@ -134,6 +137,12 @@ CanaryCreateCommand.args = {
 CanaryCreateCommand.description = `Create a new canary deployment, diverting a specified percentage of traffic from one version to another for a specified duration.
 
 Only one canary can be active at the same time. You can run \`zapier canary:list\` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using \`zapier canary:delete a.b.c x.y.z\`.
+
+For migrating a specific user, you can pass in the --user flag. 
+
+For migrating a specific user within a specific account, you can pass in the --user flag with the --accountId flag.
+
+For migrating a specific account, you can pass in the --accountId flag with an --owner flag. This is the only use case for the --owner flag, as it helps isolate the account filter.
 
 Note: this is similar to \`zapier migrate\` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
 

@@ -55,6 +55,12 @@ This command is typically followed by `zapier upload`.
 
 Only one canary can be active at the same time. You can run `zapier canary:list` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using `zapier canary:delete a.b.c x.y.z`.
 
+For migrating a specific user, you can pass in the --user flag. 
+
+For migrating a specific user within a specific account, you can pass in the --user flag with the --accountId flag.
+
+For migrating a specific account, you can pass in the --accountId flag with an --owner flag. This is the only use case for the --owner flag, as it helps isolate the account filter.
+
 Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
 
 **Only use this command to canary traffic between non-breaking versions!**
@@ -66,9 +72,9 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 **Flags**
 * (required) `-p, --percent` | Percent of traffic to route to new version
 * (required) `-d, --duration` | Duration of the canary in seconds
-* `--user` | Canary this user across all accounts, unless account_id is specified.
-* `--owner` | Canary the account_id. Only used when account_id is also used.
-* `--accountId` | The account id to target. If owner is specified, Canary applies to all traffic for the account. If user is specified, only canary the user within this account.
+* `-u, --user` | Canary this user across all accounts, unless account_id is specified.
+* `-o, --owner` | Canary the account_id. Only used when account_id is also used.
+* `-a, --accountId` | The account id to target. If owner is specified, Canary applies to all traffic for the account. If user is specified, only canary the user within this account.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
