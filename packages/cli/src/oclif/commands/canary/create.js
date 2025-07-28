@@ -12,21 +12,10 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     const owner = this.flags.owner;
     const accountId = this.flags.accountId;
 
-    if (user && owner) {
-      this.error(
-        'Cannot specify both `--user` and `--owner`. Use only one or the other.',
-      );
-    }
-
-    if (accountId && !user && !owner) {
-      this.error(
-        'Cannot specify `--accountId` without either `--user` or `--owner`.',
-      );
-    }
-
     this.validateVersions(versionFrom, versionTo);
     this.validatePercent(percent);
     this.validateDuration(duration);
+    this.validateAudienceFilters(accountId, user, owner);
 
     const activeCanaries = await listCanaries();
     if (activeCanaries.objects.length > 0) {
@@ -89,6 +78,31 @@ If you would like to stop this canary now, run \`zapier canary:delete ${existing
   validateDuration(duration) {
     if (isNaN(duration) || duration < 30 || duration > 24 * 60 * 60) {
       this.error('`--duration` must be a positive number between 30 and 86400');
+    }
+  }
+
+  /**
+   * // Valid combinations:
+  // 1. No filters (canary all traffic)
+  // 2. user only (canary user across all accounts) 
+  // 3. accountId + user (canary user within specific account)
+  // 4. accountId + owner (canary all traffic for specific account)
+   */
+  validateAudienceFilters(accountId, user, owner) {
+    if (user && owner) {
+      this.error(
+        'Cannot specify both `--user` and `--owner`. Use only one or the other.',
+      );
+    }
+
+    if (owner && !accountId) {
+      this.error('Cannot specify `--owner` without `--accountId`.');
+    }
+
+    if (accountId && !user && !owner) {
+      this.error(
+        'Cannot specify `--accountId` without either `--user` or `--owner`. Specify who to target within the account.',
+      );
     }
   }
 }
