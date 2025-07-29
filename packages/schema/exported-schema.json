@@ -309,8 +309,7 @@
             "datetime",
             "copy",
             "password",
-            "integer",
-            "text"
+            "integer"
           ]
         },
         "required": {
