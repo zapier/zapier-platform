@@ -308,7 +308,8 @@
             "boolean",
             "datetime",
             "copy",
-            "password"
+            "password",
+            "integer"
           ]
         },
         "required": {
