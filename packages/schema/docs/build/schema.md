@@ -174,7 +174,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
-`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'copy'`, `'password'`) | The type of this value used to be.
+`type` | no | `string` in (`'string'`, `'number'`, `'boolean'`, `'datetime'`, `'copy'`, `'password'`, `'integer'`) | The type of this value used to be.
 `required` | no | `boolean` | If this value is required or not. This defaults to `true`.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
