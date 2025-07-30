@@ -37,6 +37,7 @@ module.exports = makeSchema(
           'copy',
           'password',
           'integer',
+          'text',
         ],
       },
       required: {
