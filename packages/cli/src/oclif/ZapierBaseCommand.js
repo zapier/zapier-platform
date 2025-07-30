@@ -90,7 +90,11 @@ class ZapierBaseCommand extends Command {
 
   // validate that user input looks like a semver version
   throwForInvalidVersion(version) {
-    if (!version.match(/^\d+\.\d+\.\d+$/g)) {
+    if (
+      !version.match(
+        /^(0|[1-9]\d{,2})\.(0|[1-9]\d{,2})\.(0|[1-9]\d{,2})(-[0-9A-Za-z]+)*$/g,
+      )
+    ) {
       throw new Error(
         `${version} is an invalid version str. Try something like \`1.2.3\``,
       );

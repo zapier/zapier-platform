@@ -2482,12 +2482,12 @@ Key | Required | Type | Description
 
 ## /VersionSchema
 
-Represents a simplified semver string, from `0.0.0` to `999.999.999`.
+Represents a simplified semver string, from `0.0.0` to `999.999.999` with optional simplified label.
 
 #### Details
 
 * **Type** - `string`
-* **Pattern** - `^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$`
+* **Pattern** - `^(0|[1-9]\d{,2})\.(0|[1-9]\d{,2})\.(0|[1-9]\d{,2})(-[0-9A-Za-z]+)*$`
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@17.4.0/packages/schema/lib/schemas/VersionSchema.js)
 
 
@@ -2496,11 +2496,13 @@ Represents a simplified semver string, from `0.0.0` to `999.999.999`.
 * `'1.0.0'`
 * `'2.11.3'`
 * `'999.999.999'`
+* `'1.2.0-beta'`
+* `'1.3.0-issue-123'`
 
 #### Anti-Examples
 
 * `'1.0.0.0'` - _Must have only 2 periods_
 * `'1000.0.0'` - _Each number can be a maximum of 3 digits_
-* `'v1.0.0'` - _No letters allowed_
-* `'1.0.0-beta'` - _undefined_
+* `'v1.0.0'` - _No letter prefix allowed_
+* `'1.0.0-rc.1'` - _No periods allowed in label_
 <!-- {% endraw %} -->
