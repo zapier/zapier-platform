@@ -711,7 +711,8 @@ export interface AuthField {
     | 'datetime'
     | 'copy'
     | 'password'
-    | 'integer';
+    | 'integer'
+    | 'text';
 
   /** If this value is required or not. This defaults to `true`. */
   required?: boolean;
