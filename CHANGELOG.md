@@ -1,3 +1,23 @@
+## 17.5.0
+
+_Released 2025-07-30_
+
+### cli
+- :bug: Fix missing `bundle.inputDataRaw` in invoke command ([#1072](https://github.com/zapier/zapier-platform/pull/1072))
+- :bug: Fix error `'No loader is configured for ".node" files'` on `zapier build` ([#1094](https://github.com/zapier/zapier-platform/pull/1094))
+- :hammer: Refactor `zapier init` so auth should have befores/afters in `middleware.js` instead of `authentication.js` ([#1073](https://github.com/zapier/zapier-platform/pull/1073))
+
+### core
+
+- :nail_care: Export errors from `zapier-platform-core` ([#1075](https://github.com/zapier/zapier-platform/pull/1075)) 
+- :hammer: Update `form-data` from `4.0.1` to `4.0.4` ([#1075](https://github.com/zapier/zapier-platform/pull/1075)) 
+
+
+### schema
+
+- :nail_care: Add `integer` type to `AuthFieldSchema`([#1095](https://github.com/zapier/zapier-platform/pull/1095))
+- :nail_care: Add `text` type to `AuthFieldSchema`([#1098](https://github.com/zapier/zapier-platform/pull/1098))
+
 ## 17.4.0
 
 _Released 2025-07-23_
