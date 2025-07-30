@@ -51,7 +51,6 @@ const initSafeAuthDataKeys = () => {
     'environment',
     'location',
     'org',
-    'org',
     'organization',
     'project',
     'region',
