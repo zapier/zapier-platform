@@ -1654,3 +1654,102 @@ run();`,
     );
   });
 });
+
+describe('build with specific dependency', function () {
+  let appDir, corePackage, unzipDir, zipPath, origCwd;
+
+  before(async () => {
+    corePackage = await npmPackCore();
+  });
+
+  after(() => {
+    corePackage.cleanup();
+  });
+
+  beforeEach(() => {
+    appDir = getNewTempDirPath();
+    zipPath = path.join(appDir, 'build', 'build.zip');
+    unzipDir = getNewTempDirPath();
+
+    fs.ensureDirSync(appDir);
+    fs.ensureDirSync(unzipDir);
+
+    origCwd = process.cwd();
+    process.chdir(appDir);
+  });
+
+  afterEach(() => {
+    fs.removeSync(appDir);
+    fs.removeSync(unzipDir);
+
+    appDir = null;
+    zipPath = null;
+    unzipDir = null;
+
+    process.chdir(origCwd);
+  });
+
+  it('should build with ssh2 with .node files', async function () {
+    // Create a basic app that uses ssh2
+    fs.outputFileSync(
+      path.join(appDir, 'app.js'),
+      `import { Client } from 'ssh2';
+import zapier from 'zapier-platform-core';
+import packageJson from './package.json' with { type: 'json' };
+function getClient() { return new Client(); }
+export default {
+  version: packageJson.version,
+  platformversion: zapier.version,
+};
+`,
+    );
+
+    // Create package.json
+    corePackage = await npmPackCore();
+    fs.outputFileSync(
+      path.join(appDir, 'package.json'),
+      JSON.stringify({
+        name: 'test-app',
+        version: '1.0.0',
+        exports: './app.js',
+        type: 'module',
+        dependencies: {
+          'zapier-platform-core': corePackage.path,
+          ssh2: '1.16.0',
+        },
+      }),
+    );
+
+    await runCommand('npm', ['install'], { cwd: appDir });
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        cwd: appDir,
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipDir);
+
+    const expectedFiles = [
+      'app.js',
+      'package.json',
+      'zapierwrapper.js',
+      'definition.json',
+      'node_modules/ssh2/package.json',
+      'node_modules/ssh2/lib/protocol/crypto.js',
+      'node_modules/ssh2/lib/protocol/crypto/build/Release/sshcrypto.node',
+      'node_modules/cpu-features/package.json',
+      'node_modules/cpu-features/lib/index.js',
+      'node_modules/cpu-features/build/Release/cpufeatures.node',
+    ];
+    for (const file of expectedFiles) {
+      fs.existsSync(path.join(unzipDir, file)).should.be.true(
+        `Missing file in zip: ${file}`,
+      );
+    }
+  });
+});
