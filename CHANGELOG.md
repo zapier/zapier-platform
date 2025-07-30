@@ -15,8 +15,9 @@ _Released 2025-07-30_
 
 ### schema
 
-- :nail_care: Add `integer` type to `AuthFieldSchema`([#1095](https://github.com/zapier/zapier-platform/pull/1095))
-- :nail_care: Add `text` type to `AuthFieldSchema`([#1098](https://github.com/zapier/zapier-platform/pull/1098))
+- :nail_care: Expanded `AuthFieldSchema` with additional field types:
+  - Added support for the `integer` type ([#1095](https://github.com/zapier/zapier-platform/pull/1095)).
+  - Added support for the `text` type ([#1098](https://github.com/zapier/zapier-platform/pull/1098)).
 
 ## 17.4.0
 
