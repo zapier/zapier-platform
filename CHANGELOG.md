@@ -10,7 +10,7 @@ _Released 2025-07-30_
 ### core
 
 - :nail_care: Export errors from `zapier-platform-core` ([#1075](https://github.com/zapier/zapier-platform/pull/1075)) 
-- :hammer: Update `form-data` from `4.0.1` to `4.0.4` ([#1075](https://github.com/zapier/zapier-platform/pull/1075)) 
+- :hammer: Update `form-data` from `4.0.1` to `4.0.4` ([#1096](https://github.com/zapier/zapier-platform/pull/1096)) 
 
 
 ### schema
