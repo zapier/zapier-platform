@@ -54,16 +54,6 @@ const refreshAccessToken = async (z: ZObject, bundle: Bundle) => {
   };
 };
 
-// This function runs before every outbound request. You can have as many as you
-// need. They'll need to each be registered in your index.js file.
-const includeBearerToken = (request, z: ZObject, bundle: Bundle) => {
-  if (bundle.authData.access_token) {
-    request.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
-  }
-
-  return request;
-};
-
 // You want to make a request to an endpoint that is either specifically designed
 // to test auth, or one that every user will have access to. eg: `/me`.
 // By returning the entire request object, you have access to the request and
@@ -73,42 +63,38 @@ const test = (z: ZObject, bundle: Bundle) =>
   z.request({ url: 'https://auth-json-server.zapier-staging.com/me' });
 
 export default {
-  config: {
-    // OAuth2 is a web authentication standard. There are a lot of configuration
-    // options that will fit most any situation.
-    type: 'oauth2',
-    oauth2Config: {
-      authorizeUrl: {
-        url: 'https://auth-json-server.zapier-staging.com/oauth/authorize',
-        params: {
-          client_id: '{{process.env.CLIENT_ID}}',
-          state: '{{bundle.inputData.state}}',
-          redirect_uri: '{{bundle.inputData.redirect_uri}}',
-          response_type: 'code',
-        },
+  // OAuth2 is a web authentication standard. There are a lot of configuration
+  // options that will fit most any situation.
+  type: 'oauth2',
+  oauth2Config: {
+    authorizeUrl: {
+      url: 'https://auth-json-server.zapier-staging.com/oauth/authorize',
+      params: {
+        client_id: '{{process.env.CLIENT_ID}}',
+        state: '{{bundle.inputData.state}}',
+        redirect_uri: '{{bundle.inputData.redirect_uri}}',
+        response_type: 'code',
       },
-      getAccessToken,
-      refreshAccessToken,
-      autoRefresh: true,
     },
+    getAccessToken,
+    refreshAccessToken,
+    autoRefresh: true,
+  },
 
-    // Define any input app's auth requires here. The user will be prompted to enter
-    // this info when they connect their account.
-    fields: [],
+  // Define any input app's auth requires here. The user will be prompted to enter
+  // this info when they connect their account.
+  fields: [],
 
-    // The test method allows Zapier to verify that the credentials a user provides
-    // are valid. We'll execute this method whenever a user connects their account for
-    // the first time.
-    test,
+  // The test method allows Zapier to verify that the credentials a user provides
+  // are valid. We'll execute this method whenever a user connects their account for
+  // the first time.
+  test,
 
-    // This template string can access all the data returned from the auth test. If
-    // you return the test object, you'll access the returned data with a label like
-    // `{{json.X}}`. If you return `response.data` from your test, then your label can
-    // be `{{X}}`. This can also be a function that returns a label. That function has
-    // the standard args `(z: ZObject, bundle: Bundle)` and data returned from the
-    // test can be accessed in `bundle.inputData.X`.
-    connectionLabel: '{{json.username}}',
-  } satisfies Authentication,
-  befores: [includeBearerToken],
-  afters: [],
-};
+  // This template string can access all the data returned from the auth test. If
+  // you return the test object, you'll access the returned data with a label like
+  // `{{json.X}}`. If you return `response.data` from your test, then your label can
+  // be `{{X}}`. This can also be a function that returns a label. That function has
+  // the standard args `(z: ZObject, bundle: Bundle)` and data returned from the
+  // test can be accessed in `bundle.inputData.X`.
+  connectionLabel: '{{json.username}}',
+} satisfies Authentication;

@@ -130,11 +130,11 @@ const authTypes = {
 const writeGenericAuth = (gen) => {
   const authType = authTypes[gen.options.template];
   const content = authFilesCodegen[authType](gen.options.language);
-  const destPath =
-    gen.options.language === 'typescript'
-      ? 'src/authentication.ts'
-      : 'authentication.js';
-  gen.fs.write(gen.destinationPath(destPath), content);
+  const destPath = (key) =>
+    gen.options.language === 'typescript' ? `src/${key}.ts` : `${key}.js`;
+  Object.entries(content).forEach(([key, value]) => {
+    gen.fs.write(gen.destinationPath(destPath(key)), value);
+  });
 };
 
 const writeGenericAuthTest = (gen) => {

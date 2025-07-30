@@ -1,0 +1,219 @@
+{
+  "rawRequest": {
+    "querystring": "param=value&filter=active&include=all&sort=desc&limit=1000&page=1&per_page=50&search=test&category=integration&status=enabled&fields=id,name,description,metadata&expand=user,permissions&locale=en_US",
+    "headers": {
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+      "User-Agent": "Zapier-Platform/17.2.0 (Node.js/18.17.0; darwin/arm64)",
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/plain, */*",
+      "X-Request-ID": "req_2024_01_15_abc123def456",
+      "X-Zapier-Source": "cli",
+      "X-Zapier-Version": "17.2.0",
+      "Custom-Data": "SCALE_ME"
+    },
+    "body": {
+      "data": "SCALE_ME",
+      "records": [
+        {
+          "id": 1001,
+          "name": "Customer Integration Setup",
+          "description": "Comprehensive customer data integration with real-time sync capabilities, supporting multiple data formats including JSON, XML, and CSV with automatic field mapping and validation.",
+          "status": "active",
+          "created_at": "2023-12-15T10:30:00Z",
+          "updated_at": "2024-01-15T14:22:33Z",
+          "metadata": {
+            "created": "2023-01-15",
+            "type": "integration",
+            "priority": "high",
+            "tags": ["customer", "sync", "real-time"],
+            "version": "2.1.4"
+          }
+        },
+        {
+          "id": 1002,
+          "name": "Payment Processing Webhook",
+          "description": "Secure payment processing webhook handler with PCI compliance, supporting multiple payment gateways including Stripe, PayPal, and Square with automated reconciliation.",
+          "status": "active",
+          "created_at": "2023-11-20T09:15:00Z",
+          "updated_at": "2024-01-10T16:45:12Z",
+          "metadata": {
+            "created": "2023-11-20",
+            "type": "webhook",
+            "priority": "critical",
+            "tags": ["payment", "security", "compliance"],
+            "version": "1.8.2"
+          }
+        },
+        {
+          "id": 1003,
+          "name": "Email Campaign Automation",
+          "description": "Advanced email marketing automation with personalization, A/B testing, and detailed analytics tracking for engagement metrics and conversion rates.",
+          "status": "active",
+          "created_at": "2023-10-05T13:20:00Z",
+          "updated_at": "2024-01-08T11:30:45Z",
+          "metadata": {
+            "created": "2023-10-05",
+            "type": "automation",
+            "priority": "medium",
+            "tags": ["email", "marketing", "analytics"],
+            "version": "3.2.1"
+          }
+        }
+      ],
+      "summary": "Successfully processed batch operation with 3 records. Total processing time: 2.34 seconds. Memory usage: 45MB. CPU utilization: 23%. Network requests: 12. Cache hits: 8/12 (66.7%). Errors: 0. Warnings: 2."
+    }
+  },
+  "inputData": {
+    "users": [
+      {
+        "id": 501,
+        "email": "john.doe@acme-corp.com",
+        "name": "John Doe",
+        "bio": "Senior Integration Engineer with 8+ years of experience in enterprise systems. Specializes in API design, microservices architecture, and real-time data processing. Certified in AWS, Azure, and Google Cloud platforms.",
+        "settings": {
+          "theme": "dark",
+          "notifications": true,
+          "timezone": "America/New_York",
+          "language": "en_US",
+          "two_factor_enabled": true
+        },
+        "roles": ["admin", "developer", "reviewer"],
+        "last_login": "2024-01-15T08:30:00Z",
+        "account_status": "active"
+      },
+      {
+        "id": 502,
+        "email": "sarah.smith@tech-solutions.com",
+        "name": "Sarah Smith",
+        "bio": "Full-stack developer and DevOps enthusiast. Expert in containerization, CI/CD pipelines, and cloud infrastructure. Passionate about automation and scalable system design.",
+        "settings": {
+          "theme": "light",
+          "notifications": false,
+          "timezone": "Europe/London",
+          "language": "en_GB",
+          "two_factor_enabled": true
+        },
+        "roles": ["developer", "devops"],
+        "last_login": "2024-01-14T16:45:00Z",
+        "account_status": "active"
+      }
+    ],
+    "batchData": "Processing large dataset containing customer information, transaction history, inventory updates, and analytics data from multiple sources with comprehensive validation and error handling mechanisms.",
+    "configuration": {
+      "api_endpoints": [
+        "https://api.example.com/v2/customers",
+        "https://api.example.com/v2/orders",
+        "https://api.example.com/v2/products"
+      ],
+      "rate_limits": {
+        "requests_per_minute": 1000,
+        "burst_limit": 100
+      },
+      "retry_policy": {
+        "max_retries": 3,
+        "backoff_strategy": "exponential"
+      },
+      "timeout_settings": {
+        "connection_timeout": 30,
+        "read_timeout": 120
+      }
+    }
+  },
+  "authData": {
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjEyMzQ1In0.eyJpc3MiOiJodHRwczovL2F1dGguZXhhbXBsZS5jb20iLCJzdWIiOiJ1c2VyXzEyMzQ1IiwiYXVkIjoiYXBpLmV4YW1wbGUuY29tIiwiZXhwIjoxNzA1MzI2MDAwLCJpYXQiOjE3MDUzMjI0MDAsInNjb3BlIjoicmVhZCB3cml0ZSBhZG1pbiJ9",
+    "refresh_token": "rt_1234567890abcdef_secure_refresh_token_with_long_expiry_2024_01_15",
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "scope": "read write admin",
+    "user_profile": {
+      "id": 12345,
+      "name": "Test User",
+      "email": "testuser@zapier-platform.com",
+      "avatar_url": "https://avatars.example.com/user12345.jpg",
+      "permissions": [
+        "read",
+        "write",
+        "admin",
+        "manage_integrations",
+        "view_analytics"
+      ],
+      "subscription_plan": "enterprise",
+      "account_created": "2022-03-15T10:30:00Z",
+      "last_activity": "2024-01-15T09:45:00Z",
+      "preferences": {
+        "email_notifications": true,
+        "webhook_notifications": true,
+        "dashboard_layout": "grid"
+      },
+      "metadata": "Additional user context and custom fields for enterprise account management and personalization features."
+    }
+  },
+  "environment": {
+    "API_URLS": [
+      "https://api.zapier-platform.com/v2",
+      "https://hooks.zapier-platform.com/v1",
+      "https://auth.zapier-platform.com/oauth2",
+      "https://cdn.zapier-platform.com/assets"
+    ],
+    "FEATURE_FLAGS": {
+      "compression_enabled": true,
+      "advanced_logging": true,
+      "rate_limiting": true,
+      "webhook_retry": true,
+      "batch_processing": true,
+      "analytics_tracking": true
+    },
+    "CONFIG_DATA": {
+      "deployment_env": "production",
+      "region": "us-east-1",
+      "version": "17.2.0",
+      "build_number": "2024.01.15.001",
+      "monitoring": {
+        "datadog_enabled": true,
+        "sentry_enabled": true,
+        "newrelic_enabled": false
+      },
+      "database": {
+        "host": "prod-db-cluster.example.com",
+        "port": 5432,
+        "ssl_mode": "require",
+        "connection_pool_size": 20
+      }
+    }
+  },
+  "meta": {
+    "zap": {
+      "id": "zap_12345_customer_sync",
+      "name": "Customer Data Sync",
+      "description": "Automated customer data synchronization between CRM and marketing platforms",
+      "status": "active",
+      "created_by": "john.doe@acme-corp.com",
+      "created_at": "2023-12-01T10:00:00Z"
+    },
+    "execution": {
+      "id": "exec_67890_20240115_094500",
+      "started_at": "2024-01-15T09:45:00.123Z",
+      "environment": "production",
+      "trigger_type": "webhook",
+      "logs": [
+        "2024-01-15T09:45:00.125Z [INFO] Execution started for zap_12345_customer_sync",
+        "2024-01-15T09:45:00.234Z [INFO] Validating webhook payload structure",
+        "2024-01-15T09:45:00.456Z [INFO] Authentication successful - token verified",
+        "2024-01-15T09:45:01.123Z [INFO] Processing customer data: 3 records found",
+        "2024-01-15T09:45:01.567Z [INFO] Data transformation completed successfully",
+        "2024-01-15T09:45:02.234Z [INFO] Sending data to target API endpoint",
+        "2024-01-15T09:45:02.789Z [INFO] API response received: 200 OK",
+        "2024-01-15T09:45:03.012Z [INFO] Execution completed successfully"
+      ],
+      "performance_metrics": {
+        "execution_time_ms": 2889,
+        "memory_usage_mb": 45.2,
+        "cpu_usage_percent": 23.4,
+        "network_requests": 12,
+        "cache_hits": 8,
+        "cache_misses": 4
+      },
+      "debugInfo": "Detailed execution context including request/response headers, intermediate data transformations, and system resource utilization for troubleshooting and optimization."
+    }
+  }
+}

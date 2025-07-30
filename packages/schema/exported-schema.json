@@ -1,5 +1,5 @@
 {
-  "version": "17.3.1",
+  "version": "17.4.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -308,7 +308,8 @@
             "boolean",
             "datetime",
             "copy",
-            "password"
+            "password",
+            "integer"
           ]
         },
         "required": {

@@ -49,8 +49,8 @@ const objProperty = (key, value, satisfiesType) => {
   return `'${key}': ${value}${satisfiesType ? ` satisfies ${satisfiesType}` : ''}`;
 };
 
-const variableAssignmentDeclaration = (varName, value) =>
-  `const ${varName} = ${value}`;
+const variableAssignmentDeclaration = (varName, value, exportConst = false) =>
+  `${exportConst ? 'export const' : 'const'} ${varName} = ${value}`;
 
 const fatArrowReturnFunctionDeclaration = (varname, args, statement) =>
   `const ${varname} = (${args.join(', ')}) => ${statement}`;
