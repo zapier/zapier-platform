@@ -634,7 +634,7 @@ describe('logger', () => {
   it('should not replace safe keys', async () => {
     const bundle = {
       authData: {
-        // The following are keys in authData known to be logged uncensored
+        // The following are keys in authData that can be logged uncensored
         scope: 'chat:write,chat:read',
         scopes: 'user.read message.list',
         teamId: 1234567890,
