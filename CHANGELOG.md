@@ -5,7 +5,7 @@ _Released 2025-07-30_
 ### cli
 - :bug: Fix missing `bundle.inputDataRaw` in invoke command ([#1072](https://github.com/zapier/zapier-platform/pull/1072))
 - :bug: Fix error `'No loader is configured for ".node" files'` on `zapier build` ([#1094](https://github.com/zapier/zapier-platform/pull/1094))
-- :hammer: Refactor `zapier init` so auth should have befores/afters in `middleware.js` instead of `authentication.js` ([#1073](https://github.com/zapier/zapier-platform/pull/1073))
+- :hammer: Refactor `zapier init` to move auth befores/afters into `middleware.js` instead of `authentication.js` ([#1073](https://github.com/zapier/zapier-platform/pull/1073))
 
 ### core
 
