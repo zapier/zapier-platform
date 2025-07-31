@@ -631,6 +631,59 @@ describe('logger', () => {
     ]);
   });
 
+  it('should not replace safe keys', async () => {
+    const bundle = {
+      authData: {
+        // The following are keys in authData that can be logged uncensored
+        scope: 'chat:write,chat:read',
+        scopes: 'user.read message.list',
+        teamId: 1234567890,
+        account_id: '983134213',
+        username: 'john_doe_123',
+        subdomain: 'zapier-1',
+        team_name: 'Engineering',
+        org_id: 'zapier-org-1',
+        email: 'johndoe@example.com',
+
+        // The following should be censored
+        access_token: 'a_secret_token',
+        password: 'hunter3456',
+        unknown_field: 'should be censored if unknown',
+      },
+    };
+    const logger = createlogger({ bundle }, options);
+
+    logger('200 POST https://example.com/test', {
+      log_type: 'http',
+      response_content: JSON.stringify(bundle.authData),
+    });
+    const response = await logger.end(2000);
+    response.status.should.eql(200);
+    response.content.token.should.eql(options.token);
+    response.content.logs.should.deepEqual([
+      {
+        message: '200 POST https://example.com/test',
+        data: {
+          log_type: 'http',
+          response_content: JSON.stringify({
+            scope: 'chat:write,chat:read',
+            scopes: 'user.read message.list',
+            teamId: 1234567890,
+            account_id: '983134213',
+            username: 'john_doe_123',
+            subdomain: 'zapier-1',
+            team_name: 'Engineering',
+            org_id: 'zapier-org-1',
+            email: 'johndoe@example.com',
+            access_token: ':censored:14:0f3381cb70:',
+            password: ':censored:10:57c6192e39:',
+            unknown_field: ':censored:29:6803bf6334:',
+          }),
+        },
+      },
+    ]);
+  });
+
   it('should handle nullish values', async () => {
     const bundle = {
       authData: {
