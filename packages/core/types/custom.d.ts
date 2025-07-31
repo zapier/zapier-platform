@@ -10,12 +10,9 @@ import { Headers } from 'node-fetch';
 
 // The EXPORTED OBJECT
 export const version: string;
-export const tools: { 
-  env: { inject: (filename?: string) => void };
-};
+export const tools: { env: { inject: (filename?: string) => void } };
+export const console: Console;
 export const errors: ErrorsModule;
-
-
 
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
