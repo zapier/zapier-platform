@@ -57,9 +57,9 @@ Only one canary can be active at the same time. You can run `zapier canary:list`
 
 To canary traffic for a specific user, use the --user flag.
 
-To canary traffic for a specific user within a specific account, use both --user and --accountId flags.
+To canary traffic for an entire account, use the --accountId. Note: this scenario is only permitted for Zapier staff.
 
-To canary traffic for an entire account, use both --accountId and --owner flags. The --owner flag is only used with --accountId to isolate the account filter.
+To canary traffic for a specific user within a specific account, use both --user and --accountId flags.
 
 Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
 
@@ -73,15 +73,14 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * (required) `-p, --percent` | Percent of traffic to route to new version
 * (required) `-d, --duration` | Duration of the canary in seconds
 * `-u, --user` | Canary this user (email) across all accounts, unless `accountId` is specified.
-* `-o, --owner` | The owner (email) of the account to target. This canaries all traffic for the specified account. Only used when `--accountId` is also used. This differs from the `user` flag, which targets specific users within an account.
-* `-a, --accountId` | The account ID to target. If owner is specified, canary applies to all traffic for the account. If user is specified, only canary the user within this account.
+* `-a, --accountId` | The account ID to target. If user is specified, only canary the user within this account.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
 * `zapier canary:create 1.0.0 1.1.0 -p 10 -d 3600`
 * `zapier canary:create 2.0.0 2.1.0 --percent 25 --duration 1800 --user user@example.com`
 * `zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345 -u user@example.com`
-* `zapier canary:create 2.0.0 2.1.0 -p 50 -d 600 -a 12345 -o admin@example.com`
+* `zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345`
 
 
 ## canary:delete
