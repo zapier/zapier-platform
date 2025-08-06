@@ -6,12 +6,8 @@ const { simpleTruncate } = require('../tools/data');
 const isSearch = require('./is-search');
 
 const hasCanPaginate = (searchKey, compiledApp) => {
-  const canPaginate = _.get(compiledApp, [
-    'searches',
-    searchKey,
-    'operation',
-    'canPaginate',
-  ]);
+  const canPaginate =
+    compiledApp?.searches?.[searchKey]?.operation?.canPaginate;
   return canPaginate;
 };
 
@@ -19,7 +15,7 @@ const hasCanPaginate = (searchKey, compiledApp) => {
   Searches should return an array of objects,
   or an object like { results: [...], paging_token: '...' } when canPaginate is true.
 */
-const searchIsArrayOrObject = {
+const searchIsArray = {
   name: 'searchIsArrayOrObject',
   shouldRun: isSearch,
   run: (method, results, compiledApp) => {
@@ -27,20 +23,17 @@ const searchIsArrayOrObject = {
     const truncatedResults = simpleTruncate(JSON.stringify(results), 50);
 
     if (hasCanPaginate(searchKey, compiledApp)) {
-      // must be an object
-      if (!_.isObject(results)) {
-        return [
-          `Paginating search results must be an object, got: ${typeof results}, (${truncatedResults})`,
-        ];
+      // if paging is supported and results is an object (indicating pagination), it must have results and paging_token
+      if (_.isPlainObject(results)) {
+        if (!_.has(results, 'results') || !_.has(results, 'paging_token')) {
+          return [
+            `Paging search results must be an object containing results and paging_token, got: ${truncatedResults}`,
+          ];
+        }
+        // ensure the secondary check can run
+        results = results.results;
       }
-      // must have results and paging_token
-      if (!_.has(results, 'results') || !_.has(results, 'paging_token')) {
-        return [
-          `Paginating search results must be an object containing results and paging_token, got: ${truncatedResults}`,
-        ];
-      }
-      // make sure the secondary check can run
-      results = results.results;
+      return [];
     }
 
     if (!_.isArray(results)) {
@@ -52,4 +45,4 @@ const searchIsArrayOrObject = {
   },
 };
 
-module.exports = searchIsArrayOrObject;
+module.exports = searchIsArray;

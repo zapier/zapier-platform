@@ -1299,6 +1299,7 @@ class InvokeCommand extends BaseCommand {
         isPopulatingDedupe: this.flags.isPopulatingDedupe,
         limit: this.flags.limit,
         page: this.flags.page,
+        paging_token: this.flags['paging-token'],
         isTestingAuth: false, // legacy property
       };
       const output = await this.invokeAction(
@@ -1377,6 +1378,10 @@ InvokeCommand.flags = buildFlags({
       char: 'a',
       description:
         'EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/assets/connections (https://zpr.io/z8SjFTdnTFZ2 for instructions) or specify \'-\' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
+    }),
+    'paging-token': Flags.string({
+      description:
+        'Set bundle.meta.paging_token. Used for search pagination or bulk reads. When used in production, this indicates which page of items you should fetch. First page is 0.',
     }),
   },
 });
