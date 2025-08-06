@@ -44,7 +44,7 @@ If you would like to stop this canary now, run \`zapier canary:delete ${existing
     }
 
     if (accountId) {
-      body.account_id = accountId;
+      body.account_id = parseInt(accountId);
       createCanaryMessage += `\n    - Account ID: ${accountId}`;
     }
 

@@ -13,7 +13,6 @@ class CanaryListCommand extends ZapierBaseCommand {
       percent: c.percent,
       seconds_remaining: c.until_timestamp - Math.floor(Date.now() / 1000),
       user: c.user,
-      owner: c.owner,
       account_id: c.account_id,
     }));
 
@@ -26,7 +25,6 @@ class CanaryListCommand extends ZapierBaseCommand {
         ['Traffic Amount', 'percent'],
         ['Seconds Remaining', 'seconds_remaining'],
         ['User', 'user'],
-        ['Owner', 'owner'],
         ['Account ID', 'account_id'],
       ],
       emptyMessage: grey(`No active canary deployments found.`),
