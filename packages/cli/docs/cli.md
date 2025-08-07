@@ -57,9 +57,9 @@ Only one canary can be active at the same time. You can run `zapier canary:list`
 
 To canary traffic for a specific user, use the --user flag.
 
-To canary traffic for an entire account, use the --accountId. Note: this scenario is only permitted for Zapier staff.
+To canary traffic for an entire account, use the --account-id. Note: this scenario is only permitted for Zapier staff.
 
-To canary traffic for a specific user within a specific account, use both --user and --accountId flags.
+To canary traffic for a specific user within a specific account, use both --user and --account-id flags.
 
 Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
 
@@ -72,8 +72,8 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 **Flags**
 * (required) `-p, --percent` | Percent of traffic to route to new version
 * (required) `-d, --duration` | Duration of the canary in seconds
-* `-u, --user` | Canary this user (email) across all accounts, unless `accountId` is specified.
-* `-a, --accountId` | The account ID to target. If user is specified, only canary the user within this account.
+* `-u, --user` | Canary this user (email) across all accounts, unless `account-id` is specified.
+* `-a, --account-id` | The account ID to target. If user is specified, only canary the user within this account. If user is not specified, then this argument is only permitted for Zapier staff.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
