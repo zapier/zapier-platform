@@ -83,6 +83,12 @@ describe('checks', () => {
         )
         .length.should.eql(1);
     });
+
+    it('should error when canPaginate is true and results is not an object', () => {
+      checks.searchIsArrayOrObject
+        .run(searchMethod, [{ name: 'bar' }, { name: 'foo' }], app)
+        .length.should.eql(1);
+    });
   });
 
   it('should check for ids via triggerHasId', () => {

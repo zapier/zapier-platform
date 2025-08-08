@@ -30,15 +30,26 @@ const searchIsArray = {
             `Paging search results must be an object containing results and paging_token, got: ${truncatedResults}`,
           ];
         }
-        // ensure the secondary check can run
+        if (
+          !_.isString(results.paging_token) &&
+          !_.isNull(results.paging_token)
+        ) {
+          return [
+            `"paging_token" must be a string or null, got: ${typeof results.paging_token}`,
+          ];
+        }
+        // pass to array check below
         results = results.results;
+      } else {
+        return [
+          `Paging search results must be an object, got: ${typeof results}, (${truncatedResults})`,
+        ];
       }
-      return [];
     }
 
     if (!_.isArray(results)) {
       return [
-        `Search response results must be an array, got: ${typeof results}, (${truncatedResults})`,
+        `Search results must be an array, got: ${typeof results}, (${truncatedResults})`,
       ];
     }
     return [];

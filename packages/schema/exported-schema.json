@@ -1661,7 +1661,7 @@
           ]
         },
         "canPaginate": {
-          "description": "Does this endpoint support pagination via temporary cursor storage?",
+          "description": "Does this search support pagination?",
           "type": "boolean"
         },
         "inputFields": {
