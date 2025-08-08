@@ -74,6 +74,7 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * (required) `-d, --duration` | Duration of the canary in seconds
 * `-u, --user` | Canary this user (email) across all accounts, unless `account-id` is specified.
 * `-a, --account-id` | The account ID to target. If user is specified, only canary the user within this account. If user is not specified, then this argument is only permitted for Zapier staff.
+* `-f, --force-include-all` | Overrides any default filters the canary system imposes. This argument is only permitted for Zapier staff.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**

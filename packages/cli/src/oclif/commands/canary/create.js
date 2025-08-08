@@ -10,6 +10,7 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     const duration = this.flags.duration;
     const user = this.flags.user;
     const accountId = this.flags['account-id'];
+    const forceIncludeAll = this.flags['force-include-all'];
 
     this.validateVersions(versionFrom, versionTo);
     this.validatePercent(percent);
@@ -46,6 +47,11 @@ If you would like to stop this canary now, run \`zapier canary:delete ${existing
     if (accountId) {
       body.account_id = parseInt(accountId);
       createCanaryMessage += `\n    - Account ID: ${accountId}`;
+    }
+
+    if (forceIncludeAll) {
+      body.force_include_all = true;
+      createCanaryMessage += `\n    - Force Include All: true`;
     }
 
     this.startSpinner(createCanaryMessage);
@@ -98,6 +104,11 @@ CanaryCreateCommand.flags = buildFlags({
       char: 'a',
       description:
         'The account ID to target. If user is specified, only canary the user within this account. If user is not specified, then this argument is only permitted for Zapier staff.',
+    }),
+    'force-include-all': Flags.boolean({
+      char: 'f',
+      description:
+        'Overrides any default filters the canary system imposes. This argument is only permitted for Zapier staff.',
     }),
   },
 });
