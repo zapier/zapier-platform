@@ -10,7 +10,7 @@ const createJSONtool = require('../../tools/create-json-tool');
 const createStoreKeyTool = require('../../tools/create-storekey-tool');
 const createCallbackHigherOrderFunction = require('../../tools/create-callback-wrapper');
 const createLegacyScriptingRunner = require('../../tools/create-legacy-scripting-runner');
-const createLoggerConsole = require('../../tools/create-logger-console');
+const { initialize } = require('../../tools/console-singleton');
 const errors = require('../../errors');
 const hashing = require('../../tools/hashing');
 
@@ -19,9 +19,10 @@ const hashing = require('../../tools/hashing');
 */
 const injectZObject = (input) => {
   const bundle = _.get(input, '_zapier.event.bundle', {});
+
   const zRoot = {
     cache: createCache(input),
-    console: createLoggerConsole(input),
+    console: initialize(input),
     cursor: createStoreKeyTool(input),
     dehydrate: createDehydrator(input, 'method'),
     dehydrateFile: createDehydrator(input, 'file'),
