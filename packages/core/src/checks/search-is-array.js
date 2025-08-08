@@ -5,16 +5,52 @@ const { simpleTruncate } = require('../tools/data');
 
 const isSearch = require('./is-search');
 
+const hasCanPaginate = (searchKey, compiledApp) => {
+  const canPaginate =
+    compiledApp?.searches?.[searchKey]?.operation?.canPaginate;
+  return canPaginate;
+};
+
 /*
-  Searches should always return an array of objects.
+  Searches should return an array of objects,
+  or an object like { results: [...], paging_token: '...' } when canPaginate is true.
 */
 const searchIsArray = {
-  name: 'triggerIsArray',
+  name: 'searchIsArrayOrObject',
   shouldRun: isSearch,
-  run: (method, results) => {
+  run: (method, results, compiledApp) => {
+    const searchKey = method.split('.', 2)[1];
+    const truncatedResults = simpleTruncate(JSON.stringify(results), 50);
+
+    if (hasCanPaginate(searchKey, compiledApp)) {
+      // if paging is supported and results is an object (indicating pagination), it must have results and paging_token
+      if (_.isPlainObject(results)) {
+        if (!_.has(results, 'results') || !_.has(results, 'paging_token')) {
+          return [
+            `Paging search results must be an object containing results and paging_token, got: ${truncatedResults}`,
+          ];
+        }
+        if (
+          !_.isString(results.paging_token) &&
+          !_.isNull(results.paging_token)
+        ) {
+          return [
+            `"paging_token" must be a string or null, got: ${typeof results.paging_token}`,
+          ];
+        }
+        // pass to array check below
+        results = results.results;
+      } else {
+        return [
+          `Paging search results must be an object, got: ${typeof results}, (${truncatedResults})`,
+        ];
+      }
+    }
+
     if (!_.isArray(results)) {
-      const repr = simpleTruncate(JSON.stringify(results), 50);
-      return [`Results must be an array, got: ${typeof results}, (${repr})`];
+      return [
+        `Search results must be an array, got: ${typeof results}, (${truncatedResults})`,
+      ];
     }
     return [];
   },

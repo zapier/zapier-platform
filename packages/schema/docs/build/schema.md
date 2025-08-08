@@ -710,6 +710,7 @@ Key | Required | Type | Description
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get the data? This can be a function like `(z) => [{id: 123}]` or a request like `{url: 'http...'}`.
 `performResume` | no | [/FunctionSchema](#functionschema) | A function that parses data from a perform (which uses z.generateCallbackUrl()) and callback request to resume this action.
 `performGet` | no | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.
+`canPaginate` | no | `boolean` | Does this search support pagination?
 `inputFields` | no | [/InputFieldsSchema](#inputfieldsschema) | What should the form a user sees and configures look like?
 `inputFieldGroups` | no | [/InputFieldGroupsSchema](#inputfieldgroupsschema) | Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.
 `outputFields` | no | [/OutputFieldsSchema](#outputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
