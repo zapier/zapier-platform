@@ -22,7 +22,7 @@ describe('bundle-encryption', () => {
       // Create encrypted token
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -58,7 +58,7 @@ describe('bundle-encryption', () => {
       // Create encrypted token
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -131,7 +131,7 @@ describe('bundle-encryption', () => {
       // Create encrypted token with invalid JSON
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -194,7 +194,7 @@ describe('bundle-encryption', () => {
       // Step 4: Encrypt with Fernet
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -217,7 +217,7 @@ describe('bundle-encryption', () => {
       // Create encrypted token in old format (JSON string directly)
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -245,7 +245,7 @@ describe('bundle-encryption', () => {
 
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -269,7 +269,7 @@ describe('bundle-encryption', () => {
 
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
