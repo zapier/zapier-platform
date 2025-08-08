@@ -1381,7 +1381,7 @@ InvokeCommand.flags = buildFlags({
     }),
     'paging-token': Flags.string({
       description:
-        'Set bundle.meta.paging_token. Used for search pagination or bulk reads. When used in production, this indicates which page of items you should fetch. First page is 0.',
+        'Set bundle.meta.paging_token. Used for search pagination or bulk reads. When used in production, this indicates which page of items you should fetch.',
     }),
   },
 });

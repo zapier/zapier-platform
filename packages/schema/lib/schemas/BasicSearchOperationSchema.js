@@ -31,8 +31,7 @@ BasicSearchOperationSchema.properties = {
     oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   },
   canPaginate: {
-    description:
-      'Does this endpoint support pagination via temporary cursor storage?',
+    description: 'Does this search support pagination?',
     type: 'boolean',
   },
   inputFields: BasicSearchOperationSchema.properties.inputFields,
