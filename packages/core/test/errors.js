@@ -1,5 +1,6 @@
 'use strict';
 
+const should = require('should');
 const errors = require('../src/errors');
 const { HTTPBIN_URL } = require('./constants');
 
@@ -82,6 +83,31 @@ describe('errors', () => {
       error.message.should.eql(
         `{"status":401,"headers":{"content-type":"application/json","retry-after":60},"content":null,"request":{"url":"https://example.com"}}`,
       );
+    });
+  });
+
+  describe('Package exports', () => {
+    it('should export errors from main package', () => {
+      const zapierPlatformCore = require('../index');
+
+      // Check that errors are exported at package level
+      zapierPlatformCore.should.have.property('errors');
+      should.exist(zapierPlatformCore.errors);
+
+      // Check that specific error types are available
+      zapierPlatformCore.errors.should.have.property('RefreshAuthError');
+      zapierPlatformCore.errors.should.have.property('CheckError');
+      zapierPlatformCore.errors.should.have.property('Error');
+
+      // Test that we can instantiate them
+      const refreshError = new zapierPlatformCore.errors.RefreshAuthError(
+        'test message',
+      );
+      refreshError.should.instanceOf(
+        zapierPlatformCore.errors.RefreshAuthError,
+      );
+      refreshError.name.should.eql('RefreshAuthError');
+      refreshError.message.should.eql('test message');
     });
   });
 });

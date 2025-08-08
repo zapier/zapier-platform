@@ -32,16 +32,68 @@ const LOG_STREAM_BYTES_LIMIT = 15 * 1024 * 1024;
 
 const DEFAULT_LOGGER_TIMEOUT = 200;
 
+// Will be initialized lazily
+const SAFE_AUTH_DATA_KEYS = new Set();
+
 const sleep = promisify(setTimeout);
 
-const isUrl = (url) => {
-  try {
-    // eslint-disable-next-line no-new
-    new URL(url);
-    return true;
-  } catch (e) {
+const initSafeAuthDataKeys = () => {
+  // An authData key in (safePrefixes x safeSuffixes) is considered safe to log
+  // uncensored
+  const safePrefixes = [
+    'account',
+    'bot_user',
+    'cloud',
+    'cloud_site',
+    'company',
+    'domain',
+    'email',
+    'environment',
+    'location',
+    'org',
+    'organization',
+    'project',
+    'region',
+    'scope',
+    'scopes',
+    'site',
+    'subdomain',
+    'team',
+    'token_type',
+    'user',
+    'workspace',
+  ];
+  const safeSuffixes = ['', '_id', '_name', 'id', 'name'];
+  for (const prefix of safePrefixes) {
+    for (const suffix of safeSuffixes) {
+      SAFE_AUTH_DATA_KEYS.add(prefix + suffix);
+    }
+  }
+};
+
+const isUrl = (value) => {
+  if (!value || typeof value !== 'string') {
     return false;
   }
+  const commonProtocols = [
+    'https://',
+    'http://',
+    'ftp://',
+    'ftps://',
+    'file://',
+  ];
+  for (const protocol of commonProtocols) {
+    if (value.startsWith(protocol)) {
+      try {
+        // eslint-disable-next-line no-new
+        new URL(value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+  }
+  return false;
 };
 
 const MAX_LENGTH = 3500;
@@ -136,6 +188,13 @@ const attemptFindSecretsInStr = (s, isGettingNewSecret) => {
   return findSensitiveValues(parsedRespContent);
 };
 
+const isSafeAuthDataKey = (key) => {
+  if (SAFE_AUTH_DATA_KEYS.size === 0) {
+    initSafeAuthDataKeys();
+  }
+  return SAFE_AUTH_DATA_KEYS.has(key.toLowerCase());
+};
+
 const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
   const authData = bundle.authData || {};
@@ -147,7 +206,9 @@ const buildSensitiveValues = (event, data) => {
     if (isSensitiveKey(key)) {
       return true;
     }
-
+    if (isSafeAuthDataKey(key)) {
+      return false;
+    }
     if (isUrl(value) && !isUrlWithSecrets(value)) {
       return false;
     }

@@ -1,3 +1,44 @@
+## 17.5.0
+
+_Released 2025-07-30_
+
+### cli
+- :bug: Fix missing `bundle.inputDataRaw` in invoke command ([#1072](https://github.com/zapier/zapier-platform/pull/1072))
+- :bug: Fix error `'No loader is configured for ".node" files'` on `zapier build` ([#1094](https://github.com/zapier/zapier-platform/pull/1094))
+- :hammer: Refactor `zapier init` to move auth befores/afters into `middleware.js` instead of `authentication.js` ([#1073](https://github.com/zapier/zapier-platform/pull/1073))
+
+### core
+
+- :nail_care: Export errors from `zapier-platform-core` ([#1075](https://github.com/zapier/zapier-platform/pull/1075)) 
+- :hammer: Update `form-data` from `4.0.1` to `4.0.4` ([#1096](https://github.com/zapier/zapier-platform/pull/1096)) 
+
+
+### schema
+
+- :nail_care: Expanded `AuthFieldSchema` with additional field types:
+  - Added support for the `integer` type ([#1095](https://github.com/zapier/zapier-platform/pull/1095)).
+  - Added support for the `text` type ([#1098](https://github.com/zapier/zapier-platform/pull/1098)).
+
+## 17.4.0
+
+_Released 2025-07-23_
+
+### cli
+
+- :bug: Fix regression bugs with `zapier build`, where it can fail with "'The "path" argument must be of type string'" when [dirent.parentPath](https://nodejs.org/docs/latest/api/fs.html#direntparentpath) property is missing ([#1087](https://github.com/zapier/zapier-platform/pull/1087))
+- :bug: Fixes a regression where `zapier build --skip-npm-install` fails when an app has a linked dependencies in its `node_modules` ([#1089](https://github.com/zapier/zapier-platform/pull/1089))
+- :bug: Remove empty array at the end of `zapier versions -f json` ([#1086](https://github.com/zapier/zapier-platform/pull/1086)) 
+- :nail_care: Add additional Typescript auth options to `zapier init` ([#1067](https://github.com/zapier/zapier-platform/pull/1067))
+
+### core
+
+- :nail_care: Support compression when stashing large input bundles ([#1085](https://github.com/zapier/zapier-platform/pull/1085))
+
+### schema
+
+None!
+
+
 ## 17.3.1
 
 _Released 2025-07-17_

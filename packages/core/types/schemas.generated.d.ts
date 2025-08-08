@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 99.99.0
+ * zapier-platform-schema version: 17.5.0
  *  schema-to-ts compiler version: 0.1.0
  */
 import type {
@@ -704,7 +704,15 @@ export interface AuthField {
   label?: string;
 
   /** The type of this value used to be. */
-  type?: 'string' | 'number' | 'boolean' | 'datetime' | 'copy' | 'password';
+  type?:
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'datetime'
+    | 'copy'
+    | 'password'
+    | 'integer'
+    | 'text';
 
   /** If this value is required or not. This defaults to `true`. */
   required?: boolean;

@@ -1,8 +1,5 @@
-const {
-  config: authentication,
-  befores = [],
-  afters = [],
-} = require('./authentication');
+const authentication = require('./authentication');
+const { befores = [], afters = [] } = require('./middleware');
 
 module.exports = {
   // This is just shorthand to reference the installed dependencies you have.

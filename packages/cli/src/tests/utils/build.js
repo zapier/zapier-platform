@@ -55,7 +55,7 @@ describe('build (runs slowly)', function () {
     smartPaths.should.not.containEql('node_modules/jest/package.json');
     smartPaths.should.not.containEql('node_modules/node-fetch/README.md');
 
-    smartPaths.length.should.be.within(200, 306);
+    smartPaths.length.should.be.within(200, 326);
   });
 
   it('should list all the files', () => {
@@ -639,6 +639,11 @@ describe('build in yarn workspaces', function () {
   before(async () => {
     monorepo = await setupYarnMonorepo();
     await runCommand('yarn', ['install'], { cwd: monorepo.repoDir });
+
+    // Will be used to test yarn-linked zapier-platform-core package works
+    await runCommand('yarn', ['link'], {
+      cwd: path.dirname(monorepo.corePackage.path),
+    });
   });
 
   after(() => {
@@ -826,6 +831,79 @@ describe('build in yarn workspaces', function () {
     );
     helloPackageJson.name.should.equal('common-hello');
     helloPackageJson.version.should.equal('1.0.0');
+  });
+
+  it('should build in app-2 with linked core', async () => {
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
+    const coreDir = path.dirname(monorepo.corePackage.path);
+
+    await runCommand('yarn', ['link', 'zapier-platform-core'], { cwd: appDir });
+
+    fs.lstatSync(path.join(appDir, 'node_modules', 'zapier-platform-core'))
+      .isSymbolicLink()
+      .should.be.true();
+    fs.realpathSync(
+      path.join(appDir, 'node_modules', 'zapier-platform-core'),
+    ).should.equal(coreDir);
+
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+    fs.ensureDirSync(path.dirname(zipPath));
+
+    process.chdir(appDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipDir);
+
+    // Since now app-2/node_modules/zapier-platform-core links to packages/core
+    // of the zapier-platform repo, the zip file's root is the common ancestor
+    // directory of appDir and the zapier-platform repo, which is the root
+    // directory '/' on Linux/MacOS essentially when this test is run.
+    // So we expect <zip_root>/zapierwrapper.js links to a very deep path of
+    // app-2.
+    const appDirInZip = path.relative(
+      '/',
+      path.join(monorepo.repoDir, 'packages', 'app-2'),
+    );
+    const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
+    fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(wrapperLinkPath).should.equal(
+      path.join(appDirInZip, 'zapierwrapper.js'),
+    );
+
+    const indexLinkPath = path.join(unzipDir, 'index.js');
+    fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(indexLinkPath).should.equal(
+      path.join(appDirInZip, 'index.js'),
+    );
+
+    // app-2/package.json should be copied to root directory
+    const appPackageJson = fs.readJsonSync(path.join(unzipDir, 'package.json'));
+    appPackageJson.name.should.equal('app-2');
+
+    const coreDirInZip = path.relative('/', coreDir);
+    const corePackageJson = fs.readJsonSync(
+      path.join(unzipDir, coreDirInZip, 'package.json'),
+    );
+    corePackageJson.version.should.equal(monorepo.corePackage.version);
+
+    const coreLinkPath = path.join(
+      unzipDir,
+      appDirInZip,
+      'node_modules',
+      'zapier-platform-core',
+    );
+    fs.lstatSync(coreLinkPath).isSymbolicLink().should.be.true();
+    fs.readlinkSync(coreLinkPath).should.equal(
+      path.relative(path.join(appDirInZip, 'node_modules'), coreDirInZip),
+    );
   });
 });
 
@@ -1274,7 +1352,7 @@ describe('build ESM (runs slowly)', function () {
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
 
-    smartPaths.length.should.be.within(200, 306);
+    smartPaths.length.should.be.within(200, 327);
   });
 
   it('should list all the files', async () => {
@@ -1574,5 +1652,104 @@ run();`,
     smartPaths.should.containEql(
       'node_modules/zapier-platform-legacy-scripting-runner/request-worker.js',
     );
+  });
+});
+
+describe('build with specific dependency', function () {
+  let appDir, corePackage, unzipDir, zipPath, origCwd;
+
+  before(async () => {
+    corePackage = await npmPackCore();
+  });
+
+  after(() => {
+    corePackage.cleanup();
+  });
+
+  beforeEach(() => {
+    appDir = getNewTempDirPath();
+    zipPath = path.join(appDir, 'build', 'build.zip');
+    unzipDir = getNewTempDirPath();
+
+    fs.ensureDirSync(appDir);
+    fs.ensureDirSync(unzipDir);
+
+    origCwd = process.cwd();
+    process.chdir(appDir);
+  });
+
+  afterEach(() => {
+    fs.removeSync(appDir);
+    fs.removeSync(unzipDir);
+
+    appDir = null;
+    zipPath = null;
+    unzipDir = null;
+
+    process.chdir(origCwd);
+  });
+
+  it('should build with ssh2 with .node files', async function () {
+    // Create a basic app that uses ssh2
+    fs.outputFileSync(
+      path.join(appDir, 'app.js'),
+      `import { Client } from 'ssh2';
+import zapier from 'zapier-platform-core';
+import packageJson from './package.json' with { type: 'json' };
+function getClient() { return new Client(); }
+export default {
+  version: packageJson.version,
+  platformversion: zapier.version,
+};
+`,
+    );
+
+    // Create package.json
+    corePackage = await npmPackCore();
+    fs.outputFileSync(
+      path.join(appDir, 'package.json'),
+      JSON.stringify({
+        name: 'test-app',
+        version: '1.0.0',
+        exports: './app.js',
+        type: 'module',
+        dependencies: {
+          'zapier-platform-core': corePackage.path,
+          ssh2: '1.16.0',
+        },
+      }),
+    );
+
+    await runCommand('npm', ['install'], { cwd: appDir });
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        cwd: appDir,
+        skipNpmInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipDir);
+
+    const expectedFiles = [
+      'app.js',
+      'package.json',
+      'zapierwrapper.js',
+      'definition.json',
+      'node_modules/ssh2/package.json',
+      'node_modules/ssh2/lib/protocol/crypto.js',
+      'node_modules/ssh2/lib/protocol/crypto/build/Release/sshcrypto.node',
+      'node_modules/cpu-features/package.json',
+      'node_modules/cpu-features/lib/index.js',
+      'node_modules/cpu-features/build/Release/cpufeatures.node',
+    ];
+    for (const file of expectedFiles) {
+      fs.existsSync(path.join(unzipDir, file)).should.be.true(
+        `Missing file in zip: ${file}`,
+      );
+    }
   });
 });

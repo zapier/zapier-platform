@@ -56,6 +56,12 @@ This command is typically followed by `zapier upload`.
 
 Only one canary can be active at the same time. You can run `zapier canary:list` to check. If you would like to create a new canary with different parameters, you can wait for the canary to finish, or delete it using `zapier canary:delete a.b.c x.y.z`.
 
+To canary traffic for a specific user, use the --user flag.
+
+To canary traffic for an entire account, use the --account-id. Note: this scenario is only permitted for Zapier staff.
+
+To canary traffic for a specific user within a specific account, use both --user and --account-id flags.
+
 Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
 
 **Only use this command to canary traffic between non-breaking versions!**
@@ -67,11 +73,16 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 **Flags**
 * (required) `-p, --percent` | Percent of traffic to route to new version
 * (required) `-d, --duration` | Duration of the canary in seconds
+* `-u, --user` | Canary this user (email) across all accounts, unless `account-id` is specified.
+* `-a, --account-id` | The account ID to target. If user is specified, only canary the user within this account. If user is not specified, then this argument is only permitted for Zapier staff.
+* `-f, --force-include-all` | Overrides any default filters the canary system imposes. This argument is only permitted for Zapier staff.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
-* `zapier canary:create 1.0.0 1.1.0 -p 25 -d 720`
-* `zapier canary:create 2.0.0 2.1.0 --percent 50 --duration 300`
+* `zapier canary:create 1.0.0 1.1.0 -p 10 -d 3600`
+* `zapier canary:create 2.0.0 2.1.0 --percent 25 --duration 1800 --user user@example.com`
+* `zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345 -u user@example.com`
+* `zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345`
 
 
 ## canary:delete
