@@ -248,7 +248,7 @@ describe('app middleware', () => {
       // Create encrypted token
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -318,7 +318,7 @@ describe('app middleware', () => {
       // Create encrypted token with invalid JSON
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -362,7 +362,7 @@ describe('app middleware', () => {
 
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -397,7 +397,7 @@ describe('app middleware', () => {
       // Create encrypted token in old format (JSON string directly)
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -444,7 +444,7 @@ describe('app middleware', () => {
 
       const secret = new fernet.Secret(fernetKey);
       const token = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });
@@ -489,7 +489,7 @@ describe('app middleware', () => {
       const base64EncodedData = compressedData.toString('base64');
 
       const token1 = new fernet.Token({
-        secret: secret,
+        secret,
         token: '',
         ttl: 0,
       });

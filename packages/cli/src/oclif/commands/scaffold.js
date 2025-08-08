@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 // @ts-check
 
 const path = require('path');
