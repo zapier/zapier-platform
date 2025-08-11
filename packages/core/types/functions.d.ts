@@ -118,13 +118,17 @@ export type CreatePerformGet<
 > = (z: ZObject, bundle: Bundle<$InputData>) => $Return | Promise<$Return>;
 
 /**
- * Search for objects on a partner API.
- *
+ * Helper type for search results that can optionally include pagination.
  * Returns either:
  * - an array of objects, matching the search query.
  * - an object with a `results` array of objects and a `paging_token` string.
  *
- * When `canPaginate` is true, the object shape is required.
+ * When `canPaginate` is true for the search, the object shape is required.
+ */
+type SearchResult<T> = T[] | { results: T[], paging_token: string };
+
+/**
+ * Search for objects on a partner API.
  *
  * @remarks
  * This type requires a one-item array. Multiple items *can* be
@@ -134,7 +138,7 @@ export type CreatePerformGet<
 export type SearchPerform<
   $InputData extends DefaultInputData = DefaultInputData,
   $Return extends {} = {},
-> = (z: ZObject, bundle: Bundle<$InputData>) => $Return[] | $Return | Promise<$Return[] | $Return>;
+> = (z: ZObject, bundle: Bundle<$InputData>) => SearchResult<$Return> | Promise<SearchResult<$Return>>;
 
 /**
  * Follow up a search's perform with additional data.

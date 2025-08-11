@@ -13,10 +13,11 @@ const hasCanPaginate = (searchKey, compiledApp) => {
 
 /*
   Searches should return an array of objects,
-  or an object like { results: [...], paging_token: '...' } when canPaginate is true.
+  or a response envelope like { results: [...], paging_token: '...' } 
+  when canPaginate is true.
 */
-const searchIsArray = {
-  name: 'searchIsArrayOrObject',
+const searchIsArrayOrEnvelope = {
+  name: 'searchIsArrayOrEnvelope',
   shouldRun: isSearch,
   run: (method, results, compiledApp) => {
     const searchKey = method.split('.', 2)[1];
@@ -27,7 +28,7 @@ const searchIsArray = {
       if (_.isPlainObject(results)) {
         if (!_.has(results, 'results') || !_.has(results, 'paging_token')) {
           return [
-            `Paging search results must be an object containing results and paging_token, got: ${truncatedResults}`,
+            `Paginated search results must be an object containing results and paging_token, got: ${truncatedResults}`,
           ];
         }
         if (
@@ -42,7 +43,7 @@ const searchIsArray = {
         results = results.results;
       } else {
         return [
-          `Paging search results must be an object, got: ${typeof results}, (${truncatedResults})`,
+          `Paginated search results must be an object, got: ${typeof results}, (${truncatedResults})`,
         ];
       }
     }
@@ -56,4 +57,4 @@ const searchIsArray = {
   },
 };
 
-module.exports = searchIsArray;
+module.exports = searchIsArrayOrEnvelope;

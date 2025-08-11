@@ -24,7 +24,7 @@ describe('checks', () => {
     checks.createIsObject.run(testMethod, [{}, {}]).length.should.eql(1);
   });
 
-  describe('searchIsArrayOrObject', () => {
+  describe('searchIsArrayOrEnvelope', () => {
     let app;
     let searchMethod;
     beforeEach(() => {
@@ -43,16 +43,18 @@ describe('checks', () => {
     it('should error for objects when canPaginate is not set', () => {
       app.searches.find_task.operation.canPaginate = false;
 
-      checks.searchIsArrayOrObject
+      checks.searchIsArrayOrEnvelope
         .run(searchMethod, [{}, {}])
         .length.should.eql(0);
-      checks.searchIsArrayOrObject.run(searchMethod, [{}]).length.should.eql(0);
-      checks.searchIsArrayOrObject.run(searchMethod, {}).length.should.eql(1);
+      checks.searchIsArrayOrEnvelope
+        .run(searchMethod, [{}])
+        .length.should.eql(0);
+      checks.searchIsArrayOrEnvelope.run(searchMethod, {}).length.should.eql(1);
     });
 
     it('should pass when object has correct shape with results array and paging_token when canPaginate is true', () => {
-      checks.searchIsArrayOrObject.shouldRun(searchMethod).should.be.true();
-      checks.searchIsArrayOrObject
+      checks.searchIsArrayOrEnvelope.shouldRun(searchMethod).should.be.true();
+      checks.searchIsArrayOrEnvelope
         .run(
           searchMethod,
           {
@@ -65,7 +67,7 @@ describe('checks', () => {
     });
 
     it('should error when paging_token is missing when canPaginate is true', () => {
-      checks.searchIsArrayOrObject
+      checks.searchIsArrayOrEnvelope
         .run(
           searchMethod,
           { results: [{ id: 1 }, { name: 'foo' }, { name: 'bar' }] },
@@ -75,7 +77,7 @@ describe('checks', () => {
     });
 
     it('should error when results is not an array when canPaginate is true', () => {
-      checks.searchIsArrayOrObject
+      checks.searchIsArrayOrEnvelope
         .run(
           searchMethod,
           { results: { name: 'bar' }, paging_token: '123' },
@@ -85,7 +87,7 @@ describe('checks', () => {
     });
 
     it('should error when canPaginate is true and results is not an object', () => {
-      checks.searchIsArrayOrObject
+      checks.searchIsArrayOrEnvelope
         .run(searchMethod, [{ name: 'bar' }, { name: 'foo' }], app)
         .length.should.eql(1);
     });

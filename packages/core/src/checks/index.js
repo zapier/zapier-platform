@@ -1,7 +1,7 @@
 module.exports = {
   createIsObject: require('./create-is-object'),
 
-  searchIsArrayOrObject: require('./search-is-array'),
+  searchIsArrayOrEnvelope: require('./search-is-array-or-envelope'),
 
   triggerIsArray: require('./trigger-is-array'),
   triggerIsObject: require('./trigger-is-object'),
