@@ -22,7 +22,7 @@
     "content-disposition": "0.5.2",
     "lodash": "4.17.11",
     "node-fetch": "1.7.1",
-    "zapier-platform-core": "17.5.0"
+    "zapier-platform-core": "17.6.0"
   },
   "devDependencies": {
     "eslint": "3.19.0",
