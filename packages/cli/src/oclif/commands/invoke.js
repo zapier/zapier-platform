@@ -59,7 +59,14 @@ const loadAuthDataFromEnv = () => {
     .filter(([k, v]) => k.startsWith(AUTH_FIELD_ENV_PREFIX))
     .reduce((authData, [k, v]) => {
       const fieldKey = k.substr(AUTH_FIELD_ENV_PREFIX.length);
-      authData[fieldKey] = v;
+      // Try to parse as JSON if it looks like JSON, otherwise keep as string
+      try {
+        authData[fieldKey] =
+          v.startsWith('{') || v.startsWith('[') ? JSON.parse(v) : v;
+      } catch (e) {
+        // If JSON parsing fails, keep as string
+        authData[fieldKey] = v;
+      }
       return authData;
     }, {});
 };
@@ -237,7 +244,10 @@ const appendEnv = async (vars, prefix = '') => {
     '.env',
     Object.entries(vars)
       .filter(([k, v]) => v !== undefined)
-      .map(([k, v]) => `${prefix}${k}='${v || ''}'\n`),
+      .map(
+        ([k, v]) =>
+          `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
+      ),
   );
 };
 
