@@ -23,6 +23,7 @@ It consists of a few main packages:
   - [Schema Reference](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md)
   - [CHANGELOG.md](CHANGELOG.md)
 * Internal-facing docs:
-  - Testing out new features that haven't been released to npm yet? See [INSTALL_DEV.md](INSTALL_DEV.md)
+  - Testing out new features that haven't been released to npm yet? See [docs-dev/install-dev.md](docs-dev/install-dev.md)
   - Learn about how this repo is structured in [ARCHITECTURE.md](ARCHITECTURE.md)
   - Looking to contribute to this repo? See [CONTRIBUTING.md](CONTRIBUTING.md)
+  - Quick reference for development tasks? See [docs-dev/](docs-dev/)
