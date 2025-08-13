@@ -23,7 +23,7 @@ yarn lint:fix          # Fix linting issues
 ### Build & Release
 ```bash
 yarn generate-types    # Generate TypeScript declarations
-./scripts/bump.js      # Bump versions across packages
+yarn bump     # Bump versions across packages
 ```
 
 ## Package-Specific Commands (cd into package first)
