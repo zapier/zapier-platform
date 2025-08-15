@@ -942,12 +942,11 @@ describe('build in yarn workspaces', function () {
     );
     await decompress2(zipPath, unzipDir);
 
-    // Since now app-2/node_modules/zapier-platform-core links to packages/core
-    // of the zapier-platform repo, the zip file's root is the common ancestor
-    // directory of appDir and the zapier-platform repo, which is the root
-    // directory '/' on Linux/MacOS essentially when this test is run.
-    // So we expect <zip_root>/zapierwrapper.js links to a very deep path of
-    // app-2.
+    // `zapier build --skip-npm-install` uses the common ancestor of the app
+    // directory (monorepo.repoDir) and the zapier-platform repo.
+    // In GitHub's CI environment, zipRoot will be:
+    // - '/' on Linux and macOS
+    // - 'C:\' on Windows
     const zipRoot = commonAncestor(monorepo.repoDir, __dirname);
     const appDirInZip = path.relative(
       zipRoot,
