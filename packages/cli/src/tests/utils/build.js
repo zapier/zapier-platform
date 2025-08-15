@@ -953,10 +953,6 @@ describe('build in yarn workspaces', function () {
       zipRoot,
       path.join(monorepo.repoDir, 'packages', 'app-2'),
     );
-    console.log(`__dirname: "${__dirname}"`);
-    console.log(`zipRoot: "${zipRoot}"`);
-    console.log(`repoDir: "${monorepo.repoDir}"`);
-    console.log(`appDirInZip: "${appDirInZip}"`);
     const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
     fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
     fs.readlinkSync(wrapperLinkPath).should.equal(
