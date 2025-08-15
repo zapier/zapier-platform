@@ -1,14 +1,15 @@
+const os = require('node:os');
+const path = require('node:path');
+const { promisify } = require('node:util');
+
 const fs = require('fs-extra');
-const os = require('os');
-const path = require('path');
 const { captureOutput } = require('@oclif/test');
-const { promisify } = require('util');
 
 require('should');
 
 const { getPackageLatestVersion, getPackageSize } = require('../utils/npm');
 const { ensureDir, makeTempDir } = require('../utils/files');
-const { runCommand, npmPackCore } = require('../tests/_helpers');
+const { runCommand, npmPackCore, IS_WINDOWS } = require('../tests/_helpers');
 const { PLATFORM_PACKAGE } = require('../constants');
 
 const REGEX_VERSION = /\d+\.\d+\.\d+/;
@@ -357,7 +358,8 @@ describe('smoke tests - setup will take some time', function () {
             'trigger',
             'people',
             '-i',
-            '{"species_id":"1"}',
+            // Windows's cmd.exe somehow requires you to escape quotes in JSON
+            IS_WINDOWS ? '{\\"species_id\\":\\"1\\"}' : '{"species_id":"1"}',
             '--non-interactive',
           ],
           verify: (output, appDir) => {

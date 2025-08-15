@@ -1,4 +1,5 @@
 // @ts-check
+const os = require('node:os');
 
 const should = require('should');
 const {
@@ -34,7 +35,10 @@ describe('ast (JS)', () => {
       );
       should(
         result.includes(
-          'const BlahTrigger = require(\'./triggers/blah\')\nconst getThing = require("./a/b/c");',
+          [
+		    'const BlahTrigger = require(\'./triggers/blah\')',
+		    'const getThing = require("./a/b/c");',
+		  ].join(os.EOL),
         ),
       ).be.true();
     });
@@ -50,7 +54,10 @@ describe('ast (JS)', () => {
         './a/b/c',
       );
       should(
-        result.startsWith('// comment!\nconst getThing = require("./a/b/c");'),
+        result.startsWith([
+		  '// comment!',
+		  'const getThing = require("./a/b/c");',
+		].join(os.EOL)),
       ).be.true();
     });
 
@@ -224,7 +231,7 @@ describe('ast (TS)', () => {
   describe('adding import statements', () => {
     it('should add import as first statement in file', () => {
       const input = 'export default {};';
-      const expected = `import getThing from './a/b/c';\nexport default {};`;
+      const expected = ["import getThing from './a/b/c';", 'export default {};'].join(os.EOL);
       const result = importActionInTsApp(input, 'getThing', './a/b/c');
 
       should(result).eql(expected);
@@ -232,7 +239,7 @@ describe('ast (TS)', () => {
 
     it('should add import below existing imports', () => {
       const input = `import Foo from './foo';\n\nexport default {};\n`;
-      const expected = `import Foo from './foo';\n\nimport getThing from './a/b/c';\n\nexport default {};\n`;
+      const expected = ["import Foo from './foo';", '', "import getThing from './a/b/c';", '', 'export default {};', ''].join(os.EOL);
       const result = importActionInTsApp(input, 'getThing', './a/b/c');
 
       should(result).eql(expected);
