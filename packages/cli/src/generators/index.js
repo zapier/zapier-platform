@@ -2,7 +2,7 @@ const path = require('path');
 
 const { merge } = require('lodash');
 const filter = require('gulp-filter');
-const { createGeneratorClass } = require('../utils/yeoman-wrapper');
+const { createGeneratorClass } = require('../utils/esm-wrapper');
 const prettier = require('gulp-prettier');
 
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');

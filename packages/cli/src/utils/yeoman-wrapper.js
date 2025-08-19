@@ -1,10 +1,11 @@
 /**
- * CommonJS wrapper for yeoman ESM modules
- * This allows us to use yeoman-environment v4+ and yeoman-generator v7+ from CommonJS code without downgrading
+ * CommonJS wrapper for ESM-only modules
+ * This allows us to use yeoman-environment v4+, yeoman-generator v7+, and update-notifier v7+ from CommonJS code without downgrading
  */
 
 let yeomanEnvironment = null;
 let yeomanGenerator = null;
+let updateNotifier = null;
 
 /**
  * Lazy-load yeoman-environment using dynamic import
@@ -26,6 +27,17 @@ async function getYeomanGenerator() {
     yeomanGenerator = await import('yeoman-generator');
   }
   return yeomanGenerator;
+}
+
+/**
+ * Lazy-load update-notifier using dynamic import
+ * @returns {Promise<Object>} The update-notifier module
+ */
+async function getUpdateNotifier() {
+  if (!updateNotifier) {
+    updateNotifier = await import('update-notifier');
+  }
+  return updateNotifier;
 }
 
 /**
@@ -57,10 +69,22 @@ async function createGeneratorClass(generatorFactory) {
   return generatorFactory(Generator);
 }
 
+/**
+ * Create an update notifier (async version of require('update-notifier'))
+ * @param {Object} options - Update notifier options (pkg, updateCheckInterval, etc.)
+ * @returns {Promise<Object>} Update notifier instance
+ */
+async function createUpdateNotifier(options) {
+  const updateNotifierModule = await getUpdateNotifier();
+  return updateNotifierModule.default(options);
+}
+
 module.exports = {
   createEnv,
   getGenerator,
   createGeneratorClass,
+  createUpdateNotifier,
   getYeomanEnvironment,
   getYeomanGenerator,
+  getUpdateNotifier,
 };

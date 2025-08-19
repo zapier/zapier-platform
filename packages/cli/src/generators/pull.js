@@ -2,7 +2,7 @@ const colors = require('colors/safe');
 const debug = require('debug')('zapier:pull');
 const inquirer = require('inquirer');
 const path = require('path');
-const { createGeneratorClass } = require('../utils/yeoman-wrapper');
+const { createGeneratorClass } = require('../utils/esm-wrapper');
 
 const maybeOverwriteFiles = async (gen) => {
   const dstDir = gen.options.dstDir;
