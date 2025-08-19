@@ -1,3 +1,60 @@
+## 17.6.0
+
+_Released 2025-08-11_
+
+## cli
+
+- :nail_care: Add user and account filters to canary ([#1066](https://github.com/zapier/zapier-platform/pull/1066))
+
+## core
+
+- :nail_care: Export `console` from zapier-platform-core ([#1077](https://github.com/zapier/zapier-platform/pull/1077), [#1102](https://github.com/zapier/zapier-platform/pull/1102))
+- :bug: Allow safe `authData` keys to be logged uncensored ([#1097](https://github.com/zapier/zapier-platform/pull/1097))
+
+## schema
+
+None!
+
+## 17.5.0
+
+_Released 2025-07-30_
+
+### cli
+
+- :bug: Fix missing `bundle.inputDataRaw` in invoke command ([#1072](https://github.com/zapier/zapier-platform/pull/1072))
+- :bug: Fix error `'No loader is configured for ".node" files'` on `zapier build` ([#1094](https://github.com/zapier/zapier-platform/pull/1094))
+- :hammer: Refactor `zapier init` to move auth befores/afters into `middleware.js` instead of `authentication.js` ([#1073](https://github.com/zapier/zapier-platform/pull/1073))
+
+### core
+
+- :nail_care: Export errors from `zapier-platform-core` ([#1075](https://github.com/zapier/zapier-platform/pull/1075))
+- :hammer: Update `form-data` from `4.0.1` to `4.0.4` ([#1096](https://github.com/zapier/zapier-platform/pull/1096))
+
+### schema
+
+- :nail_care: Expanded `AuthFieldSchema` with additional field types:
+  - Added support for the `integer` type ([#1095](https://github.com/zapier/zapier-platform/pull/1095)).
+  - Added support for the `text` type ([#1098](https://github.com/zapier/zapier-platform/pull/1098)).
+
+## 17.4.0
+
+_Released 2025-07-23_
+
+### cli
+
+- :bug: Fix regression bugs with `zapier build`, where it can fail with "'The "path" argument must be of type string'" when [dirent.parentPath](https://nodejs.org/docs/latest/api/fs.html#direntparentpath) property is missing ([#1087](https://github.com/zapier/zapier-platform/pull/1087))
+- :bug: Fixes a regression where `zapier build --skip-npm-install` fails when an app has a linked dependencies in its `node_modules` ([#1089](https://github.com/zapier/zapier-platform/pull/1089))
+- :bug: Remove empty array at the end of `zapier versions -f json` ([#1086](https://github.com/zapier/zapier-platform/pull/1086))
+- :nail_care: Add additional Typescript auth options to `zapier init` ([#1067](https://github.com/zapier/zapier-platform/pull/1067))
+
+### core
+
+- :nail_care: Support compression when stashing large input bundles ([#1085](https://github.com/zapier/zapier-platform/pull/1085))
+
+### schema
+
+None!
+
 ## 17.3.1
 
 _Released 2025-07-17_
@@ -24,11 +81,13 @@ _Released 2025-07-01_
 This release introduces two major improvements: `zapier build` and input field grouping.
 
 The `zapier build` command has been revamped to:
+
 - Better support npm/yarn/pnpm workspaces
 - Run faster when the `--skip-npm-install` flag is enabled
 - Test the build.zip file to verify all load-time dependencies are included (not applicable on Windows)
 
 Input Field Grouping:
+
 - Grouping support, intended for visual purpose in products, has been added to the input fields.
 
 ### cli
@@ -52,7 +111,6 @@ Input Field Grouping:
 ## 17.2.0
 
 _Released 2025-06-11_
-
 
 ### cli
 
@@ -167,13 +225,15 @@ Version `17.0.0` is a breaking change release that contains several important up
 You can now build integrations using modern ES Module syntax. This means you can use `import ... from ...` instead of `require(...)`, and use newer npm packages that support only ESM.
 
 To start using ESM for your integration project:
+
 - Set `"type": "module"` in your `package.json`
 - Replace `main` with `exports` in your `package.json`
 
 For a complete example, check out [minimal-esm](https://github.com/zapier/zapier-platform/tree/82b11aef29a4e7cb576431dba24cba0066c5057b/example-apps/minimal-esm) or [typescript-esm](https://github.com/zapier/zapier-platform/tree/82b11aef29a4e7cb576431dba24cba0066c5057b/example-apps/typescript-esm) (both can be initialized using [`zapier init`](https://github.com/zapier/zapier-platform/blob/82b11aef29a4e7cb576431dba24cba0066c5057b/packages/cli/docs/cli.md#init) with the `-m esm` flag).
 
 Additionally, this update means it's no longer required for every integration's entry point to be `index.js` at the root directory. Instead, the entry point can be defined in `package.json`.
-  - For example, see the Typescript ESM example integration [at this link](https://github.com/zapier/zapier-platform/tree/main/example-apps/typescript-esm) - it no longer contains an `index.js` file at the root directory, rather the entry point is defined via `"exports": "./dist/index.js"` in the integration's [package.json](https://github.com/zapier/zapier-platform/blob/main/example-apps/typescript-esm/package.json#L20)
+
+- For example, see the Typescript ESM example integration [at this link](https://github.com/zapier/zapier-platform/tree/main/example-apps/typescript-esm) - it no longer contains an `index.js` file at the root directory, rather the entry point is defined via `"exports": "./dist/index.js"` in the integration's [package.json](https://github.com/zapier/zapier-platform/blob/main/example-apps/typescript-esm/package.json#L20)
 
 ### Typing Improvements
 
@@ -230,17 +290,17 @@ We have split authentication fields, input fields, and output fields into their 
 
 Note that a descriptive error will be thrown on `zapier validate` if your integration attempts to use an unsupported type or property to prompt you to change it; no need to manually check these. The updated schema are as follows:
 
-  - `AuthenticationSchema.fields`:
-    - The following **types** are no longer supported: `code`, `file`, `integer`, `text`
-    - The following **properties** are no longer supported: `altersDynamicFields`, `dynamic`, `meta`, `primary`, `search`, `steadyState`
-  - `BasicActionOperationSchema.inputFields`:
-    - All **types** remain the same.
-    - The following **properties** are no longer supported: `primary`, `steadyState`
-  - `BasicActionOperationSchema.outputFields`:
-    - The following **types** are no longer supported: `text`, `copy`, `code`
-    - The following **properties** are no longer supported: `altersDynamicFields`, `choices`, `computed`, `dynamic`, `helpText`, `inputFormat`, `meta`, `placeholder`, `search`
+- `AuthenticationSchema.fields`:
+  - The following **types** are no longer supported: `code`, `file`, `integer`, `text`
+  - The following **properties** are no longer supported: `altersDynamicFields`, `dynamic`, `meta`, `primary`, `search`, `steadyState`
+- `BasicActionOperationSchema.inputFields`:
+  - All **types** remain the same.
+  - The following **properties** are no longer supported: `primary`, `steadyState`
+- `BasicActionOperationSchema.outputFields`:
+  - The following **types** are no longer supported: `text`, `copy`, `code`
+  - The following **properties** are no longer supported: `altersDynamicFields`, `choices`, `computed`, `dynamic`, `helpText`, `inputFormat`, `meta`, `placeholder`, `search`
 
----------
+---
 
 Apart from these major changes, here are the detailed release notes for this release (**note that ❗ denotes a breaking change**):
 
@@ -272,8 +332,6 @@ Apart from these major changes, here are the detailed release notes for this rel
 ### misc
 
 - :hammer: Dependency updates - full list in the PR ([#1010](https://github.com/zapier/zapier-platform/pull/1010))
-
-
 
 ## Changelog Archive for Older Releases
 

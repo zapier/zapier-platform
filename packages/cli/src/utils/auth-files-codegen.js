@@ -50,8 +50,6 @@ const authFileExport = (
   authType,
   authDescription,
   {
-    beforeFuncNames = [],
-    afterFuncNames = [],
     extraConfigProps = [],
     connectionLabel = strLiteral('{{json.username}}'),
     test = objProperty('test'),
@@ -85,14 +83,37 @@ const authFileExport = (
       ? objTS('Authentication', ...configProps)
       : obj(...configProps);
 
-  return exportStatement(
-    obj(
-      objProperty('config', configObj),
-      objProperty('befores', arr(...beforeFuncNames)),
-      objProperty('afters', arr(...afterFuncNames)),
-    ),
-    language,
-  );
+  return exportStatement(configObj, language);
+};
+
+const middlewareFileExport = (
+  language,
+  { beforeFuncNames = [], afterFuncNames = [] },
+) => {
+  const exportConst = language === 'typescript';
+  return language === 'typescript'
+    ? [
+        // for Typescript, export the befores and afters separately as consts
+        variableAssignmentDeclaration(
+          'befores',
+          arr(...beforeFuncNames),
+          exportConst,
+        ),
+        variableAssignmentDeclaration(
+          'afters',
+          arr(...afterFuncNames),
+          exportConst,
+        ),
+      ]
+    : [
+        // for Javascript, export the befores and afters together using module.exports
+        exportStatement(
+          obj(
+            objProperty('befores', arr(...beforeFuncNames)),
+            objProperty('afters', arr(...afterFuncNames)),
+          ),
+        ),
+      ];
 };
 
 const authTestFunc = (language, testUrl = strLiteral(authJsonUrl('me'))) =>
@@ -126,20 +147,38 @@ const handleBadResponsesFunc = (
   );
 
 const basicAuthFile = (language) => {
-  const badFuncName = 'handleBadResponses';
   const fileInput = [
     authTestFunc(language),
-    handleBadResponsesFunc(badFuncName, language),
     authFileExport(
       language,
       'basic',
       '"basic" auth automatically creates "username" and "password" input fields. It also registers default middleware to create the authentication header.',
-      { afterFuncNames: [badFuncName] },
     ),
   ];
   return language === 'typescript'
     ? fileTS(standardTypes, ...fileInput)
     : file(...fileInput);
+};
+
+const basicMiddlewareFile = (language) => {
+  const badFuncName = 'handleBadResponses';
+  const fileInput = [
+    handleBadResponsesFunc(badFuncName, language),
+    ...middlewareFileExport(language, {
+      beforeFuncNames: [],
+      afterFuncNames: [badFuncName],
+    }),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const basicFiles = (language) => {
+  return {
+    middleware: basicMiddlewareFile(language),
+    authentication: basicAuthFile(language),
+  };
 };
 
 /**
@@ -274,6 +313,7 @@ const getAccessTokenFunc = (language) => {
         'If your app does an app refresh, then `refresh_token` should be returned here as well',
       ),
     ],
+    language,
   });
 };
 
@@ -288,23 +328,20 @@ const refreshTokenFunc = (language) => {
         'If the refresh token does change, return it here to update the stored value in Zapier',
       ),
     ],
+    language,
   });
 };
 
 const oauth2AuthFile = (language) => {
-  const bearerFuncName = 'includeBearerToken';
   const fileInput = [
     getAccessTokenFunc(language),
     refreshTokenFunc(language),
-    includeBearerFunc(bearerFuncName, language),
     authTestFunc(language),
     authFileExport(
       language,
       'oauth2',
       'OAuth2 is a web authentication standard. There are a lot of configuration options that will fit most any situation.',
       {
-        beforeFuncNames: [bearerFuncName],
-        afterFuncNames: [],
         extraConfigProps: [
           objProperty(
             'oauth2Config',
@@ -351,11 +388,55 @@ const oauth2AuthFile = (language) => {
     ? fileTS(standardTypes, ...fileInput)
     : file(...fileInput);
 };
+
+const oauth2MiddlewareFile = (language) => {
+  const bearerFuncName = 'includeBearerToken';
+  const fileInput = [
+    includeBearerFunc(bearerFuncName, language),
+    ...middlewareFileExport(language, {
+      beforeFuncNames: [bearerFuncName],
+      afterFuncNames: [],
+    }),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const oauth2Files = (language) => {
+  return {
+    middleware: oauth2MiddlewareFile(language),
+    authentication: oauth2AuthFile(language),
+  };
+};
+
 const customAuthFile = (language) => {
+  const fileInput = [
+    authTestFunc(language),
+    authFileExport(
+      language,
+      'custom',
+      '"custom" is the catch-all auth type. The user supplies some info and Zapier can make authenticated requests with it',
+      {
+        authFields: [
+          obj(
+            objProperty('key', strLiteral('apiKey')),
+            objProperty('label', strLiteral('API Key')),
+            objProperty('required', 'true'),
+          ),
+        ],
+      },
+    ),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const customMiddlewareFile = (language) => {
   const includeApiKeyFuncName = 'includeApiKey';
   const handleResponseFuncName = 'handleBadResponses';
   const fileInput = [
-    authTestFunc(language),
     handleBadResponsesFunc(handleResponseFuncName, language, 'API Key'),
     beforeMiddlewareFunc(
       includeApiKeyFuncName,
@@ -372,30 +453,24 @@ const customAuthFile = (language) => {
         comment('request.headers.Authorization = bundle.authData.apiKey;'),
       ),
     ),
-    authFileExport(
-      language,
-      'custom',
-      '"custom" is the catch-all auth type. The user supplies some info and Zapier can make authenticated requests with it',
-      {
-        beforeFuncNames: [includeApiKeyFuncName],
-        afterFuncNames: [handleResponseFuncName],
-        authFields: [
-          obj(
-            objProperty('key', strLiteral('apiKey')),
-            objProperty('label', strLiteral('API Key')),
-            objProperty('required', 'true'),
-          ),
-        ],
-      },
-    ),
+    ...middlewareFileExport(language, {
+      beforeFuncNames: [includeApiKeyFuncName],
+      afterFuncNames: [handleResponseFuncName],
+    }),
   ];
   return language === 'typescript'
     ? fileTS(standardTypes, ...fileInput)
     : file(...fileInput);
 };
 
+const customFiles = (language) => {
+  return {
+    middleware: customMiddlewareFile(language),
+    authentication: customAuthFile(language),
+  };
+};
+
 const digestAuthFile = (language) => {
-  const badFuncName = 'handleBadResponses';
   const fileInput = [
     // special digest auth
     authTestFunc(
@@ -404,12 +479,10 @@ const digestAuthFile = (language) => {
         'https://httpbin.zapier-tooling.com/digest-auth/auth/myuser/mypass',
       ),
     ),
-    handleBadResponsesFunc(badFuncName, language),
     authFileExport(
       language,
       'digest',
       '"digest" auth automatically creates "username" and "password" input fields. It also registers default middleware to create the authentication header.',
-      { afterFuncNames: [badFuncName] },
     ),
   ];
   return language === 'typescript'
@@ -417,9 +490,29 @@ const digestAuthFile = (language) => {
     : file(...fileInput);
 };
 
+const digestMiddlewareFile = (language) => {
+  const badFuncName = 'handleBadResponses';
+  const fileInput = [
+    handleBadResponsesFunc(badFuncName, language),
+    ...middlewareFileExport(language, {
+      beforeFuncNames: [],
+      afterFuncNames: [badFuncName],
+    }),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const digestFiles = (language) => {
+  return {
+    middleware: digestMiddlewareFile(language),
+    authentication: digestAuthFile(language),
+  };
+};
+
 const sessionAuthFile = (language) => {
   const getSessionKeyName = 'getSessionKey';
-  const includeSessionKeyName = 'includeSessionKeyHeader';
   const fileInput = [
     authTestFunc(language),
     tokenExchangeFunc(
@@ -437,25 +530,11 @@ const sessionAuthFile = (language) => {
         objProperty('sessionKey', 'response.data.sessionKey || "secret"'),
       ],
     ),
-    beforeMiddlewareFunc(
-      includeSessionKeyName,
-      language,
-      ifStatement(
-        'bundle.authData.sessionKey',
-        assignmentStatement('request.headers', 'request.headers || {}'),
-        assignmentStatement(
-          "request.headers['X-API-Key']",
-          'bundle.authData.sessionKey',
-        ),
-      ),
-    ),
     authFileExport(
       language,
       'session',
       '"session" auth exchanges user data for a different session token (that may be periodically refreshed")',
       {
-        beforeFuncNames: [includeSessionKeyName],
-        afterFuncNames: [],
         authFields: [
           obj(
             objProperty('key', strLiteral('username')),
@@ -482,6 +561,38 @@ const sessionAuthFile = (language) => {
   return language === 'typescript'
     ? fileTS(standardTypes, ...fileInput)
     : file(...fileInput);
+};
+
+const sessionMiddlewareFile = (language) => {
+  const includeSessionKeyName = 'includeSessionKeyHeader';
+  const fileInput = [
+    beforeMiddlewareFunc(
+      includeSessionKeyName,
+      language,
+      ifStatement(
+        'bundle.authData.sessionKey',
+        assignmentStatement('request.headers', 'request.headers || {}'),
+        assignmentStatement(
+          "request.headers['X-API-Key']",
+          'bundle.authData.sessionKey',
+        ),
+      ),
+    ),
+    ...middlewareFileExport(language, {
+      beforeFuncNames: [includeSessionKeyName],
+      afterFuncNames: [],
+    }),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const sessionFiles = (language) => {
+  return {
+    middleware: sessionMiddlewareFile(language),
+    authentication: sessionAuthFile(language),
+  };
 };
 
 // just different enough from oauth2 that it gets its own function
@@ -520,7 +631,6 @@ const oauth1AuthFile = (language) => {
   const accessTokenVarName = 'ACCESS_TOKEN_URL';
   const authorizeUrlVarName = 'AUTHORIZE_URL';
   const getRequestTokenFuncName = 'getRequestToken';
-  const includeAccessTokenFuncName = 'includeAccessToken';
   const fileInput = [
     variableAssignmentDeclaration('querystring', "require('querystring')"),
     block(
@@ -553,33 +663,8 @@ const oauth1AuthFile = (language) => {
       objProperty('oauth_token_secret', 'bundle.inputData.oauth_token_secret'),
       objProperty('oauth_verifier', 'bundle.inputData.oauth_verifier'),
     ),
-    beforeMiddlewareFunc(
-      includeAccessTokenFuncName,
-      language,
-      ifStatement(
-        'bundle.authData && bundle.authData.oauth_token && bundle.authData.oauth_token_secret',
-        comment(
-          'Put your OAuth1 credentials in `req.auth`, Zapier will sign the request for you.',
-        ),
-        assignmentStatement(
-          'request.auth',
-          obj(
-            objProperty('oauth_consumer_key', 'process.env.CLIENT_ID'),
-            objProperty('oauth_consumer_secret', 'process.env.CLIENT_SECRET'),
-            objProperty('oauth_token', 'bundle.authData.oauth_token'),
-            objProperty(
-              'oauth_token_secret',
-              'bundle.authData.oauth_token_secret',
-            ),
-            comment("oauth_version: '1.0', // sometimes required"),
-            objProperty('...(request.auth || {})'),
-          ),
-        ),
-      ),
-    ),
     authTestFunc(language, strLiteral('https://api.trello.com/1/members/me/')),
     authFileExport(language, 'oauth1', 'OAuth1 is an older form of OAuth', {
-      beforeFuncNames: [includeAccessTokenFuncName],
       extraConfigProps: [
         objProperty(
           'oauth1Config',
@@ -619,11 +704,55 @@ const oauth1AuthFile = (language) => {
     : file(...fileInput);
 };
 
+const oauth1MiddlewareFile = (language) => {
+  const includeAccessTokenFuncName = 'includeAccessToken';
+  const fileInput = [
+    beforeMiddlewareFunc(
+      includeAccessTokenFuncName,
+      language,
+      ifStatement(
+        'bundle.authData && bundle.authData.oauth_token && bundle.authData.oauth_token_secret',
+        comment(
+          'Put your OAuth1 credentials in `req.auth`, Zapier will sign the request for you.',
+        ),
+        assignmentStatement(
+          'request.auth',
+          obj(
+            objProperty('oauth_consumer_key', 'process.env.CLIENT_ID'),
+            objProperty('oauth_consumer_secret', 'process.env.CLIENT_SECRET'),
+            objProperty('oauth_token', 'bundle.authData.oauth_token'),
+            objProperty(
+              'oauth_token_secret',
+              'bundle.authData.oauth_token_secret',
+            ),
+            comment("oauth_version: '1.0', // sometimes required"),
+            objProperty('...(request.auth || {})'),
+          ),
+        ),
+      ),
+    ),
+    ...middlewareFileExport(language, {
+      beforeFuncNames: [includeAccessTokenFuncName],
+      afterFuncNames: [],
+    }),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const oauth1Files = (language) => {
+  return {
+    middleware: oauth1MiddlewareFile(language),
+    authentication: oauth1AuthFile(language),
+  };
+};
+
 module.exports = {
-  basic: basicAuthFile,
-  custom: customAuthFile,
-  digest: digestAuthFile,
-  oauth1: oauth1AuthFile,
-  oauth2: oauth2AuthFile,
-  session: sessionAuthFile,
+  basic: basicFiles,
+  custom: customFiles,
+  digest: digestFiles,
+  oauth1: oauth1Files,
+  oauth2: oauth2Files,
+  session: sessionFiles,
 };

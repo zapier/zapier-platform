@@ -29,7 +29,16 @@ module.exports = makeSchema(
       type: {
         description: 'The type of this value used to be.',
         type: 'string',
-        enum: ['string', 'number', 'boolean', 'datetime', 'copy', 'password'],
+        enum: [
+          'string',
+          'number',
+          'boolean',
+          'datetime',
+          'copy',
+          'password',
+          'integer',
+          'text',
+        ],
       },
       required: {
         description:

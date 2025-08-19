@@ -11,6 +11,8 @@ import { Headers } from 'node-fetch';
 // The EXPORTED OBJECT
 export const version: string;
 export const tools: { env: { inject: (filename?: string) => void } };
+export const console: Console;
+export const errors: ErrorsModule;
 
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
 export const createAppTester: (
@@ -138,18 +140,29 @@ export interface Bundle<
   targetUrl?: string;
 }
 
-declare class AppError extends Error {
-  constructor(message: string, code?: string, status?: number);
+// Error class types that match the runtime structure from src/errors.js
+type ErrorConstructor = new (message?: string) => Error;
+type AppErrorConstructor = new (message: string, code?: string, status?: number) => Error;
+type ThrottledErrorConstructor = new (message: string, delay?: number) => Error;
+type ResponseErrorConstructor = new (response: HttpResponse) => Error;
+
+interface ErrorsModule {
+  Error: AppErrorConstructor;
+  HaltedError: ErrorConstructor;
+  ExpiredAuthError: ErrorConstructor;
+  RefreshAuthError: ErrorConstructor;
+  ThrottledError: ThrottledErrorConstructor;
+  ResponseError: ResponseErrorConstructor;
+  CheckError: ErrorConstructor;
+  DehydrateError: ErrorConstructor;
+  MethodDoesNotExist: ErrorConstructor;
+  NotImplementedError: ErrorConstructor;
+  RequireModuleError: ErrorConstructor;
+  StashedBundleError: ErrorConstructor;
+  StopRequestError: ErrorConstructor;
+  handleError: (...args: any[]) => never;
 }
-declare class HaltedError extends Error {}
-declare class ExpiredAuthError extends Error {}
-declare class RefreshAuthError extends Error {}
-declare class ThrottledError extends Error {
-  constructor(message: string, delay?: number);
-}
-declare class ResponseError extends Error {
-  constructor(response: HttpResponse);
-}
+
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {
@@ -286,14 +299,7 @@ export interface ZObject {
     input_encoding?: string,
   ) => string;
 
-  errors: {
-    Error: typeof AppError;
-    HaltedError: typeof HaltedError;
-    ExpiredAuthError: typeof ExpiredAuthError;
-    RefreshAuthError: typeof RefreshAuthError;
-    ThrottledError: typeof ThrottledError;
-    ResponseError: typeof ResponseError;
-  };
+  errors: ErrorsModule;
 
   cache: {
     get: (key: string) => Promise<any>;

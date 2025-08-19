@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "17.3.1",
+  "version": "17.6.0",
   "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -73,7 +73,7 @@
     "semver": "7.7.1",
     "string-length": "4.0.2",
     "through2": "4.0.2",
-    "tmp": "0.2.3",
+    "tmp": "0.2.4",
     "traverse": "0.6.11",
     "update-notifier": "5.1.0",
     "yeoman-environment": "3.19.3",
