@@ -126,7 +126,7 @@ describe('searchOrCreateKeys', () => {
     const results = schema.validateAppDefinition(definition);
     results.errors.should.have.length(1);
     results.errors[0].stack.should.eql(
-      'instance.searchAndCreates.findOrCreateProduct additionalProperty "test" exists in instance when not allowed',
+      'instance.searchAndCreates.findOrCreateProduct is not allowed to have the additional property "test"',
     );
   });
 

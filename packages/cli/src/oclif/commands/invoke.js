@@ -1075,7 +1075,7 @@ class InvokeCommand extends BaseCommand {
   async perform() {
     let authId = this.flags['authentication-id'];
 
-    const dotenvResult = dotenv.config({ override: true });
+    const dotenvResult = dotenv.config({ override: true, quiet: true });
     if (!authId && _.isEmpty(dotenvResult.parsed)) {
       console.warn(
         'The .env file does not exist or is empty. ' +
