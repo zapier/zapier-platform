@@ -1,14 +1,14 @@
 const AdmZip = require('adm-zip');
 const { ensureFileSync } = require('fs-extra');
 const path = require('path');
-const yeoman = require('yeoman-environment');
+const { createEnv } = require('../../utils/yeoman-wrapper');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
 const { ensureDir, makeTempDir, removeDirSync } = require('../../utils/files');
 const { listFiles } = require('../../utils/build');
 const { buildFlags } = require('../buildFlags');
-const PullGenerator = require('../../generators/pull');
+const PullGeneratorPromise = require('../../generators/pull');
 
 class PullCommand extends ZapierBaseCommand {
   async perform() {
@@ -30,7 +30,8 @@ class PullCommand extends ZapierBaseCommand {
       const currentDir = process.cwd();
       const sourceFiles = await listFiles(srcDst);
 
-      const env = yeoman.createEnv();
+      const env = await createEnv();
+      const PullGenerator = await PullGeneratorPromise;
       const namespace = 'zapier:pull';
       env.registerStub(PullGenerator, namespace);
       await env.run(namespace, {

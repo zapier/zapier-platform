@@ -54,7 +54,7 @@
     "decompress": "4.2.1",
     "dotenv": "17.2.1",
     "esbuild": "0.25.8",
-    "fs-extra": "11.3.0",
+    "fs-extra": "11.3.1",
     "gulp-filter": "7.0.0",
     "gulp-prettier": "5.0.0",
     "ignore": "7.0.5",
@@ -75,9 +75,9 @@
     "through2": "4.0.2",
     "tmp": "0.2.4",
     "traverse": "0.6.11",
-    "update-notifier": "5.1.0",
-    "yeoman-environment": "3.19.3",
-    "yeoman-generator": "5.9.0"
+    "update-notifier": "7.3.1",
+    "yeoman-environment": "4.4.3",
+    "yeoman-generator": "7.5.1"
   },
   "devDependencies": {
     "@oclif/test": "^4.1.13",

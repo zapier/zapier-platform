@@ -1,18 +1,22 @@
 const { join } = require('path');
 
 const { Args, Flags } = require('@oclif/core');
-const yeoman = require('yeoman-environment');
+const { createEnv } = require('../../utils/yeoman-wrapper');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
-const { TEMPLATE_CHOICES, ProjectGenerator } = require('../../generators');
+const {
+  TEMPLATE_CHOICES,
+  ProjectGenerator: ProjectGeneratorPromise,
+} = require('../../generators');
 
 class InitCommand extends BaseCommand {
   async perform() {
     const { path } = this.args;
     const { template, module, language } = this.flags;
 
-    const env = yeoman.createEnv();
+    const env = await createEnv();
+    const ProjectGenerator = await ProjectGeneratorPromise;
     env.registerStub(ProjectGenerator, 'zapier:integration');
 
     await env.run('zapier:integration', { path, template, module, language });

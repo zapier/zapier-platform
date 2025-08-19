@@ -2,12 +2,12 @@ const path = require('path');
 
 const { merge } = require('lodash');
 const filter = require('gulp-filter');
-const Generator = require('yeoman-generator');
+const { createGeneratorClass } = require('../utils/yeoman-wrapper');
 const prettier = require('gulp-prettier');
 
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 const authFilesCodegen = require('../utils/auth-files-codegen');
-const { PullGenerator } = require('./pull');
+const PullGeneratorPromise = require('./pull');
 
 const writeGenericReadme = (gen) => {
   gen.fs.copyTpl(
@@ -237,89 +237,91 @@ const TS_SUPPORTED_TEMPLATES = [
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
 
-class ProjectGenerator extends Generator {
-  initializing() {
-    this.sourceRoot(path.resolve(__dirname, 'templates'));
-    this.destinationRoot(path.resolve(this.options.path));
+const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
+  return class ProjectGenerator extends Generator {
+    initializing() {
+      this.sourceRoot(path.resolve(__dirname, 'templates'));
+      this.destinationRoot(path.resolve(this.options.path));
 
-    const jsFilter = filter(['*.js', '*.json', '*.ts'], { restore: true });
-    this.queueTransformStream([
-      jsFilter,
-      prettier({ singleQuote: true }),
-      jsFilter.restore,
-    ]);
-  }
-
-  async prompting() {
-    if (!this.options.template) {
-      this.answers = await this.prompt([
-        {
-          type: 'list',
-          name: 'template',
-          choices: TEMPLATE_CHOICES,
-          message: 'Choose a project template to start with:',
-          default: 'minimal',
-        },
+      const jsFilter = filter(['*.js', '*.json', '*.ts'], { restore: true });
+      this.queueTransformStream([
+        jsFilter,
+        prettier({ singleQuote: true }),
+        jsFilter.restore,
       ]);
-      this.options.template = this.answers.template;
     }
 
-    if (
-      ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
-      !this.options.module
-    ) {
-      this.answers = await this.prompt([
-        {
-          type: 'list',
-          name: 'module',
-          choices: ['esm', 'commonjs'],
-          message: 'Choose module type:',
-          default: 'esm',
-        },
-      ]);
-      this.options.module = this.answers.module;
-    }
-
-    if (this.options.language) {
-      if (this.options.language === 'typescript') {
-        // check if the template supports typescript
-        if (!TS_SUPPORTED_TEMPLATES.includes(this.options.template)) {
-          throw new Error(
-            'Typescript is not supported for this template, please use a different template or set the language to javascript. Supported templates: ' +
-              TS_SUPPORTED_TEMPLATES.join(', '),
-          );
-        }
-        // if they try to combine typescript with commonjs, throw an error
-        if (this.options.module === 'commonjs') {
-          throw new Error('Typescript is not supported for commonjs');
-        } // esm is supported for typescript templates
+    async prompting() {
+      if (!this.options.template) {
+        this.answers = await this.prompt([
+          {
+            type: 'list',
+            name: 'template',
+            choices: TEMPLATE_CHOICES,
+            message: 'Choose a project template to start with:',
+            default: 'minimal',
+          },
+        ]);
+        this.options.template = this.answers.template;
       }
-    } else {
-      // default to javascript for the language if it's not set
-      this.options.language = 'javascript';
+
+      if (
+        ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
+        !this.options.module
+      ) {
+        this.answers = await this.prompt([
+          {
+            type: 'list',
+            name: 'module',
+            choices: ['esm', 'commonjs'],
+            message: 'Choose module type:',
+            default: 'esm',
+          },
+        ]);
+        this.options.module = this.answers.module;
+      }
+
+      if (this.options.language) {
+        if (this.options.language === 'typescript') {
+          // check if the template supports typescript
+          if (!TS_SUPPORTED_TEMPLATES.includes(this.options.template)) {
+            throw new Error(
+              'Typescript is not supported for this template, please use a different template or set the language to javascript. Supported templates: ' +
+                TS_SUPPORTED_TEMPLATES.join(', '),
+            );
+          }
+          // if they try to combine typescript with commonjs, throw an error
+          if (this.options.module === 'commonjs') {
+            throw new Error('Typescript is not supported for commonjs');
+          } // esm is supported for typescript templates
+        }
+      } else {
+        // default to javascript for the language if it's not set
+        this.options.language = 'javascript';
+      }
+
+      if (
+        !ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
+        this.options.module === 'esm' &&
+        this.options.language === 'javascript'
+      ) {
+        throw new Error(
+          'ESM is not supported for this template, please use a different template, set the module to commonjs, or try setting the language to Typescript',
+        );
+      }
     }
 
-    if (
-      !ESM_SUPPORTED_TEMPLATES.includes(this.options.template) &&
-      this.options.module === 'esm' &&
-      this.options.language === 'javascript'
-    ) {
-      throw new Error(
-        'ESM is not supported for this template, please use a different template, set the module to commonjs, or try setting the language to Typescript',
-      );
+    writing() {
+      this.options.packageName = path.basename(this.options.path);
+
+      const writeFunc = TEMPLATE_ROUTES[this.options.template];
+      writeFunc(this);
     }
-  }
-
-  writing() {
-    this.options.packageName = path.basename(this.options.path);
-
-    const writeFunc = TEMPLATE_ROUTES[this.options.template];
-    writeFunc(this);
-  }
-}
+  };
+});
 
 module.exports = {
   TEMPLATE_CHOICES,
-  PullGenerator,
-  ProjectGenerator,
+  PullGenerator: PullGeneratorPromise,
+  ProjectGenerator: ProjectGeneratorPromise,
 };
