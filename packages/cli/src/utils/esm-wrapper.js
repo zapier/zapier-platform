@@ -81,10 +81,6 @@ async function createUpdateNotifier(options) {
 
 module.exports = {
   createEnv,
-  getGenerator,
   createGeneratorClass,
   createUpdateNotifier,
-  getYeomanEnvironment,
-  getYeomanGenerator,
-  getUpdateNotifier,
 };
