@@ -1,7 +1,9 @@
-const fs = require('fs');
+const fs = require('node:fs');
+
 const nock = require('nock');
 const { expect } = require('chai');
-const { captureOutput, runCommand } = require('@oclif/test');
+const { runCommand } = require('@oclif/test');
+
 const {
   BASE_ENDPOINT,
   MIN_TITLE_LENGTH,
@@ -48,12 +50,10 @@ describe('RegisterCommand', () => {
     it('zapier register should enforce character minimum on title flag', async function () {
       setup();
 
-      await captureOutput(async function () {
-        const { error } = await runCommand(['register', 't']);
-        expect(error.message).to.contain(
-          `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`,
-        );
-      });
+      const { error } = await runCommand(['register', 't']);
+      expect(error.message).to.contain(
+        `Please provide a title that is ${MIN_TITLE_LENGTH} characters or more.`,
+      );
     });
   });
 
@@ -61,16 +61,14 @@ describe('RegisterCommand', () => {
     it('zapier register should enforce character limit on desc flag', async function () {
       setup();
 
-      await captureOutput(async function () {
-        const { error } = await runCommand([
-          'register',
-          '--desc',
-          'Cupidatat non elit non enim enim cupidatat ea in consequat exercitation do nisi occaecat amet id deserunt nostrud quis aliqua id fugiat sit elit.',
-        ]);
-        expect(error.message).to.contain(
-          `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`,
-        );
-      });
+      const { error } = await runCommand([
+        'register',
+        '--desc',
+        '"Cupidatat non elit non enim enim cupidatat ea in consequat exercitation do nisi occaecat amet id deserunt nostrud quis aliqua id fugiat sit elit."',
+      ]);
+      expect(error.message).to.contain(
+        `Please provide a description that is ${MAX_DESCRIPTION_LENGTH} characters or less.`,
+      );
     });
   });
 
@@ -78,46 +76,36 @@ describe('RegisterCommand', () => {
     it('zapier register should throw error for invalid role', async function () {
       setup();
 
-      await captureOutput(async function () {
-        const { error } = await runCommand([
-          'register',
-          '--role',
-          'invalidRole',
-        ]);
-        expect(error.message).to.contain(
-          'invalidRole is not a valid value for role',
-        );
-      });
+      const { error } = await runCommand(['register', '--role', 'invalidRole']);
+      expect(error.message).to.contain(
+        'invalidRole is not a valid value for role',
+      );
     });
 
     it('zapier register should throw error for invalid category', async function () {
       setup();
 
-      await captureOutput(async function () {
-        const { error } = await runCommand([
-          'register',
-          '--category',
-          'invalidCategory',
-        ]);
-        expect(error.message).to.contain(
-          'invalidCategory is not a valid value for category',
-        );
-      });
+      const { error } = await runCommand([
+        'register',
+        '--category',
+        'invalidCategory',
+      ]);
+      expect(error.message).to.contain(
+        'invalidCategory is not a valid value for category',
+      );
     });
 
     it('zapier register should throw error for invalid audience', async function () {
       setup();
 
-      await captureOutput(async function () {
-        const { error } = await runCommand([
-          'register',
-          '--audience',
-          'invalidAudience',
-        ]);
-        expect(error.message).to.contain(
-          'invalidAudience is not a valid value for audience',
-        );
-      });
+      const { error } = await runCommand([
+        'register',
+        '--audience',
+        'invalidAudience',
+      ]);
+      expect(error.message).to.contain(
+        'invalidAudience is not a valid value for audience',
+      );
     });
   });
 
@@ -134,27 +122,24 @@ describe('RegisterCommand', () => {
     it('zapier register should successfully register an app with all data provided', async function () {
       setup();
 
-      await captureOutput(async function () {
-        const { error } = await runCommand([
-          'register',
-          'My Cool Integration',
-          '--desc',
-          'My Cool Integration helps you integrate your apps with the apps that you need.',
-          '--url',
-          'https://www.zapier.com',
-          '--audience',
-          'private',
-          '--role',
-          'employee',
-          '--category',
-          'marketing-automation',
-          '--subscribe',
-        ]);
-
-        expect(error.message).to.contain(
-          'invalidAudience is not a valid value for audience',
-        );
-      });
+      const { stdout } = await runCommand([
+        'register',
+        '"My Cool Integration"',
+        '--desc',
+        '"My Cool Integration helps you integrate your apps with the apps that you need."',
+        '--url',
+        'https://www.zapier.com',
+        '--audience',
+        'private',
+        '--role',
+        'employee',
+        '--category',
+        'marketing-automation',
+        '--subscribe',
+      ]);
+      expect(stdout).to.contain(
+        'Finished! Now that your integration is registered with Zapier, you can `zapier push`!',
+      );
     });
   });
 
@@ -188,53 +173,45 @@ describe('RegisterCommand', () => {
     it('zapier register should successfully register an app with all data provided', async function () {
       setup();
 
-      await captureOutput(async function () {
-        const { error } = await runCommand([
-          'register',
-          'Hello',
-          '-D',
-          'Helps you in some way.',
-          '-u',
-          'https://example.com',
-          '-a',
-          'global',
-          '-r',
-          'contractor',
-          '-c',
-          'productivity',
-          '--yes',
-        ]);
-
-        expect(error.message).to.contain(
-          'zapier register --yes should update an app without prompts',
-        );
-      });
+      const { stdout } = await runCommand([
+        'register',
+        'Hello',
+        '-D',
+        '"Helps you in some way."',
+        '-u',
+        'https://example.com',
+        '-a',
+        'global',
+        '-r',
+        'contractor',
+        '-c',
+        'productivity',
+        '--yes',
+      ]);
+      expect(stdout).to.contain('Integration successfully updated!');
     });
 
     it('zapier register should not allow a user to update a pre-existing public app', async function () {
       setup(true);
 
-      await captureOutput(async function () {
-        const { error } = await runCommand([
-          'register',
-          'Hello',
-          '-D',
-          'Helps you in some way.',
-          '-u',
-          'https://example.com',
-          '-a',
-          'global',
-          '-r',
-          'contractor',
-          '-c',
-          'productivity',
-          '--yes',
-        ]);
-
-        expect(error.message).to.contain(
-          "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com.",
-        );
-      });
+      const { error } = await runCommand([
+        'register',
+        'Hello',
+        '-D',
+        '"Helps you in some way."',
+        '-u',
+        'https://example.com',
+        '-a',
+        'global',
+        '-r',
+        'contractor',
+        '-c',
+        'productivity',
+        '--yes',
+      ]);
+      expect(error.message).to.contain(
+        "You can't edit settings for this integration. To edit your integration details on Zapier's public app directory, email partners@zapier.com.",
+      );
     });
   });
 });
