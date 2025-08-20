@@ -32,9 +32,9 @@ jobs:
         node-version: [18.x, 20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -81,8 +81,7 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          # TODO: Fix tests on Windows
-          # - windows-latest
+          - windows-2025
         node-version: [18.x, 20.x]
 
     steps:
@@ -115,9 +114,9 @@ jobs:
         node-version: [18.x, 20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -144,14 +143,13 @@ jobs:
         os:
           - macos-latest
           - ubuntu-latest
-          # TODO: Fix tests on Windows
-          # - windows-latest
+          - windows-2025
         node-version: [18.x, 20.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
