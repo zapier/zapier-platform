@@ -111,6 +111,10 @@ const createRpcClient = (event) => {
         if (res.status >= 500) {
           throw new Error('Unable to reach the RPC server');
         }
+        if (res.status === 413) {
+          throw new Error('The request is too large to be processed');
+        }
+
         if (res.content) {
           // check if the ids match
           if (res.content.id !== id) {
