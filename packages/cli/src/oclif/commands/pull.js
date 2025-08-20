@@ -6,9 +6,17 @@ const yeoman = require('yeoman-environment');
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
 const { ensureDir, makeTempDir, removeDirSync } = require('../../utils/files');
-const { listFiles } = require('../../utils/build');
+const { walkDirWithPresetBlocklist } = require('../../utils/build');
 const { buildFlags } = require('../buildFlags');
 const PullGenerator = require('../../generators/pull');
+
+const listFiles = (dir) => {
+  const relPaths = [];
+  for (const entry of walkDirWithPresetBlocklist(dir)) {
+    relPaths.push(path.join(path.relative(dir, entry.parentPath), entry.name));
+  }
+  return relPaths;
+};
 
 class PullCommand extends ZapierBaseCommand {
   async perform() {
@@ -28,7 +36,7 @@ class PullCommand extends ZapierBaseCommand {
 
       // Prompt user to confirm overwrite
       const currentDir = process.cwd();
-      const sourceFiles = await listFiles(srcDst);
+      const sourceFiles = listFiles(srcDst);
 
       const env = yeoman.createEnv();
       const namespace = 'zapier:pull';
