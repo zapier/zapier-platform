@@ -127,14 +127,22 @@ const authTypes = {
   'session-auth': 'session',
 };
 
-const writeGenericAuth = (gen) => {
+const writeGenericAuth = async (gen) => {
   const authType = authTypes[gen.options.template];
   const content = authFilesCodegen[authType](gen.options.language);
   const destPath = (key) =>
     gen.options.language === 'typescript' ? `src/${key}.ts` : `${key}.js`;
-  Object.entries(content).forEach(([key, value]) => {
-    gen.fs.write(gen.destinationPath(destPath(key)), value);
-  });
+
+  // Apply prettier formatting to generated auth files since gen.fs.write bypasses transform streams
+  const prettier = require('prettier');
+
+  for (const [key, value] of Object.entries(content)) {
+    const formatted = await prettier.format(value, {
+      singleQuote: true,
+      parser: gen.options.language === 'typescript' ? 'typescript' : 'babel',
+    });
+    gen.fs.write(gen.destinationPath(destPath(key)), formatted);
+  }
 };
 
 const writeGenericAuthTest = (gen) => {
@@ -157,7 +165,7 @@ const writeGenericTest = (gen) => {
 };
 
 // Write files for templates that demonstrate an auth type
-const writeForAuthTemplate = (gen) => {
+const writeForAuthTemplate = async (gen) => {
   writeGitignore(gen);
   writeGenericReadme(gen);
   if (gen.options.language === 'typescript') {
@@ -171,7 +179,7 @@ const writeForAuthTemplate = (gen) => {
     writeGenericIndex(gen, true);
     writeGenericPackageJson(gen);
   }
-  writeGenericAuth(gen);
+  await writeGenericAuth(gen); // await needed because function is now async for prettier formatting
   writeGenericAuthTest(gen);
 };
 
@@ -311,11 +319,11 @@ const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
       }
     }
 
-    writing() {
+    async writing() {
       this.options.packageName = path.basename(this.options.path);
 
       const writeFunc = TEMPLATE_ROUTES[this.options.template];
-      writeFunc(this);
+      await writeFunc(this); // await needed because auth templates now use async prettier formatting
     }
   };
 });
