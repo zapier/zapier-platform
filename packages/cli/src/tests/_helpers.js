@@ -4,7 +4,15 @@ const { tmpdir } = require('os');
 const { join, resolve } = require('path');
 const { randomBytes } = require('crypto');
 
+const IS_WINDOWS = process.platform.startsWith('win');
+
 const runCommand = (cmd, args, opts = {}) => {
+  if (IS_WINDOWS) {
+    // On Windows, .cmd files are not executable on their own without a shell
+    cmd += '.cmd';
+    opts = { ...opts, shell: true };
+  }
+
   const { stdout, stderr, status } = spawnSync(cmd, args, {
     encoding: 'utf8',
     ...opts,
@@ -17,8 +25,11 @@ const runCommand = (cmd, args, opts = {}) => {
 
 const randomStr = (length = 4) => randomBytes(length).toString('hex');
 
-const getNewTempDirPath = () =>
-  join(realpathSync(tmpdir()), `zapier-${randomStr()}`);
+const getNewTempDirPath = () => {
+  // realpathSync.native() can normalize a Windows path like "C:\Users\ADMINI~1"
+  // to "C:\Users\Administrator"
+  return join(realpathSync.native(tmpdir()), `zapier-${randomStr()}`);
+};
 
 const getLastNonEmptyString = (arr) => {
   let result = null;
@@ -78,4 +89,10 @@ const npmPackCore = async () => {
   };
 };
 
-module.exports = { runCommand, getNewTempDirPath, randomStr, npmPackCore };
+module.exports = {
+  IS_WINDOWS,
+  getNewTempDirPath,
+  npmPackCore,
+  randomStr,
+  runCommand,
+};

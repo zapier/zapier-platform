@@ -272,18 +272,37 @@ const countLeadingDoubleDots = (relPath) => {
 // Join all relPaths with workingDir and return the common ancestor directory.
 const findCommonAncestor = (workingDir, relPaths) => {
   let maxLeadingDoubleDots = 0;
-  for (const relPath of relPaths) {
-    maxLeadingDoubleDots = Math.max(
-      maxLeadingDoubleDots,
-      countLeadingDoubleDots(relPath),
-    );
-  }
 
+  if (isWindows()) {
+    for (const relPath of relPaths) {
+      if (relPath.match(/^[a-zA-Z]:/)) {
+        // On Windows, relPath can be absolute if it starts with a different
+        // drive letter than workingDir.
+        return 'C:\\';
+      } else {
+        maxLeadingDoubleDots = Math.max(
+          maxLeadingDoubleDots,
+          countLeadingDoubleDots(relPath),
+        );
+      }
+    }
+  } else {
+    for (const relPath of relPaths) {
+      maxLeadingDoubleDots = Math.max(
+        maxLeadingDoubleDots,
+        countLeadingDoubleDots(relPath),
+      );
+    }
+  }
   let commonAncestor = workingDir;
   for (let i = 0; i < maxLeadingDoubleDots; i++) {
     commonAncestor = path.dirname(commonAncestor);
   }
   return commonAncestor;
+};
+
+const stripDriveLetterForZip = (pathStr) => {
+  return pathStr.replace(/^[cC]:\\/, '').replace(/^([a-zA-Z]):/, '$1');
 };
 
 const writeBuildZipDumbly = async (workingDir, zip) => {
@@ -350,7 +369,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
   // Write required files to the zip
   for (const relPath of relPaths) {
     const absPath = path.resolve(workingDir, relPath);
-    const nameInZip = path.relative(zipRoot, absPath);
+    const nameInZip = stripDriveLetterForZip(path.relative(zipRoot, absPath));
     if (nameInZip === 'package.json' && zipRoot !== workingDir) {
       // Ignore workspace root's package.json
       continue;
@@ -388,10 +407,10 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
         symlink.parentPath,
         symlink.name,
       );
-      const nameInZip = path.relative(zipRoot, absPath);
+      const nameInZip = stripDriveLetterForZip(path.relative(zipRoot, absPath));
       const targetInZip = path.relative(
-        symlink.parentPath,
-        fs.realpathSync(absPath),
+        stripDriveLetterForZip(symlink.parentPath),
+        stripDriveLetterForZip(fs.realpathSync(absPath)),
       );
       zip.symlink(nameInZip, targetInZip, 0o644);
     }

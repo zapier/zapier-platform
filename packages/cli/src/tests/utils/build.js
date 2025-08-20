@@ -1,13 +1,65 @@
-const fs = require('fs-extra');
-const path = require('path');
+const path = require('node:path');
 
+const fs = require('fs-extra');
 const decompress = require('decompress');
 const should = require('should');
 
 const build = require('../../utils/build');
 const { copyDir } = require('../../utils/files');
 const { PLATFORM_PACKAGE } = require('../../constants');
-const { runCommand, getNewTempDirPath, npmPackCore } = require('../_helpers');
+const {
+  IS_WINDOWS,
+  getNewTempDirPath,
+  npmPackCore,
+  runCommand,
+} = require('../_helpers');
+
+const decompress2 = async (input, output, opts) => {
+  const origPlatform = process.platform;
+  if (IS_WINDOWS) {
+    // The decompress package switches to hard links for symlinks on Windows to
+    // bypass permission issues. But in tests, we do need to keep symlinks and
+    // we run tests using Administrator. So we temporarily change
+    // process.platform to something else to make decompress believe it's not
+    // running on Windows.
+    // See https://github.com/kevva/decompress/blob/84a8c104/index.js#L117
+    Object.defineProperty(process, 'platform', { value: 'linux' });
+  }
+  try {
+    return await decompress(input, output, opts);
+  } finally {
+    if (IS_WINDOWS) {
+      Object.defineProperty(process, 'platform', { value: origPlatform });
+    }
+  }
+};
+
+function commonAncestor(pA, pB) {
+  const partsA = pA.split(path.sep);
+  const partsB = pB.split(path.sep);
+
+  const length = Math.min(partsA.length, partsB.length);
+  let i = 0;
+
+  const equal = IS_WINDOWS
+    ? (a, b) => a.toLowerCase() === b.toLowerCase()
+    : (a, b) => a === b;
+
+  while (i < length && equal(partsA[i], partsB[i])) {
+    i++;
+  }
+
+  const commonPath = partsA.slice(0, i).join(path.sep);
+  if (IS_WINDOWS) {
+    if (!commonPath) {
+      return 'C:\\';
+    } else {
+      return /^[a-zA-Z]:$/.test(commonPath) ? commonPath + '\\' : commonPath;
+    }
+  } else {
+    return commonPath || '/';
+  }
+}
 
 describe('build (runs slowly)', function () {
   let tmpDir, entryPoint, corePackage;
@@ -48,12 +100,20 @@ describe('build (runs slowly)', function () {
     smartPaths.should.containEql('authentication.js');
 
     // check that required package files are grabbed
-    smartPaths.should.containEql('node_modules/zapier-platform-core/index.js');
-    smartPaths.should.containEql('node_modules/node-fetch/lib/index.js');
+    smartPaths.should.containEql(
+      path.normalize('node_modules/zapier-platform-core/index.js'),
+    );
+    smartPaths.should.containEql(
+      path.normalize('node_modules/node-fetch/lib/index.js'),
+    );
 
     // check that unnecessary package files are omitted
-    smartPaths.should.not.containEql('node_modules/jest/package.json');
-    smartPaths.should.not.containEql('node_modules/node-fetch/README.md');
+    smartPaths.should.not.containEql(
+      path.normalize('node_modules/jest/package.json'),
+    );
+    smartPaths.should.not.containEql(
+      path.normalize('node_modules/node-fetch/README.md'),
+    );
 
     smartPaths.length.should.be.within(200, 332);
   });
@@ -66,13 +126,21 @@ describe('build (runs slowly)', function () {
     // check that required files are present
     dumbPaths.should.containEql('index.js');
     dumbPaths.should.containEql('authentication.js');
-    dumbPaths.should.containEql('node_modules/zapier-platform-core/index.js');
-    dumbPaths.should.containEql('node_modules/node-fetch/lib/index.js');
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/zapier-platform-core/index.js'),
+    );
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/node-fetch/lib/index.js'),
+    );
 
     // check that non-required files are also present
-    dumbPaths.should.containEql('node_modules/jest/package.json');
-    dumbPaths.should.containEql('node_modules/jest/README.md');
-    dumbPaths.should.containEql('node_modules/node-fetch/README.md');
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/jest/package.json'),
+    );
+    dumbPaths.should.containEql(path.normalize('node_modules/jest/README.md'));
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/node-fetch/README.md'),
+    );
 
     dumbPaths.length.should.be.within(3000, 10000);
   });
@@ -106,9 +174,9 @@ describe('build (runs slowly)', function () {
     });
     dumbPaths.should.containEql('safe.js');
     dumbPaths.should.not.containEql('.env');
-    dumbPaths.should.not.containEql('build/the-build.zip');
+    dumbPaths.should.not.containEql(path.normalize('build/the-build.zip'));
     dumbPaths.should.not.containEql('.environment');
-    dumbPaths.should.not.containEql('.git/HEAD');
+    dumbPaths.should.not.containEql(path.normalize('.git/HEAD'));
     dumbPaths.should.not.containEql('.DS_Store');
   });
 
@@ -139,7 +207,7 @@ describe('build (runs slowly)', function () {
 
     await build.makeBuildZip(tmpProjectDir, tmpZipPath);
 
-    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    const files = await decompress2(tmpZipPath, tmpUnzipPath);
     files.length.should.equal(3);
 
     const indexFile = files.find(
@@ -179,7 +247,7 @@ describe('build (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeBuildZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    const files = await decompress2(tmpZipPath, tmpUnzipPath);
     files.length.should.equal(3);
 
     const indexFile = files.find(
@@ -215,7 +283,7 @@ describe('build (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeSourceZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    const files = await decompress2(tmpZipPath, tmpUnzipPath);
 
     const filePaths = new Set(files.map((file) => file.path));
     filePaths.should.deepEqual(
@@ -264,7 +332,7 @@ describe('build (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeSourceZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    const files = await decompress2(tmpZipPath, tmpUnzipPath);
 
     const filePaths = new Set(files.map((file) => file.path));
     filePaths.should.deepEqual(
@@ -458,8 +526,15 @@ describe('build in lerna monorepo', function () {
     });
   });
 
-  after(() => {
-    monorepo.cleanup();
+  after(async () => {
+    try {
+      monorepo.cleanup();
+    } catch (error) {
+      if (!IS_WINDOWS) {
+        // On Windows, somehow the cleanup can fail with EBUSY :shrug:
+        throw error;
+      }
+    }
   });
 
   beforeEach(() => {
@@ -469,7 +544,6 @@ describe('build in lerna monorepo', function () {
 
   afterEach(() => {
     process.chdir(origCwd);
-
     fs.removeSync(unzipDir);
     unzipDir = null;
   });
@@ -489,7 +563,7 @@ describe('build in lerna monorepo', function () {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
@@ -568,7 +642,7 @@ describe('build in lerna monorepo', function () {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
@@ -646,8 +720,15 @@ describe('build in yarn workspaces', function () {
     });
   });
 
-  after(() => {
-    monorepo.cleanup();
+  after(async () => {
+    try {
+      monorepo.cleanup();
+    } catch (error) {
+      if (!IS_WINDOWS) {
+        // On Windows, somehow the cleanup can fail with EBUSY :shrug:
+        throw error;
+      }
+    }
   });
 
   beforeEach(() => {
@@ -657,7 +738,6 @@ describe('build in yarn workspaces', function () {
 
   afterEach(() => {
     process.chdir(origCwd);
-
     fs.removeSync(unzipDir);
     unzipDir = null;
   });
@@ -688,17 +768,17 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
     const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
+    const indexLinkPath = path.join(unzipDir, 'index.js');
     fs.lstatSync(wrapperLinkPath).isSymbolicLink().should.be.true();
     fs.readlinkSync(wrapperLinkPath).should.equal(
       path.join('packages', 'app-1', 'zapierwrapper.js'),
     );
 
-    const indexLinkPath = path.join(unzipDir, 'index.js');
     fs.lstatSync(indexLinkPath).isSymbolicLink().should.be.true();
     fs.readlinkSync(indexLinkPath).should.equal(
       path.join('packages', 'app-1', 'index.js'),
@@ -770,7 +850,7 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
@@ -860,16 +940,16 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
-    // Since now app-2/node_modules/zapier-platform-core links to packages/core
-    // of the zapier-platform repo, the zip file's root is the common ancestor
-    // directory of appDir and the zapier-platform repo, which is the root
-    // directory '/' on Linux/MacOS essentially when this test is run.
-    // So we expect <zip_root>/zapierwrapper.js links to a very deep path of
-    // app-2.
+    // `zapier build --skip-npm-install` uses the common ancestor of the app
+    // directory (monorepo.repoDir) and the zapier-platform repo.
+    // In GitHub's CI environment, zipRoot will be:
+    // - '/' on Linux and macOS
+    // - 'C:\' on Windows
+    const zipRoot = commonAncestor(monorepo.repoDir, __dirname);
     const appDirInZip = path.relative(
-      '/',
+      zipRoot,
       path.join(monorepo.repoDir, 'packages', 'app-2'),
     );
     const wrapperLinkPath = path.join(unzipDir, 'zapierwrapper.js');
@@ -888,7 +968,10 @@ describe('build in yarn workspaces', function () {
     const appPackageJson = fs.readJsonSync(path.join(unzipDir, 'package.json'));
     appPackageJson.name.should.equal('app-2');
 
-    const coreDirInZip = path.relative('/', coreDir);
+    const coreDirInZip = path
+      .relative(zipRoot, coreDir)
+      .replace(/^[cC]:/, '')
+      .replace(/^([a-zA-Z]):/, '$1');
     const corePackageJson = fs.readJsonSync(
       path.join(unzipDir, coreDirInZip, 'package.json'),
     );
@@ -967,7 +1050,14 @@ describe('build in pnpm workspaces', () => {
   });
 
   after(() => {
-    monorepo.cleanup();
+    try {
+      monorepo.cleanup();
+    } catch (error) {
+      if (!IS_WINDOWS) {
+        // On Windows, somehow the cleanup can fail with EBUSY :shrug:
+        throw error;
+      }
+    }
   });
 
   beforeEach(() => {
@@ -1010,7 +1100,7 @@ describe('build in pnpm workspaces', () => {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
@@ -1035,7 +1125,9 @@ describe('build in pnpm workspaces', () => {
     // coreRelPath is relative to dirname(coreLinkPath)
     const coreRelPath = fs.readlinkSync(coreLinkPath);
     const match = coreRelPath.match(
-      /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/,
+      path.sep === '/'
+        ? /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/
+        : /node_modules\\\.pnpm\\(zapier-platform-core@[^\\]+)\\node_modules\\zapier-platform-core\\?$/,
     );
     should.exist(match);
 
@@ -1157,7 +1249,9 @@ describe('build in pnpm workspaces', () => {
     // coreRelPath is relative to dirname(coreLinkPath)
     const coreRelPath = fs.readlinkSync(coreLinkPath);
     const match = coreRelPath.match(
-      /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/,
+      path.sep === '/'
+        ? /node_modules\/\.pnpm\/(zapier-platform-core@[^/]+)\/node_modules\/zapier-platform-core$/
+        : /node_modules\\\.pnpm\\(zapier-platform-core@[^\\]+)\\node_modules\\zapier-platform-core\\?$/,
     );
     should.exist(match);
 
@@ -1177,7 +1271,7 @@ describe('build in pnpm workspaces', () => {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
@@ -1346,8 +1440,8 @@ describe('build ESM (runs slowly)', function () {
     const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
     // check that only the required lodash files are grabbed
-    smartPaths.should.containEql('dist/index.js');
-    smartPaths.should.containEql('dist/authentication.js');
+    smartPaths.should.containEql(path.normalize('dist/index.js'));
+    smartPaths.should.containEql(path.normalize('dist/authentication.js'));
 
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
@@ -1361,11 +1455,11 @@ describe('build ESM (runs slowly)', function () {
     );
 
     // check that way more than the required package files are grabbed
-    dumbPaths.should.containEql('dist/index.js');
-    dumbPaths.should.containEql('dist/authentication.js');
+    dumbPaths.should.containEql(path.normalize('dist/index.js'));
+    dumbPaths.should.containEql(path.normalize('dist/authentication.js'));
 
-    dumbPaths.should.containEql('src/index.ts');
-    dumbPaths.should.containEql('src/authentication.ts');
+    dumbPaths.should.containEql(path.normalize('src/index.ts'));
+    dumbPaths.should.containEql(path.normalize('src/authentication.ts'));
     dumbPaths.should.containEql('tsconfig.json');
 
     dumbPaths.length.should.be.within(3000, 10000);
@@ -1397,9 +1491,9 @@ describe('build ESM (runs slowly)', function () {
     );
     dumbPaths.should.containEql('safe.js');
     dumbPaths.should.not.containEql('.env');
-    dumbPaths.should.not.containEql('build/the-build.zip');
+    dumbPaths.should.not.containEql(path.normalize('build/the-build.zip'));
     dumbPaths.should.not.containEql('.environment');
-    dumbPaths.should.not.containEql('.git/HEAD');
+    dumbPaths.should.not.containEql(path.normalize('.git/HEAD'));
   });
 
   it('should make a build.zip', async () => {
@@ -1429,7 +1523,7 @@ describe('build ESM (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeBuildZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress(tmpZipPath, tmpUnzipPath);
+    const files = await decompress2(tmpZipPath, tmpUnzipPath);
 
     const filePaths = new Set(files.map((file) => file.path));
     filePaths.should.deepEqual(
@@ -1514,17 +1608,23 @@ module.exports = {
     );
 
     // dumbPaths should contain both CJS and ESM paths since it's just listing all files
-    dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
-    dumbPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js'); // ESM path
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/uuid/dist/index.js'),
+    ); // CJS path
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/uuid/dist/esm-node/index.js'),
+    ); // ESM path
   });
 
   it('should only include CJS paths in smartPaths', async function () {
     const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
     // For CJS app, smartPaths should only contain CJS paths
-    smartPaths.should.containEql('node_modules/uuid/dist/index.js');
+    smartPaths.should.containEql(
+      path.normalize('node_modules/uuid/dist/index.js'),
+    );
     smartPaths.should.not.containEql(
-      'node_modules/uuid/dist/esm-node/index.js',
+      path.normalize('node_modules/uuid/dist/esm-node/index.js'),
     );
   });
 });
@@ -1588,9 +1688,15 @@ export default {
     );
 
     // dumbPaths should contain both CJS and ESM paths since it's just listing all files
-    dumbPaths.should.containEql('node_modules/uuid/dist/index.js'); // CJS path
-    dumbPaths.should.containEql('node_modules/uuid/dist/esm-node/index.js'); // ESM path
-    dumbPaths.should.containEql('node_modules/uuid/wrapper.mjs'); // ESM path
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/uuid/dist/index.js'),
+    ); // CJS path
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/uuid/dist/esm-node/index.js'),
+    ); // ESM path
+    dumbPaths.should.containEql(
+      path.normalize('node_modules/uuid/wrapper.mjs'),
+    ); // ESM path
   });
 
   it('should only include ESM paths in smartPaths', async function () {
@@ -1598,13 +1704,17 @@ export default {
 
     // For ESM app, smartPaths should contain the "exports/./node/import" entry
     // point: './wrapper.mjs' (https://github.com/uuidjs/uuid/blob/v9.0.1/package.json#L30)
-    smartPaths.should.containEql('node_modules/uuid/wrapper.mjs');
-    smartPaths.should.containEql('node_modules/uuid/dist/index.js');
+    smartPaths.should.containEql(
+      path.normalize('node_modules/uuid/wrapper.mjs'),
+    );
+    smartPaths.should.containEql(
+      path.normalize('node_modules/uuid/dist/index.js'),
+    );
 
     // This one, even though it's a ESM entry point, defined in
     // "exports/./node/module", it isn't used by Node.js
     smartPaths.should.not.containEql(
-      'node_modules/uuid/dist/esm-node/index.js',
+      path.normalize('node_modules/uuid/dist/esm-node/index.js'),
     );
   });
 });
@@ -1650,7 +1760,9 @@ run();`,
     const smartPaths = await build.findRequiredFiles(tmpDir, [entryPoint]);
 
     smartPaths.should.containEql(
-      'node_modules/zapier-platform-legacy-scripting-runner/request-worker.js',
+      path.normalize(
+        'node_modules/zapier-platform-legacy-scripting-runner/request-worker.js',
+      ),
     );
   });
 });
@@ -1679,17 +1791,22 @@ describe('build with specific dependency', function () {
   });
 
   afterEach(() => {
+    process.chdir(origCwd);
+
     fs.removeSync(appDir);
     fs.removeSync(unzipDir);
 
     appDir = null;
     zipPath = null;
     unzipDir = null;
-
-    process.chdir(origCwd);
   });
 
   it('should build with ssh2 with .node files', async function () {
+    if (process.platform === 'win32') {
+      // On Windows, ssh2 package doesn't seem to need those .node files
+      this.skip('test');
+      return;
+    }
     // Create a basic app that uses ssh2
     fs.outputFileSync(
       path.join(appDir, 'app.js'),
@@ -1732,19 +1849,23 @@ export default {
         checkOutdated: false,
       },
     );
-    await decompress(zipPath, unzipDir);
+    await decompress2(zipPath, unzipDir);
 
     const expectedFiles = [
       'app.js',
       'package.json',
       'zapierwrapper.js',
       'definition.json',
-      'node_modules/ssh2/package.json',
-      'node_modules/ssh2/lib/protocol/crypto.js',
-      'node_modules/ssh2/lib/protocol/crypto/build/Release/sshcrypto.node',
-      'node_modules/cpu-features/package.json',
-      'node_modules/cpu-features/lib/index.js',
-      'node_modules/cpu-features/build/Release/cpufeatures.node',
+      path.normalize('node_modules/ssh2/package.json'),
+      path.normalize('node_modules/ssh2/lib/protocol/crypto.js'),
+      path.normalize(
+        'node_modules/ssh2/lib/protocol/crypto/build/Release/sshcrypto.node',
+      ),
+      path.normalize('node_modules/cpu-features/package.json'),
+      path.normalize('node_modules/cpu-features/lib/index.js'),
+      path.normalize(
+        'node_modules/cpu-features/build/Release/cpufeatures.node',
+      ),
     ];
     for (const file of expectedFiles) {
       fs.existsSync(path.join(unzipDir, file)).should.be.true(
