@@ -4,6 +4,7 @@ const { merge } = require('lodash');
 const filter = require('gulp-filter');
 const { createGeneratorClass } = require('../utils/esm-wrapper');
 const prettier = require('gulp-prettier');
+const prettierApi = require('prettier');
 
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 const authFilesCodegen = require('../utils/auth-files-codegen');
@@ -133,11 +134,8 @@ const writeGenericAuth = async (gen) => {
   const destPath = (key) =>
     gen.options.language === 'typescript' ? `src/${key}.ts` : `${key}.js`;
 
-  // Apply prettier formatting to generated auth files since gen.fs.write bypasses transform streams
-  const prettier = require('prettier');
-
   for (const [key, value] of Object.entries(content)) {
-    const formatted = await prettier.format(value, {
+    const formatted = await prettierApi.format(value, {
       singleQuote: true,
       parser: gen.options.language === 'typescript' ? 'typescript' : 'babel',
     });
@@ -179,7 +177,8 @@ const writeForAuthTemplate = async (gen) => {
     writeGenericIndex(gen, true);
     writeGenericPackageJson(gen);
   }
-  await writeGenericAuth(gen); // await needed because function is now async for prettier formatting
+  // await needed because auth templates now use async prettier formatting
+  await writeGenericAuth(gen);
   writeGenericAuthTest(gen);
 };
 
@@ -323,7 +322,8 @@ const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
       this.options.packageName = path.basename(this.options.path);
 
       const writeFunc = TEMPLATE_ROUTES[this.options.template];
-      await writeFunc(this); // await needed because auth templates now use async prettier formatting
+      // await needed because auth templates now use async prettier formatting
+      await writeFunc(this);
     }
   };
 });
