@@ -4,7 +4,6 @@ const { merge } = require('lodash');
 const filter = require('gulp-filter');
 const { createGeneratorClass } = require('../utils/esm-wrapper');
 const prettier = require('gulp-prettier');
-const prettierApi = require('prettier');
 
 const { PACKAGE_VERSION, PLATFORM_PACKAGE } = require('../constants');
 const authFilesCodegen = require('../utils/auth-files-codegen');
@@ -128,19 +127,15 @@ const authTypes = {
   'session-auth': 'session',
 };
 
-const writeGenericAuth = async (gen) => {
+const writeGenericAuth = (gen) => {
   const authType = authTypes[gen.options.template];
   const content = authFilesCodegen[authType](gen.options.language);
   const destPath = (key) =>
     gen.options.language === 'typescript' ? `src/${key}.ts` : `${key}.js`;
 
-  for (const [key, value] of Object.entries(content)) {
-    const formatted = await prettierApi.format(value, {
-      singleQuote: true,
-      parser: gen.options.language === 'typescript' ? 'typescript' : 'babel',
-    });
-    gen.fs.write(gen.destinationPath(destPath(key)), formatted);
-  }
+  Object.entries(content).forEach(([key, value]) => {
+    gen.fs.write(gen.destinationPath(destPath(key)), value);
+  });
 };
 
 const writeGenericAuthTest = (gen) => {
@@ -163,7 +158,7 @@ const writeGenericTest = (gen) => {
 };
 
 // Write files for templates that demonstrate an auth type
-const writeForAuthTemplate = async (gen) => {
+const writeForAuthTemplate = (gen) => {
   writeGitignore(gen);
   writeGenericReadme(gen);
   if (gen.options.language === 'typescript') {
@@ -177,8 +172,7 @@ const writeForAuthTemplate = async (gen) => {
     writeGenericIndex(gen, true);
     writeGenericPackageJson(gen);
   }
-  // await needed because auth templates now use async prettier formatting
-  await writeGenericAuth(gen);
+  writeGenericAuth(gen);
   writeGenericAuthTest(gen);
 };
 
@@ -251,11 +245,12 @@ const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
       this.destinationRoot(path.resolve(this.options.path));
 
       const jsFilter = filter(['*.js', '*.json', '*.ts'], { restore: true });
-      this.queueTransformStream([
+      this.queueTransformStream(
+        { disabled: true }, // Suppress progress reporting (tick mark)
         jsFilter,
         prettier({ singleQuote: true }),
         jsFilter.restore,
-      ]);
+      );
     }
 
     async prompting() {
@@ -318,12 +313,11 @@ const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
       }
     }
 
-    async writing() {
+    writing() {
       this.options.packageName = path.basename(this.options.path);
 
       const writeFunc = TEMPLATE_ROUTES[this.options.template];
-      // await needed because auth templates now use async prettier formatting
-      await writeFunc(this);
+      writeFunc(this);
     }
   };
 });
