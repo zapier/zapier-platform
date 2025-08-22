@@ -587,6 +587,9 @@ export interface Create<
   /** A key to uniquely identify this create. */
   key: $Key;
 
+  /** Identifies this as a create action. */
+  type?: 'create';
+
   /**
    * A noun for this create that completes the sentence "creates a new
    * XXX".

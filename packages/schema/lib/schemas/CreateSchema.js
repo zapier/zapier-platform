@@ -17,6 +17,11 @@ module.exports = makeSchema(
         description: 'A key to uniquely identify this create.',
         $ref: KeySchema.id,
       },
+      type: {
+        description: 'Identifies this as a create action.',
+        type: 'string',
+        enum: ['create'],
+      },
       noun: {
         description:
           'A noun for this create that completes the sentence "creates a new XXX".',
@@ -36,6 +41,7 @@ module.exports = makeSchema(
     examples: [
       {
         key: 'recipe',
+        type: 'create',
         noun: 'Recipe',
         display: {
           label: 'Create Recipe',
@@ -75,6 +81,19 @@ module.exports = makeSchema(
         },
         reason:
           'Missing required key on operation: sample. Note - this is valid if the resource has defined a sample.',
+      },
+      {
+        example: {
+          key: 'recipe',
+          type: 'search',
+          noun: 'Recipe',
+          display: {
+            label: 'Create Recipe',
+            description: 'Creates a new recipe.',
+          },
+          operation: { perform: '$func$2$f$', sample: { id: 1 } },
+        },
+        reason: 'Invalid type value - must be "create"',
       },
     ],
     additionalProperties: false,

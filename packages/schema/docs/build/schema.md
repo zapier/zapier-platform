@@ -863,6 +863,7 @@ How will Zapier create a new object?
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this create.
+`type` | no | `string` in (`'create'`) | Identifies this as a create action.
 `noun` | **yes** | `string` | A noun for this create that completes the sentence "creates a new XXX".
 `display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this create.
 `operation` | **yes** | [/BasicCreateOperationSchema](#basiccreateoperationschema) | Powers the functionality for this create.
@@ -872,6 +873,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'recipe',
+    type: 'create',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
     operation: { perform: '$func$2$f$', sample: { id: 1 } }
@@ -898,6 +900,16 @@ Key | Required | Type | Description
   }
   ```
   _Missing required key on operation: sample. Note - this is valid if the resource has defined a sample._
+* ```
+  {
+    key: 'recipe',
+    type: 'search',
+    noun: 'Recipe',
+    display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } }
+  }
+  ```
+  _Invalid type value - must be "create"_
 
 -----
 

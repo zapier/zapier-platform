@@ -1846,6 +1846,11 @@
           "description": "A key to uniquely identify this create.",
           "$ref": "/KeySchema"
         },
+        "type": {
+          "description": "Identifies this as a create action.",
+          "type": "string",
+          "enum": ["create"]
+        },
         "noun": {
           "description": "A noun for this create that completes the sentence \"creates a new XXX\".",
           "type": "string",
