@@ -1,3 +1,31 @@
+## 17.7.0
+
+_Released 2025-08-22_
+
+This update lays groundwork for Search Pagination, which will allow Search steps to paginate through results so that the most relevant results can be returned. However, this is not yet supported by any Zapier products.
+
+## cli
+
+- :bug: Fix `zapier pull` error "listFiles is not a function" ([#1113](https://github.com/zapier/zapier-platform/pull/1113))
+- :bug: Fix `zapier invoke auth` writing object values to `.env` as `[object Object]` ([#1107](https://github.com/zapier/zapier-platform/pull/1107))
+- :nail_care: Add logic to `zapier build` to handle the case where the app directory has symlinks to files on a different drive ([#1106](https://github.com/zapier/zapier-platform/pull/1106))
+- :tada: `zapier invoke` supports testing Search Pagination with a `paging_token` flag ([#1082](https://github.com/zapier/zapier-platform/pull/1082))
+
+## core
+
+- :tada: Foundational support for Search Pagination ([#1082](https://github.com/zapier/zapier-platform/pull/1082))
+
+## schema
+
+- :tada: Schema support for Search Pagination ([#1082](https://github.com/zapier/zapier-platform/pull/1082))
+
+## misc
+
+- :nail_care: Enable Windows in Github Actions CI ([#1106](https://github.com/zapier/zapier-platform/pull/1106))
+- :nail_care: Add Claude, Copilot, and Cursor instructions/rules ([#1107](https://github.com/zapier/zapier-platform/pull/1107))
+- :hammer: Bump `tmp` from 0.2.3 to 0.2.4 ([#1100](https://github.com/zapier/zapier-platform/pull/1100))
+- :hammer: Bump `sha.js` from 2.4.11 to 2.4.12 ([#1116](https://github.com/zapier/zapier-platform/pull/1116))
+
 ## 17.6.0
 
 _Released 2025-08-11_
