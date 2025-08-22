@@ -71,6 +71,7 @@ module.exports = {
   },
 
   search: {
+    type: 'search',
     display: {
       label: 'Find <%= NOUN %>',
       description: 'Finds a <%= LOWER_NOUN %> give.'
@@ -84,6 +85,7 @@ module.exports = {
   },
 
   create: {
+    type: 'create',
     display: {
       label: 'Create <%= NOUN %>',
       description: 'Creates a new <%= LOWER_NOUN %>.'

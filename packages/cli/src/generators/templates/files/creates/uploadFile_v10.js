@@ -41,6 +41,7 @@ const perform = async (z, bundle) => {
 
 module.exports = {
   key: 'uploadFile_v10',
+  type: 'create',
   noun: 'File',
   display: {
     label: 'Upload File v10',

@@ -22,6 +22,7 @@ module.exports = {
     [RecipeSearch.key]: {
       // The key must match the search
       key: RecipeSearch.key, // same as above
+      type: 'searchOrCreate',
       display: {
         // The label shows up when the search-or-create checkbox is checked.
         // See https://cdn.zappy.app/5fc31d104c6bd0050c44510557b3b98f.png
