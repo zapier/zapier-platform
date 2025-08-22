@@ -15,6 +15,8 @@ const {
   sampleExportDeclaredIndexTs,
   sampleExportDirectIndexTs,
   sampleLegacyAppIndexJs,
+  sampleAppWithSpreadIndexJs,
+  sampleAppWithSpreadIndexTs,
 } = require('./astFixtures');
 
 /**
@@ -36,9 +38,9 @@ describe('ast (JS)', () => {
       should(
         result.includes(
           [
-		    'const BlahTrigger = require(\'./triggers/blah\')',
-		    'const getThing = require("./a/b/c");',
-		  ].join(os.EOL),
+            "const BlahTrigger = require('./triggers/blah')",
+            'const getThing = require("./a/b/c");',
+          ].join(os.EOL),
         ),
       ).be.true();
     });
@@ -54,10 +56,9 @@ describe('ast (JS)', () => {
         './a/b/c',
       );
       should(
-        result.startsWith([
-		  '// comment!',
-		  'const getThing = require("./a/b/c");',
-		].join(os.EOL)),
+        result.startsWith(
+          ['// comment!', 'const getThing = require("./a/b/c");'].join(os.EOL),
+        ),
       ).be.true();
     });
 
@@ -224,6 +225,22 @@ describe('ast (JS)', () => {
         });
       },
     );
+
+    // Test for the spread element issue
+    it('should handle spread elements gracefully', () => {
+      const result = registerActionInJsApp(
+        sampleAppWithSpreadIndexJs,
+        'triggers',
+        'getThing',
+      );
+      // Should not throw an error and should successfully add the trigger
+      should(countOccurrences(result, 'triggers:')).eql(1);
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const firstIndex = codeByLine.indexOf('triggers: {');
+      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+        firstIndex + 2, // BlahTrigger is on line firstIndex + 1, getThing should be on firstIndex + 2
+      );
+    });
   });
 });
 
@@ -231,7 +248,10 @@ describe('ast (TS)', () => {
   describe('adding import statements', () => {
     it('should add import as first statement in file', () => {
       const input = 'export default {};';
-      const expected = ["import getThing from './a/b/c';", 'export default {};'].join(os.EOL);
+      const expected = [
+        "import getThing from './a/b/c';",
+        'export default {};',
+      ].join(os.EOL);
       const result = importActionInTsApp(input, 'getThing', './a/b/c');
 
       should(result).eql(expected);
@@ -239,7 +259,14 @@ describe('ast (TS)', () => {
 
     it('should add import below existing imports', () => {
       const input = `import Foo from './foo';\n\nexport default {};\n`;
-      const expected = ["import Foo from './foo';", '', "import getThing from './a/b/c';", '', 'export default {};', ''].join(os.EOL);
+      const expected = [
+        "import Foo from './foo';",
+        '',
+        "import getThing from './a/b/c';",
+        '',
+        'export default {};',
+        '',
+      ].join(os.EOL);
       const result = importActionInTsApp(input, 'getThing', './a/b/c');
 
       should(result).eql(expected);
@@ -285,6 +312,22 @@ describe('ast (TS)', () => {
           should(codeByLine[firstIndex + 2]).eql('}');
         });
       });
+    });
+
+    // Test for the spread element issue in TypeScript
+    it('should handle spread elements gracefully', () => {
+      const result = registerActionInTsApp(
+        sampleAppWithSpreadIndexTs,
+        'triggers',
+        'getThing',
+      );
+      // Should not throw an error and should successfully add the trigger
+      should(countOccurrences(result, 'triggers:')).eql(1);
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const firstIndex = codeByLine.indexOf('triggers: {');
+      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+        firstIndex + 2, // BlahTrigger is on line firstIndex + 1, getThing should be on firstIndex + 2
+      );
     });
   });
 });
