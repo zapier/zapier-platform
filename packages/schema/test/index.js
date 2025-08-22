@@ -67,6 +67,7 @@ describe('app', () => {
         searches: {
           fooSearch: {
             key: 'fooSearch',
+          type: 'search',
             noun: 'Foo',
             display: {
               label: 'Find Foo',
@@ -81,6 +82,7 @@ describe('app', () => {
         creates: {
           fooCreate: {
             key: 'fooCreate',
+          type: 'create',
             noun: 'Foo',
             display: {
               label: 'Create Foo',
@@ -95,6 +97,7 @@ describe('app', () => {
         searchOrCreates: {
           fooSearchOrCreate: {
             key: 'fooSearch',
+          type: 'searchOrCreate',
             display: {
               label: 'Find or Create a...',
               description: 'Something Something',
@@ -115,6 +118,7 @@ describe('app', () => {
         searches: {
           fooSearch: {
             key: 'fooSearch',
+          type: 'search',
             noun: 'Foo',
             display: {
               label: 'Find Foo',
@@ -129,6 +133,7 @@ describe('app', () => {
         creates: {
           fooCreate: {
             key: 'fooCreate',
+          type: 'create',
             noun: 'Foo',
             display: {
               label: 'Create Foo',
@@ -143,6 +148,7 @@ describe('app', () => {
         searchOrCreates: {
           fooSearchOrCreate: {
             key: 'fooSearchOrCreate',
+          type: 'searchOrCreate',
             display: {
               label: 'Find or Create a...',
               description: 'Something Something',

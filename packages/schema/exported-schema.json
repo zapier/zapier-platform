@@ -1481,7 +1481,7 @@
       "id": "/BulkReadSchema",
       "description": "How will Zapier fetch resources from your application?",
       "type": "object",
-      "required": ["key", "noun", "display", "operation"],
+      "required": ["key", "type", "noun", "display", "operation"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify a record.",
@@ -1705,7 +1705,7 @@
       "id": "/SearchSchema",
       "description": "How will Zapier search for existing objects?",
       "type": "object",
-      "required": ["key", "noun", "display", "operation"],
+      "required": ["key", "type", "noun", "display", "operation"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this search.",
@@ -1850,7 +1850,7 @@
       "id": "/CreateSchema",
       "description": "How will Zapier create a new object?",
       "type": "object",
-      "required": ["key", "noun", "display", "operation"],
+      "required": ["key", "type", "noun", "display", "operation"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this create.",
@@ -1882,7 +1882,7 @@
       "id": "/SearchOrCreateSchema",
       "description": "Pair an existing search and a create to enable \"Find or Create\" functionality in your app",
       "type": "object",
-      "required": ["key", "display", "search", "create"],
+      "required": ["key", "type", "display", "search", "create"],
       "properties": {
         "key": {
           "description": "A key to uniquely identify this search-or-create. Must match the search key.",

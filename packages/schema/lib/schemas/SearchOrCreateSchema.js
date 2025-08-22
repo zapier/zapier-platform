@@ -13,7 +13,7 @@ module.exports = makeSchema(
     description:
       'Pair an existing search and a create to enable "Find or Create" functionality in your app',
     type: 'object',
-    required: ['key', 'display', 'search', 'create'],
+    required: ['key', 'type', 'display', 'search', 'create'],
     properties: {
       key: {
         description:
@@ -69,6 +69,7 @@ module.exports = makeSchema(
       },
       {
         key: 'upsertWidgets',
+        type: 'searchOrCreate',
         display: {
           label: 'Upsert Widgets',
           description:
@@ -100,6 +101,20 @@ module.exports = makeSchema(
           create: 'createWidget',
         },
         reason: 'Invalid value for key: key (must start with a letter)',
+      },
+      {
+        example: {
+          key: 'searchOrCreateWidgets',
+          display: {
+            label: 'Search or Create Widgets',
+            description:
+              'Searches for a widget matching the provided query, or creates one if it does not exist.',
+            hidden: false,
+          },
+          search: 'searchWidgets',
+          create: 'createWidget',
+        },
+        reason: 'Missing required key: type',
       },
       {
         example: {

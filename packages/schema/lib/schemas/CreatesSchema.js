@@ -22,6 +22,7 @@ module.exports = makeSchema(
       {
         createRecipe: {
           key: 'createRecipe',
+          type: 'create',
           noun: 'Recipe',
           display: {
             label: 'Create Recipe',
@@ -33,6 +34,7 @@ module.exports = makeSchema(
       {
         Create_Recipe_01: {
           key: 'Create_Recipe_01',
+          type: 'create',
           noun: 'Recipe',
           display: {
             label: 'Create Recipe',

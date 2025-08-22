@@ -11,6 +11,7 @@ describe('uniqueInputFieldKeys', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'Create Foo',
@@ -45,6 +46,7 @@ describe('uniqueInputFieldKeys', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'Create Foo',
@@ -87,6 +89,7 @@ describe('uniqueInputFieldKeys', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'Create Foo',
@@ -125,6 +128,7 @@ describe('uniqueInputFieldKeys', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'Create Foo',

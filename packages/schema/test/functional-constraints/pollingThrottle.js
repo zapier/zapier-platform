@@ -23,6 +23,7 @@ const definition = {
   triggers: {
     foo: {
       key: 'foo',
+          type: 'create',
       noun: 'Foo',
       display: {
         label: 'New Foo',

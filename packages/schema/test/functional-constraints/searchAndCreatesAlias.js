@@ -12,6 +12,7 @@ describe('searchAndCreatesAlias', () => {
       creates: {
         add_product: {
           key: 'add_product',
+          type: 'create',
           noun: 'Product',
           display: {
             label: 'Create Product',
@@ -25,6 +26,7 @@ describe('searchAndCreatesAlias', () => {
 
         update_product: {
           key: 'update_product',
+          type: 'create',
           noun: 'Product',
           display: {
             label: 'Update Product',
@@ -41,6 +43,7 @@ describe('searchAndCreatesAlias', () => {
       searches: {
         find_product: {
           key: 'find_product',
+          type: 'search',
           noun: 'Product',
           display: {
             label: 'Search Product',
@@ -59,6 +62,7 @@ describe('searchAndCreatesAlias', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -71,6 +75,7 @@ describe('searchAndCreatesAlias', () => {
       searchAndCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -101,6 +106,7 @@ describe('searchAndCreatesAlias', () => {
       creates: {
         add_product: {
           key: 'add_product',
+          type: 'create',
           noun: 'Product',
           display: {
             label: 'Create Product',
@@ -114,6 +120,7 @@ describe('searchAndCreatesAlias', () => {
 
         update_product: {
           key: 'update_product',
+          type: 'create',
           noun: 'Product',
           display: {
             label: 'Update Product',
@@ -130,6 +137,7 @@ describe('searchAndCreatesAlias', () => {
       searches: {
         find_product: {
           key: 'find_product',
+          type: 'search',
           noun: 'Product',
           display: {
             label: 'Search Product',
@@ -147,6 +155,7 @@ describe('searchAndCreatesAlias', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -182,6 +191,7 @@ describe('searchAndCreatesAlias', () => {
       creates: {
         add_product: {
           key: 'add_product',
+          type: 'create',
           noun: 'Product',
           display: {
             label: 'Create Product',
@@ -195,6 +205,7 @@ describe('searchAndCreatesAlias', () => {
 
         update_product: {
           key: 'update_product',
+          type: 'create',
           noun: 'Product',
           display: {
             label: 'Update Product',
@@ -211,6 +222,7 @@ describe('searchAndCreatesAlias', () => {
       searches: {
         find_product: {
           key: 'find_product',
+          type: 'search',
           noun: 'Product',
           display: {
             label: 'Search Product',
@@ -228,6 +240,7 @@ describe('searchAndCreatesAlias', () => {
       searchAndCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:

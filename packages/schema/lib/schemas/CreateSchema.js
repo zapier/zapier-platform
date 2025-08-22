@@ -11,7 +11,7 @@ module.exports = makeSchema(
     id: '/CreateSchema',
     description: 'How will Zapier create a new object?',
     type: 'object',
-    required: ['key', 'noun', 'display', 'operation'],
+    required: ['key', 'type', 'noun', 'display', 'operation'],
     properties: {
       key: {
         description: 'A key to uniquely identify this create.',
@@ -51,6 +51,7 @@ module.exports = makeSchema(
       },
       {
         key: 'recipe',
+        type: 'create',
         noun: 'Recipe',
         display: {
           label: 'Create Recipe',
@@ -81,6 +82,18 @@ module.exports = makeSchema(
         },
         reason:
           'Missing required key on operation: sample. Note - this is valid if the resource has defined a sample.',
+      },
+      {
+        example: {
+          key: 'recipe',
+          noun: 'Recipe',
+          display: {
+            label: 'Create Recipe',
+            description: 'Creates a new recipe.',
+          },
+          operation: { perform: '$func$2$f$', sample: { id: 1 } },
+        },
+        reason: 'Missing required key: type',
       },
       {
         example: {

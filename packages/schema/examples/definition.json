@@ -364,6 +364,9 @@
   },
   "searches": {
     "tag": {
+      "key": "tag",
+      "type": "search",
+      "noun": "Tag",
       "display": {
         "label": "Find Tag",
         "description": "Finds a Tag."
@@ -384,13 +387,14 @@
           "id": 1,
           "name": "test tag"
         }
-      },
-      "key": "tag",
-      "noun": "Tag"
+      }
     }
   },
   "creates": {
     "tag_create": {
+      "key": "tag_create",
+      "type": "create",
+      "noun": "Tag",
       "display": {
         "label": "Create Tag",
         "description": "Create a new Tag in your account."
@@ -402,11 +406,12 @@
           "id": 385,
           "name": "proactive enable ROI"
         }
-      },
-      "key": "tag_create",
-      "noun": "Tag"
+      }
     },
     "contact_create": {
+      "key": "contact_create",
+      "type": "create",
+      "noun": "Contact",
       "display": {
         "label": "Create Contact",
         "description": "Create a new Contact in your account."
@@ -464,9 +469,7 @@
           "owner_id": 1,
           "tag_ids": [1, 2, 3]
         }
-      },
-      "key": "contact_create",
-      "noun": "Contact"
+      }
     }
   }
 }

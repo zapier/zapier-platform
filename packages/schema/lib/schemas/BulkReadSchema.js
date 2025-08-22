@@ -11,7 +11,7 @@ module.exports = makeSchema(
     id: '/BulkReadSchema',
     description: 'How will Zapier fetch resources from your application?',
     type: 'object',
-    required: ['key', 'noun', 'display', 'operation'],
+    required: ['key', 'type', 'noun', 'display', 'operation'],
     properties: {
       key: {
         description: 'A key to uniquely identify a record.',
@@ -70,6 +70,21 @@ module.exports = makeSchema(
           },
         },
         reason: 'Missing required keys: key and noun',
+      },
+      {
+        example: {
+          key: 'recipes',
+          noun: 'Recipes',
+          display: {
+            label: 'Recipes',
+            description: 'A Read that lets Zapier fetch all recipes.',
+          },
+          operation: {
+            perform: '$func$0$f$',
+            sample: { id: 1 },
+          },
+        },
+        reason: 'Missing required key: type',
       },
       {
         example: {

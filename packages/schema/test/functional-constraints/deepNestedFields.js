@@ -11,6 +11,7 @@ describe('deepNestedFields', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'Create Foo',
@@ -47,6 +48,7 @@ describe('deepNestedFields', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'Create Foo',

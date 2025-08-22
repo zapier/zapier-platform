@@ -9,6 +9,7 @@ describe('labelWhenVisible', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             hidden: true,
@@ -31,6 +32,7 @@ describe('labelWhenVisible', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             hidden: false,
@@ -56,6 +58,7 @@ describe('labelWhenVisible', () => {
       creates: {
         foo: {
           key: 'foo',
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'nea',

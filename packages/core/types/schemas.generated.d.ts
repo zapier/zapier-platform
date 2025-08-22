@@ -5,7 +5,7 @@
  * these typings.
  *
  * zapier-platform-schema version: 17.6.0
- *  schema-to-ts compiler version: 0.1.0
+ *  schema-to-ts compiler version: undefined
  */
 import type {
   AfterResponseMiddleware,
@@ -546,7 +546,7 @@ export interface BulkRead {
   key: Key;
 
   /** Identifies this as a bulk read action. */
-  type?: 'bulkRead';
+  type: 'bulkRead';
 
   /**
    * A noun for this read that completes the sentence "reads all of
@@ -570,7 +570,7 @@ export interface Search<
   key: $Key;
 
   /** Identifies this as a search action. */
-  type?: 'search';
+  type: 'search';
 
   /**
    * A noun for this search that completes the sentence "finds a
@@ -594,7 +594,7 @@ export interface Create<
   key: $Key;
 
   /** Identifies this as a create action. */
-  type?: 'create';
+  type: 'create';
 
   /**
    * A noun for this create that completes the sentence "creates a new
@@ -621,7 +621,7 @@ export interface SearchOrCreate {
   key: Key;
 
   /** Identifies this as a search-or-create action. */
-  type?: 'searchOrCreate';
+  type: 'searchOrCreate';
 
   /** Configures the UI for this search-or-create. */
   display: BasicDisplay;

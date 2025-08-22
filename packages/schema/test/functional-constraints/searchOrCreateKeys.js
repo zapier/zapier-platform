@@ -13,6 +13,7 @@ describe('searchOrCreateKeys', () => {
     creates: {
       add_product: {
         key: 'add_product',
+          type: 'create',
         noun: 'Product',
         display: {
           label: 'Create Product',
@@ -26,6 +27,7 @@ describe('searchOrCreateKeys', () => {
 
       update_product: {
         key: 'update_product',
+          type: 'create',
         noun: 'Product',
         display: {
           label: 'Update Product',
@@ -42,6 +44,7 @@ describe('searchOrCreateKeys', () => {
     searches: {
       find_product: {
         key: 'find_product',
+          type: 'search',
         noun: 'Product',
         display: {
           label: 'Search Product',
@@ -62,6 +65,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -83,6 +87,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -111,6 +116,7 @@ describe('searchOrCreateKeys', () => {
       searchAndCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -184,6 +190,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -208,6 +215,7 @@ describe('searchOrCreateKeys', () => {
       searchAndCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -232,6 +240,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -257,6 +266,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -284,6 +294,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -311,6 +322,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -339,6 +351,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -418,6 +431,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -447,6 +461,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         findOrCreateProduct: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create',
             description:
@@ -499,6 +514,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         find_product: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Find, Create, or Update Product',
             description: 'Finds, creates, or updates a product.',
@@ -531,6 +547,7 @@ describe('searchOrCreateKeys', () => {
       searchOrCreates: {
         find_product: {
           key: 'find_product',
+          type: 'searchOrCreate',
           display: {
             label: 'Find, Create, or Update Product',
             description: 'Finds, creates, or updates a product.',

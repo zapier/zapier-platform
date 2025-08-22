@@ -11,7 +11,7 @@ module.exports = makeSchema(
     id: '/SearchSchema',
     description: 'How will Zapier search for existing objects?',
     type: 'object',
-    required: ['key', 'noun', 'display', 'operation'],
+    required: ['key', 'type', 'noun', 'display', 'operation'],
     properties: {
       key: {
         description: 'A key to uniquely identify this search.',
@@ -55,6 +55,7 @@ module.exports = makeSchema(
       },
       {
         key: 'recipe',
+        type: 'search',
         noun: 'Recipe',
         display: {
           label: 'Find a Recipe',
@@ -83,6 +84,18 @@ module.exports = makeSchema(
         },
         reason:
           'Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample.',
+      },
+      {
+        example: {
+          key: 'recipe',
+          noun: 'Recipe',
+          display: {
+            label: 'Find a Recipe',
+            description: 'Search for recipe by cuisine style.',
+          },
+          operation: { perform: '$func$2$f$', sample: { id: 1 } },
+        },
+        reason: 'Missing required key: type',
       },
       {
         example: {

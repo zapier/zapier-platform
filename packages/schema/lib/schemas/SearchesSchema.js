@@ -22,6 +22,7 @@ module.exports = makeSchema(
       {
         recipe: {
           key: 'recipe',
+          type: 'search',
           noun: 'Recipe',
           display: {
             label: 'Find a Recipe',

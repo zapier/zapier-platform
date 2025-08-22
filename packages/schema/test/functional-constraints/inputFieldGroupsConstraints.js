@@ -16,6 +16,7 @@ describe('inputFieldGroupsConstraints', () => {
         triggers: {
           test_trigger: {
             key: 'test_trigger',
+          type: 'create',
             noun: 'Test',
             display: {
               label: 'Test Trigger',
@@ -52,6 +53,7 @@ describe('inputFieldGroupsConstraints', () => {
         searches: {
           test_search: {
             key: 'test_search',
+          type: 'search',
             noun: 'Test',
             display: {
               label: 'Test Search',
@@ -85,6 +87,7 @@ describe('inputFieldGroupsConstraints', () => {
         creates: {
           test_create: {
             key: 'test_create',
+          type: 'create',
             noun: 'Test',
             display: {
               label: 'Test Create',
@@ -123,6 +126,7 @@ describe('inputFieldGroupsConstraints', () => {
         triggers: {
           test_trigger: {
             key: 'test_trigger',
+          type: 'create',
             noun: 'Test',
             display: {
               label: 'Test Trigger',
@@ -157,6 +161,7 @@ describe('inputFieldGroupsConstraints', () => {
         resources: {
           contact: {
             key: 'contact',
+          type: 'create',
             noun: 'Contact',
             list: {
               display: {
@@ -204,6 +209,7 @@ describe('inputFieldGroupsConstraints', () => {
         resources: {
           contact: {
             key: 'contact',
+          type: 'create',
             noun: 'Contact',
             search: {
               display: {
@@ -242,6 +248,7 @@ describe('inputFieldGroupsConstraints', () => {
         resources: {
           project: {
             key: 'project',
+          type: 'create',
             noun: 'Project',
             get: {
               display: {
@@ -279,6 +286,7 @@ describe('inputFieldGroupsConstraints', () => {
         resources: {
           order: {
             key: 'order',
+          type: 'create',
             noun: 'Order',
             create: {
               display: {
@@ -322,6 +330,7 @@ describe('inputFieldGroupsConstraints', () => {
         resources: {
           user: {
             key: 'user',
+          type: 'create',
             noun: 'User',
             list: {
               display: {
@@ -369,6 +378,7 @@ describe('inputFieldGroupsConstraints', () => {
         triggers: {
           user_trigger: {
             key: 'user_trigger',
+          type: 'create',
             noun: 'User',
             display: {
               label: 'User Trigger',
@@ -384,6 +394,7 @@ describe('inputFieldGroupsConstraints', () => {
         resources: {
           contact: {
             key: 'contact',
+          type: 'create',
             noun: 'Contact',
             create: {
               display: {
@@ -410,6 +421,7 @@ describe('inputFieldGroupsConstraints', () => {
         triggers: {
           test_trigger: {
             key: 'test_trigger',
+          type: 'create',
             noun: 'Test',
             display: {
               label: 'Test Trigger',
@@ -424,6 +436,7 @@ describe('inputFieldGroupsConstraints', () => {
         resources: {
           item: {
             key: 'item',
+          type: 'create',
             noun: 'Item',
             list: {
               display: {
