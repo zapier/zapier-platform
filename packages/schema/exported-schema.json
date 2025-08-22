@@ -1487,6 +1487,11 @@
           "description": "A key to uniquely identify a record.",
           "$ref": "/KeySchema"
         },
+        "type": {
+          "description": "Identifies this as a bulk read action.",
+          "type": "string",
+          "enum": ["bulkRead"]
+        },
         "noun": {
           "description": "A noun for this read that completes the sentence \"reads all of the XXX\".",
           "type": "string",
@@ -1706,6 +1711,11 @@
           "description": "A key to uniquely identify this search.",
           "$ref": "/KeySchema"
         },
+        "type": {
+          "description": "Identifies this as a search action.",
+          "type": "string",
+          "enum": ["search"]
+        },
         "noun": {
           "description": "A noun for this search that completes the sentence \"finds a specific XXX\".",
           "type": "string",
@@ -1877,6 +1887,11 @@
         "key": {
           "description": "A key to uniquely identify this search-or-create. Must match the search key.",
           "$ref": "/KeySchema"
+        },
+        "type": {
+          "description": "Identifies this as a search-or-create action.",
+          "type": "string",
+          "enum": ["searchOrCreate"]
         },
         "display": {
           "description": "Configures the UI for this search-or-create.",

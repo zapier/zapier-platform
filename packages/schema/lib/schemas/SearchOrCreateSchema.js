@@ -20,6 +20,11 @@ module.exports = makeSchema(
           'A key to uniquely identify this search-or-create. Must match the search key.',
         $ref: KeySchema.id,
       },
+      type: {
+        description: 'Identifies this as a search-or-create action.',
+        type: 'string',
+        enum: ['searchOrCreate'],
+      },
       display: {
         description: 'Configures the UI for this search-or-create.',
         $ref: BasicDisplaySchema.id,
@@ -52,6 +57,7 @@ module.exports = makeSchema(
     examples: [
       {
         key: 'searchOrCreateWidgets',
+        type: 'searchOrCreate',
         display: {
           label: 'Search or Create Widgets',
           description:
@@ -131,6 +137,21 @@ module.exports = makeSchema(
         },
         reason:
           'If either the updateInputFromSearchOutput or searchUniqueInputToOutputConstraint keys are present, then the update key must be present as well.',
+      },
+      {
+        example: {
+          key: 'searchOrCreateWidgets',
+          type: 'create',
+          display: {
+            label: 'Search or Create Widgets',
+            description:
+              'Searches for a widget matching the provided query, or creates one if it does not exist.',
+            hidden: false,
+          },
+          search: 'searchWidgets',
+          create: 'createWidget',
+        },
+        reason: 'Invalid type value - must be "searchOrCreate"',
       },
     ],
   },

@@ -17,6 +17,11 @@ module.exports = makeSchema(
         description: 'A key to uniquely identify a record.',
         $ref: KeySchema.id,
       },
+      type: {
+        description: 'Identifies this as a bulk read action.',
+        type: 'string',
+        enum: ['bulkRead'],
+      },
       noun: {
         description:
           'A noun for this read that completes the sentence "reads all of the XXX".',
@@ -36,6 +41,7 @@ module.exports = makeSchema(
     examples: [
       {
         key: 'recipes',
+        type: 'bulkRead',
         noun: 'Recipes',
         display: {
           label: 'Recipes',
@@ -64,6 +70,22 @@ module.exports = makeSchema(
           },
         },
         reason: 'Missing required keys: key and noun',
+      },
+      {
+        example: {
+          key: 'recipes',
+          type: 'create',
+          noun: 'Recipes',
+          display: {
+            label: 'Recipes',
+            description: 'A Read that lets Zapier fetch all recipes.',
+          },
+          operation: {
+            perform: '$func$0$f$',
+            sample: { id: 1 },
+          },
+        },
+        reason: 'Invalid type value - must be "bulkRead"',
       },
     ],
     additionalProperties: false,
