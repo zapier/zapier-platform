@@ -20,7 +20,6 @@ describe('readability', () => {
   it('should have decent messages for minimum length not met', () => {
     const results = TriggerSchema.validate({
       key: 'recipe',
-          type: 'create',
       noun: 'Recipe',
       display: {
         label: '',

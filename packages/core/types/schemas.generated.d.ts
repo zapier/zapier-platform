@@ -5,7 +5,7 @@
  * these typings.
  *
  * zapier-platform-schema version: 17.6.0
- *  schema-to-ts compiler version: undefined
+ *  schema-to-ts compiler version: 0.1.0
  */
 import type {
   AfterResponseMiddleware,

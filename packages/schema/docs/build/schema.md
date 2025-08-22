@@ -841,6 +841,7 @@ Key | Required | Type | Description
   {
     recipes: {
       key: 'recipes',
+      type: 'bulkRead',
       noun: 'Recipes',
       display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
       operation: {
@@ -965,6 +966,7 @@ Key | Required | Type | Description
   {
     createRecipe: {
       key: 'createRecipe',
+      type: 'create',
       noun: 'Recipe',
       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
       operation: { perform: '$func$2$f$', sample: { id: 1 } }
@@ -975,6 +977,7 @@ Key | Required | Type | Description
   {
     Create_Recipe_01: {
       key: 'Create_Recipe_01',
+      type: 'create',
       noun: 'Recipe',
       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
       operation: { perform: '$func$2$f$', sample: { id: 1 } }
@@ -2017,6 +2020,7 @@ Key | Required | Type | Description
   {
     searchOrCreateWidgets: {
       key: 'searchOrCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
@@ -2031,6 +2035,7 @@ Key | Required | Type | Description
   {
     searchAndCreateWidgets: {
       key: 'searchAndCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search and Create Widgets',
         description: 'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
@@ -2211,6 +2216,7 @@ Key | Required | Type | Description
   {
     searchOrCreateWidgets: {
       key: 'searchOrCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
@@ -2225,6 +2231,7 @@ Key | Required | Type | Description
   {
     searchAndCreateWidgets: {
       key: 'searchAndCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search and Create Widgets',
         description: 'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
@@ -2356,6 +2363,7 @@ Key | Required | Type | Description
   {
     recipe: {
       key: 'recipe',
+      type: 'search',
       noun: 'Recipe',
       display: {
         label: 'Find a Recipe',
