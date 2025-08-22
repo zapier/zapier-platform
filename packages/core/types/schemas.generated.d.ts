@@ -1193,6 +1193,9 @@ export interface BasicSearchOperation<
    */
   performGet?: Request | SearchPerformGet<InferInputData<$InputFields>>;
 
+  /** Does this search support pagination? */
+  canPaginate?: boolean;
+
   /** What should the form a user sees and configures look like? */
   inputFields?: $InputFields;
 
