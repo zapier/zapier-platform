@@ -10,6 +10,7 @@ const perform = async (z, bundle) => {
 
 module.exports = {
   key: 'recipe',
+  type: 'search',
   noun: 'Recipe',
 
   display: {

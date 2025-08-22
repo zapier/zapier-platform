@@ -52,6 +52,7 @@ describe('inputFieldGroupsConstraints', () => {
         searches: {
           test_search: {
             key: 'test_search',
+            type: 'search',
             noun: 'Test',
             display: {
               label: 'Test Search',
@@ -85,6 +86,7 @@ describe('inputFieldGroupsConstraints', () => {
         creates: {
           test_create: {
             key: 'test_create',
+            type: 'create',
             noun: 'Test',
             display: {
               label: 'Test Create',

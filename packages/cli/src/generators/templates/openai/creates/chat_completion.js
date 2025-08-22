@@ -92,6 +92,7 @@ async function perform(z, bundle) {
 
 module.exports = {
   key: 'chat_completion',
+  type: 'create',
   noun: 'Chat',
   display: {
     label: 'Chat Completion',

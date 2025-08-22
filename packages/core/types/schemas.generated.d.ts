@@ -545,6 +545,9 @@ export interface BulkRead {
   /** A key to uniquely identify a record. */
   key: Key;
 
+  /** Identifies this as a bulk read action. */
+  type: 'bulkRead';
+
   /**
    * A noun for this read that completes the sentence "reads all of
    * the XXX".
@@ -566,6 +569,9 @@ export interface Search<
   /** A key to uniquely identify this search. */
   key: $Key;
 
+  /** Identifies this as a search action. */
+  type: 'search';
+
   /**
    * A noun for this search that completes the sentence "finds a
    * specific XXX".
@@ -586,6 +592,9 @@ export interface Create<
 > {
   /** A key to uniquely identify this create. */
   key: $Key;
+
+  /** Identifies this as a create action. */
+  type: 'create';
 
   /**
    * A noun for this create that completes the sentence "creates a new
@@ -610,6 +619,9 @@ export interface SearchOrCreate {
    * search key.
    */
   key: Key;
+
+  /** Identifies this as a search-or-create action. */
+  type: 'searchOrCreate';
 
   /** Configures the UI for this search-or-create. */
   display: BasicDisplay;

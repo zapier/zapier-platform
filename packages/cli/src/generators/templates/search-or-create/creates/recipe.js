@@ -11,6 +11,7 @@ const perform = async (z, bundle) => {
 
 module.exports = {
   key: 'recipe',
+  type: 'create',
   noun: 'Recipe',
 
   display: {

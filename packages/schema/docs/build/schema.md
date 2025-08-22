@@ -770,6 +770,7 @@ How will Zapier fetch resources from your application?
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify a record.
+`type` | **yes** | `string` in (`'bulkRead'`) | Identifies this as a bulk read action.
 `noun` | **yes** | `string` | A noun for this read that completes the sentence "reads all of the XXX".
 `display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this read bulk.
 `operation` | **yes** | [/BasicActionOperationSchema](#basicactionoperationschema) | Powers the functionality for this read bulk.
@@ -779,6 +780,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'recipes',
+    type: 'bulkRead',
     noun: 'Recipes',
     display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
     operation: {
@@ -797,6 +799,25 @@ Key | Required | Type | Description
   }
   ```
   _Missing required keys: key and noun_
+* ```
+  {
+    key: 'recipes',
+    noun: 'Recipes',
+    display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
+    operation: { perform: '$func$0$f$', sample: { id: 1 } }
+  }
+  ```
+  _Missing required key: type_
+* ```
+  {
+    key: 'recipes',
+    type: 'create',
+    noun: 'Recipes',
+    display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
+    operation: { perform: '$func$0$f$', sample: { id: 1 } }
+  }
+  ```
+  _Invalid type value - must be "bulkRead"_
 
 -----
 
@@ -821,6 +842,7 @@ Key | Required | Type | Description
   {
     recipes: {
       key: 'recipes',
+      type: 'bulkRead',
       noun: 'Recipes',
       display: { label: 'Recipes', description: 'A Read that lets Zapier fetch all recipes.' },
       operation: {
@@ -864,6 +886,7 @@ How will Zapier create a new object?
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this create.
+`type` | **yes** | `string` in (`'create'`) | Identifies this as a create action.
 `noun` | **yes** | `string` | A noun for this create that completes the sentence "creates a new XXX".
 `display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this create.
 `operation` | **yes** | [/BasicCreateOperationSchema](#basiccreateoperationschema) | Powers the functionality for this create.
@@ -873,6 +896,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'recipe',
+    type: 'create',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
     operation: { perform: '$func$2$f$', sample: { id: 1 } }
@@ -881,6 +905,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'recipe',
+    type: 'create',
     noun: 'Recipe',
     display: { label: 'Create Recipe', description: 'Creates a new recipe.', hidden: true },
     operation: { perform: '$func$2$f$' }
@@ -899,6 +924,25 @@ Key | Required | Type | Description
   }
   ```
   _Missing required key on operation: sample. Note - this is valid if the resource has defined a sample._
+* ```
+  {
+    key: 'recipe',
+    noun: 'Recipe',
+    display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } }
+  }
+  ```
+  _Missing required key: type_
+* ```
+  {
+    key: 'recipe',
+    type: 'search',
+    noun: 'Recipe',
+    display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } }
+  }
+  ```
+  _Invalid type value - must be "create"_
 
 -----
 
@@ -923,6 +967,7 @@ Key | Required | Type | Description
   {
     createRecipe: {
       key: 'createRecipe',
+      type: 'create',
       noun: 'Recipe',
       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
       operation: { perform: '$func$2$f$', sample: { id: 1 } }
@@ -933,6 +978,7 @@ Key | Required | Type | Description
   {
     Create_Recipe_01: {
       key: 'Create_Recipe_01',
+      type: 'create',
       noun: 'Recipe',
       display: { label: 'Create Recipe', description: 'Creates a new recipe.' },
       operation: { perform: '$func$2$f$', sample: { id: 1 } }
@@ -1975,6 +2021,7 @@ Key | Required | Type | Description
   {
     searchOrCreateWidgets: {
       key: 'searchOrCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
@@ -1989,6 +2036,7 @@ Key | Required | Type | Description
   {
     searchAndCreateWidgets: {
       key: 'searchAndCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search and Create Widgets',
         description: 'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
@@ -2035,6 +2083,7 @@ Pair an existing search and a create to enable "Find or Create" functionality in
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this search-or-create. Must match the search key.
+`type` | **yes** | `string` in (`'searchOrCreate'`) | Identifies this as a search-or-create action.
 `display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this search-or-create.
 `search` | **yes** | [/KeySchema](#keyschema) | The key of the search that powers this search-or-create
 `create` | **yes** | [/KeySchema](#keyschema) | The key of the create that powers this search-or-create
@@ -2047,6 +2096,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'searchOrCreateWidgets',
+    type: 'searchOrCreate',
     display: {
       label: 'Search or Create Widgets',
       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
@@ -2059,6 +2109,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'upsertWidgets',
+    type: 'searchOrCreate',
     display: {
       label: 'Upsert Widgets',
       description: 'Searches for a widget matching the provided query and updates it if found, or creates one if it does not exist.',
@@ -2095,6 +2146,19 @@ Key | Required | Type | Description
       description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
       hidden: false
     },
+    search: 'searchWidgets',
+    create: 'createWidget'
+  }
+  ```
+  _Missing required key: type_
+* ```
+  {
+    key: 'searchOrCreateWidgets',
+    display: {
+      label: 'Search or Create Widgets',
+      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+      hidden: false
+    },
     search: { require: 'path/to/some/file.js' },
     create: { require: 'path/to/some/file.js' }
   }
@@ -2115,6 +2179,20 @@ Key | Required | Type | Description
   }
   ```
   _If either the updateInputFromSearchOutput or searchUniqueInputToOutputConstraint keys are present, then the update key must be present as well._
+* ```
+  {
+    key: 'searchOrCreateWidgets',
+    type: 'create',
+    display: {
+      label: 'Search or Create Widgets',
+      description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
+      hidden: false
+    },
+    search: 'searchWidgets',
+    create: 'createWidget'
+  }
+  ```
+  _Invalid type value - must be "searchOrCreate"_
 
 -----
 
@@ -2139,6 +2217,7 @@ Key | Required | Type | Description
   {
     searchOrCreateWidgets: {
       key: 'searchOrCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search or Create Widgets',
         description: 'Searches for a widget matching the provided query, or creates one if it does not exist.',
@@ -2153,6 +2232,7 @@ Key | Required | Type | Description
   {
     searchAndCreateWidgets: {
       key: 'searchAndCreateWidgets',
+      type: 'searchOrCreate',
       display: {
         label: 'Search and Create Widgets',
         description: 'Searches for a widget matching the provided query, creates one if it does not exist or updates existing one if found.',
@@ -2199,6 +2279,7 @@ How will Zapier search for existing objects?
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | [/KeySchema](#keyschema) | A key to uniquely identify this search.
+`type` | **yes** | `string` in (`'search'`) | Identifies this as a search action.
 `noun` | **yes** | `string` | A noun for this search that completes the sentence "finds a specific XXX".
 `display` | **yes** | [/BasicDisplaySchema](#basicdisplayschema) | Configures the UI for this search.
 `operation` | **yes** | [/BasicSearchOperationSchema](#basicsearchoperationschema) | Powers the functionality for this search.
@@ -2208,6 +2289,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'recipe',
+    type: 'search',
     noun: 'Recipe',
     display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
     operation: { perform: '$func$2$f$', sample: { id: 1 } }
@@ -2216,6 +2298,7 @@ Key | Required | Type | Description
 * ```
   {
     key: 'recipe',
+    type: 'search',
     noun: 'Recipe',
     display: {
       label: 'Find a Recipe',
@@ -2238,6 +2321,25 @@ Key | Required | Type | Description
   }
   ```
   _Missing required key in operation: sample. Note - this is valid if the associated resource has defined a sample._
+* ```
+  {
+    key: 'recipe',
+    noun: 'Recipe',
+    display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } }
+  }
+  ```
+  _Missing required key: type_
+* ```
+  {
+    key: 'recipe',
+    type: 'create',
+    noun: 'Recipe',
+    display: { label: 'Find a Recipe', description: 'Search for recipe by cuisine style.' },
+    operation: { perform: '$func$2$f$', sample: { id: 1 } }
+  }
+  ```
+  _Invalid type value - must be "search"_
 
 -----
 
@@ -2262,6 +2364,7 @@ Key | Required | Type | Description
   {
     recipe: {
       key: 'recipe',
+      type: 'search',
       noun: 'Recipe',
       display: {
         label: 'Find a Recipe',

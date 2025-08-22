@@ -22,6 +22,7 @@ module.exports = makeSchema(
       {
         recipes: {
           key: 'recipes',
+          type: 'bulkRead',
           noun: 'Recipes',
           display: {
             label: 'Recipes',

@@ -11,11 +11,16 @@ module.exports = makeSchema(
     id: '/BulkReadSchema',
     description: 'How will Zapier fetch resources from your application?',
     type: 'object',
-    required: ['key', 'noun', 'display', 'operation'],
+    required: ['key', 'type', 'noun', 'display', 'operation'],
     properties: {
       key: {
         description: 'A key to uniquely identify a record.',
         $ref: KeySchema.id,
+      },
+      type: {
+        description: 'Identifies this as a bulk read action.',
+        type: 'string',
+        enum: ['bulkRead'],
       },
       noun: {
         description:
@@ -36,6 +41,7 @@ module.exports = makeSchema(
     examples: [
       {
         key: 'recipes',
+        type: 'bulkRead',
         noun: 'Recipes',
         display: {
           label: 'Recipes',
@@ -64,6 +70,37 @@ module.exports = makeSchema(
           },
         },
         reason: 'Missing required keys: key and noun',
+      },
+      {
+        example: {
+          key: 'recipes',
+          noun: 'Recipes',
+          display: {
+            label: 'Recipes',
+            description: 'A Read that lets Zapier fetch all recipes.',
+          },
+          operation: {
+            perform: '$func$0$f$',
+            sample: { id: 1 },
+          },
+        },
+        reason: 'Missing required key: type',
+      },
+      {
+        example: {
+          key: 'recipes',
+          type: 'create',
+          noun: 'Recipes',
+          display: {
+            label: 'Recipes',
+            description: 'A Read that lets Zapier fetch all recipes.',
+          },
+          operation: {
+            perform: '$func$0$f$',
+            sample: { id: 1 },
+          },
+        },
+        reason: 'Invalid type value - must be "bulkRead"',
       },
     ],
     additionalProperties: false,

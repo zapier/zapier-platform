@@ -2,6 +2,7 @@
 // into the App definition at the end.
 module.exports = {
   key: 'recipe',
+  type: 'create',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.

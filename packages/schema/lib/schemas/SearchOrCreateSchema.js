@@ -13,12 +13,17 @@ module.exports = makeSchema(
     description:
       'Pair an existing search and a create to enable "Find or Create" functionality in your app',
     type: 'object',
-    required: ['key', 'display', 'search', 'create'],
+    required: ['key', 'type', 'display', 'search', 'create'],
     properties: {
       key: {
         description:
           'A key to uniquely identify this search-or-create. Must match the search key.',
         $ref: KeySchema.id,
+      },
+      type: {
+        description: 'Identifies this as a search-or-create action.',
+        type: 'string',
+        enum: ['searchOrCreate'],
       },
       display: {
         description: 'Configures the UI for this search-or-create.',
@@ -52,6 +57,7 @@ module.exports = makeSchema(
     examples: [
       {
         key: 'searchOrCreateWidgets',
+        type: 'searchOrCreate',
         display: {
           label: 'Search or Create Widgets',
           description:
@@ -63,6 +69,7 @@ module.exports = makeSchema(
       },
       {
         key: 'upsertWidgets',
+        type: 'searchOrCreate',
         display: {
           label: 'Upsert Widgets',
           description:
@@ -104,6 +111,20 @@ module.exports = makeSchema(
               'Searches for a widget matching the provided query, or creates one if it does not exist.',
             hidden: false,
           },
+          search: 'searchWidgets',
+          create: 'createWidget',
+        },
+        reason: 'Missing required key: type',
+      },
+      {
+        example: {
+          key: 'searchOrCreateWidgets',
+          display: {
+            label: 'Search or Create Widgets',
+            description:
+              'Searches for a widget matching the provided query, or creates one if it does not exist.',
+            hidden: false,
+          },
           search: { require: 'path/to/some/file.js' },
           create: { require: 'path/to/some/file.js' },
         },
@@ -131,6 +152,21 @@ module.exports = makeSchema(
         },
         reason:
           'If either the updateInputFromSearchOutput or searchUniqueInputToOutputConstraint keys are present, then the update key must be present as well.',
+      },
+      {
+        example: {
+          key: 'searchOrCreateWidgets',
+          type: 'create',
+          display: {
+            label: 'Search or Create Widgets',
+            description:
+              'Searches for a widget matching the provided query, or creates one if it does not exist.',
+            hidden: false,
+          },
+          search: 'searchWidgets',
+          create: 'createWidget',
+        },
+        reason: 'Invalid type value - must be "searchOrCreate"',
       },
     ],
   },

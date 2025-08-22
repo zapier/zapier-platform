@@ -17,6 +17,7 @@ module.exports = {
   // see here for a full list of available properties:
   // https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md#createschema
   key: '<%= KEY %>',
+  type: 'create',
   noun: '<%= NOUN %>',
 
   display: {

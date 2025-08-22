@@ -40,6 +40,7 @@ describe('readability', () => {
   it('should have decent messages for value type mismatch', () => {
     const results = CreateSchema.validate({
       key: 'recipe',
+      type: 'create',
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
@@ -59,6 +60,7 @@ describe('readability', () => {
   it('should handle falsy values for objects', () => {
     const results = CreateSchema.validate({
       key: 'recipe',
+      type: 'create',
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
@@ -78,6 +80,7 @@ describe('readability', () => {
   it('should surface deep issues', () => {
     const results = CreateSchema.validate({
       key: 'recipe',
+      type: 'create',
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
@@ -100,6 +103,7 @@ describe('readability', () => {
   it('should correctly surface subschema types', () => {
     const results = CreateSchema.validate({
       key: 'recipe',
+      type: 'create',
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',
@@ -125,6 +129,7 @@ describe('readability', () => {
   it('should be helpful for fieldChoices', () => {
     const results = CreateSchema.validate({
       key: 'recipe',
+      type: 'create',
       noun: 'Recipe',
       display: {
         label: 'Create Recipe',

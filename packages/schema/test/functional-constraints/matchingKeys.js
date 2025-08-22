@@ -12,6 +12,7 @@ describe('matchingKeys', () => {
       creates: {
         foo: {
           key: 'bar', // this is different than above, which shouldn't validate
+          type: 'create',
           noun: 'Foo',
           display: {
             label: 'Create Foo',

@@ -23,6 +23,7 @@ module.exports = makeSchema(
       {
         searchOrCreateWidgets: {
           key: 'searchOrCreateWidgets',
+          type: 'searchOrCreate',
           display: {
             label: 'Search or Create Widgets',
             description:
@@ -36,6 +37,7 @@ module.exports = makeSchema(
       {
         searchAndCreateWidgets: {
           key: 'searchAndCreateWidgets',
+          type: 'searchOrCreate',
           display: {
             label: 'Search and Create Widgets',
             description:
