@@ -118,14 +118,20 @@ const registerActionInJsApp = (codeStr, property, varName) => {
     (props) => props.key.name === property,
   );
   if (existingProp) {
-    // `triggers: myTriggers` means we shouldn't bother
     const value = existingProp.value;
-    if (value.type !== 'ObjectExpression') {
+    if (value.type === 'Identifier') {
+      // Handle shorthand syntax like `creates` instead of `creates: { ... }`
+      // Transform it into an object with spread operator: `creates: { ...creates, [newAction.key]: newAction }`
+      const spreadProperty = j.spreadElement(j.identifier(value.name));
+      existingProp.value = j.objectExpression([spreadProperty, newProperty]);
+      existingProp.shorthand = false; // Disable shorthand since we're changing the value
+    } else if (value.type === 'ObjectExpression') {
+      value.properties.push(newProperty);
+    } else {
       throw new Error(
         `Tried to edit the ${property} key, but the value wasn't an object`,
       );
     }
-    value.properties.push(newProperty);
   } else {
     objToModify.properties.push(
       j.property(
@@ -213,12 +219,19 @@ const registerActionInTsApp = (codeStr, actionTypePlural, identifierName) => {
   );
   if (existingProp) {
     const value = existingProp.value;
-    if (value.type !== 'ObjectExpression') {
+    if (value.type === 'Identifier') {
+      // Handle shorthand syntax like `creates` instead of `creates: { ... }`
+      // Transform it into an object with spread operator: `creates: { ...creates, [newAction.key]: newAction }`
+      const spreadProperty = j.spreadElement(j.identifier(value.name));
+      existingProp.value = j.objectExpression([spreadProperty, newProperty]);
+      existingProp.shorthand = false; // Disable shorthand since we're changing the value
+    } else if (value.type === 'ObjectExpression') {
+      value.properties.push(newProperty);
+    } else {
       throw new Error(
         `Tried to edit the ${actionTypePlural} key, but the value wasn't an object`,
       );
     }
-    value.properties.push(newProperty);
   } else {
     appObj.properties.push(
       j.property(

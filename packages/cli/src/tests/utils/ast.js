@@ -14,6 +14,8 @@ const {
   sampleExportObjectIndexJs,
   sampleExportDeclaredIndexTs,
   sampleExportDirectIndexTs,
+  sampleShorthandIndexTs,
+  sampleShorthandIndexJs,
   sampleLegacyAppIndexJs,
 } = require('./astFixtures');
 
@@ -36,9 +38,9 @@ describe('ast (JS)', () => {
       should(
         result.includes(
           [
-		    'const BlahTrigger = require(\'./triggers/blah\')',
-		    'const getThing = require("./a/b/c");',
-		  ].join(os.EOL),
+            "const BlahTrigger = require('./triggers/blah')",
+            'const getThing = require("./a/b/c");',
+          ].join(os.EOL),
         ),
       ).be.true();
     });
@@ -54,10 +56,9 @@ describe('ast (JS)', () => {
         './a/b/c',
       );
       should(
-        result.startsWith([
-		  '// comment!',
-		  'const getThing = require("./a/b/c");',
-		].join(os.EOL)),
+        result.startsWith(
+          ['// comment!', 'const getThing = require("./a/b/c");'].join(os.EOL),
+        ),
       ).be.true();
     });
 
@@ -191,6 +192,28 @@ describe('ast (JS)', () => {
     });
   });
 
+  describe('shorthand syntax support', () => {
+    it('should handle shorthand property syntax (JS)', () => {
+      const result = registerActionInJsApp(
+        sampleShorthandIndexJs,
+        'creates',
+        'newThing',
+      );
+
+      // Should contain spread operator and new property
+      should(result.includes('...creates')).be.true();
+      should(result.includes('[newThing.key]: newThing')).be.true();
+
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const createsIndex = codeByLine.indexOf('creates: {');
+      should(createsIndex).be.greaterThan(-1);
+      should(codeByLine.indexOf('...creates,')).eql(createsIndex + 1);
+      should(codeByLine.indexOf('[newThing.key]: newThing')).eql(
+        createsIndex + 2,
+      );
+    });
+  });
+
   describe('error handling', () => {
     const errors = [
       {
@@ -231,7 +254,10 @@ describe('ast (TS)', () => {
   describe('adding import statements', () => {
     it('should add import as first statement in file', () => {
       const input = 'export default {};';
-      const expected = ["import getThing from './a/b/c';", 'export default {};'].join(os.EOL);
+      const expected = [
+        "import getThing from './a/b/c';",
+        'export default {};',
+      ].join(os.EOL);
       const result = importActionInTsApp(input, 'getThing', './a/b/c');
 
       should(result).eql(expected);
@@ -239,7 +265,14 @@ describe('ast (TS)', () => {
 
     it('should add import below existing imports', () => {
       const input = `import Foo from './foo';\n\nexport default {};\n`;
-      const expected = ["import Foo from './foo';", '', "import getThing from './a/b/c';", '', 'export default {};', ''].join(os.EOL);
+      const expected = [
+        "import Foo from './foo';",
+        '',
+        "import getThing from './a/b/c';",
+        '',
+        'export default {};',
+        '',
+      ].join(os.EOL);
       const result = importActionInTsApp(input, 'getThing', './a/b/c');
 
       should(result).eql(expected);
@@ -285,6 +318,28 @@ describe('ast (TS)', () => {
           should(codeByLine[firstIndex + 2]).eql('}');
         });
       });
+    });
+  });
+
+  describe('shorthand syntax support', () => {
+    it('should handle shorthand property syntax (TS)', () => {
+      const result = registerActionInTsApp(
+        sampleShorthandIndexTs,
+        'creates',
+        'newThing',
+      );
+
+      // Should contain spread operator and new property
+      should(result.includes('...creates')).be.true();
+      should(result.includes('[newThing.key]: newThing')).be.true();
+
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const createsIndex = codeByLine.indexOf('creates: {');
+      should(createsIndex).be.greaterThan(-1);
+      should(codeByLine.indexOf('...creates,')).eql(createsIndex + 1);
+      should(codeByLine.indexOf('[newThing.key]: newThing')).eql(
+        createsIndex + 2,
+      );
     });
   });
 });
