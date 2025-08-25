@@ -283,10 +283,17 @@ const createScaffoldingContext = ({
   )}.test.${language}`;
   const testFileLocal = `${path.join(testDirLocal, key)}.${language}`;
   const testFileLocalStem = path.join(testDirLocal, key);
-  const actionRelativeImportPath = `./${getRelativeRequirePath(
+
+  // Generate the relative import path
+  let actionRelativeImportPath = `./${getRelativeRequirePath(
     indexFileResolved,
     actionFileResolvedStem,
   )}`;
+
+  // For TypeScript with ESM, imports must use .js extension
+  if (language === 'ts') {
+    actionRelativeImportPath += '.js';
+  }
 
   return {
     actionType,
