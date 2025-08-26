@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('zapier:migrate');
 const { Args, Flags } = require('@oclif/core');
+const colors = require('colors/safe');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
@@ -180,7 +181,7 @@ class MigrateCommand extends BaseCommand {
     }
 
     this.log(
-      '\nMigration successfully queued, please check `zapier jobs` to track the status. Migrations usually take between 5-10 minutes.',
+      `\nMigration successfully queued, check ${colors.bold.underline('zapier jobs')} to track the status. Migrations usually take between 5-10 minutes.`,
     );
   }
 }
