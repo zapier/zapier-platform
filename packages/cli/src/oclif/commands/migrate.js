@@ -7,6 +7,38 @@ const PromoteCommand = require('./promote');
 const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
 
+const ACTION_TYPES = [
+  'trigger',
+  'create',
+  'search',
+  'searchOrCreate',
+  'bulkRead',
+];
+
+const validateActions = (actions) => {
+  return actions.map((action) => {
+    if (!action.includes('/')) {
+      throw new Error(
+        `Invalid action format: "${action}". Expected format is "{action_type}/{action_key}".`,
+      );
+    }
+
+    const [actionType, actionKey] = action.split('/');
+    if (!ACTION_TYPES.includes(actionType)) {
+      throw new Error(
+        `Invalid action type "${actionType}" in "${action}". Valid types are: ${ACTION_TYPES.join(
+          ', ',
+        )}.`,
+      );
+    }
+
+    return {
+      type: actionType,
+      key: actionKey,
+    };
+  });
+};
+
 class MigrateCommand extends BaseCommand {
   async run_require_confirmation_pre_checks(app, requestBody) {
     const assumeYes = 'yes' in this.flags;
@@ -82,6 +114,11 @@ class MigrateCommand extends BaseCommand {
       );
     }
 
+    let actions;
+    if (this.flags.action) {
+      actions = validateActions(this.flags.action);
+    }
+
     const app = await this.getWritableApp();
 
     let promoteFirst = false;
@@ -113,6 +150,7 @@ class MigrateCommand extends BaseCommand {
         to_version: toVersion,
         email: user || account,
         email_type: flagType,
+        actions,
       },
     };
 
@@ -157,6 +195,12 @@ MigrateCommand.flags = buildFlags({
       description:
         "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
     }),
+    action: Flags.string({
+      char: 'a',
+      description:
+        'When specified, the command will only migrate users\' Zaps that use the specified action(s). Specify an action in the format of "{action_type}/{action_key}", where {action_type} can be "trigger", "create", "search", "bulkRead", or "searchOrCreate". You can specify multiple actions like `-a trigger/new_recipe -a create/add_recipe`.',
+      multiple: true,
+    }),
     yes: Flags.boolean({
       char: 'y',
       description:
@@ -187,6 +231,8 @@ MigrateCommand.examples = [
   'zapier migrate 1.0.1 2.0.0 10',
   'zapier migrate 2.0.0 2.0.1 --user=user@example.com',
   'zapier migrate 2.0.0 2.0.1 --account=account@example.com',
+  'zapier migrate 2.0.0 2.0.1 --action trigger/new_recipe',
+  'zapier migrate 2.0.0 2.0.1 -a trigger/new_recipe -a create/add_recipe -a search/find_recipe',
 ];
 MigrateCommand.description = `Migrate a percentage of users or a single user from one version of your integration to another.
 
