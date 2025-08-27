@@ -158,17 +158,20 @@ class MigrateCommand extends BaseCommand {
 
     await this.run_require_confirmation_pre_checks(app, body);
 
+    let message;
     if (user || account) {
-      this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${
-          user || account
-        }`,
-      );
+      message = `Requesting migration from ${fromVersion} to ${toVersion} for ${user || account}`;
     } else {
-      this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`,
-      );
+      message = `Requesting migration from ${fromVersion} to ${toVersion} for ${percent}%`;
     }
+
+    if (actions?.length) {
+      const actionsInStr = actions.map((a) => `${a.type}/${a.key}`).join(', ');
+      message += ` with ${actionsInStr}`;
+    }
+
+    this.startSpinner(message);
+
     if (percent) {
       body.job.percent_human = percent;
     }
@@ -177,9 +180,11 @@ class MigrateCommand extends BaseCommand {
 
     try {
       await callAPI(url, { method: 'POST', body });
-    } finally {
-      this.stopSpinner();
+    } catch (err) {
+      this.stopSpinner({ success: false });
+      throw err;
     }
+    this.stopSpinner();
 
     this.log(
       `\nMigration successfully queued, check ${colors.bold.underline('zapier jobs')} to track the status. Migrations usually take between 5-10 minutes.`,
