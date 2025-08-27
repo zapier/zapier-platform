@@ -127,6 +127,7 @@ class MigrateCommand extends BaseCommand {
       percent === 100 &&
       !user &&
       !account &&
+      !actions?.length &&
       (app.public || app.public_ish) &&
       toVersion !== app.latest_version
     ) {
