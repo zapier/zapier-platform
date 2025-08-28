@@ -92,7 +92,8 @@ class ZapierBaseCommand extends Command {
   throwForInvalidVersion(version) {
     if (
       !version.match(
-        /^(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})(?:-[A-Za-z0-9-]{1,12})?$/g,
+        // this is mirrored in schemas/VersionSchema.js and developer_cli/constants.py
+        /^(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})(?:-(?=.{1,12}$)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)?$/g,
       )
     ) {
       throw new Error(
