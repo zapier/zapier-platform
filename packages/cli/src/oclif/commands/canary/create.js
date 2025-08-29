@@ -3,6 +3,7 @@ const { Args, Flags } = require('@oclif/core');
 const { createCanary, listCanaries } = require('../../../utils/api');
 const { buildFlags } = require('../../buildFlags');
 const { validateActions } = require('../../../utils/actions');
+const { localAppCommand } = require('../../../utils/local');
 
 class CanaryCreateCommand extends ZapierBaseCommand {
   async perform() {
@@ -19,7 +20,16 @@ class CanaryCreateCommand extends ZapierBaseCommand {
 
     let actions;
     if (this.flags.action) {
-      actions = validateActions(this.flags.action);
+      // Load app definition to validate actions exist in the app
+      let appDefinition;
+      try {
+        appDefinition = await localAppCommand({ command: 'definition' });
+      } catch (error) {
+        // If we can't load the app definition, skip app-specific validation
+        appDefinition = null;
+      }
+
+      actions = validateActions(this.flags.action, appDefinition);
     }
 
     const activeCanaries = await listCanaries();
@@ -123,9 +133,9 @@ CanaryCreateCommand.flags = buildFlags({
         'Overrides any default filters the canary system imposes. This argument is only permitted for Zapier staff.',
     }),
     action: Flags.string({
-      char: 'a',
+      char: 'c',
       description:
-        'When specified, the command will only canary users\' Zaps that use the specified action(s). Specify an action in the format of "{action_type}/{action_key}", where {action_type} can be "trigger", "create", "search", "bulkRead", or "searchOrCreate". You can specify multiple actions like `-a trigger/new_recipe -a create/add_recipe`.',
+        'When specified, the command will only canary users\' Zaps that use the specified action(s). Specify an action in the format of "{action_type}/{action_key}", where {action_type} can be "trigger", "create", "search", "bulkRead", or "searchOrCreate". You can specify multiple actions like `-c trigger/new_recipe -c create/add_recipe`.',
       multiple: true,
     }),
   },
@@ -164,7 +174,7 @@ CanaryCreateCommand.examples = [
   'zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345 -u user@example.com',
   'zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345',
   'zapier canary:create 1.0.0 1.1.0 -p 20 -d 3600 --action trigger/new_recipe',
-  'zapier canary:create 1.0.0 1.1.0 -p 20 -d 3600 -a trigger/new_recipe -a create/add_recipe',
+  'zapier canary:create 1.0.0 1.1.0 -p 20 -d 3600 -c trigger/new_recipe -c create/add_recipe',
 ];
 CanaryCreateCommand.skipValidInstallCheck = true;
 
