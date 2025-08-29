@@ -115,7 +115,7 @@ const registerActionInJsApp = (codeStr, property, varName) => {
 
   // check if this object already has the property at the top level
   const existingProp = objToModify.properties.find(
-    (props) => props.key.name === property,
+    (props) => props.key && props.key.name === property,
   );
   if (existingProp) {
     // `triggers: myTriggers` means we shouldn't bother
@@ -209,7 +209,7 @@ const registerActionInTsApp = (codeStr, actionTypePlural, identifierName) => {
 
   // Check if this object already has the actionType group inside it.
   const existingProp = appObj.properties.find(
-    (props) => props.key.name === actionTypePlural,
+    (props) => props.key && props.key.name === actionTypePlural,
   );
   if (existingProp) {
     const value = existingProp.value;
