@@ -131,7 +131,8 @@ export interface BaseApp {
 
 /**
  * Represents a simplified semver string, from `0.0.0` to
- * `999.999.999`.
+ * `999.999.999` with optional simplified label. They need to be
+ * case-insensitive unique.
  */
 export type Version = string;
 

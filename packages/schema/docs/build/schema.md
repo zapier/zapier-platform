@@ -2512,12 +2512,12 @@ Key | Required | Type | Description
 
 ## /VersionSchema
 
-Represents a simplified semver string, from `0.0.0` to `999.999.999`.
+Represents a simplified semver string, from `0.0.0` to `999.999.999` with optional simplified label. They need to be case-insensitive unique.
 
 #### Details
 
 * **Type** - `string`
-* **Pattern** - `^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$`
+* **Pattern** - `^(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})(?:-(?=.{1,12}$)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)?$`
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@17.7.0/packages/schema/lib/schemas/VersionSchema.js)
 
 
@@ -2526,11 +2526,17 @@ Represents a simplified semver string, from `0.0.0` to `999.999.999`.
 * `'1.0.0'`
 * `'2.11.3'`
 * `'999.999.999'`
+* `'1.2.0-beta'`
+* `'0.0.0-ISSUE-123'`
 
 #### Anti-Examples
 
-* `'1.0.0.0'` - _Must have only 2 periods_
+* `'1.0.0.0'` - _Must have 2 periods_
 * `'1000.0.0'` - _Each number can be a maximum of 3 digits_
-* `'v1.0.0'` - _No letters allowed_
-* `'1.0.0-beta'` - _undefined_
+* `'v1.0.0'` - _No letter prefix allowed_
+* `'1.0.0-rc.1'` - _No periods allowed in label_
+* `'1.0.0--'` - _No repeated dashes allowed_
+* `'1.0.0-foo--bar'` - _No repeated dashes allowed in label_
+* `'1.0.0-'` - _No empty label allowed_
+* `'1.0.0-foo-'` - _No trailing dash allowed in label_
 <!-- {% endraw %} -->
