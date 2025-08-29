@@ -17,4 +17,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check variable
-        run: echo $COPILOT_MCP_FOO
+        run: echo $COPILOT_MCP_FOO && echo $FOO
