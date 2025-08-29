@@ -4,6 +4,8 @@
 
 This is the main monorepo for all public code that powers the Zapier Platform Experience.
 
+💡 **Fun fact**: The only thing faster than our automations is how quickly developers fall in love with not writing integration code! 😄
+
 ## Contents
 
 It consists of a few main packages:
