@@ -240,15 +240,37 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
 };
 
 const appendEnv = async (vars, prefix = '') => {
-  await fs.appendFile(
-    '.env',
-    Object.entries(vars)
-      .filter(([k, v]) => v !== undefined)
-      .map(
-        ([k, v]) =>
-          `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
-      ),
+  const filteredEntries = Object.entries(vars).filter(
+    ([k, v]) => v !== undefined,
   );
+
+  if (filteredEntries.length === 0) {
+    // Nothing to append
+    return;
+  }
+
+  const newContent = filteredEntries
+    .map(
+      ([k, v]) =>
+        `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
+    )
+    .join('');
+
+  // Check if .env file exists and if it ends with a newline
+  let needsLeadingNewline = false;
+  try {
+    const existingContent = await fs.readFile('.env', 'utf8');
+    // If file exists and doesn't end with newline, we need to add one
+    needsLeadingNewline =
+      existingContent.length > 0 && !existingContent.endsWith('\n');
+  } catch (error) {
+    // File doesn't exist, no need for leading newline
+    needsLeadingNewline = false;
+  }
+
+  const contentToAppend = needsLeadingNewline ? '\n' + newContent : newContent;
+
+  await fs.appendFile('.env', contentToAppend);
 };
 
 const replaceDoubleCurlies = async (request) => {
@@ -1513,3 +1535,6 @@ The following is a non-exhaustive list of current limitations and may be support
 `;
 
 module.exports = InvokeCommand;
+
+// Export for testing
+module.exports._appendEnv = appendEnv;
