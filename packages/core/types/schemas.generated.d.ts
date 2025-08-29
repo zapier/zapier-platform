@@ -1466,11 +1466,7 @@ export interface PlainOutputField {
 }
 
 /** An array or collection of input field groups. */
-export type InputFieldGroups = {
-  key: Key;
-  label: string;
-  emphasize: boolean;
-}[];
+export type InputFieldGroups = InputFieldGroup[];
 
 /**
  * Zapier uses this configuration to ensure this action is performed
@@ -1679,6 +1675,18 @@ export interface PlainInputField {
    * organize this field with others.
    */
   group?: Key;
+}
+
+/** Object for visual grouping of input fields. */
+export interface InputFieldGroup {
+  /** The unique identifier for this group. */
+  key: Key;
+
+  /** The human-readable name for the group. */
+  label?: string;
+
+  /** Whether this group should be visually emphasized in the UI. */
+  emphasize?: boolean;
 }
 
 /**
