@@ -62,6 +62,8 @@ To canary traffic for an entire account, use the --account-id. Note: this scenar
 
 To canary traffic for a specific user within a specific account, use both --user and --account-id flags.
 
+To canary traffic for specific actions only, use the --action flag. You can specify multiple actions to filter by.
+
 Note: this is similar to `zapier migrate` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
 
 **Only use this command to canary traffic between non-breaking versions!**
@@ -76,6 +78,7 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * `-u, --user` | Canary this user (email) across all accounts, unless `account-id` is specified.
 * `-a, --account-id` | The account ID to target. If user is specified, only canary the user within this account. If user is not specified, then this argument is only permitted for Zapier staff.
 * `-f, --force-include-all` | Overrides any default filters the canary system imposes. This argument is only permitted for Zapier staff.
+* `-a, --action` | When specified, the command will only canary users' Zaps that use the specified action(s). Specify an action in the format of "{action_type}/{action_key}", where {action_type} can be "trigger", "create", "search", "bulkRead", or "searchOrCreate". You can specify multiple actions like `-a trigger/new_recipe -a create/add_recipe`.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
@@ -83,6 +86,8 @@ Note: this is similar to `zapier migrate` but different in that this is temporar
 * `zapier canary:create 2.0.0 2.1.0 --percent 25 --duration 1800 --user user@example.com`
 * `zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345 -u user@example.com`
 * `zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345`
+* `zapier canary:create 1.0.0 1.1.0 -p 20 -d 3600 --action trigger/new_recipe`
+* `zapier canary:create 1.0.0 1.1.0 -p 20 -d 3600 -a trigger/new_recipe -a create/add_recipe`
 
 
 ## canary:delete

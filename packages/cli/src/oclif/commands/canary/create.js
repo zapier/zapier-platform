@@ -2,6 +2,7 @@ const ZapierBaseCommand = require('../../ZapierBaseCommand');
 const { Args, Flags } = require('@oclif/core');
 const { createCanary, listCanaries } = require('../../../utils/api');
 const { buildFlags } = require('../../buildFlags');
+const { validateActions } = require('../../../utils/actions');
 
 class CanaryCreateCommand extends ZapierBaseCommand {
   async perform() {
@@ -15,6 +16,11 @@ class CanaryCreateCommand extends ZapierBaseCommand {
     this.validateVersions(versionFrom, versionTo);
     this.validatePercent(percent);
     this.validateDuration(duration);
+
+    let actions;
+    if (this.flags.action) {
+      actions = validateActions(this.flags.action);
+    }
 
     const activeCanaries = await listCanaries();
     if (activeCanaries.objects.length > 0) {
@@ -52,6 +58,12 @@ If you would like to stop this canary now, run \`zapier canary:delete ${existing
     if (forceIncludeAll) {
       body.force_include_all = true;
       createCanaryMessage += `\n    - Force Include All: true`;
+    }
+
+    if (actions?.length) {
+      body.actions = actions;
+      const actionsInStr = actions.map((a) => `${a.type}/${a.key}`).join(', ');
+      createCanaryMessage += `\n    - Actions: ${actionsInStr}`;
     }
 
     this.startSpinner(createCanaryMessage);
@@ -110,6 +122,12 @@ CanaryCreateCommand.flags = buildFlags({
       description:
         'Overrides any default filters the canary system imposes. This argument is only permitted for Zapier staff.',
     }),
+    action: Flags.string({
+      char: 'a',
+      description:
+        'When specified, the command will only canary users\' Zaps that use the specified action(s). Specify an action in the format of "{action_type}/{action_key}", where {action_type} can be "trigger", "create", "search", "bulkRead", or "searchOrCreate". You can specify multiple actions like `-a trigger/new_recipe -a create/add_recipe`.',
+      multiple: true,
+    }),
   },
 });
 
@@ -134,6 +152,8 @@ To canary traffic for an entire account, use the --account-id. Note: this scenar
 
 To canary traffic for a specific user within a specific account, use both --user and --account-id flags.
 
+To canary traffic for specific actions only, use the --action flag. You can specify multiple actions to filter by.
+
 Note: this is similar to \`zapier migrate\` but different in that this is temporary and will "revert" the changes once the specified duration is expired.
 
 **Only use this command to canary traffic between non-breaking versions!**`;
@@ -143,6 +163,8 @@ CanaryCreateCommand.examples = [
   'zapier canary:create 2.0.0 2.1.0 --percent 25 --duration 1800 --user user@example.com',
   'zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345 -u user@example.com',
   'zapier canary:create 2.0.0 2.1.0 -p 15 -d 7200 -a 12345',
+  'zapier canary:create 1.0.0 1.1.0 -p 20 -d 3600 --action trigger/new_recipe',
+  'zapier canary:create 1.0.0 1.1.0 -p 20 -d 3600 -a trigger/new_recipe -a create/add_recipe',
 ];
 CanaryCreateCommand.skipValidInstallCheck = true;
 
