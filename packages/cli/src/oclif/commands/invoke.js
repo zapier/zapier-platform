@@ -240,15 +240,26 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
 };
 
 const appendEnv = async (vars, prefix = '') => {
-  await fs.appendFile(
-    '.env',
-    Object.entries(vars)
-      .filter(([k, v]) => v !== undefined)
-      .map(
-        ([k, v]) =>
-          `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
-      ),
-  );
+  const envVars = Object.entries(vars)
+    .filter(([k, v]) => v !== undefined)
+    .map(
+      ([k, v]) =>
+        `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
+    )
+    .join('');
+
+  // Check if .env file exists and doesn't end with newline
+  let contentToAppend = envVars;
+  try {
+    const existingContent = await fs.readFile('.env', 'utf8');
+    if (existingContent.length > 0 && !existingContent.endsWith('\n')) {
+      contentToAppend = '\n' + envVars;
+    }
+  } catch (err) {
+    // File doesn't exist, no need to prepend newline
+  }
+
+  await fs.appendFile('.env', contentToAppend);
 };
 
 const replaceDoubleCurlies = async (request) => {
