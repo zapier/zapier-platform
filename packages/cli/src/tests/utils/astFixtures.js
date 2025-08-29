@@ -87,6 +87,33 @@ export default {
 } satisfies App;
 `.trim();
 
+const sampleShorthandIndexTs = `
+import type { App } from 'zapier-platform-core';
+import { version as platformVersion } from 'zapier-platform-core';
+import * as creates from './creates/index.js';
+
+import packageJson from '../package.json';
+
+// comment!
+export default {
+  version: packageJson.version,
+  platformVersion,
+  creates
+} satisfies App;
+`.trim();
+
+const sampleShorthandIndexJs = `
+const creates = require('./creates/index.js');
+
+const App = {
+  version: require('./package.json').version,
+  platformVersion: require('zapier-platform-core').version,
+  creates
+};
+
+module.exports = App;
+`.trim();
+
 const sampleLegacyAppIndexJs = `
 const authentication = require('./authentication');
 const businessTrigger = require('./triggers/business.js');
@@ -206,6 +233,8 @@ module.exports = {
   sampleExportObjectIndexJs,
   sampleExportDeclaredIndexTs,
   sampleExportDirectIndexTs,
+  sampleShorthandIndexTs,
+  sampleShorthandIndexJs,
   sampleLegacyAppIndexJs,
   sampleAppWithSpreadIndexJs,
   sampleAppWithSpreadIndexTs,
