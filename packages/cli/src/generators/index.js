@@ -330,6 +330,7 @@ class ProjectGenerator extends Generator {
 
 module.exports = {
   TEMPLATE_CHOICES,
+  TS_SUPPORTED_TEMPLATES,
   PullGenerator,
   ProjectGenerator,
 };
