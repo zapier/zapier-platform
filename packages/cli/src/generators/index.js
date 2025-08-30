@@ -253,13 +253,23 @@ class ProjectGenerator extends Generator {
 
   async prompting() {
     if (!this.options.template) {
+      // Filter template choices for TypeScript if language is specified as typescript
+      const templateChoices =
+        this.options.language === 'typescript'
+          ? TS_SUPPORTED_TEMPLATES
+          : TEMPLATE_CHOICES;
+
+      // Use appropriate default based on language
+      const defaultTemplate =
+        this.options.language === 'typescript' ? 'basic-auth' : 'minimal';
+
       this.answers = await this.prompt([
         {
           type: 'list',
           name: 'template',
-          choices: TEMPLATE_CHOICES,
+          choices: templateChoices,
           message: 'Choose a project template to start with:',
-          default: 'minimal',
+          default: defaultTemplate,
         },
       ]);
       this.options.template = this.answers.template;
@@ -321,6 +331,7 @@ class ProjectGenerator extends Generator {
 
 module.exports = {
   TEMPLATE_CHOICES,
+  TS_SUPPORTED_TEMPLATES,
   PullGenerator,
   ProjectGenerator,
 };
