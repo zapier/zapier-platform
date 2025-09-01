@@ -253,11 +253,16 @@ class ProjectGenerator extends Generator {
 
   async prompting() {
     if (!this.options.template) {
+      // Filter template choices based on module type
+      const templateChoices = this.options.module === 'esm' 
+        ? ESM_SUPPORTED_TEMPLATES 
+        : TEMPLATE_CHOICES;
+        
       this.answers = await this.prompt([
         {
           type: 'list',
           name: 'template',
-          choices: TEMPLATE_CHOICES,
+          choices: templateChoices,
           message: 'Choose a project template to start with:',
           default: 'minimal',
         },
