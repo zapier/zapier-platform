@@ -253,10 +253,18 @@ class ProjectGenerator extends Generator {
 
   async prompting() {
     if (!this.options.template) {
-      // Filter template choices based on module type
-      const templateChoices = this.options.module === 'esm' 
-        ? ESM_SUPPORTED_TEMPLATES 
-        : TEMPLATE_CHOICES;
+      // Filter template choices based on language and module type
+      let templateChoices = TEMPLATE_CHOICES;
+      let defaultTemplate = 'minimal';
+
+      // TypeScript filtering takes precedence over ESM filtering
+      if (this.options.language === 'typescript') {
+        templateChoices = TS_SUPPORTED_TEMPLATES;
+        defaultTemplate = 'basic-auth';
+      } else if (this.options.module === 'esm') {
+        templateChoices = ESM_SUPPORTED_TEMPLATES;
+        defaultTemplate = 'minimal'; // minimal is the only ESM template
+      }
         
       this.answers = await this.prompt([
         {
@@ -264,7 +272,7 @@ class ProjectGenerator extends Generator {
           name: 'template',
           choices: templateChoices,
           message: 'Choose a project template to start with:',
-          default: 'minimal',
+          default: defaultTemplate,
         },
       ]);
       this.options.template = this.answers.template;
@@ -326,6 +334,7 @@ class ProjectGenerator extends Generator {
 
 module.exports = {
   TEMPLATE_CHOICES,
+  ESM_SUPPORTED_TEMPLATES,
   PullGenerator,
   ProjectGenerator,
 };
