@@ -35,6 +35,32 @@ Quick overview:
 - `yarn validate` - Full validation (test + smoke-test + lint)
 - Individual packages: `cd` into package directory first, then `yarn test`
 
+### Testing Guidelines
+
+When writing tests, follow these important principles:
+
+**Test Actual Code, Not Simulations**
+- Always test the actual implementation by calling the real functions/methods
+- Never duplicate or simulate the logic from the source code in your tests
+- Use mocking only for external dependencies, not for the code you're testing
+
+**Example of what NOT to do:**
+```javascript
+// ❌ Bad: Simulating the logic instead of testing it
+const result = options.language === 'typescript' ? TS_SUPPORTED : ALL_TEMPLATES;
+result.should.equal(expectedValue);
+```
+
+**Example of what to do:**
+```javascript
+// ✅ Good: Testing the actual implementation
+const generator = new ProjectGenerator([], options);
+await generator.prompting();
+// Assert on the actual behavior/side effects
+```
+
+This ensures tests remain valuable when implementation details change and prevents tests from becoming outdated duplications of source code logic.
+
 ## Development CLI Setup
 
 For setting up the development version of the CLI, see [docs-dev/install-dev.md](docs-dev/install-dev.md).
