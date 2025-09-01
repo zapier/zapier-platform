@@ -6,9 +6,14 @@ const { buildFlags } = require('../buildFlags');
 const { flattenCheckResult } = require('../../utils/display');
 const { localAppCommand } = require('../../utils/local');
 const { validateApp } = require('../../utils/api');
+const { maybeRunBuildScript } = require('../../utils/build');
 
 class ValidateCommand extends BaseCommand {
   async perform() {
+    if (!this.flags['skip-build']) {
+      await maybeRunBuildScript({ printProgress: true });
+    }
+
     this.log('Validating project locally');
 
     const errors = await localAppCommand({ command: 'validate' });
@@ -121,6 +126,9 @@ ValidateCommand.flags = buildFlags({
     'without-style': Flags.boolean({
       description: 'Forgo pinging the Zapier server to run further checks.',
     }),
+    'skip-build': Flags.boolean({
+      description: 'Skip running the _zapier-build script before validation.',
+    }),
   },
   opts: {
     format: true,
@@ -130,6 +138,7 @@ ValidateCommand.flags = buildFlags({
 ValidateCommand.examples = [
   'zapier validate',
   'zapier validate --without-style',
+  'zapier validate --skip-build',
   'zapier validate --format json',
 ];
 ValidateCommand.description = `Validate your integration.
