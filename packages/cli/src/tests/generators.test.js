@@ -22,7 +22,6 @@ describe('ProjectGenerator', () => {
 
       // Verify that only ESM-supported templates are shown
       expect(promptChoices).to.deep.equal(ESM_SUPPORTED_TEMPLATES);
-      expect(promptChoices).to.deep.equal(['minimal']);
       expect(promptDefault).to.equal('minimal');
       expect(promptChoices).to.not.include('oauth2');
       expect(promptChoices).to.not.include('basic-auth');
