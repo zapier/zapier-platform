@@ -937,12 +937,14 @@ Run the standard validation routine powered by json-schema that checks your inte
 
 **Flags**
 * `--without-style` | Forgo pinging the Zapier server to run further checks.
+* `--skip-build` | Skip running the _zapier-build script before validation.
 * `-d, --debug` | Show extra debugging output.
 * `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Examples**
 * `zapier validate`
 * `zapier validate --without-style`
+* `zapier validate --skip-build`
 * `zapier validate --format json`
 
 

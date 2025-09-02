@@ -1121,6 +1121,7 @@ describe('http prepareResponse', () => {
     should(response.json).be.Undefined(); // DEPRECATED and not forwards compatible
     should(response.getHeader(), 'application/x-www-form-urlencoded');
   });
+
   describe('sanitizeHeaders Middleware', () => {
     it('should trim whitespace from header keys and values', () => {
       const req = {
@@ -1153,6 +1154,44 @@ describe('http prepareResponse', () => {
 
       sanitizeHeaders(req);
       req.headers.should.deepEqual(expectedHeaders);
+    });
+  });
+
+  describe('secret censoring', () => {
+    let originalEnv;
+
+    before(() => {
+      originalEnv = process.env.VERY_SECRET_TOKEN;
+      process.env.VERY_SECRET_TOKEN = 'my_secret_token';
+    });
+
+    after(() => {
+      process.env.VERY_SECRET_TOKEN = originalEnv;
+    });
+
+    it('should censor sensitive data in ResponseError', async () => {
+      const bundle = {
+        authData: {
+          api_key: 'sensitive_api_key',
+          username: 'testuser', // safe key, should not be censored
+        },
+      };
+      const testLogger = async () => ({});
+      const input = createInput({}, { bundle }, testLogger);
+      const z = {}; // z object is not used in this test
+      const request = createAppRequestClient(input, {
+        extraArgs: [z, bundle],
+      });
+      await request({
+        url: `${HTTPBIN_URL}/status/400?token=sensitive_api_key&name=testuser&env_token=my_secret_token`,
+        headers: {
+          authorization: 'bearer my_secret_token',
+          'x-api-key': 'sensitive_api_key',
+        },
+      }).should.be.rejectedWith(errors.ResponseError, {
+        name: 'ResponseError',
+        message: `{"status":400,"headers":{"content-type":"text/plain; charset=utf-8","retry-after":null},"content":"","request":{"url":"${HTTPBIN_URL}/status/400?token=:censored:17:d3102b9e9b:&name=testuser&env_token=:censored:15:b0b9639af8:"}}`,
+      });
     });
   });
 });
