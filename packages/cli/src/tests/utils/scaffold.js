@@ -8,6 +8,7 @@ const {
   writeTemplateFile,
   createTemplateContext,
   updateEntryFile,
+  createScaffoldingContext,
   isEsmJavaScript,
 } = require('../../utils/scaffold');
 
@@ -378,6 +379,65 @@ describe('scaffold', () => {
 
     afterEach(async () => {
       await remove(tmpDir);
+    });
+  });
+
+  describe('createScaffoldingContext', () => {
+    it('should generate correct import paths for TypeScript with ESM', () => {
+      const context = createScaffoldingContext({
+        actionType: 'create',
+        noun: 'foo',
+        language: 'ts',
+        indexFileLocal: 'index.ts',
+        actionDirLocal: 'creates',
+        testDirLocal: 'test',
+        includeIntroComments: true,
+        preventOverwrite: false,
+      });
+
+      // For TypeScript with ESM, import paths should use .js extension
+      context.actionRelativeImportPath.should.equal('./creates/foo.js');
+    });
+
+    it('should generate correct import paths for JavaScript', () => {
+      const context = createScaffoldingContext({
+        actionType: 'create',
+        noun: 'foo',
+        language: 'js',
+        indexFileLocal: 'index.js',
+        actionDirLocal: 'creates',
+        testDirLocal: 'test',
+        includeIntroComments: true,
+        preventOverwrite: false,
+      });
+
+      // For JavaScript, import paths should not have extension
+      context.actionRelativeImportPath.should.equal('./creates/foo');
+    });
+
+    it('should normalize Windows path separators to forward slashes', () => {
+      // Mock path.relative to return Windows-style paths
+      const originalRelative = require('path').relative;
+      require('path').relative = () => 'creates\\foo';
+
+      try {
+        const context = createScaffoldingContext({
+          actionType: 'create',
+          noun: 'foo',
+          language: 'ts',
+          indexFileLocal: 'index.ts',
+          actionDirLocal: 'creates',
+          testDirLocal: 'test',
+          includeIntroComments: true,
+          preventOverwrite: false,
+        });
+
+        // Should normalize backslashes to forward slashes
+        context.actionRelativeImportPath.should.equal('./creates/foo.js');
+      } finally {
+        // Restore original function
+        require('path').relative = originalRelative;
+      }
     });
   });
 });
