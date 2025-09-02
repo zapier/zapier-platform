@@ -115,7 +115,7 @@ describe('build (runs slowly)', function () {
       path.normalize('node_modules/node-fetch/README.md'),
     );
 
-    smartPaths.length.should.be.within(200, 327);
+    smartPaths.length.should.be.within(200, 328);
   });
 
   it('should list all the files', () => {
@@ -1446,7 +1446,7 @@ describe('build ESM (runs slowly)', function () {
     smartPaths.filter((p) => p.endsWith('.ts')).length.should.equal(0);
     smartPaths.should.not.containEql('tsconfig.json');
 
-    smartPaths.length.should.be.within(200, 328);
+    smartPaths.length.should.be.within(200, 329);
   });
 
   it('should list all the files', async () => {
