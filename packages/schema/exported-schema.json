@@ -782,6 +782,28 @@
       },
       "additionalProperties": false
     },
+    "InputFieldGroupSchema": {
+      "id": "/InputFieldGroupSchema",
+      "description": "Object for visual grouping of input fields.",
+      "type": "object",
+      "required": ["key"],
+      "properties": {
+        "key": {
+          "description": "The unique identifier for this group.",
+          "$ref": "/KeySchema"
+        },
+        "label": {
+          "description": "The human-readable name for the group.",
+          "type": "string",
+          "minLength": 1
+        },
+        "emphasize": {
+          "description": "Whether this group should be visually emphasized in the UI.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
     "PlainOutputFieldSchema": {
       "description": "Field schema specialized for output fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "id": "/PlainOutputFieldSchema",
@@ -893,23 +915,7 @@
       "description": "An array or collection of input field groups.",
       "type": "array",
       "items": {
-        "type": "object",
-        "required": ["key"],
-        "properties": {
-          "key": {
-            "description": "The unique identifier for this group.",
-            "$ref": "/KeySchema"
-          },
-          "label": {
-            "description": "The human-readable name for the group.",
-            "type": "string",
-            "minLength": 1
-          },
-          "emphasize": {
-            "description": "Whether this group should be visually emphasized in the UI.",
-            "type": "boolean"
-          }
-        }
+        "$ref": "/InputFieldGroupSchema"
       },
       "additionalProperties": false
     },
@@ -2051,9 +2057,11 @@
     },
     "VersionSchema": {
       "id": "/VersionSchema",
-      "description": "Represents a simplified semver string, from `0.0.0` to `999.999.999`.",
+      "description": "Represents a simplified semver string, from `0.0.0` to `999.999.999` with optional simplified label. They need to be case-insensitive unique.",
       "type": "string",
-      "pattern": "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$"
+      "pattern": "^(?:0|[1-9]\\d{0,2})\\.(?:0|[1-9]\\d{0,2})\\.(?:0|[1-9]\\d{0,2})(?:-(?=.{1,12}$)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)?$",
+      "minLength": 5,
+      "maxLength": 24
     },
     "MiddlewaresSchema": {
       "id": "/MiddlewaresSchema",
