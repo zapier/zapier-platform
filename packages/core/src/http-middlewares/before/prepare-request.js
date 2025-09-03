@@ -145,6 +145,8 @@ const prepareRequest = function (req) {
       ['_zapier', 'app', 'flags', 'skipThrowForStatus'],
       false,
     ),
+    // throwForThrottlingEarly defaults to false (new behavior active by default)
+    throwForThrottlingEarly: false,
   });
 
   req = sugarBody(req);
