@@ -1,3 +1,19 @@
+## 17.18.0
+
+_Released 2025-09-03_
+
+### cli
+
+None!
+
+### core
+
+- :bug: Censor sensitive information in `ResponseError` to prevent accidental exposure of secrets in error messages ([#1147](https://github.com/zapier/zapier-platform/pull/1147))
+
+### schema
+
+None!
+
 ## 17.7.0
 
 _Released 2025-08-22_
