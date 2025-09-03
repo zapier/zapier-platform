@@ -43,51 +43,11 @@ When writing tests, especially for generators and complex components, follow the
 
 #### ✅ DO: Test Actual Component Behavior
 
-Always test the actual behavior of the component being tested. For generators, use proper Yeoman environment setup:
-
-```javascript
-// ✅ Good: Tests actual ProjectGenerator using Yeoman environment
-const yeoman = require('yeoman-environment');
-
-async function testGenerator(options = {}) {
-  const env = yeoman.createEnv();
-  
-  class TestProjectGenerator extends ProjectGenerator {
-    async prompt(questions) {
-      // Capture actual prompt calls and return appropriate responses
-      if (questions && questions[0].name === 'template') {
-        capturedChoices = questions[0].choices;
-      }
-      return { template: 'minimal' };
-    }
-  }
-  
-  env.registerStub(TestProjectGenerator, 'test:generator');
-  await env.run('test:generator', options);
-  return capturedChoices;
-}
-```
+Always test the actual behavior of the component being tested.
 
 #### ❌ DON'T: Use Simulation-Based Testing
 
-Never extract logic from the component and test it in isolation. This creates brittle tests that don't reflect actual behavior:
-
-```javascript
-// ❌ Bad: Simulates logic instead of testing actual generator
-function getFilteredTemplates(options) {
-  // Duplicates the logic from ProjectGenerator.prompting()
-  let templateChoices = TEMPLATE_CHOICES;
-  if (options.module === 'esm') {
-    templateChoices = ESM_SUPPORTED_TEMPLATES;
-  }
-  return { templateChoices };
-}
-
-it('should filter templates', () => {
-  const result = getFilteredTemplates({ module: 'esm' });
-  expect(result.templateChoices).to.equal(ESM_SUPPORTED_TEMPLATES);
-});
-```
+Never extract logic from the component and test it in isolation. This creates brittle tests that don't reflect actual behavior.
 
 #### Why Simulation Testing is Problematic
 
@@ -95,16 +55,6 @@ it('should filter templates', () => {
 2. **False confidence**: Tests may pass while actual functionality is broken  
 3. **Maintenance burden**: Changes require updating both implementation and simulation
 4. **Missing integration issues**: Doesn't test how components interact with their environment
-
-#### Proper Generator Testing Pattern
-
-For Yeoman generators specifically:
-
-1. Create a Yeoman environment with `yeoman.createEnv()`
-2. Register your generator using `env.registerStub()`
-3. Run the generator through the environment with `env.run()`
-4. Mock methods like `prompt()` to capture calls and provide responses
-5. Assert on the actual captured data from method calls
 
 ## Development CLI Setup
 
