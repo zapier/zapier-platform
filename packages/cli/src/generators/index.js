@@ -265,7 +265,7 @@ class ProjectGenerator extends Generator {
         templateChoices = ESM_SUPPORTED_TEMPLATES;
         defaultTemplate = 'minimal'; // minimal is the only ESM template
       }
-        
+
       this.answers = await this.prompt([
         {
           type: 'list',
@@ -335,6 +335,7 @@ class ProjectGenerator extends Generator {
 module.exports = {
   TEMPLATE_CHOICES,
   ESM_SUPPORTED_TEMPLATES,
+  TS_SUPPORTED_TEMPLATES,
   PullGenerator,
   ProjectGenerator,
 };
