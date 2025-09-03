@@ -1,79 +1,138 @@
 const { expect } = require('chai');
-const {
-  TEMPLATE_CHOICES,
-  ESM_SUPPORTED_TEMPLATES,
-  TS_SUPPORTED_TEMPLATES,
-} = require('../generators');
+const yeoman = require('yeoman-environment');
+const { ProjectGenerator, TEMPLATE_CHOICES, ESM_SUPPORTED_TEMPLATES, TS_SUPPORTED_TEMPLATES } = require('../generators');
 
 describe('ProjectGenerator', () => {
   describe('ESM template filtering', () => {
-    // Test the template filtering logic directly without instantiating the generator
-    describe('template filtering logic', () => {
-      function getFilteredTemplates(options) {
-        let templateChoices = TEMPLATE_CHOICES;
-        let defaultTemplate = 'minimal';
-
-        // Extract the same logic from the actual prompting method
-        // TypeScript filtering takes precedence over ESM filtering
-        if (options.language === 'typescript') {
-          templateChoices = TS_SUPPORTED_TEMPLATES;
-          defaultTemplate = 'basic-auth';
-        } else if (options.module === 'esm') {
-          templateChoices = ESM_SUPPORTED_TEMPLATES;
-          defaultTemplate = 'minimal'; // minimal is the only ESM template
+    /**
+     * Helper function to test template filtering by running through Yeoman environment
+     */
+    async function testTemplateFiltering(options = {}, testName = 'test') {
+      const env = yeoman.createEnv();
+      
+      let testResult = {
+        promptChoices: undefined,
+        promptDefault: undefined,
+        promptCalled: false
+      };
+      
+      // Create a unique generator class name for proper isolation
+      const generatorName = `TestProjectGenerator_${testName}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Create a custom generator class that captures prompt calls
+      const TestGeneratorClass = class extends ProjectGenerator {
+        async prompt(questions) {
+          testResult.promptCalled = true;
+          
+          // Capture template-related prompts
+          if (questions && questions.length > 0 && questions[0].name === 'template') {
+            testResult.promptChoices = questions[0].choices;
+            testResult.promptDefault = questions[0].default;
+          }
+          
+          // Return appropriate response
+          if (questions && questions.length > 0) {
+            if (questions[0].name === 'template') {
+              const templateChoice = testResult.promptChoices ? testResult.promptChoices[0] : 'minimal';
+              return { template: templateChoice };
+            } else if (questions[0].name === 'module') {
+              return { module: 'esm' };
+            }
+          }
+          
+          return {};
         }
-
-        return { templateChoices, defaultTemplate };
+        
+        // Skip the rest of the generator lifecycle to make tests faster
+        writing() {
+          // Do nothing - we only care about prompting
+        }
       }
+      
+      env.registerStub(TestGeneratorClass, generatorName);
+      
+      // Run the generator through the environment
+      await env.run(generatorName, options);
 
-      it('should filter template choices to ESM-supported templates when module=esm', () => {
-        const result = getFilteredTemplates({ module: 'esm' });
+      return testResult;
+    }
 
-        expect(result.templateChoices).to.deep.equal(ESM_SUPPORTED_TEMPLATES);
-        expect(result.defaultTemplate).to.equal('minimal');
-        expect(result.templateChoices).to.not.include('oauth2');
-        expect(result.templateChoices).to.not.include('basic-auth');
-      });
+    it('should filter template choices to ESM-supported templates when module=esm', async () => {
+      const result = await testTemplateFiltering({
+        path: '/tmp/test',
+        module: 'esm',
+      }, 'esm_filter');
 
-      it('should show all template choices when no module is specified', () => {
-        const result = getFilteredTemplates({});
+      // Verify that only ESM-supported templates are shown
+      expect(result.promptChoices).to.deep.equal(ESM_SUPPORTED_TEMPLATES);
+      expect(result.promptDefault).to.equal('minimal');
+      expect(result.promptChoices).to.not.include('oauth2');
+      expect(result.promptChoices).to.not.include('basic-auth');
+      expect(result.promptCalled).to.be.true;
+    });
 
-        expect(result.templateChoices).to.deep.equal(TEMPLATE_CHOICES);
-        expect(result.defaultTemplate).to.equal('minimal');
-        expect(result.templateChoices).to.include('minimal');
-        expect(result.templateChoices).to.include('oauth2');
-        expect(result.templateChoices).to.include('basic-auth');
-      });
+    it('should show all template choices when no module is specified', async () => {
+      const result = await testTemplateFiltering({
+        path: '/tmp/test',
+      }, 'no_module');
 
-      it('should show all template choices when module=commonjs', () => {
-        const result = getFilteredTemplates({ module: 'commonjs' });
+      // Verify that all templates are shown
+      expect(result.promptChoices).to.deep.equal(TEMPLATE_CHOICES);
+      expect(result.promptDefault).to.equal('minimal');
+      expect(result.promptChoices).to.include('minimal');
+      expect(result.promptChoices).to.include('oauth2');
+      expect(result.promptChoices).to.include('basic-auth');
+      expect(result.promptCalled).to.be.true;
+    });
 
-        expect(result.templateChoices).to.deep.equal(TEMPLATE_CHOICES);
-        expect(result.defaultTemplate).to.equal('minimal');
-      });
+    it('should show all template choices when module=commonjs', async () => {
+      const result = await testTemplateFiltering({
+        path: '/tmp/test',
+        module: 'commonjs',
+      }, 'commonjs');
 
-      it('should prioritize TypeScript filtering over ESM filtering when both are specified', () => {
-        const result = getFilteredTemplates({
-          language: 'typescript',
-          module: 'esm', // This should be ignored in favor of TypeScript filtering
-        });
+      // Verify that all templates are shown
+      expect(result.promptChoices).to.deep.equal(TEMPLATE_CHOICES);
+      expect(result.promptDefault).to.equal('minimal');
+      expect(result.promptCalled).to.be.true;
+    });
 
-        expect(result.templateChoices).to.deep.equal(TS_SUPPORTED_TEMPLATES);
-        expect(result.defaultTemplate).to.equal('basic-auth');
-        expect(result.templateChoices).to.not.deep.equal(
-          ESM_SUPPORTED_TEMPLATES,
-        );
-      });
+    it('should not prompt for template when template is already specified', async () => {
+      const result = await testTemplateFiltering({
+        path: '/tmp/test',
+        module: 'esm',
+        template: 'minimal',
+      }, 'no_prompt');
 
-      it('should use ESM filtering when language is JavaScript and module is ESM', () => {
-        const result = getFilteredTemplates({
-          language: 'javascript', // explicit JavaScript
-          module: 'esm',
-        });
+      // Verify that prompt was not called for template selection
+      expect(result.promptCalled).to.be.false;
+    });
 
-        expect(result.templateChoices).to.deep.equal(ESM_SUPPORTED_TEMPLATES);
-        expect(result.defaultTemplate).to.equal('minimal');
-      });
+    it('should prioritize TypeScript filtering over ESM filtering when both are specified', async () => {
+      const result = await testTemplateFiltering({
+        path: '/tmp/test',
+        language: 'typescript',
+        module: 'esm', // This should be ignored in favor of TypeScript filtering
+      }, 'typescript_priority');
+
+      // Should show TypeScript templates, not ESM templates
+      expect(result.promptChoices).to.deep.equal(TS_SUPPORTED_TEMPLATES);
+      expect(result.promptDefault).to.equal('basic-auth');
+      expect(result.promptChoices).to.not.deep.equal(ESM_SUPPORTED_TEMPLATES);
+      expect(result.promptCalled).to.be.true;
+    });
+
+    it('should use ESM filtering when language is JavaScript and module is ESM', async () => {
+      const result = await testTemplateFiltering({
+        path: '/tmp/test',
+        language: 'javascript', // explicit JavaScript
+        module: 'esm',
+      }, 'javascript_esm');
+
+      // Should show ESM templates for JavaScript
+      expect(result.promptChoices).to.deep.equal(ESM_SUPPORTED_TEMPLATES);
+      expect(result.promptDefault).to.equal('minimal');
+      expect(result.promptCalled).to.be.true;
     });
   });
 });
