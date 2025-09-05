@@ -650,6 +650,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
+`normalizeInputs` | no | `boolean` | Should Zapier normalize inputs by removing None, empty lists, dicts, and strings before passing them to the perform function?
 
 #### Examples
 

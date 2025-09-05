@@ -69,6 +69,11 @@ module.exports = makeSchema(
           'Zapier uses this configuration to apply throttling when the limit for the window is exceeded.',
         $ref: ThrottleObjectSchema.id,
       },
+      normalizeInputs: {
+        description:
+          'Should Zapier normalize inputs by removing None, empty lists, dicts, and strings before passing them to the perform function?',
+        type: 'boolean',
+      },
     },
     examples: [
       {

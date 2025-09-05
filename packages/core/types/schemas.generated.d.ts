@@ -1383,6 +1383,12 @@ export interface BasicOperation {
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * Should Zapier normalize inputs by removing None, empty lists,
+   * dicts, and strings before passing them to the perform function?
+   */
+  normalizeInputs?: boolean;
 }
 
 /**
