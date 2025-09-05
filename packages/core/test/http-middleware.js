@@ -1156,3 +1156,188 @@ describe('http prepareResponse', () => {
     });
   });
 });
+
+describe('throwForThrottling middleware', () => {
+  const throwForThrottling = require('../src/http-middlewares/after/throw-for-throttling');
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
+  it('should throw ThrottledError for 429 status by default', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock(HTTPBIN_URL)
+      .get('/status/429')
+      .reply(429, '', { 'retry-after': '60' });
+
+    await request({
+      url: `${HTTPBIN_URL}/status/429`,
+    }).should.be.rejectedWith(errors.ThrottledError, {
+      name: 'ThrottledError',
+      doNotContextify: true,
+    });
+
+    scope.isDone().should.be.true();
+  });
+
+  it('should not throw ThrottledError when throwForThrottlingEarly is true', async () => {
+    const testLogger = () => Promise.resolve({});
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock(HTTPBIN_URL)
+      .get('/status/429')
+      .reply(429, '', { 'retry-after': '60' });
+
+    // With throwForThrottlingEarly: true, the middleware should be skipped
+    // and throwForStatus should handle it instead
+    await request({
+      url: `${HTTPBIN_URL}/status/429`,
+      throwForThrottlingEarly: true,
+    }).should.be.rejectedWith(errors.ResponseError, {
+      name: 'ResponseError',
+      doNotContextify: true,
+    });
+
+    scope.isDone().should.be.true();
+  });
+
+  it('should extract retry-after header correctly', () => {
+    const mockResponse = {
+      status: 429,
+      headers: {
+        get: (header) => {
+          if (header === 'retry-after') {
+            return '120';
+          }
+          return null;
+        },
+      },
+      request: {},
+    };
+
+    try {
+      throwForThrottling(mockResponse);
+      // Should not reach here
+      should.fail('Expected ThrottledError to be thrown');
+    } catch (error) {
+      error.should.be.instanceOf(errors.ThrottledError);
+      error.name.should.eql('ThrottledError');
+      // Parse the JSON message to check delay
+      const errorData = JSON.parse(error.message);
+      errorData.delay.should.eql(120);
+    }
+  });
+
+  it('should handle missing retry-after header', () => {
+    const mockResponse = {
+      status: 429,
+      headers: {
+        get: () => null,
+      },
+      request: {},
+    };
+
+    try {
+      throwForThrottling(mockResponse);
+      // Should not reach here
+      should.fail('Expected ThrottledError to be thrown');
+    } catch (error) {
+      error.should.be.instanceOf(errors.ThrottledError);
+      error.name.should.eql('ThrottledError');
+      // Parse the JSON message to check delay is null
+      const errorData = JSON.parse(error.message);
+      should(errorData.delay).be.null();
+    }
+  });
+
+  it('should pass through non-429 responses', () => {
+    const mockResponse = {
+      status: 200,
+      headers: {
+        get: () => null,
+      },
+      request: {},
+    };
+
+    const result = throwForThrottling(mockResponse);
+    result.should.equal(mockResponse);
+  });
+
+  it('should respect throwForThrottlingEarly flag in request', () => {
+    const mockResponse = {
+      status: 429,
+      headers: {
+        get: () => '60',
+      },
+      request: {
+        throwForThrottlingEarly: true,
+      },
+    };
+
+    const result = throwForThrottling(mockResponse);
+    result.should.equal(mockResponse);
+  });
+
+  it('should work in integration with middleware stack', async () => {
+    const testLogger = () => Promise.resolve({});
+    const appDefinition = {
+      afterResponse: [
+        (response) => {
+          // This afterResponse middleware should not see 429 when throwForThrottlingEarly is false
+          response.status.should.not.eql(429);
+          return response;
+        },
+      ],
+    };
+    const input = createInput(appDefinition, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock(HTTPBIN_URL)
+      .get('/status/429')
+      .reply(429, '', { 'retry-after': '30' });
+
+    await request({
+      url: `${HTTPBIN_URL}/status/429`,
+    }).should.be.rejectedWith(errors.ThrottledError);
+
+    scope.isDone().should.be.true();
+  });
+
+  it('should allow afterResponse to see 429 when throwForThrottlingEarly is true', async () => {
+    const testLogger = () => Promise.resolve({});
+    let afterResponseCalled = false;
+    const appDefinition = {
+      afterResponse: [
+        (response) => {
+          // This afterResponse middleware should see 429 when throwForThrottlingEarly is true
+          if (response.status === 429) {
+            afterResponseCalled = true;
+          }
+          return response;
+        },
+      ],
+    };
+    const input = createInput(appDefinition, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock(HTTPBIN_URL)
+      .get('/status/429')
+      .reply(429, '', { 'retry-after': '30' });
+
+    await request({
+      url: `${HTTPBIN_URL}/status/429`,
+      throwForThrottlingEarly: true,
+    }).should.be.rejectedWith(errors.ResponseError);
+
+    afterResponseCalled.should.be.true();
+    scope.isDone().should.be.true();
+  });
+});
