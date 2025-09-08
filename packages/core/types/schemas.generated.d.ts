@@ -1385,11 +1385,10 @@ export interface BasicOperation {
   throttle?: ThrottleObject;
 
   /**
-   * Should Zapier normalize array inputs by removing empty strings,
-   * None, empty lists, and dicts before passing them to the perform
-   * function?
+   * Should Zapier clean inputs by removing empty strings, None, empty
+   * lists, and dicts before passing them to the perform function?
    */
-  normalizeArrays?: boolean;
+  skipCleanInputData?: boolean;
 }
 
 /**
