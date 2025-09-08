@@ -1,10 +1,9 @@
-## 17.8.0
+## 17.7.1
 
-_Released 2025-09-04_
+_Released 2025-09-09_
 
 ### cli
 
-- :tada: `zapier migrate` now supports `--action` filter ([#1126](https://github.com/zapier/zapier-platform/pull/1126))
 - :bug: Fix `zapier scaffold` failing when app object contains spread elements ([#1115](https://github.com/zapier/zapier-platform/pull/1115))
 - :bug: Fix `zapier invoke auth` may append to last line without a newline ([#1138](https://github.com/zapier/zapier-platform/pull/1138))
 - :bug: Fix `zapier scaffold` to use `.js` extension for TS imports ([#1123](https://github.com/zapier/zapier-platform/pull/1123))
