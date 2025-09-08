@@ -605,7 +605,6 @@ You cannot pass both `--user` and `--account`.
 **Flags**
 * `--user` | Migrates all of a users' Private Zaps within all accounts for which the specified user is a member
 * `--account` | Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member
-* `-a, --action` | When specified, the command will only migrate users' Zaps that use the specified action(s). Specify an action in the format of "{action_type}/{action_key}", where {action_type} can be "trigger", "create", "search", "bulkRead", or "searchOrCreate". You can specify multiple actions like `-a trigger/new_recipe -a create/add_recipe`.
 * `-y, --yes` | Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.
 * `-d, --debug` | Show extra debugging output.
 
@@ -614,8 +613,6 @@ You cannot pass both `--user` and `--account`.
 * `zapier migrate 1.0.1 2.0.0 10`
 * `zapier migrate 2.0.0 2.0.1 --user=user@example.com`
 * `zapier migrate 2.0.0 2.0.1 --account=account@example.com`
-* `zapier migrate 2.0.0 2.0.1 --action trigger/new_recipe`
-* `zapier migrate 2.0.0 2.0.1 -a trigger/new_recipe -a create/add_recipe -a search/find_recipe`
 
 
 ## promote
