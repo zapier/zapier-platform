@@ -7,6 +7,7 @@ const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
 const { callAPI } = require('../../utils/api');
 const { buildFlags } = require('../buildFlags');
+const { validateStandardVersion } = require('../../utils/misc');
 
 class MigrateCommand extends BaseCommand {
   async run_require_confirmation_pre_checks(app, requestBody) {
@@ -65,6 +66,9 @@ class MigrateCommand extends BaseCommand {
 
     const fromVersion = this.args.fromVersion;
     const toVersion = this.args.toVersion;
+
+    // Validate that toVersion follows standard version format
+    validateStandardVersion(toVersion);
     let flagType;
 
     if (user || account) {

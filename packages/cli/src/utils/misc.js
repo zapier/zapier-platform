@@ -81,6 +81,15 @@ const runCommand = (command, args, options) => {
 const isValidNodeVersion = (version = process.version) =>
   semver.satisfies(version, NODE_VERSION_CLI_REQUIRES);
 
+const validateStandardVersion = (version) => {
+  const standardVersionRegex = /^\d+\.\d+\.\d+$/;
+  if (!standardVersionRegex.test(version)) {
+    throw new Error(
+      `Version "${version}" must contain numbers only and not be a labeled version. Use format like "1.0.0" instead.`,
+    );
+  }
+};
+
 const findCorePackageDir = (workingDir) => {
   let baseDir = workingDir || process.cwd();
   // 500 is just an arbitrary number to prevent infinite loops
@@ -242,4 +251,5 @@ module.exports = {
   promiseDoWhile,
   runCommand,
   snakeCase,
+  validateStandardVersion,
 };
