@@ -8,8 +8,8 @@ const { ThrottledError } = require('../../errors');
  * Behaves similarly to throwForStaleAuth but for throttling.
  */
 const throwForThrottling = (resp) => {
-  // Skip if throwForThrottlingEarly is explicitly false
-  if (resp.request?.throwForThrottlingEarly === false) {
+  // Skip if throwForThrottlingEarly is explicitly true (backwards compatible behavior)
+  if (resp.request?.throwForThrottlingEarly === true) {
     return resp;
   }
 

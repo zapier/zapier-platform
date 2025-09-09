@@ -148,7 +148,7 @@ const prepareRequest = function (req) {
     throwForThrottlingEarly: _.get(
       input,
       ['_zapier', 'app', 'flags', 'throwForThrottlingEarly'],
-      true,
+      false,
     ),
   });
 
