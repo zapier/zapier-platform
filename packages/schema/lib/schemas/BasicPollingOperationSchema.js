@@ -35,6 +35,8 @@ BasicPollingOperationSchema.properties = {
   outputFields: BasicPollingOperationSchema.properties.outputFields,
   sample: BasicPollingOperationSchema.properties.sample,
   throttle: BasicPollingOperationSchema.properties.throttle,
+  skipCleanArrayInputData:
+    BasicPollingOperationSchema.properties.skipCleanArrayInputData,
 };
 
 module.exports = makeSchema(

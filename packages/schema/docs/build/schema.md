@@ -491,6 +491,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
+`skipCleanArrayInputData` | no | `boolean` | (Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?
 
 #### Examples
 
@@ -525,6 +526,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
+`skipCleanArrayInputData` | no | `boolean` | (Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?
 `buffer` | no (with exceptions, see description) | [/BufferConfigSchema](#bufferconfigschema) | Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.
 `performBuffer` | no (with exceptions, see description) | [/FunctionSchema](#functionschema) | Currently an **internal-only** feature. A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.
 
@@ -600,6 +602,7 @@ Key | Required | Type | Description
 `inputFieldGroups` | no | [/InputFieldGroupsSchema](#inputfieldgroupsschema) | Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.
 `outputFields` | no | [/OutputFieldsSchema](#outputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
+`skipCleanArrayInputData` | no | `boolean` | (Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?
 
 #### Examples
 
@@ -684,6 +687,7 @@ Key | Required | Type | Description
 `outputFields` | no | [/OutputFieldsSchema](#outputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
+`skipCleanArrayInputData` | no | `boolean` | (Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?
 
 #### Examples
 
@@ -719,6 +723,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
+`skipCleanArrayInputData` | no | `boolean` | (Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?
 
 #### Examples
 
