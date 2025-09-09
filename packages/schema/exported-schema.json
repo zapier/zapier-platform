@@ -1110,8 +1110,8 @@
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
         },
-        "skipCleanInputData": {
-          "description": "Should Zapier clean inputs by removing empty strings, None, empty lists, and dicts before passing them to the perform function?",
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
           "type": "boolean"
         }
       },

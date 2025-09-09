@@ -1385,10 +1385,10 @@ export interface BasicOperation {
   throttle?: ThrottleObject;
 
   /**
-   * Should Zapier clean inputs by removing empty strings, None, empty
-   * lists, and dicts before passing them to the perform function?
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
    */
-  skipCleanInputData?: boolean;
+  skipCleanArrayInputData?: boolean;
 }
 
 /**
