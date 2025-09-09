@@ -51,7 +51,7 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     numArgs: argKeys.length,
     appId: linkedAppId,
     argsKeys: argKeys,
-    flagKeys: flagKeys,
+    flagKeys,
     cliVersion: pkg.version,
     os: shouldRecordAnonymously ? undefined : process.platform,
   };
