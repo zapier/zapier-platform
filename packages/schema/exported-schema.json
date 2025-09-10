@@ -1109,6 +1109,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1215,6 +1219,10 @@
               "value": "**yes** (with exceptions, see description)"
             }
           }
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1276,6 +1284,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1346,6 +1358,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1585,6 +1601,10 @@
             }
           }
         },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
+        },
         "maxPollingDelay": {
           "description": "The maximum amount of time to wait between polling requests in seconds. Minimum value is 20s and will default to 20 if not set, or set to a lower value.",
           "type": "integer"
@@ -1702,6 +1722,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1822,6 +1846,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         },
         "buffer": {
           "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
