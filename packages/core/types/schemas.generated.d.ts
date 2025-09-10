@@ -939,6 +939,12 @@ export interface BasicPollingOperation<
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /**
@@ -1028,6 +1034,12 @@ export interface BasicHookOperation<
    * this belongs to a resource that has a top-level sample
    */
   sample?: Record<string, unknown>;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /**
@@ -1088,6 +1100,12 @@ export interface BasicHookToPollOperation<
    * this belongs to a resource that has a top-level sample
    */
   sample?: Record<string, unknown>;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 
   /**
    * The maximum amount of time to wait between polling requests in
@@ -1160,6 +1178,12 @@ export interface BasicActionOperation {
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /** Represents the fundamental mechanics of a search. */
@@ -1230,6 +1254,12 @@ export interface BasicSearchOperation<
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /** Represents the fundamental mechanics of a create. */
@@ -1299,6 +1329,12 @@ export interface BasicCreateOperation<
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 
   /**
    * Currently an **internal-only** feature. Zapier uses this
@@ -1383,6 +1419,12 @@ export interface BasicOperation {
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /**

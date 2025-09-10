@@ -36,6 +36,8 @@ BasicActionOperationSchema.properties = {
   sample: BasicActionOperationSchema.properties.sample,
   lock: BasicActionOperationSchema.properties.lock,
   throttle: BasicActionOperationSchema.properties.throttle,
+  skipCleanArrayInputData:
+    BasicActionOperationSchema.properties.skipCleanArrayInputData,
 };
 
 BasicActionOperationSchema.examples = [
