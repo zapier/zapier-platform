@@ -19,6 +19,7 @@ _Released 2025-09-09_
 ### schema
 
 - :bug: Fix `InputFieldGroupsSchema` to have its properties displayed ([#1143](https://github.com/zapier/zapier-platform/pull/1143))
+- :test_tube: Allow to skip cleaning arrays in `inputData` via `skipCleanArrayInputData` ([#1153](https://github.com/zapier/zapier-platform/pull/1153))
 - :hammer: Support version with label (ongoing work) ([#1093](https://github.com/zapier/zapier-platform/pull/1093))
 
 ## 17.7.0
