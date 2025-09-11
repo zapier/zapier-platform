@@ -8,15 +8,23 @@ const { ThrottledError } = require('../../errors');
  * Behaves similarly to throwForStaleAuth but for throttling.
  */
 const throwForThrottling = (resp) => {
-  // Skip if throwForThrottlingEarly is explicitly true (backwards compatible behavior)
-  if (resp.request?.throwForThrottlingEarly === true) {
+  // throwForThrottlingEarly has to be explicitly set to false to disable this
+  // middleware. By default, when it's undefined or null, we want this
+  // middleware to run.
+  if (resp.request?.throwForThrottlingEarly === false) {
     return resp;
   }
 
   if (resp.status === 429) {
     const retryAfter = resp.headers.get('retry-after');
-    const delay = retryAfter ? parseInt(retryAfter, 10) : null;
-    throw new ThrottledError('Too Many Requests', delay);
+    let delay = retryAfter ? parseInt(retryAfter, 10) : null;
+    if (Number.isNaN(delay)) {
+      delay = null;
+    }
+    throw new ThrottledError(
+      'The server returned 429 (Too Many Requests)',
+      delay,
+    );
   }
 
   return resp;
