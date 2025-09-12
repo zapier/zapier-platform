@@ -62,10 +62,18 @@ class ValidateCommand extends BaseCommand {
       checkResult = await validateApp(rawDefinition);
     }
 
-    const doneMessage = checkResult.passes
-      ? `Running integration checks ... ${checkResult.passes.length} checks passed`
-      : undefined;
-    this.stopSpinner({ message: doneMessage });
+    const success = !checkResult.errors.total_failures;
+    const message = 'Integration checks complete';
+    this.stopSpinner({ success, message });
+
+    this.log(`    - ${checkResult.passes.length} checks passed`);
+    this.log(`    - ${checkResult.errors.total_failures} checks failed`);
+    this.log(
+      `    - ${checkResult.warnings.total_failures} checks with publishing warning`,
+    );
+    this.log(
+      `    - ${checkResult.suggestions.total_failures} checks with general warning`,
+    );
 
     const checkIssues = flattenCheckResult(checkResult);
 
