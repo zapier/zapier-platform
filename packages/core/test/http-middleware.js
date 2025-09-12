@@ -1156,3 +1156,99 @@ describe('http prepareResponse', () => {
     });
   });
 });
+
+describe('throwForThrottling middleware', () => {
+  const testLogger = () => Promise.resolve({});
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
+  it('should throw ThrottledError for 429 status by default', async () => {
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock('https://example.zapier.com')
+      .get('/api')
+      .reply(429, '', { 'retry-after': '60' });
+
+    await request({
+      url: 'https://example.zapier.com/api',
+    }).should.be.rejectedWith(errors.ThrottledError, {
+      name: 'ThrottledError',
+      message:
+        '{"message":"The server returned 429 (Too Many Requests)","delay":60}',
+    });
+    scope.isDone().should.be.true();
+  });
+
+  it('should set delay to null in ThrottledError if retry-after is not number', async () => {
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock('https://example.zapier.com')
+      .get('/api')
+      .reply(429, '', { 'retry-after': 'sixty' });
+
+    await request({
+      url: 'https://example.zapier.com/api',
+    }).should.be.rejectedWith(errors.ThrottledError, {
+      name: 'ThrottledError',
+      message:
+        '{"message":"The server returned 429 (Too Many Requests)","delay":null}',
+    });
+    scope.isDone().should.be.true();
+  });
+
+  it('should not throw ThrottledError when throwForThrottlingEarly is false', async () => {
+    const input = createInput({}, {}, testLogger);
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock('https://example.zapier.com')
+      .get('/api')
+      .reply(429, '', { 'retry-after': '60' });
+
+    // With throwForThrottlingEarly: false, the middleware should be skipped and
+    // throwForStatus should handle it instead
+    await request({
+      url: 'https://example.zapier.com/api',
+      throwForThrottlingEarly: false,
+    }).should.be.rejectedWith(errors.ResponseError, {
+      name: 'ResponseError',
+      message:
+        '{"status":429,"headers":{"content-type":null,"retry-after":"60"},"content":"","request":{"url":"https://example.zapier.com/api"}}',
+    });
+    scope.isDone().should.be.true();
+  });
+
+  it('should respect global throwForThrottlingEarly', async () => {
+    const input = createInput(
+      // This is how UI apps can run compatibly on core v18+ by setting
+      // flags.throwForThrottlingEarly to false.
+      { flags: { throwForThrottlingEarly: false } },
+      {},
+      testLogger,
+    );
+    const request = createAppRequestClient(input);
+
+    // Mock a 429 response
+    const scope = nock('https://example.zapier.com')
+      .get('/api')
+      .reply(429, '', { 'retry-after': '60' });
+
+    // With throwForThrottlingEarly: false, the middleware should be skipped and
+    // throwForStatus should handle it instead
+    await request({
+      url: 'https://example.zapier.com/api',
+      throwForThrottlingEarly: false,
+    }).should.be.rejectedWith(errors.ResponseError, {
+      name: 'ResponseError',
+      message:
+        '{"status":429,"headers":{"content-type":null,"retry-after":"60"},"content":"","request":{"url":"https://example.zapier.com/api"}}',
+    });
+    scope.isDone().should.be.true();
+  });
+});

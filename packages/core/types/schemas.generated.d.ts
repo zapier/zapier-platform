@@ -291,6 +291,16 @@ export interface AppFlags {
    * ignore this flag if they set `skipThrowForStatus` directly
    */
   skipThrowForStatus?: boolean;
+
+  /**
+   * Starting in `core` version `18.0.0`, 429 (throttling) responses
+   * throw a `ThrottledError` before `afterResponse` middleware runs
+   * by default. Set this flag to `true` to preserve the old behavior
+   * where `afterResponse` middleware can see and handle 429
+   * responses. This flag can be overridden per-request by setting
+   * `throwForThrottlingEarly` directly on the request options.
+   */
+  throwForThrottlingEarly?: boolean;
 }
 
 /**

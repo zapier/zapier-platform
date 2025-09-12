@@ -145,6 +145,11 @@ const prepareRequest = function (req) {
       ['_zapier', 'app', 'flags', 'skipThrowForStatus'],
       false,
     ),
+    throwForThrottlingEarly: _.get(
+      input,
+      ['_zapier', 'app', 'flags', 'throwForThrottlingEarly'],
+      true,
+    ),
   });
 
   req = sugarBody(req);

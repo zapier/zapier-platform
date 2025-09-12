@@ -17,16 +17,31 @@ module.exports = makeSchema({
         'Starting in `core` version `10.0.0`, `response.throwForStatus()` was called by default. We introduced a per-request way to opt-out of this behavior. This flag takes that a step further and controls that behavior integration-wide **for requests made using `z.request()`**. Unless they specify otherwise (per-request, or via middleware), [Shorthand requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests) _always_ call `throwForStatus()`. `z.request()` calls can also ignore this flag if they set `skipThrowForStatus` directly',
       type: 'boolean',
     },
+    throwForThrottlingEarly: {
+      description:
+        'Starting in `core` version `18.0.0`, 429 (throttling) responses throw a `ThrottledError` before `afterResponse` middleware runs by default. Set this flag to `true` to preserve the old behavior where `afterResponse` middleware can see and handle 429 responses. This flag can be overridden per-request by setting `throwForThrottlingEarly` directly on the request options.',
+      type: 'boolean',
+    },
   },
   additionalProperties: false,
   examples: [
-    { skipHttpPatch: true, skipThrowForStatus: false },
-    { skipHttpPatch: false, skipThrowForStatus: true },
+    {
+      skipHttpPatch: true,
+      skipThrowForStatus: false,
+      throwForThrottlingEarly: true,
+    },
+    {
+      skipHttpPatch: false,
+      skipThrowForStatus: true,
+      throwForThrottlingEarly: false,
+    },
+    { throwForThrottlingEarly: true },
     {},
   ],
   antiExamples: [
     { example: { foo: true }, reason: 'Invalid key.' },
     { example: { skipHttpPatch: 'yes' }, reason: 'Invalid value.' },
     { example: { skipThrowForStatus: 'no' }, reason: 'Invalid value.' },
+    { example: { throwForThrottlingEarly: 'yes' }, reason: 'Invalid value.' },
   ],
 });

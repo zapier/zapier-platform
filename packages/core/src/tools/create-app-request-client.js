@@ -20,6 +20,7 @@ const sanitizeHeaders = require('../http-middlewares/before/sanatize-headers');
 const { logResponse } = require('../http-middlewares/after/log-response');
 const prepareResponse = require('../http-middlewares/after/prepare-response');
 const throwForStaleAuth = require('../http-middlewares/after/throw-for-stale-auth');
+const throwForThrottling = require('../http-middlewares/after/throw-for-throttling');
 const throwForStatusMiddleware = require('../http-middlewares/after/throw-for-status');
 const throwForDisallowedHostnameAfterRedirect = require('../http-middlewares/after/throw-for-disallowed-hostname-after-redirect');
 
@@ -69,6 +70,7 @@ const createAppRequestClient = (input, options) => {
     throwForDisallowedHostnameAfterRedirect,
     logResponse,
     ...(includeAutoRefresh ? [throwForStaleAuth] : []),
+    throwForThrottling,
     ...ensureArray(app.afterResponse),
     throwForStatusMiddleware,
   ];
