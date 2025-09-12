@@ -9,6 +9,7 @@ const { callAPI } = require('../../utils/api');
 const { flattenCheckResult } = require('../../utils/display');
 const { getVersionChangelog } = require('../../utils/changelog');
 const checkMissingAppInfo = require('../../utils/check-missing-app-info');
+const { validateStandardVersion } = require('../../utils/misc');
 const { EXAMPLE_CHANGELOG } = require('../../constants');
 
 const ACTION_TYPE_MAPPING = {
@@ -96,6 +97,10 @@ class PromoteCommand extends BaseCommand {
     checkMissingAppInfo(app);
 
     const version = this.args.version;
+
+    // Validate that version follows standard version format
+    validateStandardVersion(version);
+
     const assumeYes = 'yes' in this.flags;
 
     let shouldContinueChangelog;
