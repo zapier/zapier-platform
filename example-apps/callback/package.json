@@ -7,7 +7,7 @@
     "test": "jest --testTimeout 10000"
   },
   "dependencies": {
-    "zapier-platform-core": "17.7.1"
+    "zapier-platform-core": "17.7.2"
   },
   "devDependencies": {
     "jest": "^25.5.3"
