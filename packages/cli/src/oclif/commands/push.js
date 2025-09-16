@@ -6,10 +6,15 @@ const colors = require('colors/safe');
 const BuildCommand = require('./build');
 
 const { buildAndOrUpload } = require('../../utils/build');
+const { localAppCommand } = require('../../utils/local');
 
 class PushCommand extends ZapierBaseCommand {
   async perform() {
     const skipNpmInstall = this.flags['skip-npm-install'];
+    const definition = await localAppCommand({ command: 'definition' });
+    const version = definition.version;
+    this.throwForInvalidVersion(version);
+
     await buildAndOrUpload(
       { build: true, upload: true },
       {
