@@ -14,6 +14,7 @@ _Released 2025-09-17_
 ### misc
 
 - :hammer: Bump vite from 6.3.5 to 6.3.6 ([#1156](https://github.com/zapier/zapier-platform/pull/1156))
+- :hammer: Improve types ([#1162](https://github.com/zapier/zapier-platform/pull/1162), [#1164](https://github.com/zapier/zapier-platform/pull/1164), [#1165](https://github.com/zapier/zapier-platform/pull/1165))
 
 ## 17.7.1
 
