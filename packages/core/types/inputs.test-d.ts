@@ -6,7 +6,11 @@
 // "plain" fields, or functions that return arrays of plain fields, sync
 // or async.
 
-import type { InferInputData, InputFieldFunctionWithInputs } from './inputs';
+import type {
+  InferInputData,
+  InputFieldFunctionWithInputs,
+  StringHints,
+} from './inputs';
 import { defineInputFields } from '.';
 import type { PlainInputField } from './schemas.generated';
 
@@ -258,3 +262,69 @@ expectType<{
   omitted_field?: string;
   dynamic_field?: string; // Becomes optional.
 }>(allFieldsResult);
+
+// Choices
+const choicesInputs = defineInputFields([
+  {
+    key: 'choices_string_array',
+    type: 'string',
+    required: true,
+    choices: ['c1', 'c2'],
+  },
+  {
+    key: 'choices_object',
+    type: 'string',
+    required: true,
+    choices: { c3: 'C3', c4: 'C4' },
+  },
+  {
+    key: 'choices_field_array',
+    type: 'string',
+    required: true,
+    choices: [
+      { label: 'C5', value: 'c5', sample: 'c5' },
+      { label: 'C6', value: 'c6', sample: 'c6' },
+    ],
+  },
+  {
+    key: 'choices_list',
+    type: 'string',
+    required: true,
+    list: true,
+    choices: ['c7', 'c8'],
+  },
+  {
+    key: 'ignored_parent',
+    children: [
+      {
+        key: 'child_choice',
+        type: 'string',
+        required: true,
+        choices: { c9: 'C9', c10: 'C10' },
+      },
+      {
+        key: 'child_choice_list',
+        type: 'string',
+        required: true,
+        list: true,
+        choices: ['c11', 'c12'],
+      },
+    ],
+  },
+]);
+const choicesResult: InferInputData<typeof choicesInputs> = {
+  choices_string_array: 'c1',
+  choices_object: 'c3',
+  choices_field_array: 'c5',
+  choices_list: ['c7'],
+  child_choice: 'c9',
+  child_choice_list: ['c11'],
+};
+expectType<{
+  choices_string_array: StringHints<'c1' | 'c2'>;
+  choices_object: StringHints<'c3' | 'c4'>;
+  choices_field_array: StringHints<'c5' | 'c6'>;
+  choices_list: StringHints<'c7' | 'c8'>[];
+  child_choice: StringHints<'c9' | 'c10'>;
+  child_choice_list: StringHints<'c11' | 'c12'>[];
+}>(choicesResult);

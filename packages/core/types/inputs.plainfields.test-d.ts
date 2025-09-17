@@ -341,3 +341,144 @@ expectAssignable<primitiveOptionalCopyResult>({
   primitive_optional_copy: undefined,
 });
 expectAssignable<primitiveOptionalCopyResult>({});
+
+//
+// Choices auto-complete unions.
+//
+// Required object choices auto-complete unions.
+type requiredObjectChoicesAutoCompleteUnions = PlainFieldContribution<{
+  key: 'required_object_choices_auto_complete_unions';
+  type: 'string';
+  required: true;
+  choices: {
+    alpha: 'Alpha';
+    beta: 'Beta';
+  };
+}>;
+expectType<requiredObjectChoicesAutoCompleteUnions>(
+  {} as {
+    required_object_choices_auto_complete_unions:
+      | 'alpha'
+      | 'beta'
+      | (string & {});
+  },
+);
+expectAssignable<requiredObjectChoicesAutoCompleteUnions>({
+  required_object_choices_auto_complete_unions: 'alpha',
+});
+
+// Optional object choices auto-complete unions.
+type optionalObjectChoicesAutoCompleteUnions = PlainFieldContribution<{
+  key: 'optional_object_choices_auto_complete_unions';
+  type: 'string';
+  required: false;
+  choices: {
+    alpha: 'Alpha';
+    beta: 'Beta';
+  };
+}>;
+expectType<optionalObjectChoicesAutoCompleteUnions>(
+  {} as {
+    optional_object_choices_auto_complete_unions?:
+      | 'alpha'
+      | 'beta'
+      | (string & {});
+  },
+);
+expectAssignable<optionalObjectChoicesAutoCompleteUnions>({
+  optional_object_choices_auto_complete_unions: 'alpha',
+});
+expectAssignable<optionalObjectChoicesAutoCompleteUnions>({
+  optional_object_choices_auto_complete_unions: undefined,
+});
+expectAssignable<optionalObjectChoicesAutoCompleteUnions>({});
+
+// Required array choices auto-complete unions.
+type requiredFieldArrayChoicesAutoCompleteUnions = PlainFieldContribution<{
+  key: 'required_field_array_choices_auto_complete_unions';
+  type: 'string';
+  required: true;
+  choices: [
+    { label: 'Alpha'; value: 'alpha'; sample: 'alpha' },
+    { label: 'Beta'; value: 'beta'; sample: 'beta' },
+  ];
+}>;
+expectType<requiredFieldArrayChoicesAutoCompleteUnions>(
+  {} as {
+    required_field_array_choices_auto_complete_unions:
+      | 'alpha'
+      | 'beta'
+      | (string & {});
+  },
+);
+expectAssignable<requiredFieldArrayChoicesAutoCompleteUnions>({
+  required_field_array_choices_auto_complete_unions: 'alpha',
+});
+expectAssignable<requiredFieldArrayChoicesAutoCompleteUnions>({
+  required_field_array_choices_auto_complete_unions: 'something_else',
+});
+
+// Optional array choices auto-complete unions.
+type optionalFieldArrayChoicesAutoCompleteUnions = PlainFieldContribution<{
+  key: 'optional_field_array_choices_auto_complete_unions';
+  type: 'string';
+  required: false;
+  choices: [
+    { label: 'Alpha'; value: 'alpha'; sample: 'alpha' },
+    { label: 'Beta'; value: 'beta'; sample: 'beta' },
+  ];
+}>;
+expectType<optionalFieldArrayChoicesAutoCompleteUnions>(
+  {} as {
+    optional_field_array_choices_auto_complete_unions?:
+      | 'alpha'
+      | 'beta'
+      | (string & {});
+  },
+);
+expectAssignable<optionalFieldArrayChoicesAutoCompleteUnions>({
+  optional_field_array_choices_auto_complete_unions: 'alpha',
+});
+expectAssignable<optionalFieldArrayChoicesAutoCompleteUnions>({});
+
+//
+// Required string array choices auto-complete unions.
+type requiredStringArrayChoicesAutoCompleteUnions = PlainFieldContribution<{
+  key: 'required_string_array_choices_auto_complete_unions';
+  type: 'string';
+  required: true;
+  choices: ['alpha', 'beta'];
+}>;
+expectType<requiredStringArrayChoicesAutoCompleteUnions>(
+  {} as {
+    required_string_array_choices_auto_complete_unions:
+      | 'alpha'
+      | 'beta'
+      | (string & {});
+  },
+);
+expectAssignable<requiredStringArrayChoicesAutoCompleteUnions>({
+  required_string_array_choices_auto_complete_unions: 'alpha',
+});
+expectAssignable<requiredStringArrayChoicesAutoCompleteUnions>({
+  required_string_array_choices_auto_complete_unions: 'something_else',
+});
+
+type optionalStringArrayChoicesAutoCompleteUnions = PlainFieldContribution<{
+  key: 'optional_string_array_choices_auto_complete_unions';
+  type: 'string';
+  required: false;
+  choices: ['alpha', 'beta'];
+}>;
+expectType<optionalStringArrayChoicesAutoCompleteUnions>(
+  {} as {
+    optional_string_array_choices_auto_complete_unions?:
+      | 'alpha'
+      | 'beta'
+      | (string & {});
+  },
+);
+expectAssignable<optionalStringArrayChoicesAutoCompleteUnions>({
+  optional_string_array_choices_auto_complete_unions: 'alpha',
+});
+expectAssignable<optionalStringArrayChoicesAutoCompleteUnions>({});
