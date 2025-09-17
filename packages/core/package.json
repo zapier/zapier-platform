@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-core",
-  "version": "17.7.1",
+  "version": "17.7.2",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -63,7 +63,7 @@
     "node-fetch": "2.7.0",
     "oauth-sign": "0.9.0",
     "semver": "7.7.1",
-    "zapier-platform-schema": "17.7.1"
+    "zapier-platform-schema": "17.7.2"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.11",

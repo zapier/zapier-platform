@@ -1,3 +1,21 @@
+## 17.7.2
+
+_Released 2025-09-17_
+
+### cli
+
+- :bug: Allows deleting old non-semver versions and blocks pushes to non-semver versions ([#1160](https://github.com/zapier/zapier-platform/pull/1160))
+- :bug: Integration check displays failure icon if errors are present ([#1159](https://github.com/zapier/zapier-platform/pull/1159))
+
+### core
+
+- :bug: Adds paging_token to bundle.meta types ([#1157](https://github.com/zapier/zapier-platform/pull/1157))
+
+### misc
+
+- :hammer: Bump vite from 6.3.5 to 6.3.6 ([#1156](https://github.com/zapier/zapier-platform/pull/1156))
+- :hammer: Improve types ([#1162](https://github.com/zapier/zapier-platform/pull/1162), [#1164](https://github.com/zapier/zapier-platform/pull/1164), [#1165](https://github.com/zapier/zapier-platform/pull/1165))
+
 ## 17.7.1
 
 _Released 2025-09-10_
