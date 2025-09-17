@@ -1,4 +1,7 @@
-import type { PlainInputField } from './schemas.generated';
+import type {
+  FieldChoiceWithLabel,
+  PlainInputField,
+} from './schemas.generated';
 import type { ZObject, Bundle } from './custom';
 
 // #region UTILITIES
@@ -135,6 +138,19 @@ type FieldResultTypes = {
  * `type` is not set, the field defaults to `string`. Does not pay
  * attention to `list` `, `dict`, or `required` statuses. Does not work
  * for fields with `children` subfields either.
+ *
+ * @example
+ * type result = PrimitiveFieldResultType<{ }>;
+ * // string (string is default when `type` is not set)
+ *
+ * type result = PrimitiveFieldResultType<{ type: 'string' }>;
+ * // string
+ *
+ * type result = PrimitiveFieldResultType<{ type: 'number' }>;
+ * // number
+ *
+ * type result = PrimitiveFieldResultType<{ type: 'boolean' }>;
+ * // boolean
  */
 type PrimitiveFieldResultType<$Field extends PlainInputField> = $Field extends {
   type: infer $T extends PlainInputField['type'];
@@ -143,6 +159,29 @@ type PrimitiveFieldResultType<$Field extends PlainInputField> = $Field extends {
     ? FieldResultTypes[$T]
     : string
   : string;
+
+/**
+ * Capture a union of string literals while also allowing the string
+ * type. This allows the available choices to show in autocomplete,
+ * while also allowing arbitrary strings to still be valid.
+ *
+ * @example
+ * type result = StringHints<'a' | 'b'>;
+ * const A: result = 'a'; // Ok and autocomplete shows 'a' and 'b'.
+ * const C: result = 'c'; // Any string still ok.
+ */
+export type StringHints<S> = S | (string & {});
+
+type PrimitiveFieldResultTypesWithChoiceHints<$Field extends PlainInputField> =
+  $Field extends { choices: infer $Choices }
+    ? $Choices extends Record<string, string>
+      ? StringHints<keyof $Choices>
+      : $Choices extends FieldChoiceWithLabel[]
+        ? StringHints<$Choices[number]['value']>
+        : $Choices extends string[]
+          ? StringHints<$Choices[number]>
+          : PrimitiveFieldResultType<$Field>
+    : PrimitiveFieldResultType<$Field>;
 
 /**
  * A function that returns a list of plain fields, sync or async.
@@ -237,8 +276,13 @@ type DictFieldContribution<$Field extends PlainInputField & { dict: true }> =
  */
 type ListFieldContribution<$Field extends PlainInputField & { list: true }> =
   $Field extends { required: true }
-    ? Record<$Field['key'], PrimitiveFieldResultType<$Field>[]>
-    : Partial<Record<$Field['key'], PrimitiveFieldResultType<$Field>[]>>;
+    ? Record<$Field['key'], PrimitiveFieldResultTypesWithChoiceHints<$Field>[]>
+    : Partial<
+        Record<
+          $Field['key'],
+          PrimitiveFieldResultTypesWithChoiceHints<$Field>[]
+        >
+      >;
 
 /**
  * Extract the contribution of a primitive field to the input data. A
@@ -253,11 +297,16 @@ type ListFieldContribution<$Field extends PlainInputField & { list: true }> =
  * // { a: number }
  */
 type PrimitiveFieldContribution<$Field extends PlainInputField> =
-  PrimitiveFieldResultType<$Field> extends never
+  PrimitiveFieldResultTypesWithChoiceHints<$Field> extends never
     ? {}
     : $Field extends { required: true }
-      ? Record<$Field['key'], PrimitiveFieldResultType<$Field>>
-      : Partial<Record<$Field['key'], PrimitiveFieldResultType<$Field>>>;
+      ? Record<$Field['key'], PrimitiveFieldResultTypesWithChoiceHints<$Field>>
+      : Partial<
+          Record<
+            $Field['key'],
+            PrimitiveFieldResultTypesWithChoiceHints<$Field>
+          >
+        >;
 
 /**
  * Extract the contribution of multiple plain fields defined in an
