@@ -33,10 +33,11 @@ const searchIsArrayOrEnvelope = {
         }
         if (
           !_.isString(results.paging_token) &&
-          !_.isNull(results.paging_token)
+          !_.isNull(results.paging_token) &&
+          !_.isUndefined(results.paging_token)
         ) {
           return [
-            `"paging_token" must be a string or null, got: ${typeof results.paging_token}`,
+            `"paging_token" must be a string or null or undefined, got: ${typeof results.paging_token}`,
           ];
         }
         // pass to array check below

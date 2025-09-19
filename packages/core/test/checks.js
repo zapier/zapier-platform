@@ -91,6 +91,32 @@ describe('checks', () => {
         .run(searchMethod, [{ name: 'bar' }, { name: 'foo' }], app)
         .length.should.eql(1);
     });
+
+    it('should pass when paging_token is null or undefined when canPaginate is true', () => {
+      // Test with null
+      checks.searchIsArrayOrEnvelope
+        .run(
+          searchMethod,
+          {
+            results: [{ id: 1 }, { name: 'foo' }],
+            paging_token: null,
+          },
+          app,
+        )
+        .length.should.eql(0);
+
+      // Test with undefined
+      checks.searchIsArrayOrEnvelope
+        .run(
+          searchMethod,
+          {
+            results: [{ id: 1 }, { name: 'foo' }],
+            paging_token: undefined,
+          },
+          app,
+        )
+        .length.should.eql(0);
+    });
   });
 
   it('should check for ids via triggerHasId', () => {
