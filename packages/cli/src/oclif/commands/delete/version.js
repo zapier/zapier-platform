@@ -6,7 +6,6 @@ const { callAPI } = require('../../../utils/api');
 class DeleteVersionCommand extends BaseCommand {
   async perform() {
     const { version } = this.args;
-    this.throwForInvalidVersion(version);
 
     const { id, title } = await this.getWritableApp();
 
