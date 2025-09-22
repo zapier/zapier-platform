@@ -1,6 +1,7 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const http = require('node:http');
+const { setTimeout: setTimeoutPromise } = require('node:timers/promises');
 
 const _ = require('lodash');
 const { Args, Flags } = require('@oclif/core');
@@ -16,6 +17,7 @@ const { buildFlags } = require('../buildFlags');
 const { localAppCommand } = require('../../utils/local');
 const { startSpinner, endSpinner } = require('../../utils/display');
 const {
+  callAPI,
   getLinkedAppConfig,
   listAuthentications,
   readCredentials,
@@ -26,6 +28,8 @@ const ACTION_TYPE_PLURALS = {
   trigger: 'triggers',
   search: 'searches',
   create: 'creates',
+  bulkRead: 'bulkReads',
+  searchOrCreate: 'searchOrCreates',
 };
 
 const ACTION_TYPES = ['auth', ...Object.keys(ACTION_TYPE_PLURALS)];
@@ -332,6 +336,84 @@ const localAppCommandWithRelayErrorHandler = async (args) => {
     throw outerError;
   }
   return output;
+};
+
+const fetchInputFieldsRemotely = async (
+  actionType,
+  action,
+  appId,
+  deployKey,
+  authId,
+  inputData,
+) => {
+  const urlPath = `/apps/${appId}/versions/1.0.0/needs`;
+  const extraHeaders = {
+    'x-deploy-key': deployKey,
+  };
+  const result = await callAPI(urlPath, {
+    method: 'POST',
+    extraHeaders,
+    body: {
+      action_type: actionType,
+      action_key: action.key,
+      authentication_id: parseInt(authId),
+      params: inputData,
+    },
+    skipDeployKey: true,
+  });
+  return result.fields;
+};
+
+const invokeRemotely = async (
+  actionType,
+  action,
+  appId,
+  deployKey,
+  authId,
+  inputData,
+) => {
+  const urlPath = `/apps/${appId}/versions/1.0.0/invoke`;
+  const extraHeaders = {
+    'x-deploy-key': deployKey,
+  };
+  const result = await callAPI(urlPath, {
+    method: 'POST',
+    extraHeaders,
+    body: {
+      action_type: actionType,
+      action_key: action.key,
+      authentication_id: parseInt(authId),
+      params: inputData,
+    },
+    skipDeployKey: true,
+  });
+  const { invocation_id: invocationId } = result;
+
+  for (let i = 0; i < 50; i++) {
+    const res = await callAPI(`${urlPath}/${invocationId}`, {
+      extraHeaders,
+      skipDeployKey: true,
+    });
+    if (res.success) {
+      if (actionType === 'bulkRead') {
+        return {
+          results: res.results,
+          paging_token: res.paging_token,
+        };
+      } else if (
+        actionType !== 'trigger' &&
+        Array.isArray(res.results) &&
+        res.results.length === 1
+      ) {
+        return res.results[0];
+      } else {
+        return res.results;
+      }
+    } else {
+      // console.dir(json, { depth: null });
+      await setTimeoutPromise(500);
+    }
+  }
 };
 
 const testAuth = async (
@@ -759,6 +841,7 @@ class InvokeCommand extends BaseCommand {
     cursorTestObj,
     appId,
     deployKey,
+    remote,
   ) {
     const message = formatFieldDisplay(field) + ':';
     if (field.dynamic) {
@@ -775,6 +858,7 @@ class InvokeCommand extends BaseCommand {
       };
       const choices = await this.invokeAction(
         appDefinition,
+        'trigger',
         'triggers',
         trigger,
         inputData,
@@ -786,6 +870,7 @@ class InvokeCommand extends BaseCommand {
         cursorTestObj,
         appId,
         deployKey,
+        remote,
       );
       return this.promptWithList(
         message,
@@ -819,6 +904,7 @@ class InvokeCommand extends BaseCommand {
     cursorTestObj,
     appId,
     deployKey,
+    remote,
   ) {
     const missingFields = getMissingRequiredInputFields(inputData, inputFields);
     if (missingFields.length) {
@@ -926,6 +1012,7 @@ class InvokeCommand extends BaseCommand {
     cursorTestObj,
     appId,
     deployKey,
+    remote,
   ) {
     await this.promptOrErrorForRequiredInputFields(
       inputData,
@@ -939,6 +1026,7 @@ class InvokeCommand extends BaseCommand {
       cursorTestObj,
       appId,
       deployKey,
+      remote,
     );
     if (!this.nonInteractive && !meta.isFillingDynamicDropdown) {
       await this.promptForInputFieldEdit(
@@ -958,6 +1046,7 @@ class InvokeCommand extends BaseCommand {
 
   async invokeAction(
     appDefinition,
+    actionType,
     actionTypePlural,
     action,
     inputData,
@@ -969,6 +1058,7 @@ class InvokeCommand extends BaseCommand {
     cursorTestObj,
     appId,
     deployKey,
+    remote,
   ) {
     // Do these in order:
     // 1. Prompt for static input fields that alter dynamic fields
@@ -976,9 +1066,21 @@ class InvokeCommand extends BaseCommand {
     // 3. Prompt for input fields again
     // 4. {actionTypePlural}.{actionKey}.operation.perform
 
-    const staticInputFields = (action.operation.inputFields || []).filter(
-      (f) => f.key,
-    );
+    let staticInputFields;
+    if (remote) {
+      staticInputFields = await fetchInputFieldsRemotely(
+        actionType,
+        action,
+        appId,
+        deployKey,
+        authId,
+        inputData,
+      );
+    } else {
+      staticInputFields = (action.operation.inputFields || []).filter(
+        (f) => f.key,
+      );
+    }
     debug('staticInputFields:', staticInputFields);
 
     await this.promptForFields(
@@ -993,28 +1095,42 @@ class InvokeCommand extends BaseCommand {
       cursorTestObj,
       appId,
       deployKey,
+      remote,
     );
 
     let methodName = `${actionTypePlural}.${action.key}.operation.inputFields`;
     startSpinner(`Invoking ${methodName}`);
 
-    const inputFields = await localAppCommandWithRelayErrorHandler({
-      command: 'execute',
-      method: methodName,
-      bundle: {
+    let inputFields;
+
+    if (remote) {
+      inputFields = await fetchInputFieldsRemotely(
+        actionType,
+        action,
+        appId,
+        deployKey,
+        authId,
         inputData,
-        inputDataRaw: inputData, // At this point, inputData hasn't been transformed yet
-        authData,
-        meta,
-      },
-      zcacheTestObj,
-      cursorTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-      appId,
-      deployKey,
-      relayAuthenticationId: authId,
-    });
+      );
+    } else {
+      inputFields = await localAppCommandWithRelayErrorHandler({
+        command: 'execute',
+        method: methodName,
+        bundle: {
+          inputData,
+          inputDataRaw: inputData, // At this point, inputData hasn't been transformed yet
+          authData,
+          meta,
+        },
+        zcacheTestObj,
+        cursorTestObj,
+        customLogger,
+        calledFromCliInvoke: true,
+        appId,
+        deployKey,
+        relayAuthenticationId: authId,
+      });
+    }
     endSpinner();
 
     debug('inputFields:', inputFields);
@@ -1041,23 +1157,35 @@ class InvokeCommand extends BaseCommand {
     methodName = `${actionTypePlural}.${action.key}.operation.perform`;
 
     startSpinner(`Invoking ${methodName}`);
-    const output = await localAppCommandWithRelayErrorHandler({
-      command: 'execute',
-      method: methodName,
-      bundle: {
+    let output;
+    if (remote) {
+      output = await invokeRemotely(
+        actionType,
+        action,
+        appId,
+        deployKey,
+        authId,
         inputData,
-        inputDataRaw,
-        authData,
-        meta,
-      },
-      zcacheTestObj,
-      cursorTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-      appId,
-      deployKey,
-      relayAuthenticationId: authId,
-    });
+      );
+    } else {
+      output = await localAppCommandWithRelayErrorHandler({
+        command: 'execute',
+        method: methodName,
+        bundle: {
+          inputData,
+          inputDataRaw,
+          authData,
+          meta,
+        },
+        zcacheTestObj,
+        cursorTestObj,
+        customLogger,
+        calledFromCliInvoke: true,
+        appId,
+        deployKey,
+        relayAuthenticationId: authId,
+      });
+    }
     endSpinner();
 
     return output;
@@ -1291,6 +1419,7 @@ class InvokeCommand extends BaseCommand {
       let { inputData } = this.flags;
       if (inputData) {
         if (inputData.startsWith('@')) {
+          // Hanlde `-i @file.json` or `-i @-`
           const filePath = inputData.substr(1);
           let inputStream;
           if (filePath === '-') {
@@ -1317,7 +1446,7 @@ class InvokeCommand extends BaseCommand {
         );
       }
 
-      const { timezone } = this.flags;
+      const { timezone, remote } = this.flags;
       const meta = {
         isLoadingSample: this.flags.isLoadingSample,
         isFillingDynamicDropdown: this.flags.isFillingDynamicDropdown,
@@ -1329,6 +1458,7 @@ class InvokeCommand extends BaseCommand {
       };
       const output = await this.invokeAction(
         appDefinition,
+        actionType,
         actionTypePlural,
         action,
         inputData,
@@ -1340,6 +1470,7 @@ class InvokeCommand extends BaseCommand {
         cursorTestObj,
         appId,
         deployKey,
+        remote,
       );
       console.log(JSON.stringify(output, null, 2));
     }
@@ -1398,6 +1529,10 @@ InvokeCommand.flags = buildFlags({
       description:
         'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
       default: 9000,
+    }),
+    remote: Flags.boolean({
+      char: 'r',
+      description: 'Invoke remotely.',
     }),
     'authentication-id': Flags.string({
       char: 'a',
