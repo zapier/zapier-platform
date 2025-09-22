@@ -171,7 +171,7 @@ export type CreatePerformGet<
  *
  * When `canPaginate` is true for the search, the object shape is required.
  */
-type SearchResult<T> = T[] | { results: T[]; paging_token: string };
+type SearchResult<T> = T[] | { results: T[]; paging_token: string | null | undefined };
 
 /**
  * Search for objects on a partner API.
