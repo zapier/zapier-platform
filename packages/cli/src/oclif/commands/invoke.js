@@ -394,7 +394,7 @@ const invokeRemotely = async (
       extraHeaders,
       skipDeployKey: true,
     });
-    if (res.success) {
+    if (res.success && res.status === 'success') { // status could be 'buffered' if performBuffer
       if (actionType === 'bulkRead') {
         return {
           results: res.results,
