@@ -152,11 +152,11 @@ MigrateCommand.flags = buildFlags({
   commandFlags: {
     user: Flags.string({
       description:
-        "Migrates all of a users' Private Zaps within all accounts for which the specified user is a member",
+        "Migrates all of a user's Private Zaps in the accounts they own, excluding team accounts",
     }),
     account: Flags.string({
       description:
-        "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
+        'Migrates all Zaps, Private & Shared, within all accounts for which the specified user is a member',
     }),
     yes: Flags.boolean({
       char: 'y',
