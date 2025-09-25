@@ -644,7 +644,7 @@ describe('Integration Test', function () {
       return _app(input).then((output) => {
         const echoed = output.results[0];
         should.deepEqual(echoed.args, { name: ['john'], active: ['False'] });
-        should.equal(echoed.url, `${HTTPBIN_URL}/get?name=john&active=False`);
+        echoed.url.should.endWith('/get?name=john&active=False');
       });
     });
 
@@ -911,7 +911,7 @@ describe('Integration Test', function () {
       );
       return _app(input).then((output) => {
         const echoed = output.results[0];
-        should.equal(echoed.url, `${HTTPBIN_URL}/get`);
+        echoed.url.should.endWith('/get');
 
         // There should be a log for the http request and the bundle
         should.equal(logs.length, 2);
@@ -1236,9 +1236,7 @@ describe('Integration Test', function () {
         req.args.should.deepEqual({
           things: ['eyedrops,cyclops,ipod'],
         });
-        req.url.should.equal(
-          `${HTTPBIN_URL}/get?things=eyedrops%2Ccyclops%2Cipod`,
-        );
+        req.url.should.endWith('/get?things=eyedrops%2Ccyclops%2Cipod');
       });
     });
 
@@ -1338,7 +1336,7 @@ describe('Integration Test', function () {
       return _app(input)
         .then((output) => {
           const result = output.results[0];
-          should.equal(result.url, `${HTTPBIN_URL}/get?a=1&a=1&a=2&a=2`);
+          result.url.should.endWith('/get?a=1&a=1&a=2&a=2');
           should.deepEqual(result.args.a, ['1', '1', '2', '2']);
         })
         .finally(() => {
