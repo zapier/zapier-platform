@@ -603,8 +603,8 @@ You cannot pass both `--user` and `--account`.
 * `percent` | Percentage (between 1 and 100) of users to migrate.
 
 **Flags**
-* `--user` | Migrates all of a user's Private Zaps in the accounts they own, excluding team accounts
-* `--account` | Migrates all Zaps, Private & Shared, within all accounts for which the specified user is a member
+* `--user` | Migrates a user's private Zaps under the user's individual account, excluding organization accounts
+* `--account` | Migrates a user's private and shared Zaps under the user's individual and organization accounts
 * `-y, --yes` | Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.
 * `-d, --debug` | Show extra debugging output.
 
