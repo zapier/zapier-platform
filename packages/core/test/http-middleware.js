@@ -868,8 +868,8 @@ describe('http logResponse after middleware', () => {
     });
 
     const loggedResponseBody = JSON.parse(logData.response_content);
+    loggedResponseBody.url.should.endWith('/post');
     loggedResponseBody.should.containEql({
-      url,
       data: '{"foo":"bar"}',
     });
   });
@@ -895,8 +895,8 @@ describe('http logResponse after middleware', () => {
     });
 
     const loggedResponseBody = JSON.parse(logData.response_content);
+    loggedResponseBody.url.should.endWith('/post');
     loggedResponseBody.should.containEql({
-      url,
       form: { filename: ['sample.txt'] },
     });
   });

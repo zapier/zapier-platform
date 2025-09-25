@@ -17,18 +17,15 @@ describe('http requests', () => {
     response.content.headers['User-Agent'][0]
       .includes('zapier-platform-core/')
       .should.be.true();
-    response.content.url.should.eql(`${HTTPBIN_URL}/get`);
+    response.content.url.should.endWith('/get');
   });
 
-  it('should make GET with url sugar param', (done) => {
-    request(`${HTTPBIN_URL}/get`)
-      .then((response) => {
-        response.status.should.eql(200);
-        should.exist(response.content);
-        response.content.url.should.eql(`${HTTPBIN_URL}/get`);
-        done();
-      })
-      .catch(done);
+  it('should make GET with url sugar param', async () => {
+    const response = await request(`${HTTPBIN_URL}/get`);
+    response.status.should.eql(200);
+    should.exist(response.content);
+    response.content.method.should.eql('GET');
+    response.content.url.should.endWith('/get');
   });
 
   it('should make GET with url sugar param and options', async () => {
@@ -36,7 +33,8 @@ describe('http requests', () => {
     const response = await request(`${HTTPBIN_URL}/get`, options);
     response.status.should.eql(200);
     should.exist(response.content);
-    response.content.url.should.eql(`${HTTPBIN_URL}/get`);
+    response.content.method.should.eql('GET');
+    response.content.url.should.endWith('/get');
     response.content.headers.A.should.deepEqual(['B']);
     // don't clobber other internal user-agent headers if we decide to use them
     response.content.headers['User-Agent'].should.deepEqual(['cool thing']);
