@@ -465,9 +465,26 @@ const compileLegacyScriptingSource = (source, zcli, app, logger) => {
   const { DOMParser, XMLSerializer } = require('xmldom');
 
   const underscore = require('underscore');
+  // Configure template settings for legacy {{}} syntax
+  // Note: Using secure defaults to prevent code injection vulnerabilities
   underscore.templateSettings = {
     interpolate: /\{\{(.+?)\}\}/g,
+    evaluate: false, // Disable code evaluation for security
+    escape: false, // Keep legacy behavior but be explicit
   };
+
+  // Restore legacy function names for backward compatibility with user scripts
+  // Based on test evidence in test/example-app/index.js lines 536-539
+
+  // _.collect was an alias for _.map in old underscore versions
+  if (!underscore.collect && underscore.map) {
+    underscore.collect = underscore.map;
+  }
+
+  // _.contains was renamed to _.includes in newer underscore versions
+  if (!underscore.contains && underscore.includes) {
+    underscore.contains = underscore.includes;
+  }
 
   return new Function( // eslint-disable-line no-new-func
     '_',
