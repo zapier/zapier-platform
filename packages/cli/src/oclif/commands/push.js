@@ -12,7 +12,15 @@ class PushCommand extends ZapierBaseCommand {
   async perform() {
     const skipNpmInstall = this.flags['skip-npm-install'];
     const definition = await localAppCommand({ command: 'definition' });
-    const version = definition.version;
+
+    const snapshotLabel = this.flags.snapshot;
+    if (snapshotLabel && snapshotLabel.length >= 18) {
+      throw new Error('Snapshot label cannot exceed 18 characters');
+    }
+
+    const version = snapshotLabel
+      ? `0.0.0-${snapshotLabel}`
+      : definition.version;
     this.throwForInvalidVersion(version);
 
     await buildAndOrUpload(
@@ -23,6 +31,7 @@ class PushCommand extends ZapierBaseCommand {
         skipValidation: this.flags['skip-validation'],
         overwritePartnerChanges: this.flags['overwrite-partner-changes'],
       },
+      version,
     );
     this.log(
       `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`,
@@ -42,6 +51,10 @@ PushCommand.flags = {
     description:
       '(Internal Use Only) Allows Zapier Staff to push changes to integrations in certain situations.',
     hidden: true,
+  }),
+  snapshot: Flags.string({
+    description:
+      'Pass in a label to create a snapshot version of this integration for development and testing purposes. The version will be created as: 0.0.0-MY-LABEL',
   }),
 };
 PushCommand.description = `Build and upload the current integration.
