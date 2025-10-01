@@ -59,6 +59,7 @@ PushCommand.flags = {
 };
 PushCommand.examples = ['zapier push', 'zapier push --snapshot MY-LABEL'];
 PushCommand.description = `Build and upload the current integration.
+
 This command is the same as running \`zapier build\` and \`zapier upload\` in sequence. See those for more info.`;
 
 module.exports = PushCommand;
