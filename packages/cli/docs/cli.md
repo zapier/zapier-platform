@@ -668,16 +668,19 @@ Zapier may release new versions of your integration with bug fixes or new featur
 ## push
 
 > Build and upload the current integration.
+This command is the same as running `zapier build` and `zapier upload` in sequence. See those for more info.
 
 **Usage**: `zapier push`
-
-This command is the same as running `zapier build` and `zapier upload` in sequence. See those for more info.
 
 **Flags**
 * `--disable-dependency-detection` | Disable "smart" file inclusion. By default, Zapier only includes files that are required by your entry point (`index.js` by default). If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. See the docs about `includeInBuild` for more info.
 * `--skip-npm-install` | Skips installing a fresh copy of npm dependencies for shorter build time. Helpful for using yarn, pnpm, or local copies of dependencies.
 * `-d, --debug` | Show extra debugging output.
 * `--snapshot` | Pass in a label to create a snapshot version of this integration for development and testing purposes. The version will be created as: 0.0.0-MY-LABEL
+
+**Examples**
+* `zapier push`
+* `zapier push --snapshot MY-LABEL`
 
 
 ## register
