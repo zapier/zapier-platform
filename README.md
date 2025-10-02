@@ -20,7 +20,7 @@ It consists of a few main packages:
 * Public-facing docs:
   - [Platform Docs](https://docs.zapier.com/platform)
   - [CLI Command Reference](packages/cli/docs/cli.md)
-  - [Schema Reference](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md)
+  - [Schema Reference](packages/schema/docs/build/schema.md)
   - [Platform News](https://docs.zapier.com/platform/news) ([RSS feed](https://docs.zapier.com/platform/news.xml)) - latest updates, release notes, changelogs, and tips
   - [Old Changelog Archive](changelog) - old changelogs before v17
 * Internal-facing docs:
