@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 const BASE_URL = 'https://registry.npmjs.org';
 
 const getPackageLatestVersion = async (name) => {

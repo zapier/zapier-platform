@@ -11,7 +11,6 @@ const qs = require('querystring');
 
 const fs = require('fs');
 const AdmZip = require('adm-zip');
-const fetch = require('node-fetch');
 const path = require('path');
 
 const { writeFile, readFile } = require('./files');
