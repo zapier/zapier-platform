@@ -462,7 +462,7 @@ const pruneQueryParams = (params) => {
 };
 
 const compileLegacyScriptingSource = (source, zcli, app, logger) => {
-  const { DOMParser, XMLSerializer } = require('xmldom');
+  const { DOMParser, XMLSerializer } = require('@xmldom/xmldom');
 
   const underscore = require('underscore');
   // Configure template settings for legacy {{}} syntax
