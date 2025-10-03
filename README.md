@@ -19,9 +19,10 @@ It consists of a few main packages:
 
 * Public-facing docs:
   - [Platform Docs](https://docs.zapier.com/platform)
-  - [CLI Command Reference](https://github.com/zapier/zapier-platform/blob/main/packages/cli/docs/cli.md)
-  - [Schema Reference](https://github.com/zapier/zapier-platform/blob/main/packages/schema/docs/build/schema.md)
-  - [CHANGELOG.md](CHANGELOG.md)
+  - [CLI Command Reference](packages/cli/docs/cli.md)
+  - [Schema Reference](packages/schema/docs/build/schema.md)
+  - [Platform News](https://docs.zapier.com/platform/news) ([RSS feed](https://docs.zapier.com/platform/news.xml)) - latest updates, release notes, changelogs, and tips
+  - [Old Changelog Archive](changelog) - old changelogs before v17
 * Internal-facing docs:
   - Testing out new features that haven't been released to npm yet? See [docs-dev/install-dev.md](docs-dev/install-dev.md)
   - Learn about how this repo is structured in [ARCHITECTURE.md](ARCHITECTURE.md)
