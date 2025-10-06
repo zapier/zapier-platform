@@ -761,6 +761,7 @@ const _buildFunc = async ({
 const buildAndOrUpload = async (
   { build = false, upload = false } = {},
   buildOpts,
+  versionOverride,
 ) => {
   if (!(build || upload)) {
     throw new Error('must either build or upload');
@@ -777,7 +778,7 @@ const buildAndOrUpload = async (
     await _buildFunc(buildOpts);
   }
   if (upload) {
-    await _uploadFunc(app, buildOpts);
+    await _uploadFunc(app, buildOpts, versionOverride);
   }
 };
 
