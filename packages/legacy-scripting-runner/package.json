@@ -40,9 +40,5 @@
     "aws-sdk": "^2.1397.0",
     "nock": "13.3.1",
     "zapier-platform-core": ">=7.6.0"
-  },
-  "overrides": {
-    "underscore": "1.13.7",
-    "xmldom": "npm:@xmldom/xmldom@^0.8.10"
   }
 }
