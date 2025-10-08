@@ -14,7 +14,11 @@ const {
   sampleExportObjectIndexJs,
   sampleExportDeclaredIndexTs,
   sampleExportDirectIndexTs,
+  sampleShorthandIndexTs,
+  sampleShorthandIndexJs,
   sampleLegacyAppIndexJs,
+  sampleAppWithSpreadIndexJs,
+  sampleAppWithSpreadIndexTs,
 } = require('./astFixtures');
 
 /**
@@ -190,6 +194,28 @@ describe('ast (JS)', () => {
     });
   });
 
+  describe('shorthand syntax support', () => {
+    it('should handle shorthand property syntax (JS)', () => {
+      const result = registerActionInJsApp(
+        sampleShorthandIndexJs,
+        'creates',
+        'newThing',
+      );
+
+      // Should contain spread operator and new property
+      should(result.includes('...creates')).be.true();
+      should(result.includes('[newThing.key]: newThing')).be.true();
+
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const createsIndex = codeByLine.indexOf('creates: {');
+      should(createsIndex).be.greaterThan(-1);
+      should(codeByLine.indexOf('...creates,')).eql(createsIndex + 1);
+      should(codeByLine.indexOf('[newThing.key]: newThing')).eql(
+        createsIndex + 2,
+      );
+    });
+  });
+
   describe('error handling', () => {
     const errors = [
       {
@@ -223,6 +249,22 @@ describe('ast (JS)', () => {
         });
       },
     );
+
+    // Test for the spread element issue
+    it('should handle spread elements gracefully', () => {
+      const result = registerActionInJsApp(
+        sampleAppWithSpreadIndexJs,
+        'triggers',
+        'getThing',
+      );
+      // Should not throw an error and should successfully add the trigger
+      should(countOccurrences(result, 'triggers:')).eql(1);
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const firstIndex = codeByLine.indexOf('triggers: {');
+      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+        firstIndex + 2, // BlahTrigger is on line firstIndex + 1, getThing should be on firstIndex + 2
+      );
+    });
   });
 });
 
@@ -294,6 +336,44 @@ describe('ast (TS)', () => {
           should(codeByLine[firstIndex + 2]).eql('}');
         });
       });
+    });
+
+    // Test for the spread element issue in TypeScript
+    it('should handle spread elements gracefully', () => {
+      const result = registerActionInTsApp(
+        sampleAppWithSpreadIndexTs,
+        'triggers',
+        'getThing',
+      );
+      // Should not throw an error and should successfully add the trigger
+      should(countOccurrences(result, 'triggers:')).eql(1);
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const firstIndex = codeByLine.indexOf('triggers: {');
+      should(codeByLine.indexOf('[getThing.key]: getThing')).eql(
+        firstIndex + 2, // BlahTrigger is on line firstIndex + 1, getThing should be on firstIndex + 2
+      );
+    });
+  });
+
+  describe('shorthand syntax support', () => {
+    it('should handle shorthand property syntax (TS)', () => {
+      const result = registerActionInTsApp(
+        sampleShorthandIndexTs,
+        'creates',
+        'newThing',
+      );
+
+      // Should contain spread operator and new property
+      should(result.includes('...creates')).be.true();
+      should(result.includes('[newThing.key]: newThing')).be.true();
+
+      const codeByLine = result.split('\n').map((x) => x.trim());
+      const createsIndex = codeByLine.indexOf('creates: {');
+      should(createsIndex).be.greaterThan(-1);
+      should(codeByLine.indexOf('...creates,')).eql(createsIndex + 1);
+      should(codeByLine.indexOf('[newThing.key]: newThing')).eql(
+        createsIndex + 2,
+      );
     });
   });
 });

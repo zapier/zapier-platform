@@ -30,12 +30,18 @@ BasicSearchOperationSchema.properties = {
       'How will Zapier get a single record? If you find yourself reaching for this - consider resources and their built-in get methods.',
     oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
   },
+  canPaginate: {
+    description: 'Does this search support pagination?',
+    type: 'boolean',
+  },
   inputFields: BasicSearchOperationSchema.properties.inputFields,
   inputFieldGroups: BasicSearchOperationSchema.properties.inputFieldGroups,
   outputFields: BasicSearchOperationSchema.properties.outputFields,
   sample: BasicSearchOperationSchema.properties.sample,
   lock: BasicSearchOperationSchema.properties.lock,
   throttle: BasicSearchOperationSchema.properties.throttle,
+  skipCleanArrayInputData:
+    BasicSearchOperationSchema.properties.skipCleanArrayInputData,
 };
 
 BasicSearchOperationSchema.examples = [

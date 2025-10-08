@@ -35,6 +35,27 @@ Quick overview:
 - `yarn validate` - Full validation (test + smoke-test + lint)
 - Individual packages: `cd` into package directory first, then `yarn test`
 
+## Testing Guidelines
+
+### Writing Quality Tests
+
+When writing tests, especially for generators and complex components, follow these guidelines to ensure tests are robust and maintainable:
+
+#### ✅ DO: Test Actual Component Behavior
+
+Always test the actual behavior of the component being tested.
+
+#### ❌ DON'T: Use Simulation-Based Testing
+
+Never extract logic from the component and test it in isolation. This creates brittle tests that don't reflect actual behavior.
+
+#### Why Simulation Testing is Problematic
+
+1. **Duplication**: Simulated logic can diverge from actual implementation
+2. **False confidence**: Tests may pass while actual functionality is broken  
+3. **Maintenance burden**: Changes require updating both implementation and simulation
+4. **Missing integration issues**: Doesn't test how components interact with their environment
+
 ## Development CLI Setup
 
 For setting up the development version of the CLI, see [docs-dev/install-dev.md](docs-dev/install-dev.md).

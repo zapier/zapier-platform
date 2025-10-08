@@ -443,6 +443,7 @@ The following is a non-exhaustive list of current limitations and may be support
 * `--redirect-uri` | Only used by `auth start` subcommand. The redirect URI that will be passed to the OAuth2 authorization URL. Usually this should match the one configured in your server's OAuth2 application settings. A local HTTP server will be started to listen for the OAuth2 callback. If your server requires a non-localhost or HTTPS address for the redirect URI, you can set up port forwarding to route the non-localhost or HTTPS address to localhost.  Defaults to `http://localhost:9000`.
 * `--local-port` | Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.  Defaults to `9000`.
 * `-a, --authentication-id` | EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/assets/connections (https://zpr.io/z8SjFTdnTFZ2 for instructions) or specify '-' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.
+* `--paging-token` | Set bundle.meta.paging_token. Used for search pagination or bulk reads. When used in production, this indicates which page of items you should fetch.
 * `-d, --debug` | Show extra debugging output.
 
 **Examples**
@@ -602,8 +603,8 @@ You cannot pass both `--user` and `--account`.
 * `percent` | Percentage (between 1 and 100) of users to migrate.
 
 **Flags**
-* `--user` | Migrates all of a users' Private Zaps within all accounts for which the specified user is a member
-* `--account` | Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member
+* `--user` | Migrates a user's private Zaps under the user's individual account, excluding organization accounts
+* `--account` | Migrates a user's private and shared Zaps under the user's individual and organization accounts
 * `-y, --yes` | Automatically answer "yes" to any prompts. Useful if you want to avoid interactive prompts to run this command in CI.
 * `-d, --debug` | Show extra debugging output.
 
@@ -648,11 +649,11 @@ Check `zapier jobs` to track the status of the promotion. Or use `zapier history
 
 ## pull
 
-> Retrieve and update your local integration files with the latest version.
+> Retrieve and update your local integration files with the promoted version (or latest version if not public).
 
 **Usage**: `zapier pull`
 
-This command updates your local integration files with the latest version. You will be prompted with a confirmation dialog before continuing if there any destructive file changes.
+This command updates your local integration files with the promoted version (or latest version if not public). You will be prompted with a confirmation dialog before continuing if there any destructive file changes.
 
 Zapier may release new versions of your integration with bug fixes or new features. In the event this occurs, you will be unable to do the following until your local files are updated by running `zapier pull`:
 
@@ -676,6 +677,11 @@ This command is the same as running `zapier build` and `zapier upload` in sequen
 * `--disable-dependency-detection` | Disable "smart" file inclusion. By default, Zapier only includes files that are required by your entry point (`index.js` by default). If you (or your dependencies) require files dynamically (such as with `require(someVar)`), then you may see "Cannot find module" errors. Disabling this may make your `build.zip` too large. If that's the case, try using the `includeInBuild` option in your `.zapierapprc`. See the docs about `includeInBuild` for more info.
 * `--skip-npm-install` | Skips installing a fresh copy of npm dependencies for shorter build time. Helpful for using yarn, pnpm, or local copies of dependencies.
 * `-d, --debug` | Show extra debugging output.
+* `--snapshot` | Pass in a label to create a snapshot version of this integration for development and testing purposes. The version will be created as: 0.0.0-MY-LABEL
+
+**Examples**
+* `zapier push`
+* `zapier push --snapshot MY-LABEL`
 
 
 ## register
@@ -933,12 +939,14 @@ Run the standard validation routine powered by json-schema that checks your inte
 
 **Flags**
 * `--without-style` | Forgo pinging the Zapier server to run further checks.
+* `--skip-build` | Skip running the _zapier-build script before validation.
 * `-d, --debug` | Show extra debugging output.
 * `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
 **Examples**
 * `zapier validate`
 * `zapier validate --without-style`
+* `zapier validate --skip-build`
 * `zapier validate --format json`
 
 

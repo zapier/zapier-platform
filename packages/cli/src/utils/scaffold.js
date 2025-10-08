@@ -126,6 +126,16 @@ const writeTemplateFile = async ({
 const getRelativeRequirePath = (entryFilePath, newFilePath) =>
   path.relative(path.dirname(entryFilePath), newFilePath);
 
+/**
+ * Detect if a JavaScript file uses ES Module syntax (export default) vs CommonJS (module.exports)
+ * @param {string} codeStr - The JavaScript code to check
+ * @returns {boolean} - True if the file uses ESM syntax
+ */
+const isEsmJavaScript = (codeStr) => {
+  // Look for export default statement
+  return /^\s*export\s+default\s/m.test(codeStr);
+};
+
 const isValidEntryFileUpdate = (
   language,
   indexFileResolved,
@@ -193,16 +203,32 @@ const updateEntryFileJs = async ({
   let codeStr = (await readFile(indexFileResolved)).toString();
   const originalCodeStr = codeStr; // untouched copy in case we need to bail
 
-  codeStr = importActionInJsApp(
-    codeStr,
-    actionImportName,
-    actionRelativeImportPath,
-  );
-  codeStr = registerActionInJsApp(
-    codeStr,
-    plural(actionType),
-    actionImportName,
-  );
+  // Check if this JavaScript file uses ESM syntax (export default)
+  // If so, use the TypeScript functions which handle ESM correctly
+  if (isEsmJavaScript(codeStr)) {
+    codeStr = importActionInTsApp(
+      codeStr,
+      actionImportName,
+      actionRelativeImportPath,
+    );
+    codeStr = registerActionInTsApp(
+      codeStr,
+      plural(actionType),
+      actionImportName,
+    );
+  } else {
+    // Use traditional CommonJS functions for module.exports
+    codeStr = importActionInJsApp(
+      codeStr,
+      actionImportName,
+      actionRelativeImportPath,
+    );
+    codeStr = registerActionInJsApp(
+      codeStr,
+      plural(actionType),
+      actionImportName,
+    );
+  }
   await writeFile(indexFileResolved, codeStr);
   return originalCodeStr;
 };
@@ -283,10 +309,21 @@ const createScaffoldingContext = ({
   )}.test.${language}`;
   const testFileLocal = `${path.join(testDirLocal, key)}.${language}`;
   const testFileLocalStem = path.join(testDirLocal, key);
-  const actionRelativeImportPath = `./${getRelativeRequirePath(
+
+  // Generate the relative import path
+  let actionRelativeImportPath = `./${getRelativeRequirePath(
     indexFileResolved,
     actionFileResolvedStem,
   )}`;
+
+  // Normalize path separators to forward slashes for import statements
+  // (ES modules always use forward slashes, regardless of OS)
+  actionRelativeImportPath = actionRelativeImportPath.replace(/\\/g, '/');
+
+  // For TypeScript with ESM, imports must use .js extension
+  if (language === 'ts') {
+    actionRelativeImportPath += '.js';
+  }
 
   return {
     actionType,
@@ -324,6 +361,7 @@ module.exports = {
   updateEntryFile,
   isValidEntryFileUpdate,
   writeTemplateFile,
+  isEsmJavaScript,
 };
 
 /**

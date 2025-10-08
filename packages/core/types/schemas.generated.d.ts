@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 17.6.0
+ * zapier-platform-schema version: 17.8.0
  *  schema-to-ts compiler version: 0.1.0
  */
 import type {
@@ -131,7 +131,8 @@ export interface BaseApp {
 
 /**
  * Represents a simplified semver string, from `0.0.0` to
- * `999.999.999`.
+ * `999.999.999` with optional simplified label. They need to be
+ * case-insensitive unique.
  */
 export type Version = string;
 
@@ -948,6 +949,12 @@ export interface BasicPollingOperation<
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /**
@@ -1037,6 +1044,12 @@ export interface BasicHookOperation<
    * this belongs to a resource that has a top-level sample
    */
   sample?: Record<string, unknown>;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /**
@@ -1097,6 +1110,12 @@ export interface BasicHookToPollOperation<
    * this belongs to a resource that has a top-level sample
    */
   sample?: Record<string, unknown>;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 
   /**
    * The maximum amount of time to wait between polling requests in
@@ -1169,6 +1188,12 @@ export interface BasicActionOperation {
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /** Represents the fundamental mechanics of a search. */
@@ -1203,6 +1228,9 @@ export interface BasicSearchOperation<
    */
   performGet?: Request | SearchPerformGet<InferInputData<$InputFields>>;
 
+  /** Does this search support pagination? */
+  canPaginate?: boolean;
+
   /** What should the form a user sees and configures look like? */
   inputFields?: $InputFields;
 
@@ -1236,6 +1264,12 @@ export interface BasicSearchOperation<
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /** Represents the fundamental mechanics of a create. */
@@ -1305,6 +1339,12 @@ export interface BasicCreateOperation<
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 
   /**
    * Currently an **internal-only** feature. Zapier uses this
@@ -1389,6 +1429,12 @@ export interface BasicOperation {
    * for the window is exceeded.
    */
   throttle?: ThrottleObject;
+
+  /**
+   * (Experimental) Should empty strings, `null`, `undefined`, and
+   * empty Arrays or objects be removed from `inputData`?
+   */
+  skipCleanArrayInputData?: boolean;
 }
 
 /**
@@ -1473,11 +1519,7 @@ export interface PlainOutputField {
 }
 
 /** An array or collection of input field groups. */
-export type InputFieldGroups = {
-  key: Key;
-  label: string;
-  emphasize: boolean;
-}[];
+export type InputFieldGroups = InputFieldGroup[];
 
 /**
  * Zapier uses this configuration to ensure this action is performed
@@ -1686,6 +1728,18 @@ export interface PlainInputField {
    * organize this field with others.
    */
   group?: Key;
+}
+
+/** Object for visual grouping of input fields. */
+export interface InputFieldGroup {
+  /** The unique identifier for this group. */
+  key: Key;
+
+  /** The human-readable name for the group. */
+  label?: string;
+
+  /** Whether this group should be visually emphasized in the UI. */
+  emphasize?: boolean;
 }
 
 /**

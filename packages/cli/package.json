@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "17.6.0",
+  "version": "17.8.0",
   "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -64,7 +64,6 @@
     "luxon": "3.7.1",
     "marked": "15.0.12",
     "marked-terminal": "7.3.0",
-    "node-fetch": "2.7.0",
     "open": "10.2.0",
     "ora": "5.4.0",
     "parse-gitignore": "0.5.1",

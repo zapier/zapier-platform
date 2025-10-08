@@ -1,4 +1,7 @@
-import type { PlainInputField } from './schemas.generated';
+import type {
+  FieldChoiceWithLabel,
+  PlainInputField,
+} from './schemas.generated';
 import type { ZObject, Bundle } from './custom';
 
 // #region UTILITIES
@@ -132,15 +135,53 @@ type FieldResultTypes = {
 
 /**
  * Get the TypeScript type that corresponds to the zapier field type. If
- * `type` is not set, the field defaults to `string`.
+ * `type` is not set, the field defaults to `string`. Does not pay
+ * attention to `list` `, `dict`, or `required` statuses. Does not work
+ * for fields with `children` subfields either.
+ *
+ * @example
+ * type result = PrimitiveFieldResultType<{ }>;
+ * // string (string is default when `type` is not set)
+ *
+ * type result = PrimitiveFieldResultType<{ type: 'string' }>;
+ * // string
+ *
+ * type result = PrimitiveFieldResultType<{ type: 'number' }>;
+ * // number
+ *
+ * type result = PrimitiveFieldResultType<{ type: 'boolean' }>;
+ * // boolean
  */
-type FieldResultType<F extends PlainInputField> = F extends {
+type PrimitiveFieldResultType<$Field extends PlainInputField> = $Field extends {
   type: infer $T extends PlainInputField['type'];
 }
   ? $T extends string
     ? FieldResultTypes[$T]
     : string
   : string;
+
+/**
+ * Capture a union of string literals while also allowing the string
+ * type. This allows the available choices to show in autocomplete,
+ * while also allowing arbitrary strings to still be valid.
+ *
+ * @example
+ * type result = StringHints<'a' | 'b'>;
+ * const A: result = 'a'; // Ok and autocomplete shows 'a' and 'b'.
+ * const C: result = 'c'; // Any string still ok.
+ */
+export type StringHints<S> = S | (string & {});
+
+type PrimitiveFieldResultTypesWithChoiceHints<$Field extends PlainInputField> =
+  $Field extends { choices: infer $Choices }
+    ? $Choices extends Record<string, string>
+      ? StringHints<keyof $Choices>
+      : $Choices extends FieldChoiceWithLabel[]
+        ? StringHints<$Choices[number]['value']>
+        : $Choices extends string[]
+          ? StringHints<$Choices[number]>
+          : PrimitiveFieldResultType<$Field>
+    : PrimitiveFieldResultType<$Field>;
 
 /**
  * A function that returns a list of plain fields, sync or async.
@@ -179,15 +220,93 @@ export type InputFields = InputField[];
  * type result3 = PlainFieldContribution<{ key: "c"; type: "boolean" }>;
  * // { c?: boolean | undefined }
  */
-type PlainFieldContribution<$Field extends PlainInputField> = $Field extends {
-  required: true;
-}
-  ? FieldResultType<$Field> extends never
+export type PlainFieldContribution<$Field extends PlainInputField> =
+  $Field extends { children: PlainInputField[] }
+    ? ParentFieldContribution<$Field>
+    : $Field extends { dict: true }
+      ? DictFieldContribution<$Field>
+      : $Field extends { list: true }
+        ? ListFieldContribution<$Field>
+        : PrimitiveFieldContribution<$Field>;
+
+/**
+ * Extract the contribution of a parent field to the input data. A parent
+ * Field has a `children` field array. The parent's own `key` will be
+ * ignored, and the children's contributions will be merged into the top
+ * level inputData object.
+ *
+ * @example
+ * type result = ParentFieldContribution<{ key: "a"; children: [{ key: "b"; required: true }] }>;
+ * // { b: string }
+ */
+type ParentFieldContribution<
+  $Field extends PlainInputField & { children: PlainInputField[] },
+> = PlainFieldArrayContribution<$Field['children']>;
+
+/**
+ * Extract the contribution of a dictionary field to the input data. A
+ * dictionary field has a `dict:true` field. The type for this `key`
+ * field in the inputData object will therefore be a record of the key.
+ * Currently, the value type is always `string`, but this may change in
+ * the future.
+ *
+ * @see https://zapier.atlassian.net/browse/PDE-6547 for when non-string
+ * values will be supported.
+ *
+ * @example
+ * type result = DictFieldContribution<{ key: "a"; dict: true, required: true }>;
+ * // { a: Record<string, string> }
+ */
+type DictFieldContribution<$Field extends PlainInputField & { dict: true }> =
+  $Field extends { required: true }
+    ? Record<$Field['key'], Record<string, string>>
+    : Partial<Record<$Field['key'], Record<string, string>>>;
+
+/**
+ * Extract the contribution of a list field to the input data. A list
+ * field has a `list:true` field. The type for this `key` field in the
+ * inputData object will therefore be an array of the value type.
+ *
+ * @example
+ * type result1 = ListFieldContribution<{ key: "a"; list: true, required: true }>;
+ * // { a: string[] }
+ *
+ * type result2 = ListFieldContribution<{ key: "a"; list: true; type: "integer" }>;
+ * // { a?: number[] | undefined }
+ */
+type ListFieldContribution<$Field extends PlainInputField & { list: true }> =
+  $Field extends { required: true }
+    ? Record<$Field['key'], PrimitiveFieldResultTypesWithChoiceHints<$Field>[]>
+    : Partial<
+        Record<
+          $Field['key'],
+          PrimitiveFieldResultTypesWithChoiceHints<$Field>[]
+        >
+      >;
+
+/**
+ * Extract the contribution of a primitive field to the input data. A
+ * primitive field is a PlainInputField that is not a parent, dict, or
+ * list field. The `type` field MAY be set, but will default to `string`.
+ *
+ * @example
+ * type result1 = PrimitiveFieldContribution<{ key: "a" }>;
+ * // { a?: string | undefined }
+ *
+ * type result2 = PrimitiveFieldContribution<{ key: "a"; type: "integer", required: true }>;
+ * // { a: number }
+ */
+type PrimitiveFieldContribution<$Field extends PlainInputField> =
+  PrimitiveFieldResultTypesWithChoiceHints<$Field> extends never
     ? {}
-    : Record<$Field['key'], FieldResultType<$Field>>
-  : FieldResultType<$Field> extends never
-    ? {}
-    : Partial<Record<$Field['key'], FieldResultType<$Field>>>;
+    : $Field extends { required: true }
+      ? Record<$Field['key'], PrimitiveFieldResultTypesWithChoiceHints<$Field>>
+      : Partial<
+          Record<
+            $Field['key'],
+            PrimitiveFieldResultTypesWithChoiceHints<$Field>
+          >
+        >;
 
 /**
  * Extract the contribution of multiple plain fields defined in an
@@ -297,6 +416,18 @@ type FieldFunctionContribution<$F> = $F extends (
 // the fields that a plain field or field function will contribute to
 // the bundle, but the more straightforward term "InputData" is
 // exposed to for the public API.
+//
+// TERMINOLOGY
+// -----------
+// InputField: A PlainInputField or a FieldFunction.
+// FieldFunction: A function that returns an array of InputFields.
+// KnownFieldFunction: A FieldFunction that returns explicitly named InputFields.
+// UnknownFieldFunction: A FieldFunction that returns an array of InputFields that are not explicitly named.
+// PlainInputField: From the schema. Object with a key, and possibly `children`, `dict`, `list`, `type`, `required`, fields.
+// ParentInputField: A PlainInputField with a `children` field array.
+// DictInputField: A PlainInputField with a `dict:true` field.
+// ListInputField: A PlainInputField with a `list:true` field.
+// PrimitiveInputField: A PlainInputField with a `type` field that is not a parent, dict, or list field.
 
 /**
  * Get the bundle contribution of a single field. This is either a plain

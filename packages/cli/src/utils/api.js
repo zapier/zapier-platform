@@ -11,7 +11,6 @@ const qs = require('querystring');
 
 const fs = require('fs');
 const AdmZip = require('adm-zip');
-const fetch = require('node-fetch');
 const path = require('path');
 
 const { writeFile, readFile } = require('./files');
@@ -429,6 +428,7 @@ const downloadSourceZip = async (dst) => {
 const upload = async (
   app,
   { skipValidation = false, overwritePartnerChanges = false } = {},
+  versionOverride,
 ) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -461,10 +461,11 @@ const upload = async (
     headers['X-Overwrite-Partner-Changes'] = 'true';
   }
 
-  startSpinner(`Uploading version ${definition.version}`);
+  const version = versionOverride ?? definition.version;
+  startSpinner(`Uploading version ${version}`);
   try {
     await callAPI(
-      `/apps/${app.id}/versions/${definition.version}`,
+      `/apps/${app.id}/versions/${version}`,
       {
         method: 'PUT',
         body: {

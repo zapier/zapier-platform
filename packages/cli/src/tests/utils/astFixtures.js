@@ -87,6 +87,33 @@ export default {
 } satisfies App;
 `.trim();
 
+const sampleShorthandIndexTs = `
+import type { App } from 'zapier-platform-core';
+import { version as platformVersion } from 'zapier-platform-core';
+import * as creates from './creates/index.js';
+
+import packageJson from '../package.json';
+
+// comment!
+export default {
+  version: packageJson.version,
+  platformVersion,
+  creates
+} satisfies App;
+`.trim();
+
+const sampleShorthandIndexJs = `
+const creates = require('./creates/index.js');
+
+const App = {
+  version: require('./package.json').version,
+  platformVersion: require('zapier-platform-core').version,
+  creates
+};
+
+module.exports = App;
+`.trim();
+
 const sampleLegacyAppIndexJs = `
 const authentication = require('./authentication');
 const businessTrigger = require('./triggers/business.js');
@@ -153,10 +180,62 @@ module.exports = {
 };
 `.trim();
 
+const sampleAppWithSpreadIndexJs = `
+const CryptoCreate = require('./creates/crypto')
+const BlahTrigger = require('./triggers/blah')
+const packageJson = require('./package.json')
+const zapier = require('zapier-platform-core')
+
+const someStuff = {
+  version: packageJson.version,
+  platformVersion: zapier.version
+}
+
+// comment!
+module.exports = {
+  ...someStuff,
+  triggers: {
+    [BlahTrigger.key]: BlahTrigger
+  },
+  creates: {
+    [CryptoCreate.key]: CryptoCreate
+  }
+}
+`.trim();
+
+const sampleAppWithSpreadIndexTs = `
+import type { App } from 'zapier-platform-core';
+import { version as platformVersion } from 'zapier-platform-core';
+
+import packageJson from '../package.json';
+import CryptoCreate from './creates/crypto';
+import BlahTrigger from './triggers/blah';
+
+const someStuff = {
+  version: packageJson.version
+}
+
+// comment!
+export default {
+  ...someStuff,
+  platformVersion,
+  triggers: {
+    [BlahTrigger.key]: BlahTrigger
+  },
+  creates: {
+    [CryptoCreate.key]: CryptoCreate
+  }
+} satisfies App;
+`.trim();
+
 module.exports = {
   sampleExportVarIndexJs,
   sampleExportObjectIndexJs,
   sampleExportDeclaredIndexTs,
   sampleExportDirectIndexTs,
+  sampleShorthandIndexTs,
+  sampleShorthandIndexJs,
   sampleLegacyAppIndexJs,
+  sampleAppWithSpreadIndexJs,
+  sampleAppWithSpreadIndexTs,
 };

@@ -3,6 +3,11 @@ const querystring = require('querystring');
 const _ = require('lodash');
 
 const renderTemplate = (templateString, context) => {
+  // Security: Ensure templateString is a string and not user-controlled
+  if (typeof templateString !== 'string') {
+    throw new Error('Template string must be a string');
+  }
+
   const re = /{{([^}]+)}}/g;
 
   // _.template doesn't allow us to set defaults, so we need to make sure all the

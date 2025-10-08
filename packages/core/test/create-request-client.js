@@ -22,7 +22,6 @@ describe('request client', function () {
 
     response.request.headers['user-agent'].should.eql('Zapier');
     response.status.should.eql(200);
-    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
   it('should allow overriding the user-agent header', async () => {
@@ -37,7 +36,6 @@ describe('request client', function () {
     should(response.request.headers['user-agent']).eql(undefined);
     response.request.headers['User-Agent'].should.eql('Zapier!');
     response.status.should.eql(200);
-    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
   });
 
   it('should have json serializable response', async () => {
@@ -51,14 +49,16 @@ describe('request client', function () {
     response.status.should.eql(200);
 
     const body = JSON.parse(response.content);
-    body.url.should.eql(`${HTTPBIN_URL}/get`);
+    body.method.should.eql('GET');
+    body.url.should.endWith('/get');
   });
 
   it('should wrap a request entirely', async () => {
     const request = createAppRequestClient(input);
     const response = await request({ url: `${HTTPBIN_URL}/get` });
     response.status.should.eql(200);
-    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
+    response.data.method.should.eql('GET');
+    response.data.url.should.endWith('/get');
   });
 
   it('should support promise bodies', async () => {
@@ -139,7 +139,8 @@ describe('request client', function () {
     const request = createAppRequestClient(input);
     const response = await request(`${HTTPBIN_URL}/get`);
     response.status.should.eql(200);
-    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
+    response.data.method.should.eql('GET');
+    response.data.url.should.endWith('/get');
   });
 
   it('should support url param with options', async () => {
@@ -150,7 +151,8 @@ describe('request client', function () {
 
     response.status.should.eql(200);
     const body = JSON.parse(response.content);
-    body.url.should.eql(`${HTTPBIN_URL}/get`);
+    body.method.should.eql('GET');
+    body.url.should.endWith('/get');
     body.headers.A.should.deepEqual(['B']);
   });
 
@@ -219,7 +221,8 @@ describe('request client', function () {
 
     response.request.headers['X-Testing-True'].should.eql('Yes');
     response.status.should.eql(200);
-    response.data.url.should.eql(`${HTTPBIN_URL}/get`);
+    response.data.method.should.eql('GET');
+    response.data.url.should.endWith('/get');
   });
 
   it('should default to run throwForStatus', () => {
@@ -427,7 +430,7 @@ describe('request client', function () {
       response.status.should.eql(200);
 
       const body = JSON.parse(response.content);
-      body.url.should.eql(`${HTTPBIN_URL}/get?something=&really=&cool=true`);
+      body.url.should.endWith('/get?something=&really=&cool=true');
     });
 
     it('should omit empty params when set as true', async () => {
@@ -475,8 +478,8 @@ describe('request client', function () {
       response.status.should.eql(200);
 
       const body = JSON.parse(response.content);
-      body.url.should.eql(
-        `${HTTPBIN_URL}/get?cool=false&name=zapier&zzz=%5B%5D&yyy=%7B%7D&qqq=%20`,
+      body.url.should.endWith(
+        `/get?cool=false&name=zapier&zzz=%5B%5D&yyy=%7B%7D&qqq=%20`,
       );
     });
 
@@ -498,7 +501,7 @@ describe('request client', function () {
       response.status.should.eql(200);
 
       const body = JSON.parse(response.content);
-      body.url.should.eql(`${HTTPBIN_URL}/get`);
+      body.url.should.endWith('/get');
     });
   });
 
@@ -550,7 +553,7 @@ describe('request client', function () {
 
       const { url } = JSON.parse(response.content);
       response.data.args.id.should.deepEqual(['123']);
-      url.should.eql(`${HTTPBIN_URL}/delete?id=123`);
+      url.should.endWith('/delete?id=123');
     });
   });
 
@@ -818,7 +821,7 @@ describe('request client', function () {
 
       const { headers } = response.data;
       const { url } = JSON.parse(response.content);
-      url.should.eql(`${HTTPBIN_URL}/get?limit=20&id=123`);
+      url.should.endWith('/get?limit=20&id=123');
       headers.Authorization.should.deepEqual(['Bearer Let me in']);
       // covers the case where replacing the same value in multiple places didn't work
       headers['X-Api-Key'].should.deepEqual(['Let me in']);

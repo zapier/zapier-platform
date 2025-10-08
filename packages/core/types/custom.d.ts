@@ -113,6 +113,14 @@ export interface Bundle<
     };
 
     /**
+     * A token, such as a pagination cursor, that means this run should
+     * continue pulling results. Currently only used for search
+     * pagination. Set by previous invocations by returning `{results:
+     * […], paging_token: '…'}`
+     */
+    paging_token?: string;
+
+    /**
      * Contains metadata about the input fields, optionally provided
      * by the inputField.meta property. Useful for storing extra data
      * in dynamically created input fields.
@@ -142,7 +150,11 @@ export interface Bundle<
 
 // Error class types that match the runtime structure from src/errors.js
 type ErrorConstructor = new (message?: string) => Error;
-type AppErrorConstructor = new (message: string, code?: string, status?: number) => Error;
+type AppErrorConstructor = new (
+  message: string,
+  code?: string,
+  status?: number,
+) => Error;
 type ThrottledErrorConstructor = new (message: string, delay?: number) => Error;
 type ResponseErrorConstructor = new (response: HttpResponse) => Error;
 
@@ -162,7 +174,6 @@ interface ErrorsModule {
   StopRequestError: ErrorConstructor;
   handleError: (...args: any[]) => never;
 }
-
 
 // copied http stuff from external typings
 export interface HttpRequestOptions {

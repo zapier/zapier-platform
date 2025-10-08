@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const debug = require('debug')('zapier:migrate');
 const { Args, Flags } = require('@oclif/core');
+const colors = require('colors/safe');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const PromoteCommand = require('./promote');
@@ -118,17 +119,15 @@ class MigrateCommand extends BaseCommand {
 
     await this.run_require_confirmation_pre_checks(app, body);
 
+    let message;
     if (user || account) {
-      this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${
-          user || account
-        }`,
-      );
+      message = `Requesting migration from ${fromVersion} to ${toVersion} for ${user || account}`;
     } else {
-      this.startSpinner(
-        `Starting migration from ${fromVersion} to ${toVersion} for ${percent}%`,
-      );
+      message = `Requesting migration from ${fromVersion} to ${toVersion} for ${percent}%`;
     }
+
+    this.startSpinner(message);
+
     if (percent) {
       body.job.percent_human = percent;
     }
@@ -137,12 +136,14 @@ class MigrateCommand extends BaseCommand {
 
     try {
       await callAPI(url, { method: 'POST', body });
-    } finally {
-      this.stopSpinner();
+    } catch (err) {
+      this.stopSpinner({ success: false });
+      throw err;
     }
+    this.stopSpinner();
 
     this.log(
-      '\nMigration successfully queued, please check `zapier jobs` to track the status. Migrations usually take between 5-10 minutes.',
+      `\nMigration successfully queued, check ${colors.bold.underline('zapier jobs')} to track the status. Migrations usually take between 5-10 minutes.`,
     );
   }
 }
@@ -151,11 +152,11 @@ MigrateCommand.flags = buildFlags({
   commandFlags: {
     user: Flags.string({
       description:
-        "Migrates all of a users' Private Zaps within all accounts for which the specified user is a member",
+        "Migrates a user's private Zaps under the user's individual account, excluding organization accounts",
     }),
     account: Flags.string({
       description:
-        "Migrates all of a users' Zaps, Private & Shared, within all accounts for which the specified user is a member",
+        "Migrates a user's private and shared Zaps under the user's individual and organization accounts",
     }),
     yes: Flags.boolean({
       char: 'y',
