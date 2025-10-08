@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const { BASE_ENDPOINT } = require('../constants');
 
 const isSamlEmail = async (email) => {

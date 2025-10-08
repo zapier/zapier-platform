@@ -1,5 +1,5 @@
 {
-  "version": "17.6.0",
+  "version": "17.8.0",
   "schemas": {
     "AppSchema": {
       "id": "/AppSchema",
@@ -782,6 +782,28 @@
       },
       "additionalProperties": false
     },
+    "InputFieldGroupSchema": {
+      "id": "/InputFieldGroupSchema",
+      "description": "Object for visual grouping of input fields.",
+      "type": "object",
+      "required": ["key"],
+      "properties": {
+        "key": {
+          "description": "The unique identifier for this group.",
+          "$ref": "/KeySchema"
+        },
+        "label": {
+          "description": "The human-readable name for the group.",
+          "type": "string",
+          "minLength": 1
+        },
+        "emphasize": {
+          "description": "Whether this group should be visually emphasized in the UI.",
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
     "PlainOutputFieldSchema": {
       "description": "Field schema specialized for output fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "id": "/PlainOutputFieldSchema",
@@ -893,23 +915,7 @@
       "description": "An array or collection of input field groups.",
       "type": "array",
       "items": {
-        "type": "object",
-        "required": ["key"],
-        "properties": {
-          "key": {
-            "description": "The unique identifier for this group.",
-            "$ref": "/KeySchema"
-          },
-          "label": {
-            "description": "The human-readable name for the group.",
-            "type": "string",
-            "minLength": 1
-          },
-          "emphasize": {
-            "description": "Whether this group should be visually emphasized in the UI.",
-            "type": "boolean"
-          }
-        }
+        "$ref": "/InputFieldGroupSchema"
       },
       "additionalProperties": false
     },
@@ -1103,6 +1109,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1209,6 +1219,10 @@
               "value": "**yes** (with exceptions, see description)"
             }
           }
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1270,6 +1284,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1340,6 +1358,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1579,6 +1601,10 @@
             }
           }
         },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
+        },
         "maxPollingDelay": {
           "description": "The maximum amount of time to wait between polling requests in seconds. Minimum value is 20s and will default to 20 if not set, or set to a lower value.",
           "type": "integer"
@@ -1662,6 +1688,10 @@
             }
           ]
         },
+        "canPaginate": {
+          "description": "Does this search support pagination?",
+          "type": "boolean"
+        },
         "inputFields": {
           "description": "What should the form a user sees and configures look like?",
           "$ref": "/InputFieldsSchema"
@@ -1692,6 +1722,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         }
       },
       "additionalProperties": false
@@ -1812,6 +1846,10 @@
         "throttle": {
           "description": "Zapier uses this configuration to apply throttling when the limit for the window is exceeded.",
           "$ref": "/ThrottleObjectSchema"
+        },
+        "skipCleanArrayInputData": {
+          "description": "(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?",
+          "type": "boolean"
         },
         "buffer": {
           "description": "Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.",
@@ -2047,9 +2085,11 @@
     },
     "VersionSchema": {
       "id": "/VersionSchema",
-      "description": "Represents a simplified semver string, from `0.0.0` to `999.999.999`.",
+      "description": "Represents a simplified semver string, from `0.0.0` to `999.999.999` with optional simplified label. They need to be case-insensitive unique.",
       "type": "string",
-      "pattern": "^[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}$"
+      "pattern": "^(?:0|[1-9]\\d{0,2})\\.(?:0|[1-9]\\d{0,2})\\.(?:0|[1-9]\\d{0,2})(?:-(?=.{1,12}$)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)?$",
+      "minLength": 5,
+      "maxLength": 24
     },
     "MiddlewaresSchema": {
       "id": "/MiddlewaresSchema",

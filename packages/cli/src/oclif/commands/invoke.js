@@ -240,15 +240,26 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
 };
 
 const appendEnv = async (vars, prefix = '') => {
-  await fs.appendFile(
-    '.env',
-    Object.entries(vars)
-      .filter(([k, v]) => v !== undefined)
-      .map(
-        ([k, v]) =>
-          `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
-      ),
-  );
+  const envFile = '.env';
+  let content = Object.entries(vars)
+    .filter(([k, v]) => v !== undefined)
+    .map(
+      ([k, v]) =>
+        `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
+    )
+    .join('');
+
+  // Check if .env file exists and doesn't end with newline
+  try {
+    const existingContent = await fs.readFile(envFile, 'utf8');
+    if (existingContent.length > 0 && !existingContent.endsWith('\n')) {
+      content = '\n' + content;
+    }
+  } catch (error) {
+    // File doesn't exist or can't be read, proceed as normal
+  }
+
+  await fs.appendFile(envFile, content);
 };
 
 const replaceDoubleCurlies = async (request) => {
@@ -1313,6 +1324,7 @@ class InvokeCommand extends BaseCommand {
         isPopulatingDedupe: this.flags.isPopulatingDedupe,
         limit: this.flags.limit,
         page: this.flags.page,
+        paging_token: this.flags['paging-token'],
         isTestingAuth: false, // legacy property
       };
       const output = await this.invokeAction(
@@ -1391,6 +1403,10 @@ InvokeCommand.flags = buildFlags({
       char: 'a',
       description:
         'EXPERIMENTAL: Instead of using the local .env file, use the production authentication data with the given authentication ID (aka the "app connection" on Zapier). Find them at https://zapier.com/app/assets/connections (https://zpr.io/z8SjFTdnTFZ2 for instructions) or specify \'-\' to interactively select one from your available authentications. When specified, the code will still run locally, but all outgoing requests will be proxied through Zapier with the production auth data.',
+    }),
+    'paging-token': Flags.string({
+      description:
+        'Set bundle.meta.paging_token. Used for search pagination or bulk reads. When used in production, this indicates which page of items you should fetch.',
     }),
   },
 });

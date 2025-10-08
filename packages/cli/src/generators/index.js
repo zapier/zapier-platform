@@ -79,6 +79,7 @@ const writeGenericTypeScriptPackageJson = (gen, packageJsonExtension) => {
           test: 'npm run build && vitest --run',
           clean: 'rimraf ./dist ./build',
           build: 'npm run clean && tsc',
+          dev: 'npm run build -- --watch',
           '_zapier-build': 'npm run build',
         },
         dependencies: {
@@ -245,23 +246,36 @@ const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
       this.destinationRoot(path.resolve(this.options.path));
 
       const jsFilter = filter(['*.js', '*.json', '*.ts'], { restore: true });
-      this.queueTransformStream(
-        { disabled: true }, // Suppress progress reporting (tick mark)
+      this.queueTransformStream([
+        { disabled: true },
         jsFilter,
         prettier({ singleQuote: true }),
         jsFilter.restore,
-      );
+      ]);
     }
 
     async prompting() {
       if (!this.options.template) {
+        // Filter template choices based on language and module type
+        let templateChoices = TEMPLATE_CHOICES;
+        let defaultTemplate = 'minimal';
+
+        // TypeScript filtering takes precedence over ESM filtering
+        if (this.options.language === 'typescript') {
+          templateChoices = TS_SUPPORTED_TEMPLATES;
+          defaultTemplate = 'basic-auth';
+        } else if (this.options.module === 'esm') {
+          templateChoices = ESM_SUPPORTED_TEMPLATES;
+          defaultTemplate = 'minimal'; // minimal is the only ESM template
+        }
+
         this.answers = await this.prompt([
           {
             type: 'list',
             name: 'template',
-            choices: TEMPLATE_CHOICES,
+            choices: templateChoices,
             message: 'Choose a project template to start with:',
-            default: 'minimal',
+            default: defaultTemplate,
           },
         ]);
         this.options.template = this.answers.template;
@@ -324,6 +338,8 @@ const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
 
 module.exports = {
   TEMPLATE_CHOICES,
+  ESM_SUPPORTED_TEMPLATES,
+  TS_SUPPORTED_TEMPLATES,
   PullGenerator: PullGeneratorPromise,
   ProjectGenerator: ProjectGeneratorPromise,
 };

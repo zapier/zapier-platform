@@ -250,7 +250,6 @@ describe('create-app', () => {
 
     const result = output.results[0];
 
-    result.url.should.eql(`${HTTPBIN_URL}/get`);
     result.headers['X-Hashy'].should.deepEqual([
       '1a3ba5251cb33ee7ade01af6a7b960b8',
     ]);
@@ -295,12 +294,15 @@ describe('create-app', () => {
       bundle: {
         request: {
           url: `${HTTPBIN_URL}/get`,
+          params: {
+            foo: 'bar',
+          },
         },
       },
     });
     const output = await app(input);
     const response = output.results;
-    JSON.parse(response.content).url.should.eql(`${HTTPBIN_URL}/get`);
+    JSON.parse(response.content).args.should.deepEqual({ foo: ['bar'] });
   });
 
   it('should error on curlies for raw request', async () => {

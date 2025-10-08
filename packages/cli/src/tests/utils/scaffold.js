@@ -8,6 +8,8 @@ const {
   writeTemplateFile,
   createTemplateContext,
   updateEntryFile,
+  createScaffoldingContext,
+  isEsmJavaScript,
 } = require('../../utils/scaffold');
 
 const { getNewTempDirPath } = require('../_helpers');
@@ -36,6 +38,22 @@ export default {
 `.trim();
 const basicTriggerTs = 'export default {key: "thing"} satisfies Trigger;\n';
 
+// ESM JavaScript files use the same export syntax as TypeScript
+const basicIndexJsEsm = `
+import packageJson from './package.json' with { type: 'json' };
+import zapier from 'zapier-platform-core';
+
+export default {
+  version: packageJson.version,
+  platformVersion: zapier.version,
+  triggers: {},
+  searches: {},
+  creates: {},
+  resources: {},
+};
+`.trim();
+const basicTriggerJsEsm = 'export default {key: "thing"};\n';
+
 describe('scaffold', () => {
   describe('plural', () => {
     it('should work for expected cases', () => {
@@ -55,6 +73,29 @@ describe('scaffold', () => {
       nounToKey('Cool Contact V2').should.eql('cool_contact_v2');
       nounToKey('Cool ContactV3').should.eql('cool_contact_v3');
       nounToKey('Cool Contact V 10').should.eql('cool_contact_v10');
+    });
+  });
+
+  describe('isEsmJavaScript', () => {
+    it('should detect ESM syntax', () => {
+      isEsmJavaScript('export default {};').should.be.true();
+      isEsmJavaScript('export default {\n  foo: "bar"\n};').should.be.true();
+      isEsmJavaScript('\nexport default App;').should.be.true();
+      isEsmJavaScript('  export default   {  };  ').should.be.true();
+    });
+
+    it('should not detect CommonJS as ESM', () => {
+      isEsmJavaScript('module.exports = {};').should.be.false();
+      isEsmJavaScript(
+        'const App = {}; module.exports = App;',
+      ).should.be.false();
+    });
+
+    it('should handle edge cases', () => {
+      isEsmJavaScript('').should.be.false();
+      isEsmJavaScript('// export default {}').should.be.false();
+      isEsmJavaScript('/* export default {} */').should.be.false();
+      isEsmJavaScript('const export_default = {};').should.be.false();
     });
   });
 
@@ -275,6 +316,42 @@ describe('scaffold', () => {
     });
   });
 
+  describe('modifying entry file (ESM JS)', () => {
+    let tmpDir;
+    beforeEach(async () => {
+      tmpDir = await getNewTempDirPath();
+    });
+
+    it('should modify a file with ESM syntax', async () => {
+      // setup
+      const indexPath = `${tmpDir}/index.js`;
+      await outputFile(indexPath, basicIndexJsEsm);
+      await outputFile(`${tmpDir}/creates/things.js`, basicTriggerJsEsm);
+
+      await updateEntryFile({
+        language: 'js',
+        indexFileResolved: indexPath,
+        actionRelativeImportPath: './creates/things',
+        actionImportName: 'thing',
+        actionType: 'create',
+      });
+
+      const index = await readFile(indexPath, 'utf-8');
+
+      // Should have import statement
+      should(index.includes('import thing from')).be.true();
+      // Should have creates section with computed property
+      should(index.includes('creates: {')).be.true();
+      should(index.includes('[thing.key]: thing')).be.true();
+      // Should not have require statements (ESM doesn't use require)
+      should(index.includes('require(')).be.false();
+    });
+
+    afterEach(async () => {
+      await remove(tmpDir);
+    });
+  });
+
   describe('modifying entry file (TS)', () => {
     let tmpDir;
     beforeEach(async () => {
@@ -302,6 +379,65 @@ describe('scaffold', () => {
 
     afterEach(async () => {
       await remove(tmpDir);
+    });
+  });
+
+  describe('createScaffoldingContext', () => {
+    it('should generate correct import paths for TypeScript with ESM', () => {
+      const context = createScaffoldingContext({
+        actionType: 'create',
+        noun: 'foo',
+        language: 'ts',
+        indexFileLocal: 'index.ts',
+        actionDirLocal: 'creates',
+        testDirLocal: 'test',
+        includeIntroComments: true,
+        preventOverwrite: false,
+      });
+
+      // For TypeScript with ESM, import paths should use .js extension
+      context.actionRelativeImportPath.should.equal('./creates/foo.js');
+    });
+
+    it('should generate correct import paths for JavaScript', () => {
+      const context = createScaffoldingContext({
+        actionType: 'create',
+        noun: 'foo',
+        language: 'js',
+        indexFileLocal: 'index.js',
+        actionDirLocal: 'creates',
+        testDirLocal: 'test',
+        includeIntroComments: true,
+        preventOverwrite: false,
+      });
+
+      // For JavaScript, import paths should not have extension
+      context.actionRelativeImportPath.should.equal('./creates/foo');
+    });
+
+    it('should normalize Windows path separators to forward slashes', () => {
+      // Mock path.relative to return Windows-style paths
+      const originalRelative = require('path').relative;
+      require('path').relative = () => 'creates\\foo';
+
+      try {
+        const context = createScaffoldingContext({
+          actionType: 'create',
+          noun: 'foo',
+          language: 'ts',
+          indexFileLocal: 'index.ts',
+          actionDirLocal: 'creates',
+          testDirLocal: 'test',
+          includeIntroComments: true,
+          preventOverwrite: false,
+        });
+
+        // Should normalize backslashes to forward slashes
+        context.actionRelativeImportPath.should.equal('./creates/foo.js');
+      } finally {
+        // Restore original function
+        require('path').relative = originalRelative;
+      }
     });
   });
 });
