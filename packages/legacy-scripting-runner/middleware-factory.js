@@ -21,8 +21,21 @@ const renderTemplate = (templateString, context) => {
   }
   const finalContext = _.defaults(_.clone(context), defaults);
 
-  const options = { interpolate: re };
-  return _.template(templateString, options)(finalContext);
+  const options = {
+    interpolate: re,
+    // Security: Disable code evaluation to prevent injection
+    evaluate: false,
+    escape: false,
+  };
+
+  // Security: Use safe template compilation
+  try {
+    return _.template(templateString, options)(finalContext);
+  } catch (error) {
+    // Log template errors but don't expose internal details
+    console.error('Template rendering error:', error.message);
+    return templateString; // Return original string on error
+  }
 };
 
 const getLowerHeaders = (headers) =>

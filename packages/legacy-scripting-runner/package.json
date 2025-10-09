@@ -33,8 +33,8 @@
     "node-fetch": "2.6.7",
     "request": "2.88.2",
     "synckit": "0.6.0",
-    "underscore": "1.4.4",
-    "xmldom": "0.3.0"
+    "underscore": "1.13.7",
+    "@xmldom/xmldom": "^0.8.10"
   },
   "devDependencies": {
     "aws-sdk": "^2.1397.0",
