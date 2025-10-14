@@ -606,33 +606,6 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     Zap = compileLegacyScriptingSource(Zap, zcli, app, logger);
   }
 
-  // Does string replacement ala WB, using bundle and a potential result object
-  const replaceVars = (templateString, bundle, result) => {
-    // Security: Ensure templateString is a string and not user-controlled
-    if (typeof templateString !== 'string') {
-      throw new Error('Template string must be a string');
-    }
-
-    const options = {
-      interpolate: /{{([\s\S]+?)}}/g,
-      // Security: Disable code evaluation to prevent injection
-      evaluate: false,
-      escape: false,
-    };
-    const values = { ...bundle.authData, ...bundle.inputData, ...result };
-
-    // Security: Use safe template compilation
-    try {
-      return _.template(templateString, options)(values);
-    } catch (err) {
-      logger(`Template rendering error: ${err.message}`, {
-        log_type: 'bundle',
-        error_message: err.stack,
-      });
-      return templateString; // Return original string on error
-    }
-  };
-
   const ensureIsType = (result, type) => {
     if (!type) {
       return result;
@@ -1671,7 +1644,6 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     beforeRequest,
     run,
     runEvent,
-    replaceVars,
   };
 };
 
