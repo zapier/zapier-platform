@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+
+const path = require('node:path');
+
+(async () => {
+  const oclif = await import('@oclif/core');
+  await oclif.execute({ development: false, dir: __dirname });
+
+  console.warn(
+    '[DEPRECATION WARNING] ' +
+      'The executable name "zapier" is deprecated and will be remove in a future version. ' +
+      'Please use "zapier-platform" instead.',
+  );
+})();
