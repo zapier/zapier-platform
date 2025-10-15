@@ -462,12 +462,29 @@ const pruneQueryParams = (params) => {
 };
 
 const compileLegacyScriptingSource = (source, zcli, app, logger) => {
-  const { DOMParser, XMLSerializer } = require('xmldom');
+  const { DOMParser, XMLSerializer } = require('@xmldom/xmldom');
 
   const underscore = require('underscore');
+  // Configure template settings for legacy {{}} syntax
+  // Note: Using secure defaults to prevent code injection vulnerabilities
   underscore.templateSettings = {
     interpolate: /\{\{(.+?)\}\}/g,
+    evaluate: false, // Disable code evaluation for security
+    escape: false, // Keep legacy behavior but be explicit
   };
+
+  // Restore legacy function names for backward compatibility with user scripts
+  // Based on test evidence in test/example-app/index.js lines 536-539
+
+  // _.collect was an alias for _.map in old underscore versions
+  if (!underscore.collect && underscore.map) {
+    underscore.collect = underscore.map;
+  }
+
+  // _.contains was renamed to _.includes in newer underscore versions
+  if (!underscore.contains && underscore.includes) {
+    underscore.contains = underscore.includes;
+  }
 
   return new Function( // eslint-disable-line no-new-func
     '_',
@@ -588,15 +605,6 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
   if (typeof Zap === 'string') {
     Zap = compileLegacyScriptingSource(Zap, zcli, app, logger);
   }
-
-  // Does string replacement ala WB, using bundle and a potential result object
-  const replaceVars = (templateString, bundle, result) => {
-    const options = {
-      interpolate: /{{([\s\S]+?)}}/g,
-    };
-    const values = { ...bundle.authData, ...bundle.inputData, ...result };
-    return _.template(templateString, options)(values);
-  };
 
   const ensureIsType = (result, type) => {
     if (!type) {
@@ -1636,7 +1644,6 @@ const legacyScriptingRunner = (Zap, zcli, input) => {
     beforeRequest,
     run,
     runEvent,
-    replaceVars,
   };
 };
 
