@@ -9,7 +9,7 @@ const path = require('node:path');
   const argv = process.argv;
   if (argv.length > 1) {
     const binPath = argv[1];
-    if (path.basename(binPath) === 'run') {
+    if (path.basename(binPath) === 'zapier') {
       console.warn(
         '[DEPRECATION WARNING] ' +
           'The executable name "zapier" is deprecated and will be remove in a future version. ' +
