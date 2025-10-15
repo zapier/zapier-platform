@@ -3269,7 +3269,7 @@
     loupe "^3.1.4"
     tinyrainbow "^2.0.0"
 
-"@xmldom/xmldom@^0.8.10":
+"@xmldom/xmldom@0.8.11":
   version "0.8.11"
   resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.11.tgz#b79de2d67389734c57c52595f7a7305e30c2d608"
   integrity sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==
