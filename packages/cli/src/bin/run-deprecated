@@ -8,7 +8,7 @@ const path = require('node:path');
 
   console.warn(
     '[DEPRECATION WARNING] ' +
-      'The executable name "zapier" is deprecated and will be remove in a future version. ' +
+      'The executable name "zapier" is deprecated and will be removed in a future version. ' +
       'Please use "zapier-platform" instead.',
   );
 })();
