@@ -42,7 +42,7 @@ describe('PushCommand', () => {
 
     it('should accept snapshot labels with exactly 12 characters', async () => {
       const { error } = await captureOutput(async () => {
-        await PushCommand.run(['--snapshot', 'exactly12ch']);
+        await PushCommand.run(['--snapshot', '123456789012']);
       });
 
       // Should not error about snapshot label length
