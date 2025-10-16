@@ -9,15 +9,24 @@ const { buildAndOrUpload } = require('../../utils/build');
 const { localAppCommand } = require('../../utils/local');
 
 class PushCommand extends ZapierBaseCommand {
+  async run() {
+    // Parse command early to check snapshot flag before app install validation
+    await this._parseCommand();
+
+    const snapshotLabel = this.flags.snapshot;
+    if (snapshotLabel && snapshotLabel.length > 12) {
+      this.error('Snapshot label cannot exceed 12 characters');
+    }
+
+    return super.run();
+  }
+
   async perform() {
     const skipNpmInstall = this.flags['skip-npm-install'];
+
     const definition = await localAppCommand({ command: 'definition' });
 
     const snapshotLabel = this.flags.snapshot;
-    if (snapshotLabel && snapshotLabel.length > 18) {
-      throw new Error('Snapshot label cannot exceed 18 characters');
-    }
-
     const version = snapshotLabel
       ? `0.0.0-${snapshotLabel}`
       : definition.version;
