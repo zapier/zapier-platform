@@ -14,10 +14,9 @@ class PushCommand extends ZapierBaseCommand {
     const definition = await localAppCommand({ command: 'definition' });
 
     const snapshotLabel = this.flags.snapshot;
-    if (snapshotLabel && snapshotLabel.length > 18) {
-      throw new Error('Snapshot label cannot exceed 18 characters');
+    if (snapshotLabel && snapshotLabel.length > 12) {
+      throw new Error('Snapshot label cannot exceed 12 characters');
     }
-
     const version = snapshotLabel
       ? `0.0.0-${snapshotLabel}`
       : definition.version;
