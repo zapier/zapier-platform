@@ -69,9 +69,9 @@ module.exports = makeSchema(
           'Zapier uses this configuration to apply throttling when the limit for the window is exceeded.',
         $ref: ThrottleObjectSchema.id,
       },
-      skipCleanArrayInputData: {
+      cleanInputData: {
         description:
-          '(Experimental) Should empty strings, `null`, `undefined`, and empty Arrays or objects be removed from `inputData`?',
+          'If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.',
         type: 'boolean',
       },
     },

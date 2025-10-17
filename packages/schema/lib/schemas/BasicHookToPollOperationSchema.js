@@ -62,8 +62,7 @@ BasicHookToPollOperationSchema.properties = {
   inputFieldGroups: BasicHookToPollOperationSchema.properties.inputFieldGroups,
   outputFields: BasicHookToPollOperationSchema.properties.outputFields,
   sample: BasicHookToPollOperationSchema.properties.sample,
-  skipCleanArrayInputData:
-    BasicHookToPollOperationSchema.properties.skipCleanArrayInputData,
+  cleanInputData: BasicHookToPollOperationSchema.properties.cleanInputData,
   maxPollingDelay: {
     description:
       'The maximum amount of time to wait between polling requests in seconds. Minimum value is 20s and will default to 20 if not set, or set to a lower value.',
