@@ -71,7 +71,7 @@ module.exports = makeSchema(
       },
       cleanInputData: {
         description:
-          'If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.',
+          'If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. There is also a global flag with the same name in `App.flags`. This one takes precedence over the global one.',
         type: 'boolean',
       },
     },

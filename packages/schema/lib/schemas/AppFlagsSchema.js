@@ -22,6 +22,11 @@ module.exports = makeSchema({
         'Starting in `core` version `18.0.0`, 429 (throttling) responses throw a `ThrottledError` before `afterResponse` middleware runs by default. Set this flag to `true` to preserve the old behavior where `afterResponse` middleware can see and handle 429 responses. This flag can be overridden per-request by setting `throwForThrottlingEarly` directly on the request options.',
       type: 'boolean',
     },
+    cleanInputData: {
+      description:
+        'If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. This is a global flag that affects all the triggers and actions in your integration. The `cleanInputData` flag in `operation` takes precedence over this one.',
+      type: 'boolean',
+    },
   },
   additionalProperties: false,
   examples: [

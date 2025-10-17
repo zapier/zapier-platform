@@ -302,6 +302,17 @@ export interface AppFlags {
    * `throwForThrottlingEarly` directly on the request options.
    */
   throwForThrottlingEarly?: boolean;
+
+  /**
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. This is a global flag that affects all the triggers and
+   * actions in your integration. The `cleanInputData` flag in
+   * `operation` takes precedence over this one.
+   */
+  cleanInputData?: boolean;
 }
 
 /**
@@ -955,7 +966,8 @@ export interface BasicPollingOperation<
    * empty Arrays or objects from `bundle.inputData` recursively
    * before passing it to your `perform*` function. If you want to
    * handle empty values yourself in your code, explicitly set this to
-   * false.
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
   cleanInputData?: boolean;
 }
@@ -1053,7 +1065,8 @@ export interface BasicHookOperation<
    * empty Arrays or objects from `bundle.inputData` recursively
    * before passing it to your `perform*` function. If you want to
    * handle empty values yourself in your code, explicitly set this to
-   * false.
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
   cleanInputData?: boolean;
 }
@@ -1122,7 +1135,8 @@ export interface BasicHookToPollOperation<
    * empty Arrays or objects from `bundle.inputData` recursively
    * before passing it to your `perform*` function. If you want to
    * handle empty values yourself in your code, explicitly set this to
-   * false.
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
   cleanInputData?: boolean;
 
@@ -1203,7 +1217,8 @@ export interface BasicActionOperation {
    * empty Arrays or objects from `bundle.inputData` recursively
    * before passing it to your `perform*` function. If you want to
    * handle empty values yourself in your code, explicitly set this to
-   * false.
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
   cleanInputData?: boolean;
 }
@@ -1282,7 +1297,8 @@ export interface BasicSearchOperation<
    * empty Arrays or objects from `bundle.inputData` recursively
    * before passing it to your `perform*` function. If you want to
    * handle empty values yourself in your code, explicitly set this to
-   * false.
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
   cleanInputData?: boolean;
 }
@@ -1360,7 +1376,8 @@ export interface BasicCreateOperation<
    * empty Arrays or objects from `bundle.inputData` recursively
    * before passing it to your `perform*` function. If you want to
    * handle empty values yourself in your code, explicitly set this to
-   * false.
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
   cleanInputData?: boolean;
 
@@ -1453,7 +1470,8 @@ export interface BasicOperation {
    * empty Arrays or objects from `bundle.inputData` recursively
    * before passing it to your `perform*` function. If you want to
    * handle empty values yourself in your code, explicitly set this to
-   * false.
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
   cleanInputData?: boolean;
 }

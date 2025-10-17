@@ -98,6 +98,7 @@ Key | Required | Type | Description
 `skipHttpPatch` | no | `boolean` | By default, Zapier patches the core `http` module so that all requests (including those from 3rd-party SDKs) can be logged. Set this to true if you're seeing issues using an SDK (such as AWS).
 `skipThrowForStatus` | no | `boolean` | Starting in `core` version `10.0.0`, `response.throwForStatus()` was called by default. We introduced a per-request way to opt-out of this behavior. This flag takes that a step further and controls that behavior integration-wide **for requests made using `z.request()`**. Unless they specify otherwise (per-request, or via middleware), [Shorthand requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests) _always_ call `throwForStatus()`. `z.request()` calls can also ignore this flag if they set `skipThrowForStatus` directly
 `throwForThrottlingEarly` | no | `boolean` | Starting in `core` version `18.0.0`, 429 (throttling) responses throw a `ThrottledError` before `afterResponse` middleware runs by default. Set this flag to `true` to preserve the old behavior where `afterResponse` middleware can see and handle 429 responses. This flag can be overridden per-request by setting `throwForThrottlingEarly` directly on the request options.
+`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. This is a global flag that affects all the triggers and actions in your integration. The `cleanInputData` flag in `operation` takes precedence over this one.
 
 #### Examples
 
@@ -501,7 +502,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
-`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.
+`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. There is also a global flag with the same name in `App.flags`. This one takes precedence over the global one.
 
 #### Examples
 
@@ -536,7 +537,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
-`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.
+`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. There is also a global flag with the same name in `App.flags`. This one takes precedence over the global one.
 `buffer` | no (with exceptions, see description) | [/BufferConfigSchema](#bufferconfigschema) | Currently an **internal-only** feature. Zapier uses this configuration for creating objects in bulk with `performBuffer`.
 `performBuffer` | no (with exceptions, see description) | [/FunctionSchema](#functionschema) | Currently an **internal-only** feature. A function to create objects in bulk with. `buffer` and `performBuffer` must either both be defined or neither. Additionally, only one of `perform` or `performBuffer` can be defined. If you choose to define `perform`, you must omit `buffer` and `performBuffer`.
 
@@ -612,7 +613,7 @@ Key | Required | Type | Description
 `inputFieldGroups` | no | [/InputFieldGroupsSchema](#inputfieldgroupsschema) | Defines groups for organizing input fields in the UI. Each group can have a key, label, and emphasis styling.
 `outputFields` | no | [/OutputFieldsSchema](#outputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
-`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.
+`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. There is also a global flag with the same name in `App.flags`. This one takes precedence over the global one.
 
 #### Examples
 
@@ -663,7 +664,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
-`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.
+`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. There is also a global flag with the same name in `App.flags`. This one takes precedence over the global one.
 
 #### Examples
 
@@ -697,7 +698,7 @@ Key | Required | Type | Description
 `outputFields` | no | [/OutputFieldsSchema](#outputfieldsschema) | What fields of data will this return? Will use resource outputFields if missing, will also use sample if available.
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
-`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.
+`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. There is also a global flag with the same name in `App.flags`. This one takes precedence over the global one.
 
 #### Examples
 
@@ -733,7 +734,7 @@ Key | Required | Type | Description
 `sample` | **yes** (with exceptions, see description) | `object` | What does a sample of data look like? Will use resource sample if missing. Requirement waived if `display.hidden` is true or if this belongs to a resource that has a top-level sample
 `lock` | no | [/LockObjectSchema](#lockobjectschema) | Zapier uses this configuration to ensure this action is performed one at a time per scope (avoid concurrency).
 `throttle` | no | [/ThrottleObjectSchema](#throttleobjectschema) | Zapier uses this configuration to apply throttling when the limit for the window is exceeded.
-`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false.
+`cleanInputData` | no | `boolean` | If true, Zapier removes empty strings, `null`, `undefined`, and empty Arrays or objects from `bundle.inputData` recursively before passing it to your `perform*` function. If you want to handle empty values yourself in your code, explicitly set this to false. There is also a global flag with the same name in `App.flags`. This one takes precedence over the global one.
 
 #### Examples
 
