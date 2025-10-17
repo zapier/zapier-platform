@@ -40,8 +40,7 @@ BasicSearchOperationSchema.properties = {
   sample: BasicSearchOperationSchema.properties.sample,
   lock: BasicSearchOperationSchema.properties.lock,
   throttle: BasicSearchOperationSchema.properties.throttle,
-  skipCleanArrayInputData:
-    BasicSearchOperationSchema.properties.skipCleanArrayInputData,
+  cleanInputData: BasicSearchOperationSchema.properties.cleanInputData,
 };
 
 BasicSearchOperationSchema.examples = [

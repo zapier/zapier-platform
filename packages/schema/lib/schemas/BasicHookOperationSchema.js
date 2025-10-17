@@ -84,8 +84,7 @@ BasicHookOperationSchema.properties = {
   inputFieldGroups: BasicHookOperationSchema.properties.inputFieldGroups,
   outputFields: BasicHookOperationSchema.properties.outputFields,
   sample: BasicHookOperationSchema.properties.sample,
-  skipCleanArrayInputData:
-    BasicHookOperationSchema.properties.skipCleanArrayInputData,
+  cleanInputData: BasicHookOperationSchema.properties.cleanInputData,
 };
 
 BasicHookOperationSchema.examples = [
