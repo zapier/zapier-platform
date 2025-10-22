@@ -73,12 +73,12 @@ class SetEnvCommand extends BaseCommand {
       const failedKeys = e.json.errors[0].split('update: ')[1].split(', ');
       const successfulResult = omit(payload, failedKeys);
       if (!Object.keys(successfulResult).length) {
-        this.error(e.json.errors[0]);
+        this.error(e.json.errors.join('\nError: '));
       }
 
       this.warn(successMessage(version));
       this.logJSON(successfulResult);
-      this.warn(`However, these keys failed to update: ${failedKeys}`);
+      this.warn(e.json.errors.join('\nWarning: '));
     }
   }
 }
