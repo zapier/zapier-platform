@@ -91,7 +91,8 @@
     "yamljs": "0.3.0"
   },
   "bin": {
-    "zapier": "./src/bin/run"
+    "zapier": "./src/bin/run-deprecated",
+    "zapier-platform": "./src/bin/run"
   },
   "oclif": {
     "commands": "src/oclif/commands",

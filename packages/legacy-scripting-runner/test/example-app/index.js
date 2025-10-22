@@ -383,7 +383,7 @@ const legacyScriptingSource = `
       },
 
       recipe_pre_poll_underscore_template: function(bundle) {
-        bundle.request.url = _.template(bundle.request.url, {
+        bundle.request.url = _.template(bundle.request.url)({
           urlPath: '/recipes'
         });
         return bundle.request;
@@ -644,7 +644,7 @@ const legacyScriptingSource = `
       },
 
       recipe_pre_write_underscore_template: function(bundle) {
-        var url = _.template(bundle.url_raw, {
+        var url = _.template(bundle.url_raw)({
           urlPath: bundle.action_fields_full.urlPath
         });
         return {
@@ -811,7 +811,7 @@ const legacyScriptingSource = `
       recipe_pre_custom_action_fields_underscore_template: function(bundle) {
         return {
           method: 'GET',
-          url: _.template(bundle.raw_url, { urlPath: bundle.action_fields.urlPath }),
+          url: _.template(bundle.raw_url)({ urlPath: bundle.action_fields.urlPath }),
           headers: bundle.request.headers,
         };
       },
