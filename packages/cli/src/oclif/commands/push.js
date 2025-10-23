@@ -2,24 +2,26 @@ const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { BUILD_PATH, SOURCE_PATH } = require('../../constants');
 const { Flags } = require('@oclif/core');
 const colors = require('colors/safe');
+const path = require('path');
 
 const BuildCommand = require('./build');
 
 const { buildAndOrUpload } = require('../../utils/build');
-const { localAppCommand } = require('../../utils/local');
 
 class PushCommand extends ZapierBaseCommand {
   async perform() {
     const skipNpmInstall = this.flags['skip-npm-install'];
-    const definition = await localAppCommand({ command: 'definition' });
 
     const snapshotLabel = this.flags.snapshot;
     if (snapshotLabel && snapshotLabel.length > 12) {
       throw new Error('Snapshot label cannot exceed 12 characters');
     }
+
+    const packageJson = require(path.join(process.cwd(), 'package.json'));
+
     const version = snapshotLabel
       ? `0.0.0-${snapshotLabel}`
-      : definition.version;
+      : packageJson.version;
     this.throwForInvalidVersion(version);
 
     await buildAndOrUpload(
