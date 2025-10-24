@@ -327,4 +327,8 @@ expectType<{
   choices_list: StringHints<'c7' | 'c8'>[];
   child_choice: StringHints<'c9' | 'c10'>;
   child_choice_list: StringHints<'c11' | 'c12'>[];
+  ignored_parent?: Array<{
+    child_choice: StringHints<'c9' | 'c10'>;
+    child_choice_list: StringHints<'c11' | 'c12'>[];
+  }>;
 }>(choicesResult);

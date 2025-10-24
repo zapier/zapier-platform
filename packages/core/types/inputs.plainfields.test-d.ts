@@ -14,7 +14,11 @@ type singleRequiredChildren = PlainFieldContribution<{
   key: 'parent_input';
   children: [{ key: 'string_required'; type: 'string'; required: true }];
 }>;
-expectType<singleRequiredChildren>(singleRequiredChild);
+expectAssignable<singleRequiredChildren>(singleRequiredChild);
+expectAssignable<singleRequiredChildren>({
+  string_required: 'some_string',
+  parent_input: [{ string_required: 'value1' }, { string_required: 'value2' }],
+});
 
 // Complete `children: [{...}]` case.
 const multipleRequiredChild = {
@@ -35,10 +39,30 @@ type multipleRequiredChildren = PlainFieldContribution<{
     { key: 'datetime_required'; type: 'datetime'; required: true },
     { key: 'file_required'; type: 'file'; required: true },
     { key: 'password_required'; type: 'password'; required: true },
-    { key: 'code_required'; type: 'code'; required: true },
+    { key: 'code_required'; type: 'code'; required: true }
   ];
 }>;
-expectType<multipleRequiredChildren>(multipleRequiredChild);
+expectAssignable<multipleRequiredChildren>(multipleRequiredChild);
+expectAssignable<multipleRequiredChildren>({
+  string_required: 'some_string',
+  number_required: 1,
+  boolean_required: true,
+  datetime_required: '2021-01-01T00:00:00Z',
+  file_required: 'some_file',
+  password_required: 'some_password',
+  code_required: 'some_code',
+  parent_input: [
+    {
+      string_required: 'item1',
+      number_required: 2,
+      boolean_required: false,
+      datetime_required: '2022-01-01T00:00:00Z',
+      file_required: 'file1',
+      password_required: 'pass1',
+      code_required: 'code1',
+    },
+  ],
+});
 
 // Complete `children: [{...}]` case where all children are optional.
 const multipleOptionalChild = {
@@ -59,7 +83,7 @@ type multipleOptionalChildren = PlainFieldContribution<{
     { key: 'datetime_optional'; type: 'datetime'; required: false },
     { key: 'file_optional'; type: 'file'; required: false },
     { key: 'password_optional'; type: 'password'; required: false },
-    { key: 'code_optional'; type: 'code'; required: false },
+    { key: 'code_optional'; type: 'code'; required: false }
   ];
 }>;
 expectAssignable<multipleOptionalChildren>(multipleOptionalChild);
@@ -86,7 +110,7 @@ type mixedOptionalChildren = PlainFieldContribution<{
   key: 'parent_input';
   children: [
     { key: 'string_required'; type: 'string'; required: true },
-    { key: 'string_optional'; type: 'string'; required: false },
+    { key: 'string_optional'; type: 'string'; required: false }
   ];
 }>;
 expectAssignable<mixedOptionalChildren>(multipleRequiredChild);
@@ -361,7 +385,7 @@ expectType<requiredObjectChoicesAutoCompleteUnions>(
       | 'alpha'
       | 'beta'
       | (string & {});
-  },
+  }
 );
 expectAssignable<requiredObjectChoicesAutoCompleteUnions>({
   required_object_choices_auto_complete_unions: 'alpha',
@@ -383,7 +407,7 @@ expectType<optionalObjectChoicesAutoCompleteUnions>(
       | 'alpha'
       | 'beta'
       | (string & {});
-  },
+  }
 );
 expectAssignable<optionalObjectChoicesAutoCompleteUnions>({
   optional_object_choices_auto_complete_unions: 'alpha',
@@ -400,7 +424,7 @@ type requiredFieldArrayChoicesAutoCompleteUnions = PlainFieldContribution<{
   required: true;
   choices: [
     { label: 'Alpha'; value: 'alpha'; sample: 'alpha' },
-    { label: 'Beta'; value: 'beta'; sample: 'beta' },
+    { label: 'Beta'; value: 'beta'; sample: 'beta' }
   ];
 }>;
 expectType<requiredFieldArrayChoicesAutoCompleteUnions>(
@@ -409,7 +433,7 @@ expectType<requiredFieldArrayChoicesAutoCompleteUnions>(
       | 'alpha'
       | 'beta'
       | (string & {});
-  },
+  }
 );
 expectAssignable<requiredFieldArrayChoicesAutoCompleteUnions>({
   required_field_array_choices_auto_complete_unions: 'alpha',
@@ -425,7 +449,7 @@ type optionalFieldArrayChoicesAutoCompleteUnions = PlainFieldContribution<{
   required: false;
   choices: [
     { label: 'Alpha'; value: 'alpha'; sample: 'alpha' },
-    { label: 'Beta'; value: 'beta'; sample: 'beta' },
+    { label: 'Beta'; value: 'beta'; sample: 'beta' }
   ];
 }>;
 expectType<optionalFieldArrayChoicesAutoCompleteUnions>(
@@ -434,7 +458,7 @@ expectType<optionalFieldArrayChoicesAutoCompleteUnions>(
       | 'alpha'
       | 'beta'
       | (string & {});
-  },
+  }
 );
 expectAssignable<optionalFieldArrayChoicesAutoCompleteUnions>({
   optional_field_array_choices_auto_complete_unions: 'alpha',
@@ -455,7 +479,7 @@ expectType<requiredStringArrayChoicesAutoCompleteUnions>(
       | 'alpha'
       | 'beta'
       | (string & {});
-  },
+  }
 );
 expectAssignable<requiredStringArrayChoicesAutoCompleteUnions>({
   required_string_array_choices_auto_complete_unions: 'alpha',
@@ -476,7 +500,7 @@ expectType<optionalStringArrayChoicesAutoCompleteUnions>(
       | 'alpha'
       | 'beta'
       | (string & {});
-  },
+  }
 );
 expectAssignable<optionalStringArrayChoicesAutoCompleteUnions>({
   optional_string_array_choices_auto_complete_unions: 'alpha',

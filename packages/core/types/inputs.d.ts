@@ -52,12 +52,11 @@ type UnionToIntersection<U> = (
  * type result = LastInUnion<1 | 2>;
  * // 2
  */
-type LastInUnion<U> =
-  UnionToIntersection<U extends unknown ? (x: U) => 0 : never> extends (
-    x: infer L,
-  ) => 0
-    ? L
-    : never;
+type LastInUnion<U> = UnionToIntersection<
+  U extends unknown ? (x: U) => 0 : never
+> extends (x: infer L) => 0
+  ? L
+  : never;
 
 /**
  * @link https://github.com/type-challenges/type-challenges/issues/737
@@ -78,7 +77,7 @@ type UnionToTuple<U, Last = LastInUnion<U>> = [U] extends [never]
  */
 type Flatten<S extends unknown[], T extends unknown[] = []> = S extends [
   infer X,
-  ...infer Y,
+  ...infer Y
 ]
   ? X extends unknown[]
     ? Flatten<[...X, ...Y], T>
@@ -127,10 +126,10 @@ type FieldResultTypes = {
     | 'code'
     ? string
     : $FieldType extends 'number' | 'integer'
-      ? number
-      : $FieldType extends 'boolean'
-        ? boolean
-        : never; // Ignore `copy` and any other non-value types
+    ? number
+    : $FieldType extends 'boolean'
+    ? boolean
+    : never; // Ignore `copy` and any other non-value types
 };
 
 /**
@@ -177,10 +176,10 @@ type PrimitiveFieldResultTypesWithChoiceHints<$Field extends PlainInputField> =
     ? $Choices extends Record<string, string>
       ? StringHints<keyof $Choices>
       : $Choices extends FieldChoiceWithLabel[]
-        ? StringHints<$Choices[number]['value']>
-        : $Choices extends string[]
-          ? StringHints<$Choices[number]>
-          : PrimitiveFieldResultType<$Field>
+      ? StringHints<$Choices[number]['value']>
+      : $Choices extends string[]
+      ? StringHints<$Choices[number]>
+      : PrimitiveFieldResultType<$Field>
     : PrimitiveFieldResultType<$Field>;
 
 /**
@@ -188,10 +187,10 @@ type PrimitiveFieldResultTypesWithChoiceHints<$Field extends PlainInputField> =
  * Can be used as a member of an array of input fields itself.
  */
 export type InputFieldFunction<
-  $InputData extends InputDataConstraint = InputDataDefault,
+  $InputData extends InputDataConstraint = InputDataDefault
 > = (
   z: ZObject,
-  bundle: Bundle<$InputData>,
+  bundle: Bundle<$InputData>
 ) => PlainInputField[] | Promise<PlainInputField[]>;
 
 /**
@@ -199,7 +198,7 @@ export type InputFieldFunction<
  * fields, async or not.
  */
 export type InputField<
-  $InputData extends InputDataConstraint = InputDataDefault,
+  $InputData extends InputDataConstraint = InputDataDefault
 > = PlainInputField | InputFieldFunction<$InputData>;
 export type InputFields = InputField[];
 
@@ -224,10 +223,10 @@ export type PlainFieldContribution<$Field extends PlainInputField> =
   $Field extends { children: PlainInputField[] }
     ? ParentFieldContribution<$Field>
     : $Field extends { dict: true }
-      ? DictFieldContribution<$Field>
-      : $Field extends { list: true }
-        ? ListFieldContribution<$Field>
-        : PrimitiveFieldContribution<$Field>;
+    ? DictFieldContribution<$Field>
+    : $Field extends { list: true }
+    ? ListFieldContribution<$Field>
+    : PrimitiveFieldContribution<$Field>;
 
 /**
  * Extract the contribution of a parent field to the input data. A parent
@@ -240,8 +239,18 @@ export type PlainFieldContribution<$Field extends PlainInputField> =
  * // { b: string }
  */
 type ParentFieldContribution<
-  $Field extends PlainInputField & { children: PlainInputField[] },
-> = PlainFieldArrayContribution<$Field['children']>;
+  $Field extends PlainInputField & { children: PlainInputField[] }
+> = PlainFieldArrayContribution<$Field['children']> &
+  // When line items are mapped into any child input, then the parent will also
+  // be included as an array of objects containing the children's inputs'
+  // contributions. This may or may not apply on a per-zap basis, so this parent
+  // array is an optional member of inputData.
+  Partial<
+    Record<
+      $Field['key'],
+      Array<PlainFieldArrayContribution<$Field['children']>>
+    >
+  >;
 
 /**
  * Extract the contribution of a dictionary field to the input data. A
@@ -300,13 +309,10 @@ type PrimitiveFieldContribution<$Field extends PlainInputField> =
   PrimitiveFieldResultTypesWithChoiceHints<$Field> extends never
     ? {}
     : $Field extends { required: true }
-      ? Record<$Field['key'], PrimitiveFieldResultTypesWithChoiceHints<$Field>>
-      : Partial<
-          Record<
-            $Field['key'],
-            PrimitiveFieldResultTypesWithChoiceHints<$Field>
-          >
-        >;
+    ? Record<$Field['key'], PrimitiveFieldResultTypesWithChoiceHints<$Field>>
+    : Partial<
+        Record<$Field['key'], PrimitiveFieldResultTypesWithChoiceHints<$Field>>
+      >;
 
 /**
  * Extract the contribution of multiple plain fields defined in an
@@ -335,7 +341,7 @@ type PlainFieldArrayContribution<$Fields extends PlainInputField[]> = Simplify<
  */
 type FieldFunction<
   $InputData extends InputDataConstraint = InputDataDefault,
-  $Output extends PlainInputField[] = PlainInputField[],
+  $Output extends PlainInputField[] = PlainInputField[]
 > = (z: ZObject, bundle: Bundle<$InputData>) => $Output | Promise<$Output>;
 
 /**
@@ -344,7 +350,7 @@ type FieldFunction<
  * that can be normalised into a bundle contribution object.
  */
 type FieldFunctionResult<
-  $Func extends (...args: never) => InputField[] | Promise<InputField[]>,
+  $Func extends (...args: never) => InputField[] | Promise<InputField[]>
 > = Flatten<UnionToTuple<Awaited<ReturnType<$Func>>>>;
 
 /**
@@ -367,11 +373,10 @@ type FieldFunctionResult<
  * // }
  */
 type KnownFieldFunctionContribution<
-  $Func extends (...args: never) => InputField[] | Promise<InputField[]>,
-> =
-  FieldFunctionResult<$Func> extends PlainInputField[]
-    ? Partial<PlainFieldArrayContribution<FieldFunctionResult<$Func>>>
-    : never;
+  $Func extends (...args: never) => InputField[] | Promise<InputField[]>
+> = FieldFunctionResult<$Func> extends PlainInputField[]
+  ? Partial<PlainFieldArrayContribution<FieldFunctionResult<$Func>>>
+  : never;
 
 /**
  * Get the contribution of a field function. If the field function
@@ -437,8 +442,8 @@ type InferInputFieldContribution<$Input extends InputField> =
   $Input extends PlainInputField
     ? PlainFieldContribution<$Input>
     : $Input extends (...args: never) => InputField[] | Promise<InputField[]> // Conditional field function
-      ? FieldFunctionContribution<$Input>
-      : never;
+    ? FieldFunctionContribution<$Input>
+    : never;
 
 /**
  * Get the shape of bundle.inputData, given the array of input fields.
@@ -452,7 +457,7 @@ export type InferInputData<$InputFields extends readonly InputField<any>[]> =
           [K in keyof $InputFields]: InferInputFieldContribution<
             $InputFields[K]
           >;
-        },
+        }
       ]
     >
   >;
@@ -463,5 +468,5 @@ export type InferInputData<$InputFields extends readonly InputField<any>[]> =
  */
 export type InputFieldFunctionWithInputs<$Inputs extends InputFields = []> = (
   z: ZObject,
-  bundle: Bundle<InferInputData<$Inputs>>,
+  bundle: Bundle<InferInputData<$Inputs>>
 ) => InputField[] | Promise<InputField[]>;
