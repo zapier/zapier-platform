@@ -2,12 +2,10 @@ const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { BUILD_PATH, SOURCE_PATH } = require('../../constants');
 const { Flags } = require('@oclif/core');
 const colors = require('colors/safe');
-const path = require('path');
 
 const BuildCommand = require('./build');
 
 const { buildAndOrUpload } = require('../../utils/build');
-
 class PushCommand extends ZapierBaseCommand {
   async perform() {
     const skipNpmInstall = this.flags['skip-npm-install'];
@@ -17,12 +15,9 @@ class PushCommand extends ZapierBaseCommand {
       throw new Error('Snapshot label cannot exceed 12 characters');
     }
 
-    const packageJson = require(path.join(process.cwd(), 'package.json'));
-
-    const version = snapshotLabel
+    const snapshotVersion = snapshotLabel
       ? `0.0.0-${snapshotLabel}`
-      : packageJson.version;
-    this.throwForInvalidVersion(version);
+      : undefined;
 
     await buildAndOrUpload(
       { build: true, upload: true },
@@ -32,7 +27,7 @@ class PushCommand extends ZapierBaseCommand {
         skipValidation: this.flags['skip-validation'],
         overwritePartnerChanges: this.flags['overwrite-partner-changes'],
       },
-      version,
+      snapshotVersion,
     );
     this.log(
       `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`,
