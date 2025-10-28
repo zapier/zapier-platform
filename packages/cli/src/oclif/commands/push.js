@@ -6,21 +6,18 @@ const colors = require('colors/safe');
 const BuildCommand = require('./build');
 
 const { buildAndOrUpload } = require('../../utils/build');
-const { localAppCommand } = require('../../utils/local');
-
 class PushCommand extends ZapierBaseCommand {
   async perform() {
     const skipNpmInstall = this.flags['skip-npm-install'];
-    const definition = await localAppCommand({ command: 'definition' });
 
     const snapshotLabel = this.flags.snapshot;
     if (snapshotLabel && snapshotLabel.length > 12) {
       throw new Error('Snapshot label cannot exceed 12 characters');
     }
-    const version = snapshotLabel
+
+    const snapshotVersion = snapshotLabel
       ? `0.0.0-${snapshotLabel}`
-      : definition.version;
-    this.throwForInvalidVersion(version);
+      : undefined;
 
     await buildAndOrUpload(
       { build: true, upload: true },
@@ -30,7 +27,7 @@ class PushCommand extends ZapierBaseCommand {
         skipValidation: this.flags['skip-validation'],
         overwritePartnerChanges: this.flags['overwrite-partner-changes'],
       },
-      version,
+      snapshotVersion,
     );
     this.log(
       `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`,
