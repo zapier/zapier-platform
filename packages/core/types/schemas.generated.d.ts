@@ -292,6 +292,27 @@ export interface AppFlags {
    * ignore this flag if they set `skipThrowForStatus` directly
    */
   skipThrowForStatus?: boolean;
+
+  /**
+   * Starting in `core` version `18.0.0`, 429 (throttling) responses
+   * throw a `ThrottledError` before `afterResponse` middleware runs
+   * by default. Set this flag to `true` to preserve the old behavior
+   * where `afterResponse` middleware can see and handle 429
+   * responses. This flag can be overridden per-request by setting
+   * `throwForThrottlingEarly` directly on the request options.
+   */
+  throwForThrottlingEarly?: boolean;
+
+  /**
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. This is a global flag that affects all the triggers and
+   * actions in your integration. The `cleanInputData` flag in
+   * `operation` takes precedence over this one.
+   */
+  cleanInputData?: boolean;
 }
 
 /**
@@ -941,10 +962,14 @@ export interface BasicPollingOperation<
   throttle?: ThrottleObject;
 
   /**
-   * (Experimental) Should empty strings, `null`, `undefined`, and
-   * empty Arrays or objects be removed from `inputData`?
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
-  skipCleanArrayInputData?: boolean;
+  cleanInputData?: boolean;
 }
 
 /**
@@ -1036,10 +1061,14 @@ export interface BasicHookOperation<
   sample?: Record<string, unknown>;
 
   /**
-   * (Experimental) Should empty strings, `null`, `undefined`, and
-   * empty Arrays or objects be removed from `inputData`?
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
-  skipCleanArrayInputData?: boolean;
+  cleanInputData?: boolean;
 }
 
 /**
@@ -1102,10 +1131,14 @@ export interface BasicHookToPollOperation<
   sample?: Record<string, unknown>;
 
   /**
-   * (Experimental) Should empty strings, `null`, `undefined`, and
-   * empty Arrays or objects be removed from `inputData`?
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
-  skipCleanArrayInputData?: boolean;
+  cleanInputData?: boolean;
 
   /**
    * The maximum amount of time to wait between polling requests in
@@ -1180,10 +1213,14 @@ export interface BasicActionOperation {
   throttle?: ThrottleObject;
 
   /**
-   * (Experimental) Should empty strings, `null`, `undefined`, and
-   * empty Arrays or objects be removed from `inputData`?
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
-  skipCleanArrayInputData?: boolean;
+  cleanInputData?: boolean;
 }
 
 /** Represents the fundamental mechanics of a search. */
@@ -1256,10 +1293,14 @@ export interface BasicSearchOperation<
   throttle?: ThrottleObject;
 
   /**
-   * (Experimental) Should empty strings, `null`, `undefined`, and
-   * empty Arrays or objects be removed from `inputData`?
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
-  skipCleanArrayInputData?: boolean;
+  cleanInputData?: boolean;
 }
 
 /** Represents the fundamental mechanics of a create. */
@@ -1331,10 +1372,14 @@ export interface BasicCreateOperation<
   throttle?: ThrottleObject;
 
   /**
-   * (Experimental) Should empty strings, `null`, `undefined`, and
-   * empty Arrays or objects be removed from `inputData`?
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
-  skipCleanArrayInputData?: boolean;
+  cleanInputData?: boolean;
 
   /**
    * Currently an **internal-only** feature. Zapier uses this
@@ -1421,10 +1466,14 @@ export interface BasicOperation {
   throttle?: ThrottleObject;
 
   /**
-   * (Experimental) Should empty strings, `null`, `undefined`, and
-   * empty Arrays or objects be removed from `inputData`?
+   * If true, Zapier removes empty strings, `null`, `undefined`, and
+   * empty Arrays or objects from `bundle.inputData` recursively
+   * before passing it to your `perform*` function. If you want to
+   * handle empty values yourself in your code, explicitly set this to
+   * false. There is also a global flag with the same name in
+   * `App.flags`. This one takes precedence over the global one.
    */
-  skipCleanArrayInputData?: boolean;
+  cleanInputData?: boolean;
 }
 
 /**

@@ -46,10 +46,13 @@ const injectEnvironmentFile = (filename) => {
     filename = localFilepath(filename);
   }
   // reads ".env" if filename is falsy, needs full path otherwise
-  let result = dotenv.config({ path: filename });
+  let result = dotenv.config({ path: filename, quiet: true });
   if (result.error) {
     // backwards compatibility
-    result = dotenv.config({ path: localFilepath('.environment') });
+    result = dotenv.config({
+      path: localFilepath('.environment'),
+      quiet: true,
+    });
     if (result.parsed && !IS_TESTING) {
       console.log(
         [
