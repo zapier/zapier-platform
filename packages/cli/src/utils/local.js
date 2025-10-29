@@ -282,13 +282,21 @@ const getLocalAppHandler = async ({
     appRaw = loadAppRawUsingRequire(appDir);
   } catch (err) {
     if (err.code === 'MODULE_NOT_FOUND' || err.code === 'ERR_REQUIRE_ESM') {
-      appRaw = await loadAppRawUsingImport(
-        appDir,
-        corePackageDir,
-        shouldDeleteWrapper,
-      );
+      try {
+        appRaw = await loadAppRawUsingImport(
+          appDir,
+          corePackageDir,
+          shouldDeleteWrapper,
+        );
+      } catch (err) {
+        err.message =
+          'Your ESM integration requires a compiled `dist/` directory. Run `zapier build` to compile your code first.\n\n' +
+          err.message;
+        throw err;
+      }
     } else {
       // err.name === 'SyntaxError' or others
+
       throw err;
     }
   }

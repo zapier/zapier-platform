@@ -428,7 +428,7 @@ const downloadSourceZip = async (dst) => {
 const upload = async (
   app,
   { skipValidation = false, overwritePartnerChanges = false } = {},
-  versionOverride,
+  snapshotVersion,
 ) => {
   const zipPath = constants.BUILD_PATH;
   const sourceZipPath = constants.SOURCE_PATH;
@@ -461,7 +461,7 @@ const upload = async (
     headers['X-Overwrite-Partner-Changes'] = 'true';
   }
 
-  const version = versionOverride ?? definition.version;
+  const version = snapshotVersion ?? definition.version;
   startSpinner(`Uploading version ${version}`);
   try {
     await callAPI(

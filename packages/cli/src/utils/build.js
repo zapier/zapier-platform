@@ -45,6 +45,7 @@ const checkMissingAppInfo = require('./check-missing-app-info');
 const { findCorePackageDir, isWindows, runCommand } = require('./misc');
 const { isBlocklisted, respectGitIgnore } = require('./ignore');
 const { localAppCommand } = require('./local');
+const { throwForInvalidVersion } = require('./version');
 
 const debug = require('debug')('zapier:build');
 
@@ -589,13 +590,16 @@ const testBuildZip = async (zipPath) => {
   }
 };
 
-const _buildFunc = async ({
-  skipNpmInstall = false,
-  disableDependencyDetection = false,
-  skipValidation = false,
-  printProgress = true,
-  checkOutdated = true,
-} = {}) => {
+const _buildFunc = async (
+  {
+    skipNpmInstall = false,
+    disableDependencyDetection = false,
+    skipValidation = false,
+    printProgress = true,
+    checkOutdated = true,
+  } = {},
+  snapshotVersion,
+) => {
   const maybeStartSpinner = printProgress ? startSpinner : () => {};
   const maybeEndSpinner = printProgress ? endSpinner : () => {};
 
@@ -659,6 +663,9 @@ const _buildFunc = async ({
     workingDir,
     false,
   );
+
+  const version = snapshotVersion ?? rawDefinition.version;
+  throwForInvalidVersion(version);
 
   try {
     fs.writeFileSync(
@@ -762,7 +769,7 @@ const _buildFunc = async ({
 const buildAndOrUpload = async (
   { build = false, upload = false } = {},
   buildOpts,
-  versionOverride,
+  snapshotVersion,
 ) => {
   if (!(build || upload)) {
     throw new Error('must either build or upload');
@@ -776,10 +783,10 @@ const buildAndOrUpload = async (
   }
 
   if (build) {
-    await _buildFunc(buildOpts);
+    await _buildFunc(buildOpts, snapshotVersion);
   }
   if (upload) {
-    await _uploadFunc(app, buildOpts, versionOverride);
+    await _uploadFunc(app, buildOpts, snapshotVersion);
   }
 };
 

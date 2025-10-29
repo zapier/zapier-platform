@@ -8,6 +8,7 @@ const { recordAnalytics } = require('../utils/analytics');
 const { getWritableApp } = require('../utils/api');
 
 const inquirer = require('inquirer');
+const { throwForInvalidVersion } = require('../utils/version');
 
 const DATA_FORMATS = ['json', 'raw'];
 
@@ -90,16 +91,7 @@ class ZapierBaseCommand extends Command {
 
   // validate that user input looks like a semver version
   throwForInvalidVersion(version) {
-    if (
-      !version.match(
-        // this is mirrored in schemas/VersionSchema.js and developer_cli/constants.py
-        /^(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})\.(?:0|[1-9]\d{0,2})(?:-(?=.{1,12}$)[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*)?$/g,
-      )
-    ) {
-      throw new Error(
-        `${version} is an invalid version str. Try something like \`1.2.3\` or \`0.0.0-TICKET\``,
-      );
-    }
+    return throwForInvalidVersion(version);
   }
 
   async getWritableApp() {
