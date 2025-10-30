@@ -1,5 +1,5 @@
 const jQuery = require('jquery');
-const { DOMParser } = require('xmldom');
+const { DOMParser } = require('@xmldom/xmldom');
 const { jsdom } = require('jsdom');
 
 const window = jsdom().defaultView;

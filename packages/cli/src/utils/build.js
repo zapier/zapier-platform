@@ -11,7 +11,7 @@ const archiver = require('archiver');
 const colors = require('colors/safe');
 const esbuild = require('esbuild');
 const fse = require('fs-extra');
-const updateNotifier = require('update-notifier');
+const { createUpdateNotifier } = require('./esm-wrapper');
 const decompress = require('decompress');
 
 const {
@@ -468,7 +468,8 @@ const makeSourceZip = async (workingDir, zipPath) => {
   await zip.finish();
 };
 
-const maybeNotifyAboutOutdated = () => {
+const maybeNotifyAboutOutdated = async () => {
+  // Made async because createUpdateNotifier() uses dynamic import() to load ESM-only update-notifier package
   // find a package.json for the app and notify on the core dep
   // `build` won't run if package.json isn't there, so if we get to here we're good
   const requiredVersion = _.get(
@@ -477,7 +478,7 @@ const maybeNotifyAboutOutdated = () => {
   );
 
   if (requiredVersion) {
-    const notifier = updateNotifier({
+    const notifier = await createUpdateNotifier({
       pkg: { name: PLATFORM_PACKAGE, version: requiredVersion },
       updateCheckInterval: UPDATE_NOTIFICATION_INTERVAL,
     });
@@ -603,7 +604,7 @@ const _buildFunc = async (
   const maybeEndSpinner = printProgress ? endSpinner : () => {};
 
   if (checkOutdated) {
-    maybeNotifyAboutOutdated();
+    await maybeNotifyAboutOutdated(); // await needed because function is now async due to ESM import
   }
   const appDir = process.cwd();
 

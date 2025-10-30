@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const yeoman = require('yeoman-environment');
+const { createEnv } = require('../utils/esm-wrapper');
 const {
   ProjectGenerator,
   TEMPLATE_CHOICES,
@@ -23,10 +23,11 @@ describe('ProjectGenerator', () => {
       };
 
       // Create a Yeoman environment
-      const env = yeoman.createEnv();
+      const env = await createEnv();
 
       // Create a custom generator class that extends ProjectGenerator and captures prompt calls
-      const TestProjectGenerator = class extends ProjectGenerator {
+      const ResolvedProjectGenerator = await ProjectGenerator;
+      const TestProjectGenerator = class extends ResolvedProjectGenerator {
         // Override only the prompt method to capture what would be shown
         async prompt(questions) {
           if (questions && questions.length > 0) {

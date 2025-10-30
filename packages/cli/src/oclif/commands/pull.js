@@ -1,14 +1,14 @@
 const AdmZip = require('adm-zip');
 const { ensureFileSync } = require('fs-extra');
 const path = require('path');
-const yeoman = require('yeoman-environment');
+const { createEnv } = require('../../utils/esm-wrapper');
 
 const ZapierBaseCommand = require('../ZapierBaseCommand');
 const { downloadSourceZip } = require('../../utils/api');
 const { ensureDir, makeTempDir, removeDirSync } = require('../../utils/files');
 const { walkDirWithPresetBlocklist } = require('../../utils/build');
 const { buildFlags } = require('../buildFlags');
-const PullGenerator = require('../../generators/pull');
+const PullGeneratorPromise = require('../../generators/pull');
 
 const listFiles = (dir) => {
   const relPaths = [];
@@ -38,7 +38,8 @@ class PullCommand extends ZapierBaseCommand {
       const currentDir = process.cwd();
       const sourceFiles = listFiles(srcDst);
 
-      const env = yeoman.createEnv();
+      const env = await createEnv(); // await needed because createEnv() uses dynamic import() for ESM-only yeoman-environment
+      const PullGenerator = await PullGeneratorPromise; // await needed because generator classes are now created via ESM dynamic import
       const namespace = 'zapier:pull';
       env.registerStub(PullGenerator, namespace);
       await env.run(namespace, {

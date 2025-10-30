@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-schema",
-  "version": "17.9.1",
+  "version": "18.0.0",
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -28,7 +28,7 @@
     "validate": "yarn test && yarn lint && yarn smoke-test"
   },
   "dependencies": {
-    "jsonschema": "1.2.2",
+    "jsonschema": "1.5.0",
     "lodash": "4.17.21"
   },
   "devDependencies": {
