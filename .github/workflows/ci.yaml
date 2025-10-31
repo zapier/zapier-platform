@@ -158,3 +158,6 @@ jobs:
       - name: Smoke test - cli
         run: yarn smoke-test
         working-directory: packages/cli
+      - name: Test npx resolution
+        run: npx zapier-platform-cli --version
+        working-directory: packages/cli
