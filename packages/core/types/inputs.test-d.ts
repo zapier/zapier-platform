@@ -294,7 +294,7 @@ const choicesInputs = defineInputFields([
     choices: ['c7', 'c8'],
   },
   {
-    key: 'ignored_parent',
+    key: 'parent_key',
     children: [
       {
         key: 'child_choice',
@@ -327,4 +327,8 @@ expectType<{
   choices_list: StringHints<'c7' | 'c8'>[];
   child_choice: StringHints<'c9' | 'c10'>;
   child_choice_list: StringHints<'c11' | 'c12'>[];
+  parent_key?: Array<{
+    child_choice: StringHints<'c9' | 'c10'>;
+    child_choice_list: StringHints<'c11' | 'c12'>[];
+  }>;
 }>(choicesResult);

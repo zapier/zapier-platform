@@ -241,7 +241,19 @@ export type PlainFieldContribution<$Field extends PlainInputField> =
  */
 type ParentFieldContribution<
   $Field extends PlainInputField & { children: PlainInputField[] },
-> = PlainFieldArrayContribution<$Field['children']>;
+> = Simplify<
+  PlainFieldArrayContribution<$Field['children']> &
+    // When line items are mapped into any child input, then the parent will also
+    // be included as an array of objects containing the children's inputs'
+    // contributions. This may or may not apply on a per-zap basis, so this parent
+    // array is an optional member of inputData.
+    Partial<
+      Record<
+        $Field['key'],
+        Array<PlainFieldArrayContribution<$Field['children']>>
+      >
+    >
+>;
 
 /**
  * Extract the contribution of a dictionary field to the input data. A

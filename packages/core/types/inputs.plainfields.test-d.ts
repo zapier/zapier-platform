@@ -14,7 +14,17 @@ type singleRequiredChildren = PlainFieldContribution<{
   key: 'parent_input';
   children: [{ key: 'string_required'; type: 'string'; required: true }];
 }>;
-expectType<singleRequiredChildren>(singleRequiredChild);
+expectAssignable<singleRequiredChildren>(singleRequiredChild);
+expectAssignable<singleRequiredChildren>({
+  string_required: 'some_string',
+  parent_input: [{ string_required: 'value1' }, { string_required: 'value2' }],
+});
+expectType<singleRequiredChildren>(
+  singleRequiredChild as {
+    string_required: string;
+    parent_input?: { string_required: string }[];
+  },
+);
 
 // Complete `children: [{...}]` case.
 const multipleRequiredChild = {
@@ -25,6 +35,26 @@ const multipleRequiredChild = {
   file_required: 'some_file',
   password_required: 'some_password',
   code_required: 'some_code',
+};
+const multipleRequiredChildWithLineItems = {
+  string_required: 'some_string',
+  number_required: 1,
+  boolean_required: true,
+  datetime_required: '2021-01-01T00:00:00Z',
+  file_required: 'some_file',
+  password_required: 'some_password',
+  code_required: 'some_code',
+  parent_input: [
+    {
+      string_required: 'item1',
+      number_required: 2,
+      boolean_required: false,
+      datetime_required: '2022-01-01T00:00:00Z',
+      file_required: 'file1',
+      password_required: 'pass1',
+      code_required: 'code1',
+    },
+  ],
 };
 type multipleRequiredChildren = PlainFieldContribution<{
   key: 'parent_input';
@@ -38,10 +68,31 @@ type multipleRequiredChildren = PlainFieldContribution<{
     { key: 'code_required'; type: 'code'; required: true },
   ];
 }>;
-expectType<multipleRequiredChildren>(multipleRequiredChild);
+expectAssignable<multipleRequiredChildren>(multipleRequiredChild);
+expectAssignable<multipleRequiredChildren>(multipleRequiredChildWithLineItems);
+expectType<multipleRequiredChildren>(
+  {} as {
+    string_required: string;
+    number_required: number;
+    boolean_required: boolean;
+    datetime_required: string;
+    file_required: string;
+    password_required: string;
+    code_required: string;
+    parent_input?: {
+      string_required: string;
+      number_required: number;
+      boolean_required: boolean;
+      datetime_required: string;
+      file_required: string;
+      password_required: string;
+      code_required: string;
+    }[];
+  },
+);
 
 // Complete `children: [{...}]` case where all children are optional.
-const multipleOptionalChild = {
+const multipleOptionalChildNoLineItems = {
   string_optional: 'some_string',
   number_optional: 1,
   boolean_optional: true,
@@ -49,6 +100,16 @@ const multipleOptionalChild = {
   file_optional: 'some_file',
   password_optional: 'some_password',
   code_optional: 'some_code',
+};
+const multipleOptionalChildWithLineItems = {
+  string_optional: 'some_string',
+  number_optional: 1,
+  boolean_optional: true,
+  datetime_optional: '2021-01-01T00:00:00Z',
+  file_optional: 'some_file',
+  password_optional: 'some_password',
+  code_optional: 'some_code',
+  parent_input: [{ string_optional: 'item1' }],
 };
 type multipleOptionalChildren = PlainFieldContribution<{
   key: 'parent_input';
@@ -62,12 +123,34 @@ type multipleOptionalChildren = PlainFieldContribution<{
     { key: 'code_optional'; type: 'code'; required: false },
   ];
 }>;
-expectAssignable<multipleOptionalChildren>(multipleOptionalChild);
 expectAssignable<multipleOptionalChildren>({});
+expectAssignable<multipleOptionalChildren>(multipleOptionalChildNoLineItems);
+expectAssignable<multipleOptionalChildren>({ parent_input: [{}] });
+expectAssignable<multipleOptionalChildren>(multipleOptionalChildWithLineItems);
+expectType<multipleOptionalChildren>(
+  {} as {
+    string_optional?: string;
+    number_optional?: number;
+    boolean_optional?: boolean;
+    datetime_optional?: string;
+    file_optional?: string;
+    password_optional?: string;
+    code_optional?: string;
+    parent_input?: {
+      string_optional?: string;
+      number_optional?: number;
+      boolean_optional?: boolean;
+      datetime_optional?: string;
+      file_optional?: string;
+      password_optional?: string;
+      code_optional?: string;
+    }[];
+  },
+);
 
 // Complete `children: [{...}]` case with complete mixture of required
 // and optional fields.
-const mixedOptionalChildren = {
+const mixedOptionalChildrenNoLineItems = {
   string_required: 'some_string',
   string_optional: 'some_string',
   number_required: 1,
@@ -80,20 +163,91 @@ const mixedOptionalChildren = {
   file_optional: 'some_file',
   password_required: 'some_password',
   password_optional: 'some_password',
+  code_required: 'some_code',
   code_optional: 'some_code',
 };
-type mixedOptionalChildren = PlainFieldContribution<{
+const mixedOptionalChildrenWithLineItems = {
+  string_required: 'some_string',
+  string_optional: 'some_string',
+  number_required: 1,
+  number_optional: 1,
+  boolean_required: true,
+  boolean_optional: true,
+  datetime_required: '2021-01-01T00:00:00Z',
+  datetime_optional: '2021-01-01T00:00:00Z',
+  file_required: 'some_file',
+  file_optional: 'some_file',
+  password_required: 'some_password',
+  password_optional: 'some_password',
+  code_required: 'some_code',
+  code_optional: 'some_code',
+  parent_input: [
+    {
+      string_required: 'item1',
+      number_required: 2,
+      boolean_required: false,
+      datetime_required: '2022-01-01T00:00:00Z',
+      file_required: 'file1',
+      password_required: 'pass1',
+      code_required: 'code1',
+    },
+  ],
+};
+type MixedOptionalChildren = PlainFieldContribution<{
   key: 'parent_input';
   children: [
     { key: 'string_required'; type: 'string'; required: true },
     { key: 'string_optional'; type: 'string'; required: false },
+    { key: 'number_required'; type: 'number'; required: true },
+    { key: 'number_optional'; type: 'number'; required: false },
+    { key: 'boolean_required'; type: 'boolean'; required: true },
+    { key: 'boolean_optional'; type: 'boolean'; required: false },
+    { key: 'datetime_required'; type: 'datetime'; required: true },
+    { key: 'datetime_optional'; type: 'datetime'; required: false },
+    { key: 'file_required'; type: 'file'; required: true },
+    { key: 'file_optional'; type: 'file'; required: false },
+    { key: 'password_required'; type: 'password'; required: true },
+    { key: 'password_optional'; type: 'password'; required: false },
+    { key: 'code_required'; type: 'code'; required: true },
+    { key: 'code_optional'; type: 'code'; required: false },
   ];
 }>;
-expectAssignable<mixedOptionalChildren>(multipleRequiredChild);
-expectAssignable<mixedOptionalChildren>({
-  ...multipleRequiredChild,
-  ...multipleOptionalChild,
-});
+expectAssignable<MixedOptionalChildren>(mixedOptionalChildrenNoLineItems);
+expectAssignable<MixedOptionalChildren>(mixedOptionalChildrenWithLineItems);
+expectType<MixedOptionalChildren>(
+  {} as {
+    string_required: string;
+    string_optional?: string;
+    number_required: number;
+    number_optional?: number;
+    boolean_required: boolean;
+    boolean_optional?: boolean;
+    datetime_required: string;
+    datetime_optional?: string;
+    file_required: string;
+    file_optional?: string;
+    password_required: string;
+    password_optional?: string;
+    code_required: string;
+    code_optional?: string;
+    parent_input?: {
+      string_required: string;
+      string_optional?: string;
+      number_required: number;
+      number_optional?: number;
+      boolean_required: boolean;
+      boolean_optional?: boolean;
+      datetime_required: string;
+      datetime_optional?: string;
+      file_required: string;
+      file_optional?: string;
+      password_required: string;
+      password_optional?: string;
+      code_required: string;
+      code_optional?: string;
+    }[];
+  },
+);
 
 //
 // Dictionary fields (where `dict:true` is set)
