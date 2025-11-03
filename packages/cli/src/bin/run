@@ -2,104 +2,47 @@
 
 const path = require('node:path');
 const fs = require('node:fs');
-const { execSync } = require('node:child_process');
 
 (async () => {
   const oclif = await import('@oclif/core');
   await oclif.execute({ development: false, dir: __dirname });
 
-  // Show deprecation warning if invoked via the old "zapier" binary name
-  let binName = null;
-  
-  console.log('\n=== DEBUG: Binary Name Detection ===');
-  console.log('Platform:', process.platform);
-  console.log('process.argv[1]:', process.argv[1]);
-  
-  if (process.platform !== 'win32') {
-    // Unix: Check the symlink name from process.argv[1]
-    const scriptPath = process.argv[1] || '';
-    binName = path.basename(scriptPath, path.extname(scriptPath));
-    console.log('Method: Unix symlink detection');
-    console.log('Detected binName:', binName);
-  } else {
-    // Windows: Try multiple detection methods
-    
-    // METHOD 1: Check parent process command line (PowerShell/CMD)
-    console.log('\n--- Method 1: Parent Process Analysis ---');
+  // Show deprecation warning for the old "zapier" binary name
+  if (process.platform === 'win32') {
+    // On Windows, we cannot reliably detect which wrapper was invoked (zapier vs zapier-platform)
+    // because both wrappers point to the same script. Show a generic deprecation notice.
     try {
-      const ppid = process.ppid;
-      console.log('Parent PID:', ppid);
+      const scriptDir = path.dirname(process.argv[1]);
+      const parts = scriptDir.split(path.sep);
+      const nodeModulesIndex = parts.lastIndexOf('node_modules');
       
-      // Get parent process info
-      const cmd = `wmic process where ProcessId=${ppid} get Name,CommandLine /format:list`;
-      const output = execSync(cmd, { encoding: 'utf8', timeout: 1000 });
-      console.log('Parent process info:', output);
-      
-      // Check environment variables that might be set
-      console.log('\nEnvironment variables:');
-      console.log('PSCommandPath:', process.env.PSCommandPath);
-      console.log('PSScriptRoot:', process.env.PSScriptRoot);
-      console.log('_:', process.env._);
-      
-      // Check all env vars for any clues
-      const suspectEnvVars = Object.keys(process.env).filter(k => 
-        k.toLowerCase().includes('script') || 
-        k.toLowerCase().includes('command') ||
-        k.toLowerCase().includes('ps')
-      );
-      console.log('Potentially relevant env vars:', suspectEnvVars);
-      suspectEnvVars.forEach(k => console.log(`  ${k}=${process.env[k]}`));
-      
-    } catch (error) {
-      console.log('Failed to query parent process:', error.message);
-    }
-    
-    // METHOD 2: Filesystem check - look for wrapper scripts
-    if (!binName) {
-      console.log('\n--- Method 2: Filesystem Check ---');
-      try {
-        // Get the global npm bin directory
-        const scriptDir = path.dirname(process.argv[1]);
-        console.log('Script directory:', scriptDir);
+      if (nodeModulesIndex !== -1) {
+        const binDir = parts.slice(0, nodeModulesIndex).join(path.sep);
+        const zapierExists = fs.existsSync(path.join(binDir, 'zapier.cmd')) || 
+                            fs.existsSync(path.join(binDir, 'zapier.ps1'));
         
-        // Go up to find the npm bin directory (where wrappers live)
-        // Typically: node_modules/zapier-platform-cli/src/bin/run
-        // We want: the directory that contains zapier.cmd/ps1
-        const parts = scriptDir.split(path.sep);
-        const nodeModulesIndex = parts.lastIndexOf('node_modules');
-        
-        if (nodeModulesIndex !== -1) {
-          // Go up to the parent of node_modules (the bin directory)
-          const binDir = parts.slice(0, nodeModulesIndex).join(path.sep);
-          console.log('Potential bin directory:', binDir);
-          
-          // Check which wrappers exist
-          const zapierExists = fs.existsSync(path.join(binDir, 'zapier.cmd')) || 
-                              fs.existsSync(path.join(binDir, 'zapier.ps1'));
-          const zapierPlatformExists = fs.existsSync(path.join(binDir, 'zapier-platform.cmd')) || 
-                                      fs.existsSync(path.join(binDir, 'zapier-platform.ps1'));
-          
-          console.log('zapier wrappers exist:', zapierExists);
-          console.log('zapier-platform wrappers exist:', zapierPlatformExists);
-          
-          // If both exist, we can't determine which was used by filesystem alone
-          // But at least we know if we're in a global install
-          console.log('Cannot determine from filesystem alone (both wrappers present)');
+        if (zapierExists) {
+          console.warn(
+            '\n[DEPRECATION NOTICE] ' +
+              'The "zapier" command is deprecated and will be removed in a future version. ' +
+              'Please use "zapier-platform" instead.\n',
+          );
         }
-      } catch (error) {
-        console.log('Failed filesystem check:', error.message);
       }
+    } catch (error) {
+      // Silently fail if we can't detect - better than showing incorrect warnings
     }
-  }
-  
-  console.log('\nFinal detected binName:', binName);
-  console.log('===================================\n');
-  
-  if (binName === 'zapier') {
-    console.warn(
-      '[DEPRECATION WARNING] ' +
-        'The executable name "zapier" is deprecated and will be removed in a future version. ' +
-        'Please use "zapier-platform" instead.\n',
-    );
+  } else {
+    // On Unix, we can detect which symlink was used
+    const scriptPath = process.argv[1] || '';
+    const binName = path.basename(scriptPath, path.extname(scriptPath));
+    
+    if (binName === 'zapier') {
+      console.warn(
+        '\n[DEPRECATION WARNING] ' +
+          'The "zapier" command is deprecated and will be removed in a future version. ' +
+          'Please use "zapier-platform" instead.\n',
+      );
+    }
   }
 })();
