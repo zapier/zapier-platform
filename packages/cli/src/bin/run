@@ -24,34 +24,32 @@ const { execSync } = require('node:child_process');
   } else {
     // Windows: Try multiple detection methods
     
-    // METHOD 1: Check parent process command line
-    console.log('\n--- Method 1: Parent Process Command Line ---');
+    // METHOD 1: Check parent process command line (PowerShell/CMD)
+    console.log('\n--- Method 1: Parent Process Analysis ---');
     try {
       const ppid = process.ppid;
       console.log('Parent PID:', ppid);
       
-      // Use WMIC (works on older Windows) instead of Get-WmiObject
-      const cmd = `wmic process where ProcessId=${ppid} get CommandLine /format:list`;
-      console.log('Running:', cmd);
-      
+      // Get parent process info
+      const cmd = `wmic process where ProcessId=${ppid} get Name,CommandLine /format:list`;
       const output = execSync(cmd, { encoding: 'utf8', timeout: 1000 });
-      console.log('Raw output:', output);
+      console.log('Parent process info:', output);
       
-      // Parse the output to find CommandLine
-      const match = output.match(/CommandLine=(.+)/);
-      if (match) {
-        const parentCmdLine = match[1].trim();
-        console.log('Parent command line:', parentCmdLine);
-        
-        // Check if it contains zapier-platform or just zapier
-        if (parentCmdLine.includes('zapier-platform')) {
-          binName = 'zapier-platform';
-          console.log('Detected: zapier-platform (from parent process)');
-        } else if (parentCmdLine.includes('zapier')) {
-          binName = 'zapier';
-          console.log('Detected: zapier (from parent process)');
-        }
-      }
+      // Check environment variables that might be set
+      console.log('\nEnvironment variables:');
+      console.log('PSCommandPath:', process.env.PSCommandPath);
+      console.log('PSScriptRoot:', process.env.PSScriptRoot);
+      console.log('_:', process.env._);
+      
+      // Check all env vars for any clues
+      const suspectEnvVars = Object.keys(process.env).filter(k => 
+        k.toLowerCase().includes('script') || 
+        k.toLowerCase().includes('command') ||
+        k.toLowerCase().includes('ps')
+      );
+      console.log('Potentially relevant env vars:', suspectEnvVars);
+      suspectEnvVars.forEach(k => console.log(`  ${k}=${process.env[k]}`));
+      
     } catch (error) {
       console.log('Failed to query parent process:', error.message);
     }
