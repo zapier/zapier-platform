@@ -10,6 +10,16 @@ const path = require('node:path');
   const scriptPath = process.argv[1] || '';
   const binName = path.basename(scriptPath, path.extname(scriptPath));
   
+  // DEBUG: Print values for Windows testing
+  console.log('\n=== DEBUG INFO (Windows Testing) ===');
+  console.log('process.argv[0]:', process.argv[0]);
+  console.log('process.argv[1]:', process.argv[1]);
+  console.log('scriptPath:', scriptPath);
+  console.log('binName:', binName);
+  console.log('Platform:', process.platform);
+  console.log('Full process.argv:', process.argv);
+  console.log('===================================\n');
+  
   if (binName === 'zapier') {
     console.warn(
       '[DEPRECATION WARNING] ' +
