@@ -17,36 +17,13 @@ const path = require('node:path');
   console.log('scriptPath:', scriptPath);
   console.log('binName:', binName);
   console.log('Platform:', process.platform);
-  console.log('process.env.npm_execpath:', process.env.npm_execpath);
-  console.log('process.env.npm_command:', process.env.npm_command);
-  console.log('process.env._:', process.env._);
-  console.log('process.env.npm_lifecycle_event:', process.env.npm_lifecycle_event);
-  console.log('Full process.argv:', process.argv);
+  console.log('process.ppid:', process.ppid);
+  console.log('process.title:', process.title);
   
-  // Try to find wrapper script name on Windows
-  if (process.platform === 'win32') {
-    const npmGlobalPrefix = process.env.APPDATA 
-      ? path.join(process.env.APPDATA, 'npm')
-      : null;
-    console.log('npmGlobalPrefix:', npmGlobalPrefix);
-    
-    // Check what's in the directory where argv[0] is
-    const nodeDir = path.dirname(process.argv[0]);
-    console.log('nodeDir:', nodeDir);
-    
-    // Check parent process
-    console.log('process.ppid:', process.ppid);
-    console.log('process.title:', process.title);
-  }
-  
-  // Check all environment variables to see if any give us clues
-  const relevantEnvVars = Object.keys(process.env).filter(key => 
-    key.includes('zapier') || 
-    key.includes('ZAPIER') ||
-    key.includes('COMSPEC') ||
-    key.includes('PSModulePath')
-  );
-  console.log('Relevant env vars:', relevantEnvVars.map(k => `${k}=${process.env[k]}`));
+  // Check for custom env variables we could inject via wrapper scripts
+  console.log('\nChecking for custom env variables:');
+  console.log('process.env.ZAPIER_BIN_NAME:', process.env.ZAPIER_BIN_NAME);
+  console.log('process.env._ZAPIER_BIN:', process.env._ZAPIER_BIN);
   
   console.log('===================================\n');
   
