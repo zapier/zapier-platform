@@ -1,37 +1,107 @@
 #!/usr/bin/env node
 
 const path = require('node:path');
+const fs = require('node:fs');
+const { execSync } = require('node:child_process');
 
 (async () => {
   const oclif = await import('@oclif/core');
   await oclif.execute({ development: false, dir: __dirname });
 
   // Show deprecation warning if invoked via the old "zapier" binary name
-  const scriptPath = process.argv[1] || '';
-  const binName = path.basename(scriptPath, path.extname(scriptPath));
+  let binName = null;
   
-  // DEBUG: Print values for Windows testing
-  console.log('\n=== DEBUG INFO (Windows Testing) ===');
-  console.log('process.argv[0]:', process.argv[0]);
-  console.log('process.argv[1]:', process.argv[1]);
-  console.log('scriptPath:', scriptPath);
-  console.log('binName:', binName);
+  console.log('\n=== DEBUG: Binary Name Detection ===');
   console.log('Platform:', process.platform);
-  console.log('process.ppid:', process.ppid);
-  console.log('process.title:', process.title);
+  console.log('process.argv[1]:', process.argv[1]);
   
-  // Check for custom env variables we could inject via wrapper scripts
-  console.log('\nChecking for custom env variables:');
-  console.log('process.env.ZAPIER_BIN_NAME:', process.env.ZAPIER_BIN_NAME);
-  console.log('process.env._ZAPIER_BIN:', process.env._ZAPIER_BIN);
+  if (process.platform !== 'win32') {
+    // Unix: Check the symlink name from process.argv[1]
+    const scriptPath = process.argv[1] || '';
+    binName = path.basename(scriptPath, path.extname(scriptPath));
+    console.log('Method: Unix symlink detection');
+    console.log('Detected binName:', binName);
+  } else {
+    // Windows: Try multiple detection methods
+    
+    // METHOD 1: Check parent process command line
+    console.log('\n--- Method 1: Parent Process Command Line ---');
+    try {
+      const ppid = process.ppid;
+      console.log('Parent PID:', ppid);
+      
+      // Use WMIC (works on older Windows) instead of Get-WmiObject
+      const cmd = `wmic process where ProcessId=${ppid} get CommandLine /format:list`;
+      console.log('Running:', cmd);
+      
+      const output = execSync(cmd, { encoding: 'utf8', timeout: 1000 });
+      console.log('Raw output:', output);
+      
+      // Parse the output to find CommandLine
+      const match = output.match(/CommandLine=(.+)/);
+      if (match) {
+        const parentCmdLine = match[1].trim();
+        console.log('Parent command line:', parentCmdLine);
+        
+        // Check if it contains zapier-platform or just zapier
+        if (parentCmdLine.includes('zapier-platform')) {
+          binName = 'zapier-platform';
+          console.log('Detected: zapier-platform (from parent process)');
+        } else if (parentCmdLine.includes('zapier')) {
+          binName = 'zapier';
+          console.log('Detected: zapier (from parent process)');
+        }
+      }
+    } catch (error) {
+      console.log('Failed to query parent process:', error.message);
+    }
+    
+    // METHOD 2: Filesystem check - look for wrapper scripts
+    if (!binName) {
+      console.log('\n--- Method 2: Filesystem Check ---');
+      try {
+        // Get the global npm bin directory
+        const scriptDir = path.dirname(process.argv[1]);
+        console.log('Script directory:', scriptDir);
+        
+        // Go up to find the npm bin directory (where wrappers live)
+        // Typically: node_modules/zapier-platform-cli/src/bin/run
+        // We want: the directory that contains zapier.cmd/ps1
+        const parts = scriptDir.split(path.sep);
+        const nodeModulesIndex = parts.lastIndexOf('node_modules');
+        
+        if (nodeModulesIndex !== -1) {
+          // Go up to the parent of node_modules (the bin directory)
+          const binDir = parts.slice(0, nodeModulesIndex).join(path.sep);
+          console.log('Potential bin directory:', binDir);
+          
+          // Check which wrappers exist
+          const zapierExists = fs.existsSync(path.join(binDir, 'zapier.cmd')) || 
+                              fs.existsSync(path.join(binDir, 'zapier.ps1'));
+          const zapierPlatformExists = fs.existsSync(path.join(binDir, 'zapier-platform.cmd')) || 
+                                      fs.existsSync(path.join(binDir, 'zapier-platform.ps1'));
+          
+          console.log('zapier wrappers exist:', zapierExists);
+          console.log('zapier-platform wrappers exist:', zapierPlatformExists);
+          
+          // If both exist, we can't determine which was used by filesystem alone
+          // But at least we know if we're in a global install
+          console.log('Cannot determine from filesystem alone (both wrappers present)');
+        }
+      } catch (error) {
+        console.log('Failed filesystem check:', error.message);
+      }
+    }
+  }
   
+  console.log('\nFinal detected binName:', binName);
   console.log('===================================\n');
   
   if (binName === 'zapier') {
     console.warn(
       '[DEPRECATION WARNING] ' +
         'The executable name "zapier" is deprecated and will be removed in a future version. ' +
-        'Please use "zapier-platform" instead.',
+        'Please use "zapier-platform" instead.\n',
     );
   }
 })();
