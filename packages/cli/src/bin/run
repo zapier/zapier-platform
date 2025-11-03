@@ -17,7 +17,23 @@ const path = require('node:path');
   console.log('scriptPath:', scriptPath);
   console.log('binName:', binName);
   console.log('Platform:', process.platform);
+  console.log('process.env.npm_execpath:', process.env.npm_execpath);
+  console.log('process.env.npm_command:', process.env.npm_command);
+  console.log('process.env._:', process.env._);
+  console.log('process.env.npm_lifecycle_event:', process.env.npm_lifecycle_event);
   console.log('Full process.argv:', process.argv);
+  
+  // Try to find wrapper script name on Windows
+  if (process.platform === 'win32') {
+    const npmGlobalPrefix = process.env.APPDATA 
+      ? path.join(process.env.APPDATA, 'npm')
+      : null;
+    console.log('npmGlobalPrefix:', npmGlobalPrefix);
+    
+    // Check what's in the directory where argv[0] is
+    const nodeDir = path.dirname(process.argv[0]);
+    console.log('nodeDir:', nodeDir);
+  }
   console.log('===================================\n');
   
   if (binName === 'zapier') {
