@@ -33,7 +33,21 @@ const path = require('node:path');
     // Check what's in the directory where argv[0] is
     const nodeDir = path.dirname(process.argv[0]);
     console.log('nodeDir:', nodeDir);
+    
+    // Check parent process
+    console.log('process.ppid:', process.ppid);
+    console.log('process.title:', process.title);
   }
+  
+  // Check all environment variables to see if any give us clues
+  const relevantEnvVars = Object.keys(process.env).filter(key => 
+    key.includes('zapier') || 
+    key.includes('ZAPIER') ||
+    key.includes('COMSPEC') ||
+    key.includes('PSModulePath')
+  );
+  console.log('Relevant env vars:', relevantEnvVars.map(k => `${k}=${process.env[k]}`));
+  
   console.log('===================================\n');
   
   if (binName === 'zapier') {
