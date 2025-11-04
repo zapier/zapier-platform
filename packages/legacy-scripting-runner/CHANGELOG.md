@@ -1,3 +1,13 @@
+## 4.0.0
+
+_Released 2025-10-30_
+
+We updated several dependencies of legacy-scripting-runner to address security vulnerabilities. This includes a **breaking change** :exclamation: from underscore's `_.template()` function, where the `_.template(templateString, data)` usage is no longer supported. You will have to change your legacy scripting code to use `_.template(templateString)(data)` instead.
+
+That's the only breaking change. For details and more dependency updates, see the PR linked below:
+
+- :exclamation: Update underscore, lodash, xmldom ([#1177](https://github.com/zapier/zapier-platform/pull/1177))
+
 ## 3.8.18
 
 _Released 2025-07-17_
