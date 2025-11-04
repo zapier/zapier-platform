@@ -1,36 +1,30 @@
 #!/usr/bin/env node
 
 const path = require('node:path');
-const fs = require('node:fs');
 
 (async () => {
   const oclif = await import('@oclif/core');
   await oclif.execute({ development: false, dir: __dirname });
 
   // Show deprecation warning for the old "zapier" binary name
-  if (process.platform === 'win32') {
-    // On Windows, we cannot reliably detect which wrapper (zapier vs zapier-platform) was invoked.
-    // Both npm-generated .cmd/.ps1 wrappers call the same script (this file), and process.argv[1]
-    // always points to the script path, not the wrapper name. The parent process is just the shell
-    // (powershell.exe/cmd.exe), and no environment variables are set to indicate which wrapper ran.
-    // Therefore, we show a generic notice for all Windows users rather than no notice at all.
-    console.warn(
-      '\n[DEPRECATION NOTICE] ' +
-        'The "zapier" command is deprecated and will be removed in a future version. ' +
-        'Please use "zapier-platform" instead.\n',
-    );
-  } else {
-    // On Unix-like systems (macOS/Linux), process.argv[1] contains the symlink name that was
-    // invoked, allowing us to detect precisely which command was used.
-    const scriptPath = process.argv[1] || '';
-    const binName = path.basename(scriptPath, path.extname(scriptPath));
+  // Users can suppress this warning by setting ZAPIER_SUPPRESS_DEPRECATION_WARNING
+  if (!process.env.ZAPIER_SUPPRESS_DEPRECATION_WARNING) {
+    const msg =
+      'The "zapier" command is deprecated and will be removed in a future version. ' +
+      'Please use "zapier-platform" instead.\n' +
+      'To suppress this warning, set ZAPIER_SUPPRESS_DEPRECATION_WARNING in your environment.\n';
     
-    if (binName === 'zapier') {
-      console.warn(
-        '\n[DEPRECATION WARNING] ' +
-          'The "zapier" command is deprecated and will be removed in a future version. ' +
-          'Please use "zapier-platform" instead.\n',
-      );
+    if (process.platform === 'win32') {
+      // On Windows, we cannot reliably detect which wrapper was invoked (zapier vs zapier-platform)
+      // because both wrappers point to the same script. Show a generic deprecation notice instead of a warning..
+      console.warn('\n[DEPRECATION NOTICE] ' + msg);
+    } else {
+      // On Unix, we can detect which symlink was used
+      const scriptPath = process.argv[1] || '';
+      const binName = path.basename(scriptPath, path.extname(scriptPath));
+      if (binName === 'zapier') {
+        console.warn('\n[DEPRECATION WARNING] ' + msg);
+      }
     }
   }
 })();
