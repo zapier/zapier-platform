@@ -13,7 +13,6 @@
     "/src/generators/",
     "/src/oclif/",
     "/src/bin/",
-    "/src/bin/run.cmd",
     "/src/utils/",
     "/scaffold/",
     "/oclif.manifest.json"
@@ -91,7 +90,7 @@
     "yamljs": "0.3.0"
   },
   "bin": {
-    "zapier": "./src/bin/run-deprecated",
+    "zapier": "./src/bin/run",
     "zapier-platform": "./src/bin/run"
   },
   "oclif": {

@@ -1,6 +1,30 @@
 #!/usr/bin/env node
 
+const path = require('node:path');
+
 (async () => {
   const oclif = await import('@oclif/core');
   await oclif.execute({ development: false, dir: __dirname });
+
+  // Show deprecation warning for the old "zapier" binary name
+  // Users can suppress this warning by setting ZAPIER_SUPPRESS_DEPRECATION_WARNING
+  if (!process.env.ZAPIER_SUPPRESS_DEPRECATION_WARNING) {
+    const msg =
+      'The "zapier" command is deprecated and will be removed in a future version. ' +
+      'Please use "zapier-platform" instead.\n' +
+      'To suppress this warning, set ZAPIER_SUPPRESS_DEPRECATION_WARNING in your environment.\n';
+    
+    if (process.platform === 'win32') {
+      // On Windows, we cannot reliably detect which wrapper was invoked (zapier vs zapier-platform)
+      // because both wrappers point to the same script. Show a generic deprecation notice instead of a warning..
+      console.warn('\n[DEPRECATION NOTICE] ' + msg);
+    } else {
+      // On Unix, we can detect which symlink was used
+      const scriptPath = process.argv[1] || '';
+      const binName = path.basename(scriptPath, path.extname(scriptPath));
+      if (binName === 'zapier') {
+        console.warn('\n[DEPRECATION WARNING] ' + msg);
+      }
+    }
+  }
 })();
