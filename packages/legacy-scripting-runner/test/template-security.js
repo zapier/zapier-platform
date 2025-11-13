@@ -27,12 +27,12 @@ describe('middleware renderTemplate security', () => {
     const context = { test: 'value' };
 
     (() => {
-      renderTemplate(null, context);
-    }).should.throw('Template string must be a string');
+      renderTemplate({}, context);
+    }).should.throw('Template string must be a primitive');
 
     (() => {
-      renderTemplate(123, context);
-    }).should.throw('Template string must be a string');
+      renderTemplate([], context);
+    }).should.throw('Template string must be a primitive');
   });
 
   it('should handle template errors gracefully in middleware', () => {
