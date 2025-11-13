@@ -1,3 +1,9 @@
+## 4.0.1
+
+_Release 2025-11-14_
+
+- :bug: fix "Template string must be a string" when auth mapping contains non-string values ([#1195](https://github.com/zapier/zapier-platform/pull/1195))
+
 ## 4.0.0
 
 _Released 2025-10-30_
