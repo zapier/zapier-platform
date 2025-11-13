@@ -2,10 +2,17 @@ const querystring = require('querystring');
 
 const _ = require('lodash');
 
+const isPrimitive = (x) => {
+  const tipe = typeof x;
+  return (
+    tipe === 'string' || tipe === 'number' || tipe === 'boolean' || tipe == null
+  );
+};
+
 const renderTemplate = (templateString, context) => {
   // Security: Ensure templateString is a string and not user-controlled
-  if (typeof templateString !== 'string') {
-    throw new Error('Template string must be a string');
+  if (!isPrimitive(templateString)) {
+    throw new Error('Template string must be a primitive');
   }
 
   const re = /{{([^}]+)}}/g;
