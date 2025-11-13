@@ -746,6 +746,38 @@ describe('Integration Test', function () {
       });
     });
 
+    it('scriptingless, auth mapping contains non-strings', async () => {
+      const appDef = _.cloneDeep(appDefinition);
+      appDef.legacy.scriptingSource = appDef.legacy.scriptingSource.replace(
+        'movie_post_poll_make_array',
+        'movie_post_poll',
+      );
+      const _appDefWithAuth = withAuth(appDef, apiKeyAuth);
+      _appDefWithAuth.legacy.authentication.mapping = {
+        'x-api-key': '{{api_key}}',
+        'x-version': 1,
+        'x-active': true,
+      };
+      _appDefWithAuth.legacy.authentication.placement = 'header';
+      _appDefWithAuth.legacy.triggers.movie.operation.url = `${HTTPBIN_URL}/get`;
+
+      const _compiledApp = schemaTools.prepareApp(_appDefWithAuth);
+      const _app = createApp(_appDefWithAuth);
+
+      const input = createTestInput(
+        _compiledApp,
+        'triggers.movie.operation.perform',
+      );
+      input.bundle.authData = {
+        api_key: 'secret',
+      };
+      const output = await _app(input);
+      const echoed = output.results[0];
+      should.deepEqual(echoed.headers['X-Api-Key'], ['secret']);
+      should.deepEqual(echoed.headers['X-Version'], ['1']);
+      should.deepEqual(echoed.headers['X-Active'], ['true']);
+    });
+
     it('KEY_poll', () => {
       const input = createTestInput(
         compiledApp,
