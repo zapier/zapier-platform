@@ -1,7 +1,7 @@
 const path = require('node:path');
 
+const AdmZip = require('adm-zip');
 const fs = require('fs-extra');
-const decompress = require('decompress');
 const should = require('should');
 
 const build = require('../../utils/build');
@@ -15,23 +15,35 @@ const {
 } = require('../_helpers');
 
 const decompress2 = async (input, output, opts) => {
-  const origPlatform = process.platform;
-  if (IS_WINDOWS) {
-    // The decompress package switches to hard links for symlinks on Windows to
-    // bypass permission issues. But in tests, we do need to keep symlinks and
-    // we run tests using Administrator. So we temporarily change
-    // process.platform to something else to make decompress believe it's not
-    // running on Windows.
-    // See https://github.com/kevva/decompress/blob/84a8c104/index.js#L117
-    Object.defineProperty(process, 'platform', { value: 'linux' });
-  }
-  try {
-    return await decompress(input, output, opts);
-  } finally {
-    if (IS_WINDOWS) {
-      Object.defineProperty(process, 'platform', { value: origPlatform });
-    }
-  }
+  const zip = new AdmZip(input);
+
+  // Extract all files to output directory
+  zip.extractAllTo(output, true); // true = overwrite existing files
+
+  // Fix symlinks that adm-zip may have incorrectly extracted as regular files
+  build.fixSymlinksInExtractedZip(zip, output);
+
+  // Return file list in compatible format with decompress
+  // This format is expected by tests: [{ path: string, mode: number }, ...]
+  return zip.getEntries()
+    .filter((entry) => !entry.isDirectory)
+    .map((entry) => {
+      const entryPath = entry.entryName.replace(/\\/g, '/'); // Normalize path separators
+      const fullPath = path.join(output, entryPath);
+
+      // Get file mode
+      let mode = 0o644; // Default file mode
+      try {
+        if (fs.existsSync(fullPath)) {
+          const stats = fs.lstatSync(fullPath); // Use lstatSync to not follow symlinks
+          mode = stats.mode;
+        }
+      } catch (err) {
+        // If we can't read stats, use default mode
+      }
+
+      return { path: entryPath, mode };
+    });
 };
 
 function commonAncestor(pA, pB) {
