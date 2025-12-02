@@ -1,10 +1,10 @@
 const path = require('node:path');
 
-const AdmZip = require('adm-zip');
 const fs = require('fs-extra');
 const should = require('should');
 
 const build = require('../../utils/build');
+const decompress = require('../../utils/decompress');
 const { copyDir } = require('../../utils/files');
 const { PLATFORM_PACKAGE } = require('../../constants');
 const {
@@ -13,38 +13,6 @@ const {
   npmPackCore,
   runCommand,
 } = require('../_helpers');
-
-const decompress2 = async (input, output, opts) => {
-  const zip = new AdmZip(input);
-
-  // Extract all files to output directory
-  zip.extractAllTo(output, true); // true = overwrite existing files
-
-  // Fix symlinks that adm-zip may have incorrectly extracted as regular files
-  build.fixSymlinksInExtractedZip(zip, output);
-
-  // Return file list in compatible format with decompress
-  // This format is expected by tests: [{ path: string, mode: number }, ...]
-  return zip.getEntries()
-    .filter((entry) => !entry.isDirectory)
-    .map((entry) => {
-      const entryPath = entry.entryName.replace(/\\/g, '/'); // Normalize path separators
-      const fullPath = path.join(output, entryPath);
-
-      // Get file mode
-      let mode = 0o644; // Default file mode
-      try {
-        if (fs.existsSync(fullPath)) {
-          const stats = fs.lstatSync(fullPath); // Use lstatSync to not follow symlinks
-          mode = stats.mode;
-        }
-      } catch (err) {
-        // If we can't read stats, use default mode
-      }
-
-      return { path: entryPath, mode };
-    });
-};
 
 function commonAncestor(pA, pB) {
   const partsA = pA.split(path.sep);
@@ -219,7 +187,7 @@ describe('build (runs slowly)', function () {
 
     await build.makeBuildZip(tmpProjectDir, tmpZipPath);
 
-    const files = await decompress2(tmpZipPath, tmpUnzipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
     files.length.should.equal(3);
 
     const indexFile = files.find(
@@ -259,7 +227,7 @@ describe('build (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeBuildZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress2(tmpZipPath, tmpUnzipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
     files.length.should.equal(3);
 
     const indexFile = files.find(
@@ -295,7 +263,7 @@ describe('build (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeSourceZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress2(tmpZipPath, tmpUnzipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
     const filePaths = new Set(files.map((file) => file.path));
     filePaths.should.deepEqual(
@@ -344,7 +312,7 @@ describe('build (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeSourceZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress2(tmpZipPath, tmpUnzipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
     const filePaths = new Set(files.map((file) => file.path));
     filePaths.should.deepEqual(
@@ -575,7 +543,7 @@ describe('build in lerna monorepo', function () {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
@@ -654,7 +622,7 @@ describe('build in lerna monorepo', function () {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
@@ -780,7 +748,7 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
@@ -862,7 +830,7 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
@@ -952,7 +920,7 @@ describe('build in yarn workspaces', function () {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     // `zapier build --skip-npm-install` uses the common ancestor of the app
     // directory (monorepo.repoDir) and the zapier-platform repo.
@@ -1112,7 +1080,7 @@ describe('build in pnpm workspaces', () => {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-1/zapierwrapper.js and app-1/index.js respectively.
@@ -1283,7 +1251,7 @@ describe('build in pnpm workspaces', () => {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     // Root directory should have symlinks named zapierwrapper.js and index.js
     // linking to app-2/zapierwrapper.js and app-2/index.js respectively.
@@ -1535,7 +1503,7 @@ describe('build ESM (runs slowly)', function () {
     global.argOpts = {};
 
     await build.makeBuildZip(tmpProjectDir, tmpZipPath);
-    const files = await decompress2(tmpZipPath, tmpUnzipPath);
+    const files = await decompress(tmpZipPath, tmpUnzipPath);
 
     const filePaths = new Set(files.map((file) => file.path));
     filePaths.should.deepEqual(
@@ -1861,7 +1829,7 @@ export default {
         checkOutdated: false,
       },
     );
-    await decompress2(zipPath, unzipDir);
+    await decompress(zipPath, unzipDir);
 
     const expectedFiles = [
       'app.js',

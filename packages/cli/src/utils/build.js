@@ -7,12 +7,12 @@ const {
 } = require('node:zlib');
 
 const _ = require('lodash');
-const AdmZip = require('adm-zip');
 const archiver = require('archiver');
 const colors = require('colors/safe');
 const esbuild = require('esbuild');
 const fse = require('fs-extra');
 const { createUpdateNotifier } = require('./esm-wrapper');
+const decompress = require('./decompress');
 
 const {
   BUILD_DIR,
@@ -537,142 +537,6 @@ const extractMissingModulePath = (testDir, error) => {
   return null;
 };
 
-// Fix symlinks that adm-zip may have incorrectly extracted as regular files
-// This function handles the case where archiver stores symlink targets as file content
-const fixSymlinksInExtractedZip = (zip, extractDir) => {
-  const entries = zip.getEntries();
-  for (const entry of entries) {
-    if (entry.isDirectory) {
-      continue;
-    }
-
-    const entryPath = entry.entryName.replace(/\\/g, '/');
-    const fullPath = path.join(extractDir, entryPath);
-
-    try {
-      if (fs.existsSync(fullPath) && !fs.lstatSync(fullPath).isSymbolicLink()) {
-        const stats = fs.statSync(fullPath);
-        // Small files might be symlink targets stored as content
-        if (stats.size < 1000) {
-          let content;
-          try {
-            content = fs.readFileSync(fullPath, 'utf8').trim();
-          } catch (err) {
-            // If we can't read as UTF-8, skip
-            continue;
-          }
-
-          // Known symlink filenames in root directory
-          const isKnownSymlinkFile =
-            (entryPath === 'zapierwrapper.js' ||
-              entryPath === 'index.js' ||
-              entryPath === 'config') &&
-            !entryPath.includes('/') &&
-            !entryPath.includes('\\');
-
-          // Check if content looks like a relative path (not code)
-          const looksLikePath =
-            content &&
-            content.length > 0 &&
-            content.length < 500 &&
-            (content.includes('/') || content.includes('\\')) &&
-            !content.match(
-              /^(function|const|let|var|import|export|require|module\.exports|exports\.)/m,
-            ) &&
-            !content.includes(';') &&
-            !content.match(/^[\s]*[{}[\]]/);
-
-          // For known symlink files, if content contains path separators, treat it as symlink
-          if (
-            isKnownSymlinkFile &&
-            content &&
-            (content.includes('/') || content.includes('\\'))
-          ) {
-            // Known symlink file with path-like content - definitely a symlink
-            const targetPath = path.resolve(path.dirname(fullPath), content);
-            if (fs.existsSync(targetPath)) {
-              try {
-                fse.removeSync(fullPath);
-                fse.ensureDirSync(path.dirname(fullPath));
-                // Try to create symlink first
-                fs.symlinkSync(content, fullPath);
-              } catch (symlinkErr) {
-                // If symlink creation fails on Windows, fall back to hard link
-                // This matches decompress's default behavior and avoids permission issues
-                if (isWindows() && symlinkErr.code === 'EPERM') {
-                  try {
-                    // Use hard link as fallback on Windows (doesn't require admin)
-                    fs.linkSync(targetPath, fullPath);
-                    debug(
-                      `Created hard link instead of symlink for ${entryPath} (Windows fallback)`,
-                    );
-                  } catch (hardLinkErr) {
-                    // If hard link also fails, restore the original file content
-                    fse.writeFileSync(fullPath, content);
-                    debug(
-                      `Failed to create symlink or hard link for ${entryPath}, restored file content: ${symlinkErr.message}`,
-                    );
-                  }
-                } else {
-                  // On non-Windows or non-permission errors, restore file content
-                  fse.writeFileSync(fullPath, content);
-                  debug(
-                    `Failed to create symlink for ${entryPath}: ${symlinkErr.message}`,
-                  );
-                }
-              }
-            }
-          } else if (!isKnownSymlinkFile && looksLikePath) {
-            // Check if the target path exists relative to the file's directory
-            const targetPath = path.resolve(path.dirname(fullPath), content);
-            // Also check if the target exists in the ZIP entries
-            const targetExistsInZip = entries.some(
-              (e) =>
-                !e.isDirectory && e.entryName.replace(/\\/g, '/') === content,
-            );
-
-            if (fs.existsSync(targetPath) || targetExistsInZip) {
-              // This is likely a symlink - remove the file and create symlink
-              const actualTargetPath = fs.existsSync(targetPath)
-                ? targetPath
-                : path.resolve(extractDir, content);
-              try {
-                fse.removeSync(fullPath);
-                fse.ensureDirSync(path.dirname(fullPath));
-                fs.symlinkSync(content, fullPath);
-              } catch (symlinkErr) {
-                // If symlink creation fails on Windows, fall back to hard link
-                if (isWindows() && symlinkErr.code === 'EPERM' && fs.existsSync(actualTargetPath)) {
-                  try {
-                    fs.linkSync(actualTargetPath, fullPath);
-                    debug(
-                      `Created hard link instead of symlink for ${entryPath} (Windows fallback)`,
-                    );
-                  } catch (hardLinkErr) {
-                    // If hard link also fails, restore the original file content
-                    fse.writeFileSync(fullPath, content);
-                    debug(
-                      `Failed to create symlink or hard link for ${entryPath}, restored file content: ${symlinkErr.message}`,
-                    );
-                  }
-                } else {
-                  // On non-Windows or non-permission errors, restore file content
-                  fse.writeFileSync(fullPath, content);
-                  debug(
-                    `Failed to create symlink for ${entryPath}: ${symlinkErr.message}`,
-                  );
-                }
-              }
-            }
-          }
-        }
-      }
-    } catch (err) {
-      // If we can't process, continue
-    }
-  }
-};
-
 const testBuildZip = async (zipPath) => {
   const osTmpDir = await fse.realpath(os.tmpdir());
   const testDir = path.join(
@@ -682,11 +546,7 @@ const testBuildZip = async (zipPath) => {
 
   try {
     await fse.ensureDir(testDir);
-    const zip = new AdmZip(zipPath);
-    zip.extractAllTo(testDir, true); // true = overwrite existing files
-
-    // Fix symlinks that adm-zip may have incorrectly extracted as regular files
-    fixSymlinksInExtractedZip(zip, testDir);
+    await decompress(zipPath, testDir);
 
     const wrapperPath = path.join(testDir, 'zapierwrapper.js');
     if (!fs.existsSync(wrapperPath)) {
@@ -933,7 +793,6 @@ const buildAndOrUpload = async (
 module.exports = {
   buildAndOrUpload,
   findRequiredFiles,
-  fixSymlinksInExtractedZip,
   makeBuildZip,
   makeSourceZip,
   maybeRunBuildScript,

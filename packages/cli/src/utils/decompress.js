@@ -1,0 +1,110 @@
+// This is a modernized version of the decompress package.
+// Instead of letting decompress import many of its plugins, such as
+// decompress-unzip, decompress-tar, etc, we extracted only the unzip part,
+// so we only depends on decompress-unzip.
+// Original source: https://github.com/kevva/decompress/blob/84a8c104/index.js
+
+const fsP = require('node:fs/promises');
+const path = require('node:path');
+
+const decompressUnzip = require('decompress-unzip');
+
+const safeMakeDir = async (dir, realOutputPath) => {
+  let resolvedPathToCheck;
+
+  try {
+    resolvedPathToCheck = await fsP.realpath(dir);
+  } catch (error) {
+    const parent = path.dirname(dir);
+    resolvedPathToCheck = await safeMakeDir(parent, realOutputPath);
+  }
+
+  // Security check for zip slip vulnerability
+  if (!resolvedPathToCheck.startsWith(realOutputPath)) {
+    throw new Error('Refusing to create a directory outside the output path.');
+  }
+
+  await fsP.mkdir(dir, { recursive: true });
+  return await fsP.realpath(dir);
+};
+
+const preventWritingThroughSymlink = async (destination, realOutputPath) => {
+  let symlinkPointsTo;
+  try {
+    symlinkPointsTo = await fsP.readlink(destination);
+  } catch (error) {
+    // Either no file exists, or it's not a symlink. In either case, this is
+    // not an escape we need to worry about in this phase.
+  }
+
+  if (symlinkPointsTo) {
+    throw new Error('Refusing to write into a symlink');
+  }
+};
+
+const extractItem = async (item, output) => {
+  const dest = path.join(output, item.path);
+  const mode = item.mode & ~process.umask();
+  const now = new Date();
+
+  // Ensure parent directory exists
+  await fsP.mkdir(output, { recursive: true });
+  const realOutputPath = await fsP.realpath(output);
+
+  if (item.type === 'directory') {
+    await safeMakeDir(dest, realOutputPath);
+    await fsP.utimes(dest, now, item.mtime);
+    return item;
+  }
+
+  await safeMakeDir(path.dirname(dest), realOutputPath);
+
+  if (item.type === 'file') {
+    await preventWritingThroughSymlink(dest, realOutputPath);
+  }
+
+  const realDestinationDir = await fsP.realpath(path.dirname(dest));
+  if (!realDestinationDir.startsWith(realOutputPath)) {
+    throw new Error(
+      'Refusing to write outside output directory: ' + realDestinationDir,
+    );
+  }
+
+  if (item.type === 'link') {
+    await fsP.link(item.linkname, dest);
+  } else if (item.type === 'symlink') {
+    // Windows will have issues with this line, since creating a symlink on
+    // Windows requires Administrator priviledge. But that's fine because we
+    // only run decompress on Windows in CI tests, which do run with
+    // Administrator priviledge.
+    await fsP.symlink(item.linkname, dest);
+  } else {
+    await fsP.writeFile(dest, item.data, { mode });
+    await fsP.utimes(dest, now, item.mtime);
+  }
+
+  return item;
+};
+
+const decompress = async (input, output) => {
+  if (typeof input !== 'string') {
+    throw new TypeError('Input file path required');
+  }
+
+  let fd, buf;
+  try {
+    fd = await fsP.open(input);
+    buf = await fd.readFile();
+  } finally {
+    await fd?.close();
+  }
+
+  const items = await decompressUnzip()(buf);
+  return await Promise.all(
+    items.map(async (x) => {
+      return await extractItem(x, output);
+    }),
+  );
+};
+
+module.exports = decompress;

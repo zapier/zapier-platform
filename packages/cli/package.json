@@ -50,6 +50,7 @@
     "cli-table3": "0.6.5",
     "colors": "1.4.0",
     "debug": "4.4.1",
+    "decompress-unzip": "4.0.1",
     "dotenv": "17.2.1",
     "esbuild": "0.25.8",
     "fs-extra": "11.3.1",
