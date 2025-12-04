@@ -91,6 +91,10 @@ const decompress = async (input, output) => {
     throw new TypeError('Input file path required');
   }
 
+  if (typeof output !== 'string') {
+    throw new TypeError('Output directory path required');
+  }
+
   let fd, buf;
   try {
     fd = await fsP.open(input);
