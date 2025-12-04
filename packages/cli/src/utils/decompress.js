@@ -66,9 +66,7 @@ const extractItem = async (item, realOutputPath) => {
     );
   }
 
-  if (item.type === 'link') {
-    await fsP.link(item.linkname, dest);
-  } else if (item.type === 'symlink') {
+  if (item.type === 'symlink') {
     // Windows will have issues with this line, since creating a symlink on
     // Windows requires Administrator privilege. But that's fine because we
     // only run decompress on Windows in CI tests, which do run with
