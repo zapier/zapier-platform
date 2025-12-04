@@ -42,14 +42,10 @@ const preventWritingThroughSymlink = async (destination, realOutputPath) => {
   }
 };
 
-const extractItem = async (item, output) => {
-  const dest = path.join(output, item.path);
+const extractItem = async (item, realOutputPath) => {
+  const dest = path.join(realOutputPath, item.path);
   const mode = item.mode & ~process.umask();
   const now = new Date();
-
-  // Ensure parent directory exists
-  await fsP.mkdir(output, { recursive: true });
-  const realOutputPath = await fsP.realpath(output);
 
   if (item.type === 'directory') {
     await safeMakeDir(dest, realOutputPath);
@@ -88,11 +84,11 @@ const extractItem = async (item, output) => {
 
 const decompress = async (input, output) => {
   if (typeof input !== 'string') {
-    throw new TypeError('Input file path required');
+    throw new TypeError('input must be a file path (string)');
   }
 
   if (typeof output !== 'string') {
-    throw new TypeError('Output directory path required');
+    throw new TypeError('output must be a directory path (string)');
   }
 
   let fd, buf;
@@ -103,10 +99,14 @@ const decompress = async (input, output) => {
     await fd?.close();
   }
 
+  // Ensure output directory exists
+  await fsP.mkdir(output, { recursive: true });
+  const realOutputPath = await fsP.realpath(output);
+
   const items = await decompressUnzip()(buf);
   return await Promise.all(
     items.map(async (x) => {
-      return await extractItem(x, output);
+      return await extractItem(x, realOutputPath);
     }),
   );
 };
