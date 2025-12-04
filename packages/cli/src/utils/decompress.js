@@ -1,7 +1,7 @@
 // This is a modernized version of the decompress package.
 // Instead of letting decompress import many of its plugins, such as
 // decompress-unzip, decompress-tar, etc, we extracted only the unzip part,
-// so we only depends on decompress-unzip.
+// so we only depend on decompress-unzip.
 // Original source: https://github.com/kevva/decompress/blob/84a8c104/index.js
 
 const fsP = require('node:fs/promises');
@@ -74,9 +74,9 @@ const extractItem = async (item, output) => {
     await fsP.link(item.linkname, dest);
   } else if (item.type === 'symlink') {
     // Windows will have issues with this line, since creating a symlink on
-    // Windows requires Administrator priviledge. But that's fine because we
+    // Windows requires Administrator privilege. But that's fine because we
     // only run decompress on Windows in CI tests, which do run with
-    // Administrator priviledge.
+    // Administrator privilege.
     await fsP.symlink(item.linkname, dest);
   } else {
     await fsP.writeFile(dest, item.data, { mode });
