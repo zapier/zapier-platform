@@ -67,22 +67,20 @@ const extractItem = async (item, realOutputPath) => {
   }
 
   if (item.type === 'symlink') {
+    // Security check to block symlinks pointing outside output directory,
+    // like evil_link -> ../../../../../etc/passwd. We don't throw an error
+    // here, just skip creating the symlink, because there are known zip files
+    // containing such symlinks (such as .editorconfig) that are not essential
+    // to the integration.
     const absTargetPath = path.resolve(realDestinationDir, item.linkname);
     const relTargetPath = path.relative(realOutputPath, absTargetPath);
-    if (relTargetPath.startsWith('..')) {
-      // Security check to block symlinks pointing outside output directory,
-      // like evil_link -> ../../../../../etc/passwd
-      throw new Error(
-        'Reusing to create symlink pointing to outside output directory: ' +
-          item.linkname,
-      );
+    if (!relTargetPath.startsWith('..')) {
+      // Windows will have issues with the following line, since creating a
+      // symlink on Windows requires Administrator privilege. But that's fine
+      // because we only run decompress on Windows in CI tests, which do run
+      // with Administrator privilege.
+      await fsP.symlink(item.linkname, dest);
     }
-
-    // Windows will have issues with this line, since creating a symlink on
-    // Windows requires Administrator privilege. But that's fine because we
-    // only run decompress on Windows in CI tests, which do run with
-    // Administrator privilege.
-    await fsP.symlink(item.linkname, dest);
   } else {
     await fsP.writeFile(dest, item.data, { mode });
     await fsP.utimes(dest, now, item.mtime);
