@@ -67,6 +67,17 @@ const extractItem = async (item, realOutputPath) => {
   }
 
   if (item.type === 'symlink') {
+    const absTargetPath = path.resolve(realDestinationDir, item.linkname);
+    const relTargetPath = path.relative(realOutputPath, absTargetPath);
+    if (relTargetPath.startsWith('..')) {
+      // Security check to block symlinks pointing outside output directory,
+      // like evil_link -> ../../../../../etc/passwd
+      throw new Error(
+        'Reusing to create symlink pointing to outside output directory: ' +
+          item.linkname,
+      );
+    }
+
     // Windows will have issues with this line, since creating a symlink on
     // Windows requires Administrator privilege. But that's fine because we
     // only run decompress on Windows in CI tests, which do run with
