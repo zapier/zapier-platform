@@ -21,8 +21,8 @@
     "lint:fix": "eslint --fix lib",
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
-    "docs": "node bin/docs.js",
-    "build": "pnpm docs && pnpm export",
+    "build-docs": "node bin/docs.js",
+    "build": "pnpm build-docs && pnpm export",
     "git-add": "git add exported-schema.json README.md docs",
     "precommit": "pnpm build && pnpm git-add",
     "validate": "pnpm test && pnpm lint && pnpm smoke-test"
