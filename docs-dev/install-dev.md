@@ -10,7 +10,7 @@ Clone the zapier-platform repo and install the dependencies:
 cd ~/projects  # or wherever you want to cloen the repo
 git clone git@github.com/zapier/zapier-platform.git
 cd zapier-platform
-yarn
+pnpm install
 ```
 
 Then add this line to your shell configuration file, such as `~/.bashrc` or `~/.zshrc`:
@@ -34,10 +34,10 @@ USAGE
 
 ## Updating the CLI
 
-To update, simply pull from the main branch and update the dependencies:
+To update, pull from the main branch or any feature branch, and update the dependencies:
 
 ```
 cd ~/projects/zapier-platform
 git pull origin main
-yarn
+pnpm install
 ```

@@ -9,15 +9,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
-          cache: yarn
+          node-version: 22
+          cache: pnpm
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: pnpm install
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
 
   test-libs:
     name: Test - core, schema, legacy-scripting-runner
@@ -33,21 +38,26 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - name: Install Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
+          cache: pnpm
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: pnpm install
       - name: Test - core
-        run: yarn test
+        run: pnpm test
         working-directory: packages/core
       - name: Test - schema
-        run: yarn test
+        run: pnpm test
         working-directory: packages/schema
       - name: Test - legacy-scripting-runner
-        run: yarn test
+        run: pnpm test
         working-directory: packages/legacy-scripting-runner
 
   test-schema-to-ts:
@@ -56,16 +66,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
-          cache: yarn
+          node-version: 22
+          cache: pnpm
       - name: Install dependencies
-        run: yarn --frozen-lockfile
-        working-directory: schema-to-ts
+        run: pnpm install
       - name: Test - schema-to-ts
-        run: yarn test
+        run: pnpm test
         working-directory: schema-to-ts
 
   test-cli:
@@ -90,15 +104,16 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 10
-      - name: Use Node.js ${{ matrix.node-version }}
+          run_install: false
+      - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: yarn
+          node-version: 22
+          cache: pnpm
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: pnpm install
       - name: Test - cli
-        run: yarn test
+        run: pnpm test
         working-directory: packages/cli
 
   smoke-test-libs:
@@ -115,18 +130,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - name: Install Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
+          cache: pnpm
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: pnpm install
       - name: Smoke test - core
-        run: yarn smoke-test
+        run: pnpm smoke-test
         working-directory: packages/core
       - name: Smoke test - schema
-        run: yarn smoke-test
+        run: pnpm smoke-test
         working-directory: packages/schema
 
   smoke-test-cli:
@@ -148,15 +168,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - name: Install Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
+          cache: pnpm
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: pnpm install
       - name: Smoke test - cli
-        run: yarn smoke-test
+        run: pnpm smoke-test
         working-directory: packages/cli
       - name: Test npx resolution
         run: npx zapier-platform-cli --version

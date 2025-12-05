@@ -16,8 +16,7 @@
     "test:debug": "CLIENT_ID=1234 CLIENT_SECRET=asdf AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake mocha inspect --recursive -t 20s --exit",
     "preversion": "git pull",
     "postversion": "git push && git push --tags",
-    "ci-test": "yarn test && ./ci-test.js",
-    "validate": "yarn test && yarn lint"
+    "validate": "pnpm test && pnpm lint"
   },
   "engines": {
     "node": ">=8.10.0",

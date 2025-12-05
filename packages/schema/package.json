@@ -13,7 +13,7 @@
     "/schema.js"
   ],
   "scripts": {
-    "preversion": "git pull && yarn test && yarn build",
+    "preversion": "git pull && pnpm test && pnpm build",
     "test": "mocha -t 10s --recursive test --exit",
     "smoke-test": "mocha -t 10s --recursive smoke-test --exit",
     "test:debug": "mocha --recursive --inspect-brk test",
@@ -22,10 +22,10 @@
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
     "docs": "node bin/docs.js",
-    "build": "yarn docs && yarn export",
+    "build": "pnpm docs && pnpm export",
     "git-add": "git add exported-schema.json README.md docs",
-    "precommit": "yarn build && yarn git-add",
-    "validate": "yarn test && yarn lint && yarn smoke-test"
+    "precommit": "pnpm build && pnpm git-add",
+    "validate": "pnpm test && pnpm lint && pnpm smoke-test"
   },
   "dependencies": {
     "jsonschema": "1.5.0",
