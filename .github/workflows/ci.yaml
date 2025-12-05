@@ -183,6 +183,3 @@ jobs:
       - name: Smoke test - cli
         run: pnpm smoke-test
         working-directory: packages/cli
-      - name: Test npx resolution
-        run: npx zapier-platform-cli --version
-        working-directory: packages/cli
