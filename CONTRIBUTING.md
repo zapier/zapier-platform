@@ -29,7 +29,7 @@ That's it! Now you have a local environment for development.
 For detailed testing commands and workflow, see [docs-dev/commands.md](docs-dev/commands.md).
 
 Quick overview:
-- `pnpm test` - Run all tests for all packages (rarely used)
+- `pnpm test` - Run all tests for all packages
 - `yarn validate` - Full validation (test + smoke-test + lint)
 - Individual packages: `cd` into package directory first, then `yarn test`
 
