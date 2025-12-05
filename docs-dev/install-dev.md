@@ -38,6 +38,7 @@ To update, pull from the main branch or any feature branch, and update the depen
 
 ```
 cd ~/projects/zapier-platform
-git pull origin main
+git fetch origin main  # or a feature branch
+git pull origin main   # or a feature branch
 pnpm install
 ```
