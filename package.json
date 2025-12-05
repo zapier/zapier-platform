@@ -35,11 +35,6 @@
     "generate-types": "cd schema-to-ts && pnpm generate-types",
     "preinstall": "npx only-allow pnpm"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pnpm -r precommit && yarn generate-types && lint-staged"
-    }
-  },
   "lint-staged": {
     "*.js": [
       "eslint --fix --quiet"

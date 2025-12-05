@@ -21,12 +21,12 @@
     "node": ">=18.20"
   },
   "scripts": {
-    "docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js",
-    "preversion": "git pull && yarn validate",
+    "build-docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js",
+    "preversion": "git pull && pnpm validate",
     "prepack": "oclif manifest",
     "postpack": "rimraf oclif.manifest.json",
-    "precommit": "yarn docs && git add docs",
-    "version": "yarn docs && git add docs/*",
+    "precommit": "pnpm build-docs && git add docs",
+    "version": "pnpm build-docs && git add docs/*",
     "postversion": "git push && git push --tags",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
