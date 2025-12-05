@@ -247,8 +247,8 @@ importers:
         specifier: 7.7.2
         version: 7.7.2
       zapier-platform-schema:
-        specifier: 18.0.1
-        version: 18.0.1
+        specifier: workspace:*
+        version: link:../schema
     devDependencies:
       '@types/node-fetch':
         specifier: ^2.6.11

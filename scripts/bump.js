@@ -178,7 +178,7 @@ const bumpMainPackages = (versionToBump) => {
     PACKAGES.map((depName) => {
       const depFullName = `zapier-platform-${depName}`;
       const depVersion = packageJson.dependencies[depFullName];
-      if (depVersion) {
+      if (depVersion && !depVersion.startsWith('workspace:')) {
         console.log(
           `${packageName}'s dependency ${depName} ${depVersion} -> ${versionToBump}`,
         );
