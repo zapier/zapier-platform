@@ -12,7 +12,7 @@ const colors = require('colors/safe');
 const esbuild = require('esbuild');
 const fse = require('fs-extra');
 const { createUpdateNotifier } = require('./esm-wrapper');
-const decompress = require('decompress');
+const decompress = require('./decompress');
 
 const {
   BUILD_DIR,
