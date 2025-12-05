@@ -1,2 +1,0 @@
-# this needs to be in `cli` so `yarn lint` works in cli
-src/generators/templates/**/*.template.js

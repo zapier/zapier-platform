@@ -21,12 +21,12 @@
     "node": ">=18.20"
   },
   "scripts": {
-    "docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js",
-    "preversion": "git pull && yarn validate",
+    "build-docs": "ZAPIER_BASE_ENDPOINT='' node scripts/docs.js",
+    "preversion": "git pull && pnpm validate",
     "prepack": "oclif manifest",
     "postpack": "rimraf oclif.manifest.json",
-    "precommit": "yarn docs && git add docs",
-    "version": "yarn docs && git add docs/*",
+    "precommit": "pnpm build-docs && git add docs",
+    "version": "pnpm build-docs && git add docs/*",
     "postversion": "git push && git push --tags",
     "lint": "eslint src",
     "lint:fix": "eslint --fix src",
@@ -36,7 +36,7 @@
     "smoke-test:debug": "cross-env NODE_ENV=test node inspect ../../node_modules/.bin/mocha -t 6m --recursive src/smoke-tests --exit",
     "validate-templates": "./scripts/validate-app-templates.js",
     "set-template-versions": "./scripts/set-app-template-versions.js",
-    "validate": "yarn test && yarn smoke-test && yarn lint"
+    "validate": "pnpm test && pnpm smoke-test && pnpm lint"
   },
   "dependencies": {
     "@oclif/core": "4.5.2",

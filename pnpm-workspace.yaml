@@ -1,0 +1,7 @@
+packages:
+  - packages/*
+  - schema-to-ts
+
+onlyBuiltDependencies:
+  - aws-sdk
+  - esbuild

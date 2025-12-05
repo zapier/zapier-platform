@@ -7,7 +7,7 @@ This directory provides quick reference information for both human developers an
 ### Existing Documentation (main repository docs)
 - **[README.md](../README.md)** - Repository overview and all documentation links
 - **[ARCHITECTURE.md](../ARCHITECTURE.md)** - Repository structure and technical organization
-- **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Setup, testing, development workflow, and yarn linking
+- **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Setup, testing, development workflow, and pnpm linking
 
 ### Quick Reference (this directory)
 - **[install-dev.md](install-dev.md)** - Development CLI setup and aliases

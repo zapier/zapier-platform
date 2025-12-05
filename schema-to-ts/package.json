@@ -12,7 +12,7 @@
     "clean": "rm -rf dist",
     "generate-types": "tsx ./src/main.ts --schema-json ../packages/schema/exported-schema.json --output ../packages/core/types/schemas.generated.d.ts",
     "git-add": "git add ../packages/core/types/schemas.generated.d.ts",
-    "precommit": "yarn generate-types && yarn git-add"
+    "precommit": "pnpm generate-types && pnpm git-add"
   },
   "dependencies": {
     "@commander-js/extra-typings": "^14.0.0",
