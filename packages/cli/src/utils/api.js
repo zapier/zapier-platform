@@ -450,6 +450,13 @@ const upload = async (
   }
   const definition = JSON.parse(definitionJson);
 
+  const actionHashesJson = zip.readAsText('action-hashes.json');
+  if (!actionHashesJson) {
+    throw new Error('action-hashes.json in the zip was missing!');
+  }
+  const actionHashes = JSON.parse(actionHashesJson);
+  debug('Extracted action hashes from build.zip:', actionHashes);
+
   const binaryZip = fs.readFileSync(fullZipPath);
   const buffer = Buffer.from(binaryZip).toString('base64');
 
@@ -462,6 +469,7 @@ const upload = async (
   }
 
   const version = snapshotVersion ?? definition.version;
+
   startSpinner(`Uploading version ${version}`);
   try {
     await callAPI(
@@ -472,6 +480,7 @@ const upload = async (
           zip_file: buffer,
           source_zip_file: sourceBuffer,
           skip_validation: skipValidation,
+          action_hashes: actionHashes,
         },
         extraHeaders: headers,
       },

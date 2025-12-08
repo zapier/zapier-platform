@@ -41,6 +41,7 @@ const {
 const { copyZapierWrapper, deleteZapierWrapper } = require('./zapierwrapper');
 
 const checkMissingAppInfo = require('./check-missing-app-info');
+const { generateActionHashes } = require('./hash-actions');
 
 const { findCorePackageDir, isWindows, runCommand } = require('./misc');
 const { isBlocklisted, respectGitIgnore } = require('./ignore');
@@ -360,7 +361,7 @@ const writeBuildZipSmartly = async (workingDir, zip) => {
       }
     }
 
-    const filenames = ['package.json', 'definition.json'];
+    const filenames = ['package.json', 'definition.json', 'action-hashes.json'];
     for (const name of filenames) {
       const absPath = path.resolve(workingDir, name);
       zip.file(absPath, { name, mode: 0o644 });
@@ -452,8 +453,12 @@ const makeSourceZip = async (workingDir, zipPath) => {
 
   debug('\nSource files:');
   for (const relPath of finalRelPaths) {
-    if (relPath === 'definition.json' || relPath === 'zapierwrapper.js') {
-      // These two files are generated at build time;
+    if (
+      relPath === 'definition.json' ||
+      relPath === 'zapierwrapper.js' ||
+      relPath === 'action-hashes.json'
+    ) {
+      // These files are generated at build time;
       // they're not part of the source code.
       continue;
     }
@@ -680,6 +685,22 @@ const _buildFunc = async (
   }
 
   maybeEndSpinner();
+  maybeStartSpinner('Generating action hashes');
+
+  let actionHashes;
+  try {
+    actionHashes = await generateActionHashes(workingDir);
+    debug('Generated action hashes:', actionHashes);
+    fs.writeFileSync(
+      path.join(workingDir, 'action-hashes.json'),
+      prettyJSONstringify(actionHashes),
+    );
+  } catch (err) {
+    debug('\nAction Hash Error:\n', err, '\n');
+    throw new Error(`Failed to generate action hashes: ${err.message}`);
+  }
+
+  maybeEndSpinner();
 
   if (!skipValidation) {
     /**
@@ -748,6 +769,7 @@ const _buildFunc = async (
     maybeStartSpinner('Cleaning up temp files');
     await deleteZapierWrapper(workingDir);
     fs.rmSync(path.join(workingDir, 'definition.json'));
+    fs.rmSync(path.join(workingDir, 'action-hashes.json'));
     maybeEndSpinner();
   } else {
     maybeStartSpinner('Cleaning up temp directory');
