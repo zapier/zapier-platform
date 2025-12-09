@@ -13,7 +13,7 @@
 - Schemas are declared, one-per-file, in `schema/lib/schemas`.
 - The "root" schema is `schema/lib/schemas/AppSchema.js`, but that one doesn't change much.
 - There are also functional constraints in `schema/lib/schemas/functional-constraints`, which validate things that JSONSchema can't cover (such as pairs of fields needing to have the same keys).
-- Docs (in `schema/docs`) are generated directly from schemas via `yarn docs`.
+- Docs (in `schema/docs`) are generated directly from schemas via `pnpm build-docs`.
 - Each schema has a `validate` that will validate incoming JSON. This is used in `core` to execute the `validation` command (which is exposed as the `zapier validate` command in CLI). See `schema/lib/utils/makeValidator.js`
 
 ### Tests

@@ -14,18 +14,18 @@ See [CONTRIBUTING.md](https://github.com/zapier/zapier-platform/blob/main/CONTRI
 
 Useful commands:
 
-- `yarn` to install packages and get started
-- `yarn lint` to lint code
-- `yarn test` to run tests
-- `yarn smoke-test` to run smoke tests
-- `yarn coverage` to run tests and display test coverage
-- `yarn validate` to run tests, smoke tests, and linter
-- `yarn export` to update the exported-schema (even if only the version changes)
-- `yarn docs` to update docs (even if only the version changes)
-- `yarn build` to update docs and the exported-schema (even if only the version changes)
+- `pnpm` to install packages and get started
+- `pnpm lint` to lint code
+- `pnpm test` to run tests
+- `pnpm smoke-test` to run smoke tests
+- `pnpm coverage` to run tests and display test coverage
+- `pnpm validate` to run tests, smoke tests, and linter
+- `pnpm export` to update the exported-schema (even if only the version changes)
+- `pnpm docs` to update docs (even if only the version changes)
+- `pnpm build` to update docs and the exported-schema (even if only the version changes)
 
 ## Publishing
 
 Only do this after merging your PR to `main`.
 
-- `yarn version --[patch|minor|major]` will pull, test, update exported-schema, update docs, increment version in package.json, push tags, and publish to npm
+- `pnpm version --[patch|minor|major]` will pull, test, update exported-schema, update docs, increment version in package.json, push tags, and publish to npm

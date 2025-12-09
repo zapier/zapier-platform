@@ -46,9 +46,13 @@ const npmPackCLI = () => {
 };
 
 const npmInstall = (packagePath, workdir) => {
-  runCommand('npm', ['install', '--production', packagePath], {
-    cwd: workdir,
-  });
+  runCommand(
+    'npm',
+    ['install', '--production', '--ignore-scripts', packagePath],
+    {
+      cwd: workdir,
+    },
+  );
 };
 
 const yarnInstall = (coreZipPath, workdir) => {
@@ -64,7 +68,7 @@ const yarnInstall = (coreZipPath, workdir) => {
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson));
 
   try {
-    runCommand('yarn', [], { cwd: workdir });
+    runCommand('yarn', ['--ignore-scripts'], { cwd: workdir });
   } finally {
     fs.writeFileSync(packageJsonPath, origPackageJsonText);
   }
@@ -136,6 +140,25 @@ describe('smoke tests - setup will take some time', function () {
 
   it('cli executable should exist', () => {
     fs.existsSync(context.cliBin).should.be.true();
+  });
+
+  it('should define only one executable entry', () => {
+    const packageName = 'zapier-platform-cli';
+    const packageJsonPath = path.join(
+      context.workdir,
+      'node_modules',
+      packageName,
+      'package.json',
+    );
+    const packageJson = JSON.parse(
+      fs.readFileSync(packageJsonPath, { encoding: 'utf8' }),
+    );
+
+    // packageJson.bin can define multiple executable names, but for
+    // `npx zapier-platform-cli <args>` to work, all names must point to the
+    // same file.
+    const executables = new Set(Object.values(packageJson.bin));
+    executables.size.should.eql(1);
   });
 
   it('zapier --version', () => {
