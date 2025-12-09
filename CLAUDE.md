@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Primary Documentation (read these first)
 - **[README.md](README.md)** - Repository overview, package descriptions, all doc links
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Setup, testing workflow, pnpm linking
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Setup, testing workflow, package linking
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Repository structure and organization
 
 ### Quick Reference (for task-oriented work)
@@ -20,4 +20,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 2. **Testing workflow**: Use `pnpm validate` at root for full validation, or `cd` into specific packages for targeted testing
 3. **TypeScript types**: Generated automatically via husky hooks - no manual intervention needed
 4. **Package development**: Always understand package relationships from `docs-dev/package-info.md` before making changes
-5. **Monorepo commands**: Use pnpm workspaces from root; individual packages need `cd` first
+5. **Monorepo commands**: Use pnpm from root; individual packages need `cd` first

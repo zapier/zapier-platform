@@ -6,8 +6,7 @@ used in downstream integration application code.
 
 This tool is not intended to be pushed to NPM, but rather to be used
 during development of the Zapier Platform CLI. This is why it has been
-placed as a top-level package in this repo, and not in `packages/` and
-managed by Lerna.
+placed as a top-level package in this repo, and not in `packages/`.
 
 ## Development
 
