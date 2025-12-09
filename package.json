@@ -25,7 +25,7 @@
   },
   "scripts": {
     "test": "pnpm -r test",
-    "smoke-test": "pnpm -F zapier-platform-cli -F zapier-platform-core -F zapier-platform-schema smoke-test",
+    "smoke-test": "pnpm -r --if-present smoke-test",
     "lint": "pnpm -r lint",
     "lint:fix": "pnpm -r lint:fix",
     "lint-examples": "eslint examples",
