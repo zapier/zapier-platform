@@ -16,7 +16,7 @@ git clone git@github.com:zapier/zapier-platform.git
 cd zapier-platform
 ```
 
-In the repo directory, install dependencies with yarn:
+In the repo directory, install dependencies with pnpm:
 
 ```bash
 pnpm install
@@ -30,8 +30,8 @@ For detailed testing commands and workflow, see [docs-dev/commands.md](docs-dev/
 
 Quick overview:
 - `pnpm test` - Run all tests for all packages
-- `yarn validate` - Full validation (test + smoke-test + lint)
-- Individual packages: `cd` into package directory first, then `yarn test`
+- `pnpm validate` - Full validation (test + smoke-test + lint)
+- Individual packages: `cd` into package directory first, then `pnpm test`
 
 ## Testing Guidelines
 
@@ -70,7 +70,4 @@ For linking development versions of core and schema packages to your integration
 [license]: https://github.com/zapier/zapier-platform/blob/main/LICENSE
 [pnpm]: https://pnpm.io/installation
 [asdf]: https://asdf-vm.com
-[ci]: https://github.com/zapier/zapier-platform/actions/workflows/ci.yaml
 [releasing]: https://coda.io/d/_di0MgBhlCWf/Releasing-a-New-zapier-platform-Version_su5eD
-[mocha-only]: https://mochajs.org/#exclusive-tests
-[yarn-link]: https://classic.yarnpkg.com/en/docs/cli/link
