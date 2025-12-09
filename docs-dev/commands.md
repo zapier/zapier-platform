@@ -60,7 +60,7 @@ pnpm test              # Uses vitest (not mocha)
 ## Development Workflow Tips
 
 - **Individual package testing**: Always `cd` into package directory first
-- **Full validation**: Use `yarn validate` at root for comprehensive checking
+- **Full validation**: Use `pnpm validate` at root for comprehensive checking
 - **Focused testing**: Use `.only` in Mocha for specific test cases
 - **TypeScript types**: Generated automatically via husky precommit hooks
 

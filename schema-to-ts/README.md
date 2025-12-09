@@ -11,16 +11,16 @@ managed by Lerna.
 
 ## Development
 
-- `yarn install` for getting started.
-- `yarn test` for running unit tests.
-- `yarn build` for building this compiler into runnable js inside of `./dist/`.
-- `yarn generate-types` to actually generate the TypeScript interfaces.
+- `pnpm install` for getting started.
+- `pnpm test` for running unit tests.
+- `pnpm build` for building this compiler into runnable js inside of `./dist/`.
+- `pnpm generate-types` to actually generate the TypeScript interfaces.
   - By default, this will read `packages/schema/exported-schema.json` as input.
   - By default, this will write `packages/core/types/zapier.generated.d.ts` as output.
 
 ## "Publishing"
 
-This tool is configured via run `yarn generate-types` on every commit,
+This tool is configured via run `pnpm generate-types` on every commit,
 via husky. This will keep the generated TypeScript interfaces up to date
 with the latest schema definitions.
 

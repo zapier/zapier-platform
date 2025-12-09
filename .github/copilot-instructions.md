@@ -8,7 +8,7 @@ This is a monorepo containing the Zapier Platform Experience packages. For detai
 
 ### Primary Documentation
 - **[README.md](../README.md)** - Repository overview, package descriptions, all doc links
-- **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Setup, testing workflow, yarn linking  
+- **[CONTRIBUTING.md](../CONTRIBUTING.md)** - Setup, testing workflow, pnpm linking  
 - **[ARCHITECTURE.md](../ARCHITECTURE.md)** - Repository structure and organization
 
 ### Quick Reference
@@ -25,12 +25,12 @@ When suggesting code or providing assistance:
 2. **Package context**: Reference `docs-dev/package-info.md` to understand package relationships before suggesting changes across packages.
 
 3. **Testing approach**: 
-   - Use `yarn validate` at root for comprehensive validation
+   - Use `pnpm validate` at root for comprehensive validation
    - Individual package testing requires `cd` into the specific package directory first
    - Follow existing Mocha patterns with `.only` for focused testing
 
 4. **Monorepo workflows**:
-   - Root-level commands use yarn workspaces
+   - Root-level commands use pnpm workspaces
    - Package-specific commands require navigating to package directory
    - TypeScript types are auto-generated via husky hooks
 
@@ -44,6 +44,6 @@ When suggesting code or providing assistance:
 For complete command reference, see [docs-dev/commands.md](../docs-dev/commands.md). 
 
 Key commands:
-- `yarn test` - Run all tests
-- `yarn validate` - Full validation (test + smoke-test + lint)
-- `yarn generate-types` - Generate TypeScript declarations
+- `pnpm test` - Run all tests
+- `pnpm validate` - Full validation (test + smoke-test + lint)
+- `pnpm generate-types` - Generate TypeScript declarations
