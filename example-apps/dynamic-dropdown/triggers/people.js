@@ -1,5 +1,33 @@
 const { extractID } = require('../utils');
 
+/**
+ * PERFORM-BASED choices WITH PAGINATION (NEW pattern)
+ * Fetches planets from the Star Wars API with pagination support.
+ *
+ * - bundle.meta.paging_token is a full URL from the previous response
+ * - Return paging_token as the API's next page URL (or null if no more pages)
+ *
+ * MUST return: { results: [...], paging_token: string|null }
+ */
+const getPlanetChoices = async (z, bundle) => {
+  // paging_token is a full URL to the next page (from SWAPI's "next" field)
+  // First page: paging_token is undefined/null, use default URL
+  const url = bundle.meta.paging_token || 'https://swapi.dev/api/planets/';
+
+  const response = await z.request({ url });
+  const data = response.data;
+
+  // SWAPI returns: { results: [...], next: "url" or null }
+  return {
+    results: data.results.map((planet) => ({
+      id: extractID(planet.url),
+      label: planet.name,
+    })),
+    // Return SWAPI's next URL as our paging_token
+    paging_token: data.next,
+  };
+};
+
 // Fetches a list of records from the endpoint
 const perform = async (z, bundle) => {
   // Ideally, we should poll through all the pages of results, but in this
@@ -39,12 +67,28 @@ module.exports = {
 
   operation: {
     inputFields: [
+      // TRIGGER-BASED dynamic dropdown (legacy pattern)
+      // Uses a separate trigger to fetch choices
       {
         key: 'species_id',
         type: 'integer',
-        helpText: 'Species of person',
+        label: 'Species (trigger-based)',
+        helpText:
+          'Filter by species. Uses trigger-based dynamic dropdown (dynamic: "species.id.name").',
         dynamic: 'species.id.name',
         altersDynamicFields: true,
+      },
+      // PERFORM-BASED dynamic dropdown WITH PAGINATION (new pattern)
+      // Uses a function to fetch choices directly
+      {
+        key: 'planet_id',
+        type: 'integer',
+        label: 'Home Planet (perform-based)',
+        helpText:
+          'Filter by home planet. Uses perform-based dynamic dropdown with pagination support.',
+        choices: {
+          perform: getPlanetChoices,
+        },
       },
     ],
     perform,

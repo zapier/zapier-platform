@@ -1048,7 +1048,7 @@ Describes dynamic dropdowns powered by a perform function or request.
 #### Details
 
 * **Type** - `object`
-* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@18.0.1/packages/schema/lib/schemas/FieldDynamicChoicesSchema.js)
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@18.0.5/packages/schema/lib/schemas/FieldDynamicChoicesSchema.js)
 
 #### Properties
 
