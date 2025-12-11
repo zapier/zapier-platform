@@ -8,7 +8,7 @@ For detailed repository information, reference these documentation files:
 
 ### Primary Documentation
 - README.md - Repository overview, package descriptions, all doc links
-- CONTRIBUTING.md - Setup, testing workflow, yarn linking  
+- CONTRIBUTING.md - Setup, testing workflow, pnpm linking  
 - ARCHITECTURE.md - Repository structure and organization
 
 ### Quick Reference (docs-dev/)
@@ -25,12 +25,12 @@ When working with this codebase:
 2. **Package relationships**: Reference `docs-dev/package-info.md` to understand package interdependencies before making changes across packages.
 
 3. **Testing workflow**: 
-   - Use `yarn validate` at root for comprehensive validation
+   - Use `pnpm validate` at root for comprehensive validation
    - Individual package testing requires `cd` into the specific package directory first
    - Follow existing Mocha patterns with `.only` for focused testing
 
 4. **Monorepo patterns**:
-   - Root-level commands use yarn workspaces
+   - Root-level commands use pnpm workspaces
    - Package-specific commands require navigating to package directory
    - TypeScript types are auto-generated via husky hooks - no manual intervention needed
 
@@ -44,10 +44,10 @@ When working with this codebase:
 For complete command reference, see docs-dev/commands.md.
 
 Essential commands:
-- `yarn test` - Run all tests across all packages
-- `yarn validate` - Full validation (test + smoke-test + lint)
-- `yarn generate-types` - Generate TypeScript declarations
-- Individual packages: `cd packages/[package-name]` then `yarn test`
+- `pnpm test` - Run all tests across all packages
+- `pnpm validate` - Full validation (test + smoke-test + lint)
+- `pnpm generate-types` - Generate TypeScript declarations
+- Individual packages: `cd packages/[package-name]` then `pnpm test`
 
 ## Package Structure
 

@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-core",
-  "version": "18.0.1",
+  "version": "18.0.5",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -25,13 +25,13 @@
     "/types/"
   ],
   "scripts": {
-    "preversion": "git pull && yarn test",
-    "version": "node bin/bump-dependencies.js && yarn && git add package.json yarn.lock",
+    "preversion": "git pull && pnpm test",
+    "version": "node bin/bump-dependencies.js && pnpm install && git add package.json pnpm-lock.yaml",
     "postversion": "git push && git push --tags",
     "main-tests": "mocha -t 20s --recursive test --exit",
     "type-tests": "tsd --files types/**/*.test-d.ts",
     "solo-test": "test $(OPT_OUT_PATCH_TEST_ONLY=yes mocha --recursive test -g 'should be able to opt out of patch' -R json | jq '.stats.passes') -eq 1 && echo 'Ran 1 test and it passed!'",
-    "test": "yarn main-tests && yarn solo-test && yarn type-tests",
+    "test": "pnpm main-tests && pnpm solo-test && pnpm type-tests",
     "test:debug": "mocha inspect -t 10s --recursive test",
     "debug": "mocha -t 10s --inspect-brk --recursive test",
     "test:w": "mocha -t 10s --recursive test --watch",
@@ -43,8 +43,8 @@
     "lint:fix": "eslint --fix src test",
     "build-integration-test": "bin/build.sh local.bundle.zip",
     "upload-integration-test": "bin/upload-lambda.js local.bundle.zip",
-    "deploy-integration-test": "yarn build-integration-test && yarn upload-integration-test",
-    "validate": "yarn test && yarn smoke-test && yarn lint"
+    "deploy-integration-test": "pnpm build-integration-test && pnpm upload-integration-test",
+    "validate": "pnpm test && pnpm smoke-test && pnpm lint"
   },
   "engines": {
     "node": ">=16",
@@ -56,14 +56,14 @@
     "content-disposition": "0.5.4",
     "dotenv": "17.2.1",
     "fernet": "^0.3.3",
-    "form-data": "4.0.4",
+    "form-data": "4.0.5",
     "lodash": "4.17.21",
     "mime-types": "3.0.1",
     "node-abort-controller": "3.1.1",
     "node-fetch": "2.7.0",
     "oauth-sign": "0.9.0",
     "semver": "7.7.2",
-    "zapier-platform-schema": "18.0.1"
+    "zapier-platform-schema": "workspace:*"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.6.11",

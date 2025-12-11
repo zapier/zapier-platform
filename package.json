@@ -1,6 +1,7 @@
 {
   "name": "root",
   "private": true,
+  "packageManager": "pnpm@10.24.0",
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.32.0",
@@ -16,32 +17,23 @@
     "globals": "^15.13.0",
     "husky": "^9.1.7",
     "inquirer": "^8.0.0",
-    "lerna": "^8.2.3",
     "lint-staged": "^11.2.6",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
     "semver": "^7.7.2",
     "should": "^13"
   },
-  "workspaces": [
-    "packages/*",
-    "schema-to-ts"
-  ],
   "scripts": {
-    "test": "yarn workspaces run test && (cd schema-to-ts && yarn test)",
-    "smoke-test": "yarn workspace zapier-platform-cli run smoke-test && yarn workspace zapier-platform-core run smoke-test && yarn workspace zapier-platform-schema run smoke-test",
-    "lint": "lerna run lint",
-    "lint:fix": "lerna run lint:fix",
+    "test": "pnpm -r test",
+    "smoke-test": "pnpm -r --if-present smoke-test",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix",
     "lint-examples": "eslint examples",
-    "validate": "lerna run validate",
+    "validate": "pnpm -r validate",
     "bump": "./scripts/bump.js",
     "prepare": "husky",
-    "generate-types": "cd schema-to-ts && yarn generate-types"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lerna run --stream precommit && yarn generate-types && lint-staged"
-    }
+    "generate-types": "cd schema-to-ts && pnpm generate-types",
+    "preinstall": "npx only-allow pnpm"
   },
   "lint-staged": {
     "*.js": [

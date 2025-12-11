@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-schema",
-  "version": "18.0.1",
+  "version": "18.0.5",
   "description": "Schema definition for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -13,7 +13,7 @@
     "/schema.js"
   ],
   "scripts": {
-    "preversion": "git pull && yarn test && yarn build",
+    "preversion": "git pull && pnpm test && pnpm build",
     "test": "mocha -t 10s --recursive test --exit",
     "smoke-test": "mocha -t 10s --recursive smoke-test --exit",
     "test:debug": "mocha --recursive --inspect-brk test",
@@ -21,11 +21,11 @@
     "lint:fix": "eslint --fix lib",
     "coverage": "istanbul cover _mocha -- --recursive",
     "export": "node bin/export.js && prettier --write exported-schema.json",
-    "docs": "node bin/docs.js",
-    "build": "yarn docs && yarn export",
+    "build-docs": "node bin/docs.js",
+    "build": "pnpm build-docs && pnpm export",
     "git-add": "git add exported-schema.json README.md docs",
-    "precommit": "yarn build && yarn git-add",
-    "validate": "yarn test && yarn lint && yarn smoke-test"
+    "precommit": "pnpm build && pnpm git-add",
+    "validate": "pnpm test && pnpm lint && pnpm smoke-test"
   },
   "dependencies": {
     "jsonschema": "1.5.0",

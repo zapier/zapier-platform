@@ -1,1 +1,1 @@
-yarn lerna run --stream precommit && yarn generate-types && yarn lint-staged
+pnpm -r precommit && lint-staged
