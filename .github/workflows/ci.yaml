@@ -183,3 +183,6 @@ jobs:
       - name: Smoke test - cli
         run: pnpm smoke-test
         working-directory: packages/cli
+      - name: Test npx resolution
+        run: npx . --version
+        working-directory: packages/cli
