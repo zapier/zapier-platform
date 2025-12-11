@@ -71,7 +71,7 @@
     "semver": "7.7.2",
     "string-length": "4.0.2",
     "through2": "4.0.2",
-    "tmp": "0.2.4",
+    "tmp": "0.2.5",
     "traverse": "0.6.11",
     "update-notifier": "7.3.1",
     "yeoman-environment": "4.4.3",
