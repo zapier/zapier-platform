@@ -268,6 +268,9 @@ const createLambdaHandler = (appRawOrPath) => {
           reject(loggedErr);
         } finally {
           await logger.end();
+          // Clean up environment variables that were applied during invocation
+          // to prevent cross-contamination when Lambda containers are reused
+          environmentTools.cleanEnvironment(event);
         }
       });
     });

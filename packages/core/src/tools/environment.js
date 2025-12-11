@@ -18,7 +18,9 @@ const applyEnvironment = (event) => {
 };
 
 // Remove junk from process.env.
-const cleanEnvironment = () => {
+// If event is provided, also removes environment variables that were applied
+// during invocation to prevent cross-contamination when Lambda containers are reused.
+const cleanEnvironment = (event) => {
   // not really a security measure - just prevent useless security bounty emails
   if (
     process.env.AWS_LAMBDA_FUNCTION_VERSION ||
@@ -35,6 +37,15 @@ const cleanEnvironment = () => {
   ENV_VARS_TO_CLEAN.forEach((name) => {
     delete process.env[name];
   });
+
+  // If event is provided, clean up environment variables that were applied during invocation
+  if (event) {
+    event = ensurePath(event, 'bundle');
+    const envKeys = Object.keys(event.environment || {});
+    envKeys.forEach((key) => {
+      delete process.env[key];
+    });
+  }
 };
 
 const localFilepath = (filename) => {
