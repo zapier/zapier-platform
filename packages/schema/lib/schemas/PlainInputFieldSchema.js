@@ -46,6 +46,12 @@ module.exports = makeSchema(
         type: 'array',
         items: { type: 'string' },
       },
+      resourceKey: {
+        description:
+          'Explicitly links this input field to a resource or asset. If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.',
+        type: 'string',
+        minLength: 1,
+      },
       choices: {
         description:
           'Describes how to populate this dropdown. Can be a static list or a dynamic object with pagination and search support.',
@@ -125,6 +131,11 @@ module.exports = makeSchema(
       {
         key: 'worksheet',
         dependsOn: ['folder', 'spreadsheet'],
+      },
+      {
+        key: 'spreadsheet_id',
+        resourceKey: 'spreadsheets',
+        choices: { perform: '$func$0$f$' },
       },
     ],
     antiExamples: [
