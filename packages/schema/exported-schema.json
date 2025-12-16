@@ -865,6 +865,29 @@
         "steadyState": {
           "description": "Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.",
           "type": "boolean"
+        },
+        "sample": {
+          "description": "An example value for this field. Can be any type (string, number, boolean, object, array, null) to match the expected field output. Values provided here will be combined with values in the operation level `sample` field, with this field taking precedence. This is most useful when using a function to generate dynamic `outputFields`.",
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "object"
+            },
+            {
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "additionalProperties": false
