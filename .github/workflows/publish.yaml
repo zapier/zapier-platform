@@ -17,16 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Determine release type
-        id: release-type
-        run: |
-          BRANCH="${{ github.event.pull_request.head.ref }}"
-          if [[ "$BRANCH" == release-legacy-* ]]; then
-            echo "type=legacy" >> $GITHUB_OUTPUT
-          else
-            echo "type=main" >> $GITHUB_OUTPUT
-          fi
-
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -44,28 +34,37 @@ jobs:
         run: pnpm install
 
       - name: Publish schema
-        if: steps.release-type.outputs.type == 'main'
         run: pnpm publish --no-git-checks
         working-directory: packages/schema
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish core
-        if: steps.release-type.outputs.type == 'main'
         run: pnpm publish --no-git-checks
         working-directory: packages/core
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish cli
-        if: steps.release-type.outputs.type == 'main'
         run: pnpm publish --no-git-checks
         working-directory: packages/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Check if legacy-scripting-runner changed
+        id: check-legacy
+        run: |
+          git fetch origin main --depth=1
+          if git diff origin/main --name-only | grep -q "packages/legacy-scripting-runner/package.json"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "legacy-scripting-runner/package.json was modified"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "legacy-scripting-runner/package.json unchanged"
+          fi
+
       - name: Publish legacy-scripting-runner
-        if: steps.release-type.outputs.type == 'legacy'
+        if: steps.check-legacy.outputs.changed == 'true'
         run: pnpm publish --no-git-checks
         working-directory: packages/legacy-scripting-runner
         env:
