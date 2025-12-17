@@ -62,7 +62,7 @@ describe('build (runs slowly)', function () {
     appPackageJson.dependencies[PLATFORM_PACKAGE] = corePackage.path;
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
 
-    runCommand('npm', ['i'], { cwd: tmpDir });
+    runCommand('npm', ['install', '--ignore-scripts'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -501,7 +501,7 @@ describe('build in lerna monorepo', function () {
     // lerna@7 removed the bootstrap command, so we use lerna@6.
     // Lerna now actually recommends using the workspace feature from your
     // package manager, so this test suite is more of a regression test.
-    await runCommand('npx', ['lerna@6', 'bootstrap', '--no-ci'], {
+    runCommand('npx', ['lerna@6', 'bootstrap', '--no-ci'], {
       cwd: monorepo.repoDir,
     });
   });
@@ -692,10 +692,12 @@ describe('build in yarn workspaces', function () {
 
   before(async () => {
     monorepo = await setupYarnMonorepo();
-    await runCommand('yarn', ['install'], { cwd: monorepo.repoDir });
+    runCommand('yarn', ['install', '--ignore-scripts'], {
+      cwd: monorepo.repoDir,
+    });
 
     // Will be used to test yarn-linked zapier-platform-core package works
-    await runCommand('yarn', ['link'], {
+    runCommand('yarn', ['link'], {
       cwd: path.dirname(monorepo.corePackage.path),
     });
   });
@@ -897,7 +899,7 @@ describe('build in yarn workspaces', function () {
     const appDir = path.join(monorepo.repoDir, 'packages', 'app-2');
     const coreDir = path.dirname(monorepo.corePackage.path);
 
-    await runCommand('yarn', ['link', 'zapier-platform-core'], { cwd: appDir });
+    runCommand('yarn', ['link', 'zapier-platform-core'], { cwd: appDir });
 
     fs.lstatSync(path.join(appDir, 'node_modules', 'zapier-platform-core'))
       .isSymbolicLink()
@@ -975,7 +977,7 @@ describe('build in pnpm workspaces', () => {
 
   before(async () => {
     monorepo = await setupPnpmMonorepo();
-    await runCommand('pnpm', ['install'], { cwd: monorepo.repoDir });
+    runCommand('pnpm', ['install'], { cwd: monorepo.repoDir });
 
     // For context, after `pnpm install`, the directory tree looks like this:
     //
@@ -1400,7 +1402,7 @@ describe('build ESM (runs slowly)', function () {
     appPackageJson.dependencies[PLATFORM_PACKAGE] = corePackage.path;
     fs.writeFileSync(appPackageJsonPath, JSON.stringify(appPackageJson));
 
-    runCommand('npm', ['i'], { cwd: tmpDir });
+    runCommand('npm', ['install', '--ignore-scripts'], { cwd: tmpDir });
     // TODO: This test depends on how "oauth2-typescript" example is set up, which
     // isn't good. Should refactor not to rely on that.
     runCommand('npm', ['run', 'build', '--scripts-prepend-node-path'], {
@@ -1571,7 +1573,7 @@ module.exports = {
       }),
     );
 
-    runCommand('npm', ['install'], { cwd: tmpDir });
+    runCommand('npm', ['install', '--ignore-scripts'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -1651,7 +1653,7 @@ export default {
       }),
     );
 
-    runCommand('npm', ['install'], { cwd: tmpDir });
+    runCommand('npm', ['install', '--ignore-scripts'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -1727,7 +1729,7 @@ run();`,
       }),
     );
 
-    runCommand('npm', ['install'], { cwd: tmpDir });
+    runCommand('npm', ['install', '--ignore-scripts'], { cwd: tmpDir });
     entryPoint = path.resolve(tmpDir, 'index.js');
   });
 
@@ -1817,7 +1819,12 @@ export default {
       }),
     );
 
-    await runCommand('npm', ['install'], { cwd: appDir });
+    // ssh2 requires building native code, so we install it first with
+    // --ignore-scripts disabled.
+    runCommand('npm', ['install', '--ignore-scripts', 'false', 'ssh2@1.16.0'], {
+      cwd: appDir,
+    });
+    runCommand('npm', ['install', '--ignore-scripts'], { cwd: appDir });
 
     await build.buildAndOrUpload(
       { build: true, upload: false },
