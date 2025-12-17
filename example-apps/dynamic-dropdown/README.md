@@ -77,7 +77,6 @@ This integration uses the [Star Wars API](https://swapi.dev/) to demonstrate:
 
 - **Species dropdown** - Trigger-based pattern using the `species` trigger
 - **Planet dropdown** - Perform-based pattern with pagination
-- **Film dropdown** - Perform-based pattern without pagination (single page)
 
 ## Getting Started
 

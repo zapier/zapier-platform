@@ -1735,6 +1735,13 @@ export interface PlainInputField {
   dependsOn?: string[];
 
   /**
+   * Explicitly links this input field to a resource or asset. If not
+   * set for dynamic dropdowns, the resource is derived implicitly
+   * from the `dynamic` property.
+   */
+  resourceKey?: string;
+
+  /**
    * Describes how to populate this dropdown. Can be a static list or
    * a dynamic object with pagination and search support.
    */
