@@ -2,17 +2,6 @@ name: CI
 
 on: push
 
-  # Manual publish trigger - uncomment to enable
-  # workflow_dispatch:
-  #   inputs:
-  #     package:
-  #       description: 'Package(s) to publish'
-  #       required: true
-  #       type: choice
-  #       options:
-  #         - schema, core, cli
-  #         - legacy-scripting-runner
-
 jobs:
   lint:
     name: Lint

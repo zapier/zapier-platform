@@ -1,0 +1,73 @@
+name: Publish
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    # Only run when a release-* PR is merged
+    if: |
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release-')
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine release type
+        id: release-type
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          if [[ "$BRANCH" == release-legacy-* ]]; then
+            echo "type=legacy" >> $GITHUB_OUTPUT
+          else
+            echo "type=main" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.24.0
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Publish schema
+        if: steps.release-type.outputs.type == 'main'
+        run: pnpm publish --no-git-checks
+        working-directory: packages/schema
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish core
+        if: steps.release-type.outputs.type == 'main'
+        run: pnpm publish --no-git-checks
+        working-directory: packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish cli
+        if: steps.release-type.outputs.type == 'main'
+        run: pnpm publish --no-git-checks
+        working-directory: packages/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish legacy-scripting-runner
+        if: steps.release-type.outputs.type == 'legacy'
+        run: pnpm publish --no-git-checks
+        working-directory: packages/legacy-scripting-runner
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
