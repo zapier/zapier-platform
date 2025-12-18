@@ -32,8 +32,7 @@
     "validate": "pnpm -r validate",
     "bump": "./scripts/bump.js",
     "prepare": "husky",
-    "generate-types": "cd schema-to-ts && pnpm generate-types",
-    "preinstall": "npx only-allow pnpm"
+    "generate-types": "cd schema-to-ts && pnpm generate-types"
   },
   "lint-staged": {
     "*.js": [

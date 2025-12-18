@@ -151,7 +151,7 @@ const isValidAppInstall = () => {
 };
 
 const npmInstall = (appDir) => {
-  return runCommand('npm', ['install'], { cwd: appDir });
+  return runCommand('npm', ['install', '--ignore-scripts'], { cwd: appDir });
 };
 
 /*
