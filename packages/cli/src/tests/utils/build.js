@@ -699,6 +699,13 @@ describe('build in yarn workspaces', function () {
     // Will be used to test yarn-linked zapier-platform-core package works
     runCommand('yarn', ['link'], {
       cwd: path.dirname(monorepo.corePackage.path),
+      env: {
+        ...process.env,
+        // Workaround for yarn 1.22.21
+        // https://github.com/yarnpkg/yarn/issues/9015
+        // https://github.com/yarnpkg/yarn/commit/a84723816a81908214a5eb69fbf55fec0326b35a
+        SKIP_YARN_COREPACK_CHECK: '1',
+      },
     });
   });
 
