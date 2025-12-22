@@ -34,7 +34,7 @@ jobs:
         run: pnpm install
 
       - name: Publish schema
-        run: npm publish --provenance --dry-run
+        run: npm publish --provenance --dry-run --tag beta
         working-directory: packages/schema
 
       - name: Publish core
