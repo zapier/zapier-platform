@@ -1,18 +1,16 @@
 name: Publish
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  workflow_dispatch:
 
 jobs:
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
-    # Only run when a release-* PR is merged
-    if: |
-      github.event.pull_request.merged == true &&
-      startsWith(github.event.pull_request.head.ref, 'release-')
+    # Only run when on a release-* branch
+    if: startsWith(github.ref_name, 'release-')
+    permissions:
+      id-token: write  # Required for OIDC trusted publishing
 
     steps:
       - uses: actions/checkout@v4
@@ -26,7 +24,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
 
@@ -34,39 +32,18 @@ jobs:
         run: pnpm install
 
       - name: Publish schema
-        run: pnpm publish --no-git-checks
+        run: npm publish --provenance --dry-run
         working-directory: packages/schema
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish core
-        run: pnpm publish --no-git-checks
+        run: npm publish --provenance --dry-run
         working-directory: packages/core
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish cli
-        run: pnpm publish --no-git-checks
+        run: npm publish --provenance --dry-run
         working-directory: packages/cli
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Check if legacy-scripting-runner changed
-        id: check-legacy
-        run: |
-          git fetch origin main --depth=1
-          if git diff origin/main --name-only | grep -q "packages/legacy-scripting-runner/package.json"; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-            echo "legacy-scripting-runner/package.json was modified"
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "legacy-scripting-runner/package.json unchanged"
-          fi
 
       - name: Publish legacy-scripting-runner
-        if: steps.check-legacy.outputs.changed == 'true'
-        run: pnpm publish --no-git-checks
+        run: npm publish --provenance --dry-run
         working-directory: packages/legacy-scripting-runner
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
