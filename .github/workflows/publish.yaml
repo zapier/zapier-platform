@@ -2,13 +2,15 @@ name: Publish
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - 'release-*'
 
 jobs:
   publish:
     name: Publish to npm
     runs-on: ubuntu-latest
-    # Only run when on a release-* branch
-    if: startsWith(github.ref_name, 'release-')
+    environment: npm-publish  # Requires manual approval in GitHub settings
     permissions:
       id-token: write  # Required for OIDC trusted publishing
 
