@@ -1,7 +1,10 @@
 name: Publish
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # temp
+  push:
+    branches:
+      - 'release-test-publish'  # temp
   pull_request:
     types: [closed]
     branches:
@@ -10,7 +13,7 @@ on:
 jobs:
   publish:
     name: Publish to npm
-    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-'))
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-')) #temp
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # Required for OIDC trusted publishing
