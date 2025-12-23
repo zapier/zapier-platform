@@ -38,18 +38,18 @@ jobs:
         run: pnpm install
 
       - name: Publish schema
-        run: pnpm publish --provenance --dry-run
+        run: pnpm publish --provenance --dry-run --no-git-checks
         working-directory: packages/schema
 
       - name: Publish core
-        run: pnpm publish --provenance --dry-run
+        run: pnpm publish --provenance --dry-run --no-git-checks
         working-directory: packages/core
 
       - name: Publish cli
-        run: pnpm publish --provenance --dry-run
+        run: pnpm publish --provenance --dry-run --no-git-checks
         working-directory: packages/cli
 
       - name: Publish legacy-scripting-runner
-        run: pnpm publish --provenance --dry-run
+        run: pnpm publish --provenance --dry-run --no-git-checks
         working-directory: packages/legacy-scripting-runner
 
