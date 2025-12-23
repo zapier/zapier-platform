@@ -10,7 +10,7 @@ on:
 jobs:
   publish:
     name: Publish to npm
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-')
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-'))
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # Required for OIDC trusted publishing
