@@ -9,6 +9,7 @@ on:
 jobs:
   publish:
     name: Publish to npm
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     environment: npm-publish  # Requires manual approval in GitHub settings
     permissions:
@@ -34,18 +35,18 @@ jobs:
         run: pnpm install
 
       - name: Publish schema
-        run: npm publish --provenance --dry-run --tag beta
+        run: npm publish --provenance
         working-directory: packages/schema
 
       - name: Publish core
-        run: npm publish --provenance --dry-run
+        run: npm publish --provenance
         working-directory: packages/core
 
       - name: Publish cli
-        run: npm publish --provenance --dry-run
+        run: npm publish --provenance
         working-directory: packages/cli
 
       - name: Publish legacy-scripting-runner
-        run: npm publish --provenance --dry-run
+        run: npm publish --provenance
         working-directory: packages/legacy-scripting-runner
 
