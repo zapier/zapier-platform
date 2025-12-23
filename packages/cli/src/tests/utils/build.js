@@ -931,7 +931,7 @@ describe('build in yarn workspaces', function () {
     );
     await decompress(zipPath, unzipDir);
 
-    // `zapier build --skip-npm-install` uses the common ancestor of the app
+    // `zapier build --skip-dep-install` uses the common ancestor of the app
     // directory (monorepo.repoDir) and the zapier-platform repo.
     // In GitHub's CI environment, zipRoot will be:
     // - '/' on Linux and macOS

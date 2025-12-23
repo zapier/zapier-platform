@@ -4,6 +4,10 @@ const { getPackageManager } = require('../../utils/package-manager');
 
 describe('package manager utils', () => {
   describe('getPackageManager', () => {
+    afterEach(() => {
+      mock.restore();
+    });
+
     it('should identify npm correctly', async () => {
       mock(
         {
@@ -24,8 +28,6 @@ describe('package manager utils', () => {
         executable: 'npm',
         useDoubleHyphenBeforeArgs: true,
       });
-
-      mock.restore();
     });
 
     it('should identify yarn correctly', async () => {
@@ -48,8 +50,6 @@ describe('package manager utils', () => {
         executable: 'yarn',
         useDoubleHyphenBeforeArgs: false,
       });
-
-      mock.restore();
     });
 
     it('should identify pnpm correctly', async () => {
@@ -72,8 +72,6 @@ describe('package manager utils', () => {
         executable: 'pnpm',
         useDoubleHyphenBeforeArgs: true,
       });
-
-      mock.restore();
     });
 
     it('should force yarn correctly', async () => {
@@ -96,8 +94,6 @@ describe('package manager utils', () => {
         executable: 'yarn',
         useDoubleHyphenBeforeArgs: false,
       });
-
-      mock.restore();
     });
 
     it('should force pnpm correctly', async () => {
@@ -120,8 +116,6 @@ describe('package manager utils', () => {
         executable: 'pnpm',
         useDoubleHyphenBeforeArgs: true,
       });
-
-      mock.restore();
     });
 
     it('should use npm by default', async () => {
@@ -144,8 +138,45 @@ describe('package manager utils', () => {
         executable: 'npm',
         useDoubleHyphenBeforeArgs: true,
       });
+    });
 
-      mock.restore();
+    it('should use package.json packageManager if defined', async () => {
+      mock(
+        {
+          'package.json': JSON.stringify({ packageManager: 'pnpm@6.32.4' }),
+        },
+        {
+          createCwd: true,
+          createTmp: true,
+        },
+      );
+
+      const man = await getPackageManager({});
+
+      man.should.containEql({
+        executable: 'pnpm',
+        useDoubleHyphenBeforeArgs: true,
+      });
+    });
+
+    it('should fall back to lock file if packageManager is undefined', async () => {
+      mock(
+        {
+          'package.json': JSON.stringify({ name: 'test-app' }),
+          'yarn.lock': '',
+        },
+        {
+          createCwd: true,
+          createTmp: true,
+        },
+      );
+
+      const man = await getPackageManager({});
+
+      man.should.containEql({
+        executable: 'yarn',
+        useDoubleHyphenBeforeArgs: false,
+      });
     });
   });
 });
