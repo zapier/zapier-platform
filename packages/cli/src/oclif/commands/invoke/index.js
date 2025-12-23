@@ -11,16 +11,16 @@ const dotenv = require('dotenv');
 const chrono = require('chrono-node');
 const { DateTime, IANAZone } = require('luxon');
 
-const BaseCommand = require('../ZapierBaseCommand');
-const { buildFlags } = require('../buildFlags');
-const { localAppCommand } = require('../../utils/local');
-const { startSpinner, endSpinner } = require('../../utils/display');
+const BaseCommand = require('../../ZapierBaseCommand');
+const { buildFlags } = require('../../buildFlags');
+const { localAppCommand } = require('../../../utils/local');
+const { startSpinner, endSpinner } = require('../../../utils/display');
 const {
   getLinkedAppConfig,
   listAuthentications,
   readCredentials,
-} = require('../../utils/api');
-const { AUTH_KEY } = require('../../constants');
+} = require('../../../utils/api');
+const { AUTH_KEY } = require('../../../constants');
 
 const ACTION_TYPE_PLURALS = {
   trigger: 'triggers',
