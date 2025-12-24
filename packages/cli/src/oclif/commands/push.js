@@ -8,7 +8,7 @@ const BuildCommand = require('./build');
 const { buildAndOrUpload } = require('../../utils/build');
 class PushCommand extends ZapierBaseCommand {
   async perform() {
-    const skipNpmInstall = this.flags['skip-npm-install'];
+    const skipDepInstall = this.flags['skip-dep-install'];
 
     const snapshotLabel = this.flags.snapshot;
     if (snapshotLabel && snapshotLabel.length > 12) {
@@ -22,7 +22,7 @@ class PushCommand extends ZapierBaseCommand {
     await buildAndOrUpload(
       { build: true, upload: true },
       {
-        skipNpmInstall,
+        skipDepInstall,
         disableDependencyDetection: this.flags['disable-dependency-detection'],
         skipValidation: this.flags['skip-validation'],
         overwritePartnerChanges: this.flags['overwrite-partner-changes'],
@@ -33,9 +33,9 @@ class PushCommand extends ZapierBaseCommand {
       `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`,
     );
 
-    if (!skipNpmInstall) {
+    if (!skipDepInstall) {
       this.log(
-        `\nTip: Try ${colors.bold.underline('zapier push --skip-npm-install')} for faster builds.`,
+        `\nTip: Try ${colors.bold.underline('zapier push --skip-dep-install')} for faster builds.`,
       );
     }
   }
