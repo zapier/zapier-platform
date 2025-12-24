@@ -12,11 +12,11 @@ const colors = require('colors/safe');
 
 class BuildCommand extends BaseCommand {
   async perform() {
-    const skipNpmInstall = this.flags['skip-dep-install'];
+    const skipDepInstall = this.flags['skip-dep-install'];
     await buildAndOrUpload(
       { build: true },
       {
-        skipNpmInstall,
+        skipDepInstall,
         disableDependencyDetection: this.flags['disable-dependency-detection'],
         skipValidation: this.flags['skip-validation'],
       },
@@ -27,7 +27,7 @@ class BuildCommand extends BaseCommand {
         `Now you can upload them with the ${colors.bold.underline('zapier upload')} command.`,
     );
 
-    if (!skipNpmInstall) {
+    if (!skipDepInstall) {
       this.log(
         `\nTip: Try ${colors.bold.underline('zapier build --skip-dep-install')} for faster builds.`,
       );

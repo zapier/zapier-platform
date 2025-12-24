@@ -537,7 +537,7 @@ describe('build in lerna monorepo', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -616,7 +616,7 @@ describe('build in lerna monorepo', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -751,7 +751,7 @@ describe('build in yarn workspaces', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -833,7 +833,7 @@ describe('build in yarn workspaces', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -923,7 +923,7 @@ describe('build in yarn workspaces', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -1083,7 +1083,7 @@ describe('build in pnpm workspaces', () => {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -1254,7 +1254,7 @@ describe('build in pnpm workspaces', () => {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -1837,7 +1837,7 @@ export default {
       { build: true, upload: false },
       {
         cwd: appDir,
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
