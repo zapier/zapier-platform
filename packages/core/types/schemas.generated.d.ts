@@ -1728,10 +1728,24 @@ export interface PlainInputField {
   dynamic?: RefResource;
 
   /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
+   * Specifies which other input fields this field depends on. These
+   * must be filled before this one becomes enabled, and when their
+   * values change, this field's value should be cleared.
    */
-  choices?: FieldChoices;
+  dependsOn?: string[];
+
+  /**
+   * Explicitly links this input field to a resource or asset. If not
+   * set for dynamic dropdowns, the resource is derived implicitly
+   * from the `dynamic` property.
+   */
+  resourceKey?: string;
+
+  /**
+   * Describes how to populate this dropdown. Can be a static list or
+   * a dynamic object with pagination and search support.
+   */
+  choices?: FieldChoices | FieldDynamicChoices;
 
   /** An example value that is not saved. */
   placeholder?: string;
@@ -1786,6 +1800,18 @@ export interface InputFieldGroup {
  * format of: `{resource_key}.{foreign_key}(.{human_label_key})`.
  */
 export type RefResource = string;
+
+/**
+ * Describes dynamic dropdowns powered by a perform function or
+ * request.
+ */
+export interface FieldDynamicChoices {
+  /**
+   * A function or request that returns choices for this dynamic
+   * dropdown.
+   */
+  perform: Function | Request;
+}
 
 /** Allows for additional metadata to be stored on the field. */
 export type FieldMeta = Record<string, string | number | boolean>;
