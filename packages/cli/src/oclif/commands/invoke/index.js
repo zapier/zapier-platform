@@ -1,3 +1,8 @@
+// TODO: modularize
+// - prompters
+// - timezone
+// - field type resolvers
+// - ...
 const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const http = require('node:http');
@@ -7,20 +12,17 @@ const { Args, Flags } = require('@oclif/core');
 const debug = require('debug')('zapier:invoke');
 const dotenv = require('dotenv');
 
-// Datetime related imports
-const chrono = require('chrono-node');
-const { DateTime, IANAZone } = require('luxon');
-
-const BaseCommand = require('../ZapierBaseCommand');
-const { buildFlags } = require('../buildFlags');
-const { localAppCommand } = require('../../utils/local');
-const { startSpinner, endSpinner } = require('../../utils/display');
+const BaseCommand = require('../../ZapierBaseCommand');
+const { buildFlags } = require('../../buildFlags');
+const { localAppCommand } = require('../../../utils/local');
+const { startSpinner, endSpinner } = require('../../../utils/display');
 const {
   getLinkedAppConfig,
   listAuthentications,
   readCredentials,
-} = require('../../utils/api');
-const { AUTH_KEY } = require('../../constants');
+} = require('../../../utils/api');
+const { AUTH_KEY } = require('../../../constants');
+const resolveInputDataTypes = require('./input-types');
 
 const ACTION_TYPE_PLURALS = {
   trigger: 'triggers',
@@ -31,28 +33,6 @@ const ACTION_TYPE_PLURALS = {
 const ACTION_TYPES = ['auth', ...Object.keys(ACTION_TYPE_PLURALS)];
 
 const AUTH_FIELD_ENV_PREFIX = 'authData_';
-
-const NUMBER_CHARSET = '0123456789.-,';
-
-const FALSE_STRINGS = new Set([
-  'noo',
-  'no',
-  'n',
-  'false',
-  'nope',
-  'f',
-  'never',
-  'no thanks',
-  'no thank you',
-  'nul',
-  '0',
-  'none',
-  'nil',
-  'nill',
-  'null',
-]);
-
-const TRUE_STRINGS = new Set([['yes', 'yeah', 'y', 'true', 't', '1']]);
 
 const loadAuthDataFromEnv = () => {
   return Object.entries(process.env)
@@ -83,160 +63,6 @@ const getMissingRequiredInputFields = (inputData, inputFields) => {
   return inputFields.filter(
     (f) => f.required && !f.default && !inputData[f.key],
   );
-};
-
-const parseDecimal = (s) => {
-  const chars = [];
-  for (const c of s) {
-    if (NUMBER_CHARSET.includes(c)) {
-      chars.push(c);
-    }
-  }
-  const cleaned = chars.join('').replace(/[.,-]$/, '');
-  return parseFloat(cleaned);
-};
-
-const parseInteger = (s) => {
-  const n = parseInt(s);
-  if (!isNaN(n)) {
-    return n;
-  }
-  return Math.floor(parseDecimal(s));
-};
-
-const parseBoolean = (s) => {
-  s = s.toLowerCase();
-  if (TRUE_STRINGS.has(s)) {
-    return true;
-  }
-  if (FALSE_STRINGS.has(s)) {
-    return false;
-  }
-  return Boolean(s);
-};
-
-const parsingCompsToString = (parsingComps) => {
-  const yyyy = parsingComps.get('year');
-  const mm = String(parsingComps.get('month')).padStart(2, '0');
-  const dd = String(parsingComps.get('day')).padStart(2, '0');
-  const hh = String(parsingComps.get('hour')).padStart(2, '0');
-  const ii = String(parsingComps.get('minute')).padStart(2, '0');
-  const ss = String(parsingComps.get('second')).padStart(2, '0');
-  return `${yyyy}-${mm}-${dd}T${hh}:${ii}:${ss}`;
-};
-
-const hasTimeInfo = (parsingComps) => {
-  const tags = [...parsingComps.tags()];
-  for (const tag of tags) {
-    if (tag.includes('ISOFormat') || tag.includes('Time')) {
-      return true;
-    }
-  }
-  return false;
-};
-
-const maybeImplyTimeInfo = (parsingComps) => {
-  if (!hasTimeInfo(parsingComps)) {
-    parsingComps.imply('hour', 9);
-    parsingComps.imply('minute', 0);
-    parsingComps.imply('second', 0);
-    parsingComps.imply('millisecond', 0);
-  }
-  return parsingComps;
-};
-
-const parseTimestamp = (dtString, tzName) => {
-  const match = dtString.match(/-?\d{10,14}/);
-  if (!match) {
-    return null;
-  }
-
-  dtString = match[0];
-  let timestamp = parseInt(dtString);
-  if (dtString.length <= 12) {
-    timestamp *= 1000;
-  }
-
-  return DateTime.fromMillis(timestamp, { zone: tzName }).toFormat(
-    "yyyy-MM-dd'T'HH:mm:ssZZ",
-  );
-};
-
-const parseDatetime = (dtString, tzName, now) => {
-  const timestampResult = parseTimestamp(dtString, tzName);
-  if (timestampResult) {
-    return timestampResult;
-  }
-
-  const offset = IANAZone.create(tzName).offset(now.getTime());
-  const results = chrono.parse(dtString, {
-    instant: now,
-    timezone: offset,
-  });
-
-  let isoString;
-  if (results.length) {
-    const parsingComps = results[0].start;
-    if (parsingComps.get('timezoneOffset') == null) {
-      // No timezone info in the input string => interpret the datetime string
-      // exactly as it is and append the timezone
-      isoString = parsingCompsToString(maybeImplyTimeInfo(parsingComps));
-    } else {
-      // Timezone info is present or implied in the input string => convert the
-      // datetime to the specified timezone
-      isoString = maybeImplyTimeInfo(parsingComps).date().toISOString();
-    }
-  } else {
-    // No datetime info in the input string => just return the current time
-    isoString = now.toISOString();
-  }
-
-  return DateTime.fromISO(isoString, { zone: tzName }).toFormat(
-    "yyyy-MM-dd'T'HH:mm:ssZZ",
-  );
-};
-
-const resolveInputDataTypes = (inputData, inputFields, timezone) => {
-  const fieldsWithDefault = inputFields.filter((f) => f.default);
-  for (const f of fieldsWithDefault) {
-    if (!inputData[f.key]) {
-      inputData[f.key] = f.default;
-    }
-  }
-
-  const inputFieldsByKey = _.keyBy(inputFields, 'key');
-  for (const [k, v] of Object.entries(inputData)) {
-    const inputField = inputFieldsByKey[k];
-    if (!inputField) {
-      continue;
-    }
-
-    switch (inputField.type) {
-      case 'integer':
-        inputData[k] = parseInteger(v);
-        break;
-      case 'number':
-        inputData[k] = parseDecimal(v);
-        break;
-      case 'boolean':
-        inputData[k] = parseBoolean(v);
-        break;
-      case 'datetime':
-        inputData[k] = parseDatetime(v, timezone, new Date());
-        break;
-      case 'file':
-        // TODO: How to handle a file field?
-        break;
-      // TODO: Handle 'list' and 'dict' types?
-      default:
-        // No need to do anything with 'string' type
-        break;
-    }
-  }
-
-  // TODO: Handle line items (fields with "children")
-
-  return inputData;
 };
 
 const appendEnv = async (vars, prefix = '') => {
@@ -334,56 +160,39 @@ const localAppCommandWithRelayErrorHandler = async (args) => {
   return output;
 };
 
-const testAuth = async (
-  authId,
-  authData,
-  meta,
-  zcacheTestObj,
-  appId,
-  deployKey,
-) => {
+const testAuth = async (context) => {
   startSpinner('Invoking authentication.test');
   const result = await localAppCommandWithRelayErrorHandler({
     command: 'execute',
     method: 'authentication.test',
     bundle: {
-      authData,
+      authData: context.authData,
       meta: {
-        ...meta,
+        ...context.meta,
         isTestingAuth: true,
       },
     },
-    zcacheTestObj,
+    zcacheTestObj: context.zcacheTestObj,
     customLogger,
     calledFromCliInvoke: true,
-    appId,
-    deployKey,
-    relayAuthenticationId: authId,
+    appId: context.appId,
+    deployKey: context.deployKey,
+    relayAuthenticationId: context.authId,
   });
   endSpinner();
   return result;
 };
 
-const getAuthLabel = async (
-  labelTemplate,
-  authId,
-  authData,
-  meta,
-  zcacheTestObj,
-  appId,
-  deployKey,
-) => {
-  const testResult = await testAuth(
-    authId,
-    authData,
-    meta,
-    zcacheTestObj,
-    appId,
-    deployKey,
-  );
-  labelTemplate = labelTemplate.replace('__', '.');
+const getAuthLabel = async (context) => {
+  const testResult = await testAuth(context);
+  const labelTemplate = (
+    context.appDefinition.authentication.connectionLabel ?? ''
+  ).replaceAll('__', '.');
   const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
-  return tpl({ ...testResult, bundle: { authData, inputData: testResult } });
+  return tpl({
+    ...testResult,
+    bundle: { authData: context.authData, inputData: testResult },
+  });
 };
 
 const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
@@ -472,8 +281,8 @@ class InvokeCommand extends BaseCommand {
     return authData;
   }
 
-  async startBasicAuth(authFields) {
-    if (this.nonInteractive) {
+  async startBasicAuth(context) {
+    if (context.nonInteractive) {
       throw new Error(
         'The `auth start` subcommand for "basic" authentication type only works in interactive mode.',
       );
@@ -492,22 +301,22 @@ class InvokeCommand extends BaseCommand {
     ]);
   }
 
-  async startCustomAuth(authFields, zcacheTestObj) {
-    if (this.nonInteractive) {
+  async startCustomAuth(context) {
+    if (context.nonInteractive) {
       throw new Error(
         'The `auth start` subcommand for "custom" authentication type only works in interactive mode.',
       );
     }
-    return this.promptForAuthFields(authFields);
+    return this.promptForAuthFields(
+      context.appDefinition.authentication.fields,
+    );
   }
 
-  async startOAuth2(appDefinition, zcacheTestObj) {
-    const redirectUri = this.flags['redirect-uri'];
-    const port = this.flags['local-port'];
+  async startOAuth2(context) {
     const env = {};
 
     if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
-      if (this.nonInteractive) {
+      if (context.nonInteractive) {
         throw new Error(
           'CLIENT_ID and CLIENT_SECRET must be set in the .env file in non-interactive mode.',
         );
@@ -545,16 +354,16 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         inputData: {
           response_type: 'code',
-          redirect_uri: redirectUri,
+          redirect_uri: context.redirectUri,
           state: stateParam,
         },
       },
-      zcacheTestObj,
+      zcacheTestObj: context.zcacheTestObj,
       customLogger,
       calledFromCliInvoke: true,
     });
     if (!authorizeUrl.includes('&scope=')) {
-      const scope = appDefinition.authentication.oauth2Config.scope;
+      const scope = context.appDefinition.authentication.oauth2Config.scope;
       if (scope) {
         authorizeUrl += `&scope=${encodeURIComponent(scope)}`;
       }
@@ -571,7 +380,9 @@ class InvokeCommand extends BaseCommand {
 
     const server = http.createServer((req, res) => {
       // Parse the request URL to extract the query parameters
-      const code = new URL(req.url, redirectUri).searchParams.get('code');
+      const code = new URL(req.url, context.redirectUri).searchParams.get(
+        'code',
+      );
       if (code) {
         resolveCode(code);
         debug(`Received code '${code}' from ${req.headers.referer}`);
@@ -591,7 +402,7 @@ class InvokeCommand extends BaseCommand {
     });
 
     await new Promise((resolve) => {
-      server.listen(port, resolve);
+      server.listen(context.port, resolve);
     });
 
     endSpinner();
@@ -620,10 +431,10 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         inputData: {
           code,
-          redirect_uri: redirectUri,
+          redirect_uri: context.redirectUri,
         },
       },
-      zcacheTestObj,
+      zcacheTestObj: context.zcacheTestObj,
       customLogger,
       calledFromCliInvoke: true,
     });
@@ -632,14 +443,14 @@ class InvokeCommand extends BaseCommand {
     return authData;
   }
 
-  async startSessionAuth(appDefinition, zcacheTestObj) {
-    if (this.nonInteractive) {
+  async startSessionAuth(context) {
+    if (context.nonInteractive) {
       throw new Error(
         'The `auth start` subcommand for "session" authentication type only works in interactive mode.',
       );
     }
     const authData = await this.promptForAuthFields(
-      appDefinition.authentication.fields,
+      context.appDefinition.authentication.fields,
     );
 
     startSpinner('Invoking authentication.sessionConfig.perform');
@@ -649,7 +460,7 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         authData,
       },
-      zcacheTestObj,
+      zcacheTestObj: context.zcacheTestObj,
       customLogger,
       calledFromCliInvoke: true,
     });
@@ -658,8 +469,8 @@ class InvokeCommand extends BaseCommand {
     return { ...authData, ...sessionData };
   }
 
-  async startAuth(appDefinition, zcacheTestObj) {
-    const authentication = appDefinition.authentication;
+  async startAuth(context) {
+    const authentication = context.appDefinition.authentication;
     if (!authentication) {
       console.warn(
         "Your integration doesn't seem to need authentication. " +
@@ -670,13 +481,13 @@ class InvokeCommand extends BaseCommand {
     }
     switch (authentication.type) {
       case 'basic':
-        return this.startBasicAuth(authentication.fields);
+        return this.startBasicAuth(context);
       case 'custom':
-        return this.startCustomAuth(authentication.fields, zcacheTestObj);
+        return this.startCustomAuth(context);
       case 'oauth2':
-        return this.startOAuth2(appDefinition, zcacheTestObj);
+        return this.startOAuth2(context);
       case 'session':
-        return this.startSessionAuth(appDefinition, zcacheTestObj);
+        return this.startSessionAuth(context);
       default:
         // TODO: Add support for 'digest' and 'oauth1'
         throw new Error(
@@ -685,16 +496,16 @@ class InvokeCommand extends BaseCommand {
     }
   }
 
-  async refreshOAuth2(appDefinition, authData, zcacheTestObj) {
+  async refreshOAuth2(context) {
     startSpinner('Invoking authentication.oauth2Config.refreshAccessToken');
 
     const newAuthData = await localAppCommand({
       command: 'execute',
       method: 'authentication.oauth2Config.refreshAccessToken',
       bundle: {
-        authData,
+        authData: context.authData,
       },
-      zcacheTestObj,
+      zcacheTestObj: context.zcacheTestObj,
       customLogger,
       calledFromCliInvoke: true,
     });
@@ -703,16 +514,16 @@ class InvokeCommand extends BaseCommand {
     return newAuthData;
   }
 
-  async refreshSessionAuth(appDefinition, authData, zcacheTestObj) {
+  async refreshSessionAuth(context) {
     startSpinner('Invoking authentication.sessionConfig.perform');
 
     const sessionData = await localAppCommand({
       command: 'execute',
       method: 'authentication.sessionConfig.perform',
       bundle: {
-        authData,
+        authData: context.authData,
       },
-      zcacheTestObj,
+      zcacheTestObj: context.zcacheTestObj,
       customLogger,
       calledFromCliInvoke: true,
     });
@@ -721,8 +532,8 @@ class InvokeCommand extends BaseCommand {
     return sessionData;
   }
 
-  async refreshAuth(appDefinition, authData, zcacheTestObj) {
-    const authentication = appDefinition.authentication;
+  async refreshAuth(context) {
+    const authentication = context.appDefinition.authentication;
     if (!authentication) {
       console.warn(
         "Your integration doesn't seem to need authentication. " +
@@ -731,16 +542,16 @@ class InvokeCommand extends BaseCommand {
       );
       return null;
     }
-    if (_.isEmpty(authData)) {
+    if (_.isEmpty(context.authData)) {
       throw new Error(
         'No auth data found in the .env file. Run `zapier invoke auth start` first to initialize the auth data.',
       );
     }
     switch (authentication.type) {
       case 'oauth2':
-        return this.refreshOAuth2(appDefinition, authData, zcacheTestObj);
+        return this.refreshOAuth2(context);
       case 'session':
-        return this.refreshSessionAuth(appDefinition, authData, zcacheTestObj);
+        return this.refreshSessionAuth(context);
       default:
         throw new Error(
           `This command doesn't support refreshing authentication type "${authentication.type}".`,
@@ -748,45 +559,28 @@ class InvokeCommand extends BaseCommand {
     }
   }
 
-  async promptForField(
-    field,
-    appDefinition,
-    inputData,
-    authId,
-    authData,
-    timezone,
-    zcacheTestObj,
-    cursorTestObj,
-    appId,
-    deployKey,
-  ) {
+  async promptForField(context, field) {
     const message = formatFieldDisplay(field) + ':';
     if (field.dynamic) {
       // Dyanmic dropdown
       const [triggerKey, idField, labelField] = field.dynamic.split('.');
-      const trigger = appDefinition.triggers[triggerKey];
-      const meta = {
-        isLoadingSample: false,
-        isFillingDynamicDropdown: true,
-        isPopulatingDedupe: false,
-        limit: -1,
-        page: 0,
-        isTestingAuth: false,
+      const trigger = context.appDefinition.triggers[triggerKey];
+      if (!trigger) {
+        throw new Error(
+          `Cannot find trigger "${triggerKey}" for dynamic dropdown of field "${field.key}".`,
+        );
+      }
+      const newContext = {
+        ...context,
+        actionType: 'trigger',
+        actionKey: triggerKey,
+        actionTypePlural: 'triggers',
+        meta: {
+          ...context.meta,
+          isFillingDynamicDropdown: true,
+        },
       };
-      const choices = await this.invokeAction(
-        appDefinition,
-        'triggers',
-        trigger,
-        inputData,
-        authId,
-        authData,
-        meta,
-        timezone,
-        zcacheTestObj,
-        cursorTestObj,
-        appId,
-        deployKey,
-      );
+      const choices = await this.invokeAction(newContext);
       return this.promptWithList(
         message,
         choices.map((c) => {
@@ -807,56 +601,25 @@ class InvokeCommand extends BaseCommand {
     }
   }
 
-  async promptOrErrorForRequiredInputFields(
-    inputData,
-    inputFields,
-    appDefinition,
-    authId,
-    authData,
-    meta,
-    timezone,
-    zcacheTestObj,
-    cursorTestObj,
-    appId,
-    deployKey,
-  ) {
-    const missingFields = getMissingRequiredInputFields(inputData, inputFields);
+  async promptOrErrorForRequiredInputFields(context, inputFields) {
+    const missingFields = getMissingRequiredInputFields(
+      context.inputData,
+      inputFields,
+    );
     if (missingFields.length) {
-      if (this.nonInteractive || meta.isFillingDynamicDropdown) {
+      if (context.nonInteractive || context.meta.isFillingDynamicDropdown) {
         throw new Error(
           "You're in non-interactive mode, so you must at least specify these required fields with --inputData: \n" +
             missingFields.map((f) => '* ' + formatFieldDisplay(f)).join('\n'),
         );
       }
       for (const f of missingFields) {
-        inputData[f.key] = await this.promptForField(
-          f,
-          appDefinition,
-          inputData,
-          authId,
-          authData,
-          timezone,
-          zcacheTestObj,
-          cursorTestObj,
-          appId,
-          deployKey,
-        );
+        context.inputData[f.key] = await this.promptForField(context, f);
       }
     }
   }
 
-  async promptForInputFieldEdit(
-    inputData,
-    inputFields,
-    appDefinition,
-    authId,
-    authData,
-    timezone,
-    zcacheTestObj,
-    cursorTestObj,
-    appId,
-    deployKey,
-  ) {
+  async promptForInputFieldEdit(context, inputFields) {
     inputFields = inputFields.filter((f) => f.key);
     if (!inputFields.length) {
       return;
@@ -871,8 +634,8 @@ class InvokeCommand extends BaseCommand {
         } else {
           name = f.key;
         }
-        if (inputData[f.key]) {
-          name += ` [current: "${inputData[f.key]}"]`;
+        if (context.inputData[f.key]) {
+          name += ` [current: "${context.inputData[f.key]}"]`;
         } else if (f.default) {
           name += ` [default: "${f.default}"]`;
         }
@@ -899,146 +662,68 @@ class InvokeCommand extends BaseCommand {
       }
 
       const field = inputFields.find((f) => f.key === fieldKey);
-      inputData[fieldKey] = await this.promptForField(
-        field,
-        appDefinition,
-        inputData,
-        authId,
-        authData,
-        timezone,
-        zcacheTestObj,
-        cursorTestObj,
-        appId,
-        deployKey,
-      );
+      context.inputData[fieldKey] = await this.promptForField(context, field);
     }
   }
 
-  async promptForFields(
-    inputData,
-    inputFields,
-    appDefinition,
-    authId,
-    authData,
-    meta,
-    timezone,
-    zcacheTestObj,
-    cursorTestObj,
-    appId,
-    deployKey,
-  ) {
-    await this.promptOrErrorForRequiredInputFields(
-      inputData,
-      inputFields,
-      appDefinition,
-      authId,
-      authData,
-      meta,
-      timezone,
-      zcacheTestObj,
-      cursorTestObj,
-      appId,
-      deployKey,
-    );
-    if (!this.nonInteractive && !meta.isFillingDynamicDropdown) {
-      await this.promptForInputFieldEdit(
-        inputData,
-        inputFields,
-        appDefinition,
-        authId,
-        authData,
-        timezone,
-        zcacheTestObj,
-        cursorTestObj,
-        appId,
-        deployKey,
-      );
+  async promptForFields(context, inputFields) {
+    await this.promptOrErrorForRequiredInputFields(context, inputFields);
+    if (!context.nonInteractive && !context.meta.isFillingDynamicDropdown) {
+      await this.promptForInputFieldEdit(context, inputFields);
     }
   }
 
-  async invokeAction(
-    appDefinition,
-    actionTypePlural,
-    action,
-    inputData,
-    authId,
-    authData,
-    meta,
-    timezone,
-    zcacheTestObj,
-    cursorTestObj,
-    appId,
-    deployKey,
-  ) {
+  async invokeAction(context) {
     // Do these in order:
     // 1. Prompt for static input fields that alter dynamic fields
     // 2. {actionTypePlural}.{actionKey}.operation.inputFields
     // 3. Prompt for input fields again
     // 4. {actionTypePlural}.{actionKey}.operation.perform
-
+    const action =
+      context.appDefinition[context.actionTypePlural][context.actionKey];
     const staticInputFields = (action.operation.inputFields || []).filter(
       (f) => f.key,
     );
     debug('staticInputFields:', staticInputFields);
 
-    await this.promptForFields(
-      inputData,
-      staticInputFields,
-      appDefinition,
-      authId,
-      authData,
-      meta,
-      timezone,
-      zcacheTestObj,
-      cursorTestObj,
-      appId,
-      deployKey,
-    );
+    await this.promptForFields(context, staticInputFields);
 
-    let methodName = `${actionTypePlural}.${action.key}.operation.inputFields`;
+    let methodName = `${context.actionTypePlural}.${action.key}.operation.inputFields`;
     startSpinner(`Invoking ${methodName}`);
 
     const inputFields = await localAppCommandWithRelayErrorHandler({
       command: 'execute',
       method: methodName,
       bundle: {
-        inputData,
-        inputDataRaw: inputData, // At this point, inputData hasn't been transformed yet
-        authData,
-        meta,
+        inputData: context.inputData,
+        inputDataRaw: context.inputData, // At this point, inputData hasn't been transformed yet
+        authData: context.authData,
+        meta: context.meta,
       },
-      zcacheTestObj,
-      cursorTestObj,
+      zcacheTestObj: context.zcacheTestObj,
+      cursorTestObj: context.cursorTestObj,
       customLogger,
       calledFromCliInvoke: true,
-      appId,
-      deployKey,
-      relayAuthenticationId: authId,
+      appId: context.appId,
+      deployKey: context.deployKey,
+      relayAuthenticationId: context.authId,
     });
     endSpinner();
 
     debug('inputFields:', inputFields);
 
     if (inputFields.length !== staticInputFields.length) {
-      await this.promptForFields(
-        inputData,
-        inputFields,
-        appDefinition,
-        authId,
-        authData,
-        meta,
-        timezone,
-        zcacheTestObj,
-        cursorTestObj,
-        appId,
-        deployKey,
-      );
+      await this.promptForFields(context, inputFields);
     }
 
     // Preserve original inputData as inputDataRaw before type resolution
-    const inputDataRaw = { ...inputData };
-    inputData = resolveInputDataTypes(inputData, inputFields, timezone);
-    methodName = `${actionTypePlural}.${action.key}.operation.perform`;
+    const inputDataRaw = { ...context.inputData };
+    const inputData = resolveInputDataTypes(
+      context.inputData,
+      inputFields,
+      context.timezone,
+    );
+    methodName = `${context.actionTypePlural}.${action.key}.operation.perform`;
 
     startSpinner(`Invoking ${methodName}`);
     const output = await localAppCommandWithRelayErrorHandler({
@@ -1047,16 +732,16 @@ class InvokeCommand extends BaseCommand {
       bundle: {
         inputData,
         inputDataRaw,
-        authData,
-        meta,
+        authData: context.authData,
+        meta: context.meta,
       },
-      zcacheTestObj,
-      cursorTestObj,
+      zcacheTestObj: context.zcacheTestObj,
+      cursorTestObj: context.cursorTestObj,
       customLogger,
       calledFromCliInvoke: true,
-      appId,
-      deployKey,
-      relayAuthenticationId: authId,
+      appId: context.appId,
+      deployKey: context.deployKey,
+      relayAuthenticationId: context.authId,
     });
     endSpinner();
 
@@ -1084,87 +769,110 @@ class InvokeCommand extends BaseCommand {
   }
 
   async perform() {
-    let authId = this.flags['authentication-id'];
+    // Execution context that will be passed around
+    const context = {
+      // Data directly from command args and flags
+      authId: this.flags['authentication-id'],
+      nonInteractive: this.flags['non-interactive'] || !process.stdin.isTTY,
+      actionType: this.args.actionType,
+      actionKey: this.args.actionKey,
+      timezone: this.flags.timezone,
+      redirectUri: this.flags['redirect-uri'],
+      port: this.flags['local-port'],
+      meta: {
+        isLoadingSample: this.flags.isLoadingSample,
+        isFillingDynamicDropdown: this.flags.isFillingDynamicDropdown,
+        isPopulatingDedupe: this.flags.isPopulatingDedupe,
+        limit: this.flags.limit,
+        page: this.flags.page,
+        paging_token: this.flags['paging-token'],
+        isTestingAuth: false, // legacy property
+      },
+
+      // Data to be filled later
+      actionTypePlural: null,
+      appDefinition: null,
+      authData: {},
+      appId: null,
+      deployKey: null,
+      inputData: null,
+
+      // These will be used to patch z.cache() and z.cursor()
+      zcacheTestObj: {},
+      cursorTestObj: {},
+    };
 
     const dotenvResult = dotenv.config({ override: true, quiet: true });
-    if (!authId && _.isEmpty(dotenvResult.parsed)) {
+    if (!context.authId && _.isEmpty(dotenvResult.parsed)) {
       console.warn(
         'The .env file does not exist or is empty. ' +
           'You may need to set some environment variables in there if your code uses process.env.',
       );
     }
 
-    this.nonInteractive = this.flags['non-interactive'] || !process.stdin.isTTY;
-
-    let { actionType, actionKey } = this.args;
-
-    if (!actionType) {
-      if (this.nonInteractive) {
+    if (!context.actionType) {
+      if (context.nonInteractive) {
         throw new Error(
           'You must specify ACTIONTYPE and ACTIONKEY in non-interactive mode.',
         );
       }
-      actionType = await this.promptWithList(
+      context.actionType = await this.promptWithList(
         'Which action type would you like to invoke?',
         ACTION_TYPES,
         { useStderr: true },
       );
     }
 
-    const actionTypePlural = ACTION_TYPE_PLURALS[actionType];
-    const appDefinition = await localAppCommand({ command: 'definition' });
+    context.actionTypePlural = ACTION_TYPE_PLURALS[context.actionType];
+    context.appDefinition = await localAppCommand({ command: 'definition' });
 
-    if (!actionKey) {
-      if (this.nonInteractive) {
+    if (!context.actionKey) {
+      if (context.nonInteractive) {
         throw new Error('You must specify ACTIONKEY in non-interactive mode.');
       }
-      if (actionType === 'auth') {
+      if (context.actionType === 'auth') {
         const actionKeys = ['label', 'refresh', 'start', 'test'];
-        actionKey = await this.promptWithList(
+        context.actionKey = await this.promptWithList(
           'Which auth operation would you like to invoke?',
           actionKeys,
           { useStderr: true },
         );
       } else {
         const actionKeys = Object.keys(
-          appDefinition[actionTypePlural] || {},
+          context.appDefinition[context.actionTypePlural] || {},
         ).sort();
         if (!actionKeys.length) {
           throw new Error(
-            `No "${actionTypePlural}" found in your integration.`,
+            `No "${context.actionTypePlural}" found in your integration.`,
           );
         }
 
-        actionKey = await this.promptWithList(
-          `Which "${actionType}" key would you like to invoke?`,
+        context.actionKey = await this.promptWithList(
+          `Which "${context.actionType}" key would you like to invoke?`,
           actionKeys,
           { useStderr: true },
         );
       }
     }
 
-    const appId = (await getLinkedAppConfig(null, false))?.id;
-    const deployKey = (await readCredentials(false))[AUTH_KEY];
+    context.appId = (await getLinkedAppConfig(null, false))?.id;
+    context.deployKey = (await readCredentials(false))[AUTH_KEY];
 
-    if (authId === '-' || authId === '') {
-      if (this.nonInteractive) {
+    if (context.authId === '-' || context.authId === '') {
+      if (context.nonInteractive) {
         throw new Error(
           "You cannot specify '-' or an empty string for `--authentication-id` in non-interactive mode.",
         );
       }
-      authId = (await this.promptForAuthentication()).toString();
+      context.authId = (await this.promptForAuthentication()).toString();
     }
 
-    const zcacheTestObj = {};
-    const cursorTestObj = {};
-
-    let authData = {};
-    if (authId) {
+    if (context.authId) {
       // Fill authData with curlies if we're in relay mode
-      const authFields = appDefinition.authentication.fields || [];
+      const authFields = context.appDefinition.authentication.fields || [];
       for (const field of authFields) {
         if (field.key) {
-          authData[field.key] = `{{${field.key}}}`;
+          context.authData[field.key] = `{{${field.key}}}`;
         }
       }
     }
@@ -1172,30 +880,19 @@ class InvokeCommand extends BaseCommand {
     // Load from .env as well even in relay mode, in case the integration code
     // assumes there are values in bundle.authData. Loading from .env at least
     // gives the developer an option to override the values in bundle.authData.
-    authData = { ...authData, ...loadAuthDataFromEnv() };
+    context.authData = { ...context.authData, ...loadAuthDataFromEnv() };
 
-    if (actionType === 'auth') {
-      const meta = {
-        isLoadingSample: false,
-        isFillingDynamicDropdown: false,
-        isPopulatingDedupe: false,
-        limit: -1,
-        page: 0,
-        isTestingAuth: true,
-      };
-      switch (actionKey) {
+    if (context.actionType === 'auth') {
+      switch (context.actionKey) {
         case 'start': {
-          if (authId) {
+          if (context.authId) {
             throw new Error(
               'The `--authentication-id` flag is not applicable. ' +
                 'The `auth start` subcommand is to initialize local auth data in the .env file, ' +
                 'whereas `--authentication-id` is for proxying requests using production auth data.',
             );
           }
-          const newAuthData = await this.startAuth(
-            appDefinition,
-            zcacheTestObj,
-          );
+          const newAuthData = await this.startAuth(context);
           if (_.isEmpty(newAuthData)) {
             return;
           }
@@ -1206,18 +903,14 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'refresh': {
-          if (authId) {
+          if (context.authId) {
             throw new Error(
               'The `--authentication-id` flag is not applicable. ' +
                 'The `auth refresh` subcommand can only refresh your local auth data in the .env file. ' +
                 'You might want to run `auth test` instead, which tests and may refresh auth data with the specified authentication ID in production.',
             );
           }
-          const newAuthData = await this.refreshAuth(
-            appDefinition,
-            authData,
-            zcacheTestObj,
-          );
+          const newAuthData = await this.refreshAuth(context);
           if (_.isEmpty(newAuthData)) {
             return;
           }
@@ -1228,42 +921,21 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'test': {
-          const output = await testAuth(
-            authId,
-            authData,
-            meta,
-            zcacheTestObj,
-            appId,
-            deployKey,
-          );
+          const output = await testAuth(context);
           console.log(JSON.stringify(output, null, 2));
           return;
         }
         case 'label': {
-          const labelTemplate = appDefinition.authentication.connectionLabel;
+          const labelTemplate =
+            context.appDefinition.authentication.connectionLabel;
           if (labelTemplate && labelTemplate.startsWith('$func$')) {
             console.warn(
               'Function-based connection label is not supported yet. Printing auth test result instead.',
             );
-            const output = await testAuth(
-              authId,
-              authData,
-              meta,
-              zcacheTestObj,
-              appId,
-              deployKey,
-            );
+            const output = await testAuth(context);
             console.log(JSON.stringify(output, null, 2));
           } else {
-            const output = await getAuthLabel(
-              labelTemplate,
-              authId,
-              authData,
-              meta,
-              zcacheTestObj,
-              appId,
-              deployKey,
-            );
+            const output = await getAuthLabel(context);
             if (output) {
               console.log(output);
             } else {
@@ -1274,18 +946,21 @@ class InvokeCommand extends BaseCommand {
         }
         default:
           throw new Error(
-            `Unknown auth operation "${actionKey}". ` +
+            `Unknown auth operation "${context.actionKey}". ` +
               'The options are "label", "refresh", "start", and "test". \n',
           );
       }
     } else {
-      const action = appDefinition[actionTypePlural][actionKey];
+      const action =
+        context.appDefinition[context.actionTypePlural][context.actionKey];
       if (!action) {
-        throw new Error(`No "${actionType}" found with key "${actionKey}".`);
+        throw new Error(
+          `No "${context.actionType}" found with key "${context.actionKey}".`,
+        );
       }
 
-      debug('Action type:', actionType);
-      debug('Action key:', actionKey);
+      debug('Action type:', context.actionType);
+      debug('Action key:', context.actionKey);
       debug('Action label:', action.display.label);
 
       let { inputData } = this.flags;
@@ -1301,13 +976,13 @@ class InvokeCommand extends BaseCommand {
           }
           inputData = await readStream(inputStream);
         }
-        inputData = JSON.parse(inputData);
+        context.inputData = JSON.parse(inputData);
       } else {
-        inputData = {};
+        context.inputData = {};
       }
 
       // inputData should only contain strings
-      const nonStringPrimitives = findNonStringPrimitives(inputData);
+      const nonStringPrimitives = findNonStringPrimitives(context.inputData);
       if (nonStringPrimitives.length) {
         throw new Error(
           'All primitive values in --inputData must be strings. Found non-string values in these paths:\n' +
@@ -1317,30 +992,7 @@ class InvokeCommand extends BaseCommand {
         );
       }
 
-      const { timezone } = this.flags;
-      const meta = {
-        isLoadingSample: this.flags.isLoadingSample,
-        isFillingDynamicDropdown: this.flags.isFillingDynamicDropdown,
-        isPopulatingDedupe: this.flags.isPopulatingDedupe,
-        limit: this.flags.limit,
-        page: this.flags.page,
-        paging_token: this.flags['paging-token'],
-        isTestingAuth: false, // legacy property
-      };
-      const output = await this.invokeAction(
-        appDefinition,
-        actionTypePlural,
-        action,
-        inputData,
-        authId,
-        authData,
-        meta,
-        timezone,
-        zcacheTestObj,
-        cursorTestObj,
-        appId,
-        deployKey,
-      );
+      const output = await this.invokeAction(context);
       console.log(JSON.stringify(output, null, 2));
     }
   }
