@@ -202,6 +202,7 @@ const startOAuth2 = async (command, context) => {
     command: 'execute',
     method: 'authentication.oauth2Config.getAccessToken',
     bundle: {
+      authData: {},
       inputData: {
         code,
         redirect_uri: context.redirectUri,
