@@ -26,6 +26,12 @@ const TRUE_STRINGS = new Set([['yes', 'yeah', 'y', 'true', 't', '1']]);
 
 const NUMBER_CHARSET = '0123456789.-,';
 
+/**
+ * Parses a string value to a boolean like how Zapier production does.
+ * Recognizes common truthy/falsy strings like 'yes', 'no', 'true', 'false', etc.
+ * @param {string} s - The string to parse
+ * @returns {boolean} The parsed boolean value
+ */
 const parseBoolean = (s) => {
   s = s.toLowerCase();
   if (TRUE_STRINGS.has(s)) {
@@ -37,6 +43,12 @@ const parseBoolean = (s) => {
   return Boolean(s);
 };
 
+/**
+ * Parses a string to a decimal number like how Zapier production does.
+ * Extracts numeric characters and handles various number formats.
+ * @param {string} s - The string to parse
+ * @returns {number} The parsed decimal number
+ */
 const parseDecimal = (s) => {
   const chars = [];
   for (const c of s) {
@@ -48,6 +60,12 @@ const parseDecimal = (s) => {
   return parseFloat(cleaned);
 };
 
+/**
+ * Parses a string to an integer.
+ * Falls back to parseDecimal if parseInt fails.
+ * @param {string} s - The string to parse
+ * @returns {number} The parsed integer
+ */
 const parseInteger = (s) => {
   const n = parseInt(s);
   if (!isNaN(n)) {
@@ -56,6 +74,13 @@ const parseInteger = (s) => {
   return Math.floor(parseDecimal(s));
 };
 
+/**
+ * Parses a Unix timestamp string to an ISO datetime string.
+ * Handles both seconds and milliseconds timestamps.
+ * @param {string} dtString - String potentially containing a timestamp
+ * @param {string} tzName - IANA timezone name
+ * @returns {string|null} ISO datetime string or null if not a timestamp
+ */
 const parseTimestamp = (dtString, tzName) => {
   const match = dtString.match(/-?\d{10,14}/);
   if (!match) {
@@ -73,6 +98,11 @@ const parseTimestamp = (dtString, tzName) => {
   );
 };
 
+/**
+ * Checks if chrono parsing components contain time information.
+ * @param {Object} parsingComps - Chrono parsing components
+ * @returns {boolean} True if time info is present
+ */
 const hasTimeInfo = (parsingComps) => {
   const tags = [...parsingComps.tags()];
   for (const tag of tags) {
@@ -83,6 +113,11 @@ const hasTimeInfo = (parsingComps) => {
   return false;
 };
 
+/**
+ * Adds default time info (09:00:00) to parsing components if not present.
+ * @param {Object} parsingComps - Chrono parsing components
+ * @returns {Object} The modified parsing components
+ */
 const maybeImplyTimeInfo = (parsingComps) => {
   if (!hasTimeInfo(parsingComps)) {
     parsingComps.imply('hour', 9);
@@ -93,6 +128,11 @@ const maybeImplyTimeInfo = (parsingComps) => {
   return parsingComps;
 };
 
+/**
+ * Converts chrono parsing components to an ISO datetime string (without timezone).
+ * @param {Object} parsingComps - Chrono parsing components
+ * @returns {string} ISO datetime string like "2024-01-15T09:00:00"
+ */
 const parsingCompsToString = (parsingComps) => {
   const yyyy = parsingComps.get('year');
   const mm = String(parsingComps.get('month')).padStart(2, '0');
@@ -103,6 +143,14 @@ const parsingCompsToString = (parsingComps) => {
   return `${yyyy}-${mm}-${dd}T${hh}:${ii}:${ss}`;
 };
 
+/**
+ * Parses a datetime string using chrono-node with timezone support.
+ * Handles timestamps, natural language dates, and ISO formats.
+ * @param {string} dtString - The datetime string to parse
+ * @param {string} tzName - IANA timezone name
+ * @param {Date} now - Reference date for relative parsing
+ * @returns {string} ISO datetime string with timezone offset
+ */
 const parseDatetime = (dtString, tzName, now) => {
   const timestampResult = parseTimestamp(dtString, tzName);
   if (timestampResult) {
@@ -137,6 +185,15 @@ const parseDatetime = (dtString, tzName, now) => {
   );
 };
 
+/**
+ * Resolves input data types based on field definitions.
+ * Converts string values to appropriate types (integer, number, boolean, datetime).
+ * Also applies default values for fields that have them.
+ * @param {Object} inputData - The input data object (will be mutated)
+ * @param {Array<Object>} inputFields - Array of field definitions with type info
+ * @param {string} timezone - IANA timezone name for datetime parsing
+ * @returns {Object} The mutated inputData object with resolved types
+ */
 const resolveInputDataTypes = (inputData, inputFields, timezone) => {
   const fieldsWithDefault = inputFields.filter((f) => f.default);
   for (const f of fieldsWithDefault) {

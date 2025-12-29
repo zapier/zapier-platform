@@ -94,7 +94,20 @@
     "zapier-platform": "./src/bin/run"
   },
   "oclif": {
-    "commands": "src/oclif/commands",
+    "commands": {
+      "strategy": "pattern",
+      "target": "./src/oclif/commands",
+      "globPatterns": [
+        "**/*.js",
+        "!invoke/action.js",
+        "!invoke/env.js",
+        "!invoke/input-types.js",
+        "!invoke/logger.js",
+        "!invoke/prompts.js",
+        "!invoke/relay.js",
+        "!invoke/auth/**"
+      ]
+    },
     "additionalHelpFlags": [
       "-h"
     ],

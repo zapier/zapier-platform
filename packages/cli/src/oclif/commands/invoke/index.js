@@ -1,28 +1,23 @@
-// TODO: modularize
-// - prompters
-// - timezone
-// - field type resolvers
-// - ...
-const crypto = require('node:crypto');
-const fs = require('node:fs/promises');
-const http = require('node:http');
+const fsP = require('node:fs/promises');
 
 const _ = require('lodash');
 const { Args, Flags } = require('@oclif/core');
-const debug = require('debug')('zapier:invoke');
 const dotenv = require('dotenv');
 
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
 const { localAppCommand } = require('../../../utils/local');
-const { startSpinner, endSpinner } = require('../../../utils/display');
-const {
-  getLinkedAppConfig,
-  listAuthentications,
-  readCredentials,
-} = require('../../../utils/api');
+const { getLinkedAppConfig, readCredentials } = require('../../../utils/api');
 const { AUTH_KEY } = require('../../../constants');
-const resolveInputDataTypes = require('./input-types');
+
+const {
+  AUTH_FIELD_ENV_PREFIX,
+  loadAuthDataFromEnv,
+  appendEnv,
+} = require('./env');
+const { startAuth, testAuth, getAuthLabel, refreshAuth } = require('./auth');
+const { invokeAction } = require('./action');
+const { promptForAuthentication } = require('./prompts');
 
 const ACTION_TYPE_PLURALS = {
   trigger: 'triggers',
@@ -32,25 +27,11 @@ const ACTION_TYPE_PLURALS = {
 
 const ACTION_TYPES = ['auth', ...Object.keys(ACTION_TYPE_PLURALS)];
 
-const AUTH_FIELD_ENV_PREFIX = 'authData_';
-
-const loadAuthDataFromEnv = () => {
-  return Object.entries(process.env)
-    .filter(([k, v]) => k.startsWith(AUTH_FIELD_ENV_PREFIX))
-    .reduce((authData, [k, v]) => {
-      const fieldKey = k.substr(AUTH_FIELD_ENV_PREFIX.length);
-      // Try to parse as JSON if it looks like JSON, otherwise keep as string
-      try {
-        authData[fieldKey] =
-          v.startsWith('{') || v.startsWith('[') ? JSON.parse(v) : v;
-      } catch (e) {
-        // If JSON parsing fails, keep as string
-        authData[fieldKey] = v;
-      }
-      return authData;
-    }, {});
-};
-
+/**
+ * Reads all data from a readable stream and returns it as a string.
+ * @param {import('stream').Readable} stream - The readable stream to consume
+ * @returns {Promise<string>} The concatenated stream contents
+ */
 const readStream = async (stream) => {
   const chunks = [];
   for await (const chunk of stream) {
@@ -59,168 +40,13 @@ const readStream = async (stream) => {
   return chunks.join('');
 };
 
-const getMissingRequiredInputFields = (inputData, inputFields) => {
-  return inputFields.filter(
-    (f) => f.required && !f.default && !inputData[f.key],
-  );
-};
-
-const appendEnv = async (vars, prefix = '') => {
-  const envFile = '.env';
-  let content = Object.entries(vars)
-    .filter(([k, v]) => v !== undefined)
-    .map(
-      ([k, v]) =>
-        `${prefix}${k}='${typeof v === 'object' && v !== null ? JSON.stringify(v) : v || ''}'\n`,
-    )
-    .join('');
-
-  // Check if .env file exists and doesn't end with newline
-  try {
-    const existingContent = await fs.readFile(envFile, 'utf8');
-    if (existingContent.length > 0 && !existingContent.endsWith('\n')) {
-      content = '\n' + content;
-    }
-  } catch (error) {
-    // File doesn't exist or can't be read, proceed as normal
-  }
-
-  await fs.appendFile(envFile, content);
-};
-
-const replaceDoubleCurlies = async (request) => {
-  // Use lcurly-fieldName-rcurly instead of {{fieldName}} to bypass node-fetch's
-  // URL validation in case the variable is used in a URL.
-  if (request.url) {
-    request.url = request.url
-      .replaceAll('{{', 'lcurly-')
-      .replaceAll('}}', '-rcurly');
-  }
-
-  // The authorization header may confuse zapier.com and it's relay's job to add
-  // it, so we delete it here.
-  delete request.headers.authorization;
-  delete request.headers.Authorization;
-
-  return request;
-};
-
-const restoreDoubleCurlies = async (response) => {
-  if (response.url) {
-    response.url = response.url
-      .replaceAll('lcurly-', '{{')
-      .replaceAll('-rcurly', '}}');
-  }
-  if (response.request?.url) {
-    response.request.url = response.request.url
-      .replaceAll('lcurly-', '{{')
-      .replaceAll('-rcurly', '}}');
-  }
-  return response;
-};
-
-const localAppCommandWithRelayErrorHandler = async (args) => {
-  if (args.relayAuthenticationId) {
-    args = {
-      ...args,
-      beforeRequest: [replaceDoubleCurlies],
-      afterResponse: [restoreDoubleCurlies],
-    };
-  }
-
-  let output;
-  try {
-    output = await localAppCommand(args);
-  } catch (outerError) {
-    if (outerError.name === 'ResponseError') {
-      let response;
-      try {
-        response = JSON.parse(outerError.message);
-      } catch (innerError) {
-        throw outerError;
-      }
-      if (typeof response.content === 'string') {
-        const match = response.content.match(/domain filter `([^`]+)`/);
-        if (!match) {
-          throw outerError;
-        }
-        const domainFilter = match[1];
-        const requestUrl = response.request.url
-          .replaceAll('lcurly-', '{{')
-          .replaceAll('-rcurly', '}}');
-        throw new Error(
-          `Request to ${requestUrl} was blocked. ` +
-            `Only these domain names are allowed: ${domainFilter}. ` +
-            'Contact Zapier team to verify your domain filter setting.',
-        );
-      }
-    }
-    throw outerError;
-  }
-  return output;
-};
-
-const testAuth = async (context) => {
-  startSpinner('Invoking authentication.test');
-  const result = await localAppCommandWithRelayErrorHandler({
-    command: 'execute',
-    method: 'authentication.test',
-    bundle: {
-      authData: context.authData,
-      meta: {
-        ...context.meta,
-        isTestingAuth: true,
-      },
-    },
-    zcacheTestObj: context.zcacheTestObj,
-    customLogger,
-    calledFromCliInvoke: true,
-    appId: context.appId,
-    deployKey: context.deployKey,
-    relayAuthenticationId: context.authId,
-  });
-  endSpinner();
-  return result;
-};
-
-const getAuthLabel = async (context) => {
-  const testResult = await testAuth(context);
-  const labelTemplate = (
-    context.appDefinition.authentication.connectionLabel ?? ''
-  ).replaceAll('__', '.');
-  const tpl = _.template(labelTemplate, { interpolate: /{{([\s\S]+?)}}/g });
-  return tpl({
-    ...testResult,
-    bundle: { authData: context.authData, inputData: testResult },
-  });
-};
-
-const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
-  const keys = [
-    'name',
-    'Name',
-    'display',
-    'Display',
-    'title',
-    'Title',
-    'subject',
-    'Subject',
-  ];
-  if (preferredKey) {
-    keys.unshift(preferredKey.split('__'));
-  }
-  if (fallbackKey) {
-    keys.push(fallbackKey.split('__'));
-  }
-  for (const key of keys) {
-    const label = _.get(obj, key);
-    if (label) {
-      return label;
-    }
-  }
-  return '';
-};
-
+/**
+ * Recursively finds all non-string primitive values in a data structure.
+ * Used to validate that inputData contains only string values.
+ * @param {*} data - The data to search
+ * @param {string} [path='inputData'] - The current path for error reporting
+ * @returns {Array<{path: string, value: *}>} Array of objects with path and non-string value
+ */
 const findNonStringPrimitives = (data, path = 'inputData') => {
   if (typeof data === 'number' || typeof data === 'boolean' || data === null) {
     return [{ path, value: data }];
@@ -243,531 +69,12 @@ const findNonStringPrimitives = (data, path = 'inputData') => {
   }
 };
 
-const customLogger = (message, data) => {
-  debug(message);
-  debug(data);
-};
-
-const formatFieldDisplay = (field) => {
-  const ftype = field.type || 'string';
-  let result;
-  if (field.label) {
-    result = `${field.label} | ${field.key} | ${ftype}`;
-  } else {
-    result = `${field.key} | ${ftype}`;
-  }
-  if (field.required) {
-    result += ' | required';
-  }
-  return result;
-};
-
 class InvokeCommand extends BaseCommand {
-  async promptForAuthFields(authFields) {
-    const authData = {};
-    for (const field of authFields) {
-      if (field.computed) {
-        continue;
-      }
-      const message = formatFieldDisplay(field) + ':';
-      let value;
-      if (field.type === 'password') {
-        value = await this.promptHidden(message, true);
-      } else {
-        value = await this.prompt(message, { useStderr: true });
-      }
-      authData[field.key] = value;
-    }
-    return authData;
-  }
-
-  async startBasicAuth(context) {
-    if (context.nonInteractive) {
-      throw new Error(
-        'The `auth start` subcommand for "basic" authentication type only works in interactive mode.',
-      );
-    }
-    return this.promptForAuthFields([
-      {
-        key: 'username',
-        label: 'Username',
-        required: true,
-      },
-      {
-        key: 'password',
-        label: 'Password',
-        required: true,
-      },
-    ]);
-  }
-
-  async startCustomAuth(context) {
-    if (context.nonInteractive) {
-      throw new Error(
-        'The `auth start` subcommand for "custom" authentication type only works in interactive mode.',
-      );
-    }
-    return this.promptForAuthFields(
-      context.appDefinition.authentication.fields,
-    );
-  }
-
-  async startOAuth2(context) {
-    const env = {};
-
-    if (!process.env.CLIENT_ID || !process.env.CLIENT_SECRET) {
-      if (context.nonInteractive) {
-        throw new Error(
-          'CLIENT_ID and CLIENT_SECRET must be set in the .env file in non-interactive mode.',
-        );
-      } else {
-        console.warn(
-          'CLIENT_ID and CLIENT_SECRET are required for OAuth2, ' +
-            "but they are not found in the .env file. I'll prompt you for them now.",
-        );
-      }
-    }
-
-    if (!process.env.CLIENT_ID) {
-      env.CLIENT_ID = await this.prompt('CLIENT_ID:', { useStderr: true });
-      process.env.CLIENT_ID = env.CLIENT_ID;
-    }
-    if (!process.env.CLIENT_SECRET) {
-      env.CLIENT_SECRET = await this.prompt('CLIENT_SECRET:', {
-        useStderr: true,
-      });
-      process.env.CLIENT_SECRET = env.CLIENT_SECRET;
-    }
-
-    if (!_.isEmpty(env)) {
-      // Save envs so the user won't have to re-enter them if the command fails
-      await appendEnv(env);
-      console.warn('CLIENT_ID and CLIENT_SECRET saved to .env file.');
-    }
-
-    startSpinner('Invoking authentication.oauth2Config.authorizeUrl');
-
-    const stateParam = crypto.randomBytes(20).toString('hex');
-    let authorizeUrl = await localAppCommand({
-      command: 'execute',
-      method: 'authentication.oauth2Config.authorizeUrl',
-      bundle: {
-        inputData: {
-          response_type: 'code',
-          redirect_uri: context.redirectUri,
-          state: stateParam,
-        },
-      },
-      zcacheTestObj: context.zcacheTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-    });
-    if (!authorizeUrl.includes('&scope=')) {
-      const scope = context.appDefinition.authentication.oauth2Config.scope;
-      if (scope) {
-        authorizeUrl += `&scope=${encodeURIComponent(scope)}`;
-      }
-    }
-    debug('authorizeUrl:', authorizeUrl);
-
-    endSpinner();
-    startSpinner('Starting local HTTP server');
-
-    let resolveCode;
-    const codePromise = new Promise((resolve) => {
-      resolveCode = resolve;
-    });
-
-    const server = http.createServer((req, res) => {
-      // Parse the request URL to extract the query parameters
-      const code = new URL(req.url, context.redirectUri).searchParams.get(
-        'code',
-      );
-      if (code) {
-        resolveCode(code);
-        debug(`Received code '${code}' from ${req.headers.referer}`);
-
-        res.writeHead(200, { 'Content-Type': 'text/plain' });
-        res.end(
-          'Parameter `code` received successfully. Go back to the terminal to continue.',
-        );
-      } else {
-        res.writeHead(400, { 'Content-Type': 'text/plain' });
-        res.end(
-          'Error: Did not receive `code` query parameter. ' +
-            'Did you have the right CLIENT_ID and CLIENT_SECRET? ' +
-            'Or did your server respond properly?',
-        );
-      }
-    });
-
-    await new Promise((resolve) => {
-      server.listen(context.port, resolve);
-    });
-
-    endSpinner();
-    startSpinner(
-      'Opening browser to authorize (press Ctrl-C to exit on error)',
-    );
-
-    const { default: open } = await import('open');
-    open(authorizeUrl);
-
-    const code = await codePromise;
-    endSpinner();
-
-    startSpinner('Closing local HTTP server');
-    await new Promise((resolve) => {
-      server.close(resolve);
-    });
-    debug('Local HTTP server closed');
-
-    endSpinner();
-    startSpinner('Invoking authentication.oauth2Config.getAccessToken');
-
-    const authData = await localAppCommand({
-      command: 'execute',
-      method: 'authentication.oauth2Config.getAccessToken',
-      bundle: {
-        inputData: {
-          code,
-          redirect_uri: context.redirectUri,
-        },
-      },
-      zcacheTestObj: context.zcacheTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-    });
-
-    endSpinner();
-    return authData;
-  }
-
-  async startSessionAuth(context) {
-    if (context.nonInteractive) {
-      throw new Error(
-        'The `auth start` subcommand for "session" authentication type only works in interactive mode.',
-      );
-    }
-    const authData = await this.promptForAuthFields(
-      context.appDefinition.authentication.fields,
-    );
-
-    startSpinner('Invoking authentication.sessionConfig.perform');
-    const sessionData = await localAppCommand({
-      command: 'execute',
-      method: 'authentication.sessionConfig.perform',
-      bundle: {
-        authData,
-      },
-      zcacheTestObj: context.zcacheTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-    });
-    endSpinner();
-
-    return { ...authData, ...sessionData };
-  }
-
-  async startAuth(context) {
-    const authentication = context.appDefinition.authentication;
-    if (!authentication) {
-      console.warn(
-        "Your integration doesn't seem to need authentication. " +
-          "If that isn't true, the app definition should have " +
-          'an `authentication` object at the root level.',
-      );
-      return null;
-    }
-    switch (authentication.type) {
-      case 'basic':
-        return this.startBasicAuth(context);
-      case 'custom':
-        return this.startCustomAuth(context);
-      case 'oauth2':
-        return this.startOAuth2(context);
-      case 'session':
-        return this.startSessionAuth(context);
-      default:
-        // TODO: Add support for 'digest' and 'oauth1'
-        throw new Error(
-          `This command doesn't support authentication type "${authentication.type}".`,
-        );
-    }
-  }
-
-  async refreshOAuth2(context) {
-    startSpinner('Invoking authentication.oauth2Config.refreshAccessToken');
-
-    const newAuthData = await localAppCommand({
-      command: 'execute',
-      method: 'authentication.oauth2Config.refreshAccessToken',
-      bundle: {
-        authData: context.authData,
-      },
-      zcacheTestObj: context.zcacheTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-    });
-
-    endSpinner();
-    return newAuthData;
-  }
-
-  async refreshSessionAuth(context) {
-    startSpinner('Invoking authentication.sessionConfig.perform');
-
-    const sessionData = await localAppCommand({
-      command: 'execute',
-      method: 'authentication.sessionConfig.perform',
-      bundle: {
-        authData: context.authData,
-      },
-      zcacheTestObj: context.zcacheTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-    });
-
-    endSpinner();
-    return sessionData;
-  }
-
-  async refreshAuth(context) {
-    const authentication = context.appDefinition.authentication;
-    if (!authentication) {
-      console.warn(
-        "Your integration doesn't seem to need authentication. " +
-          "If that isn't true, the app definition should have " +
-          'an `authentication` object at the root level.',
-      );
-      return null;
-    }
-    if (_.isEmpty(context.authData)) {
-      throw new Error(
-        'No auth data found in the .env file. Run `zapier invoke auth start` first to initialize the auth data.',
-      );
-    }
-    switch (authentication.type) {
-      case 'oauth2':
-        return this.refreshOAuth2(context);
-      case 'session':
-        return this.refreshSessionAuth(context);
-      default:
-        throw new Error(
-          `This command doesn't support refreshing authentication type "${authentication.type}".`,
-        );
-    }
-  }
-
-  async promptForField(context, field) {
-    const message = formatFieldDisplay(field) + ':';
-    if (field.dynamic) {
-      // Dyanmic dropdown
-      const [triggerKey, idField, labelField] = field.dynamic.split('.');
-      const trigger = context.appDefinition.triggers[triggerKey];
-      if (!trigger) {
-        throw new Error(
-          `Cannot find trigger "${triggerKey}" for dynamic dropdown of field "${field.key}".`,
-        );
-      }
-      const newContext = {
-        ...context,
-        actionType: 'trigger',
-        actionKey: triggerKey,
-        actionTypePlural: 'triggers',
-        meta: {
-          ...context.meta,
-          isFillingDynamicDropdown: true,
-        },
-      };
-      const choices = await this.invokeAction(newContext);
-      return this.promptWithList(
-        message,
-        choices.map((c) => {
-          const id = c[idField] ?? 'null';
-          const label = getLabelForDynamicDropdown(c, labelField, idField);
-          return {
-            name: `${label} (${id})`,
-            value: id,
-          };
-        }),
-        { useStderr: true },
-      );
-    } else if (field.type === 'boolean') {
-      const yes = await this.confirm(message, false, !field.required, true);
-      return yes ? 'yes' : 'no';
-    } else {
-      return this.prompt(message, { useStderr: true });
-    }
-  }
-
-  async promptOrErrorForRequiredInputFields(context, inputFields) {
-    const missingFields = getMissingRequiredInputFields(
-      context.inputData,
-      inputFields,
-    );
-    if (missingFields.length) {
-      if (context.nonInteractive || context.meta.isFillingDynamicDropdown) {
-        throw new Error(
-          "You're in non-interactive mode, so you must at least specify these required fields with --inputData: \n" +
-            missingFields.map((f) => '* ' + formatFieldDisplay(f)).join('\n'),
-        );
-      }
-      for (const f of missingFields) {
-        context.inputData[f.key] = await this.promptForField(context, f);
-      }
-    }
-  }
-
-  async promptForInputFieldEdit(context, inputFields) {
-    inputFields = inputFields.filter((f) => f.key);
-    if (!inputFields.length) {
-      return;
-    }
-
-    // Let user select which field to fill/edit
-    while (true) {
-      let fieldChoices = inputFields.map((f) => {
-        let name;
-        if (f.label) {
-          name = `${f.label} (${f.key})`;
-        } else {
-          name = f.key;
-        }
-        if (context.inputData[f.key]) {
-          name += ` [current: "${context.inputData[f.key]}"]`;
-        } else if (f.default) {
-          name += ` [default: "${f.default}"]`;
-        }
-        return {
-          name,
-          value: f.key,
-        };
-      });
-      fieldChoices = [
-        {
-          name: '>>> DONE <<<',
-          short: 'DONE',
-          value: null,
-        },
-        ...fieldChoices,
-      ];
-      const fieldKey = await this.promptWithList(
-        'Would you like to edit any of these input fields? Select "DONE" when you are all set.',
-        fieldChoices,
-        { useStderr: true },
-      );
-      if (!fieldKey) {
-        break;
-      }
-
-      const field = inputFields.find((f) => f.key === fieldKey);
-      context.inputData[fieldKey] = await this.promptForField(context, field);
-    }
-  }
-
-  async promptForFields(context, inputFields) {
-    await this.promptOrErrorForRequiredInputFields(context, inputFields);
-    if (!context.nonInteractive && !context.meta.isFillingDynamicDropdown) {
-      await this.promptForInputFieldEdit(context, inputFields);
-    }
-  }
-
-  async invokeAction(context) {
-    // Do these in order:
-    // 1. Prompt for static input fields that alter dynamic fields
-    // 2. {actionTypePlural}.{actionKey}.operation.inputFields
-    // 3. Prompt for input fields again
-    // 4. {actionTypePlural}.{actionKey}.operation.perform
-    const action =
-      context.appDefinition[context.actionTypePlural][context.actionKey];
-    const staticInputFields = (action.operation.inputFields || []).filter(
-      (f) => f.key,
-    );
-    debug('staticInputFields:', staticInputFields);
-
-    await this.promptForFields(context, staticInputFields);
-
-    let methodName = `${context.actionTypePlural}.${action.key}.operation.inputFields`;
-    startSpinner(`Invoking ${methodName}`);
-
-    const inputFields = await localAppCommandWithRelayErrorHandler({
-      command: 'execute',
-      method: methodName,
-      bundle: {
-        inputData: context.inputData,
-        inputDataRaw: context.inputData, // At this point, inputData hasn't been transformed yet
-        authData: context.authData,
-        meta: context.meta,
-      },
-      zcacheTestObj: context.zcacheTestObj,
-      cursorTestObj: context.cursorTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-      appId: context.appId,
-      deployKey: context.deployKey,
-      relayAuthenticationId: context.authId,
-    });
-    endSpinner();
-
-    debug('inputFields:', inputFields);
-
-    if (inputFields.length !== staticInputFields.length) {
-      await this.promptForFields(context, inputFields);
-    }
-
-    // Preserve original inputData as inputDataRaw before type resolution
-    const inputDataRaw = { ...context.inputData };
-    const inputData = resolveInputDataTypes(
-      context.inputData,
-      inputFields,
-      context.timezone,
-    );
-    methodName = `${context.actionTypePlural}.${action.key}.operation.perform`;
-
-    startSpinner(`Invoking ${methodName}`);
-    const output = await localAppCommandWithRelayErrorHandler({
-      command: 'execute',
-      method: methodName,
-      bundle: {
-        inputData,
-        inputDataRaw,
-        authData: context.authData,
-        meta: context.meta,
-      },
-      zcacheTestObj: context.zcacheTestObj,
-      cursorTestObj: context.cursorTestObj,
-      customLogger,
-      calledFromCliInvoke: true,
-      appId: context.appId,
-      deployKey: context.deployKey,
-      relayAuthenticationId: context.authId,
-    });
-    endSpinner();
-
-    return output;
-  }
-
-  async promptForAuthentication() {
-    const auths = (await listAuthentications()).authentications;
-    if (!auths || auths.length === 0) {
-      throw new Error(
-        'No authentications/connections found for your integration. ' +
-          'Add a new connection at https://zapier.com/app/assets/connections ' +
-          'or use local auth data by removing the `--authentication-id` flag.',
-      );
-    }
-    const authChoices = auths.map((auth) => ({
-      name: `${auth.title} | ${auth.app_version} | ID: ${auth.id}`,
-      value: auth.id,
-    }));
-    return this.promptWithList(
-      'Which authentication/connection would you like to use?',
-      authChoices,
-      { useStderr: true },
-    );
-  }
-
+  /**
+   * Main entry point for the invoke command. Handles auth operations (start, test, label, refresh)
+   * and action invocations (trigger, create, search).
+   * @returns {Promise<void>}
+   */
   async perform() {
     // Execution context that will be passed around
     const context = {
@@ -864,7 +171,7 @@ class InvokeCommand extends BaseCommand {
           "You cannot specify '-' or an empty string for `--authentication-id` in non-interactive mode.",
         );
       }
-      context.authId = (await this.promptForAuthentication()).toString();
+      context.authId = (await promptForAuthentication(this)).toString();
     }
 
     if (context.authId) {
@@ -892,7 +199,7 @@ class InvokeCommand extends BaseCommand {
                 'whereas `--authentication-id` is for proxying requests using production auth data.',
             );
           }
-          const newAuthData = await this.startAuth(context);
+          const newAuthData = await startAuth(this, context);
           if (_.isEmpty(newAuthData)) {
             return;
           }
@@ -910,7 +217,7 @@ class InvokeCommand extends BaseCommand {
                 'You might want to run `auth test` instead, which tests and may refresh auth data with the specified authentication ID in production.',
             );
           }
-          const newAuthData = await this.refreshAuth(context);
+          const newAuthData = await refreshAuth(context);
           if (_.isEmpty(newAuthData)) {
             return;
           }
@@ -959,10 +266,6 @@ class InvokeCommand extends BaseCommand {
         );
       }
 
-      debug('Action type:', context.actionType);
-      debug('Action key:', context.actionKey);
-      debug('Action label:', action.display.label);
-
       let { inputData } = this.flags;
       if (inputData) {
         if (inputData.startsWith('@')) {
@@ -971,7 +274,7 @@ class InvokeCommand extends BaseCommand {
           if (filePath === '-') {
             inputStream = process.stdin;
           } else {
-            const fd = await fs.open(filePath);
+            const fd = await fsP.open(filePath);
             inputStream = fd.createReadStream({ encoding: 'utf8' });
           }
           inputData = await readStream(inputStream);
@@ -992,7 +295,7 @@ class InvokeCommand extends BaseCommand {
         );
       }
 
-      const output = await this.invokeAction(context);
+      const output = await invokeAction(this, context);
       console.log(JSON.stringify(output, null, 2));
     }
   }
