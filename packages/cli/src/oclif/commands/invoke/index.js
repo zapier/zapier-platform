@@ -228,7 +228,7 @@ class InvokeCommand extends BaseCommand {
           }
           await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
           console.warn(
-            'Auth data appended to .env file. Run `zapier invoke auth test` to test it.',
+            'Auth data appended to .env file. Run `zapier-platform invoke auth test` to test it.',
           );
           return;
         }
@@ -246,7 +246,7 @@ class InvokeCommand extends BaseCommand {
           }
           await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
           console.warn(
-            'Auth data has been refreshed and appended to .env file. Run `zapier invoke auth test` to test it.',
+            'Auth data has been refreshed and appended to .env file. Run `zapier-platform invoke auth test` to test it.',
           );
           return;
         }
@@ -437,15 +437,29 @@ Why use this command?
 * Step-by-step debugging: Running locally means you can use a debugger to step through your code
 * Untruncated logs: View complete logs and errors in your terminal
 
+### Modes
+
+The \`invoke\` command supports three modes:
+
+1. Local mode: runs your code locally, and sends outgoing requests directly from your local machine.
+2. Relay mode: runs your code locally, but proxies all outgoing requests through Zapier using production authentication data.
+3. Remote mode: runs your code and sends outgoing requests entirely in/from Zapier production environment.
+
+**Local mode** is the default mode. Without the \`--remote\` (or \`-r\`) flag or the \`--authentication-id\` (or \`-a\`) flag, the command runs in local mode. It's useful when you want to quickly test your integration code locally. You'll need to set up local auth data in the \`.env\` file using the \`zapier-platform invoke auth start\` command.
+
+**Relay mode** is currently EXPERIMENTAL. It's enabled when the \`-a\` flag is specified. It's useful when you want to test code locally but setting up local auth data is troublesome, such as when your OAuth2 server requires a non-localhost or HTTPS redirect URI. By specifying \`-a <authentication-id>\`, all outgoing requests will be proxied through Zapier's relay service using the production authentication data with the given authentication ID. See the **Authentication** section below for more details.
+
+**Remote mode** is enabled when the \`--remote\` (or \`-r\`) flag is specified. It's useful when you want to verify how your code behaves in Zapier production environment. Note that remote mode requires deploying your integration first. If the \`-a\` flag is not specified, the command will prompt you to select one of your available authentications/connections in production.
+
 ### Authentication
 
-You can supply the authentcation data in two ways: Load from the local \`.env\` file or use the (experimental) \`--authentication-id\` flag.
+You can supply the authentcation data in two ways: Load from the local \`.env\` file or use the \`--authentication-id\` flag.
 
 #### The local \`.env\` file
 
-This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have a \`.env\` file yet, you can use the \`zapier invoke auth start\` command to help you initialize it, or you can manually create it.
+This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have a \`.env\` file yet, you can use the \`zapier-platform invoke auth start\` command to help you initialize it, or you can manually create it.
 
-The \`zapier invoke auth start\` subcommand will prompt you for the necessary auth fields and save them to the \`.env\` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
+The \`zapier-platform invoke auth start\` subcommand will prompt you for the necessary auth fields and save them to the \`.env\` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
 
 Each line in the \`.env\` file should follow one of these formats:
 
@@ -463,33 +477,36 @@ authData_account_name='zapier'
 \`\`\`
 
 
-#### The \`--authentication-id\` flag (EXPERIMENTAL)
+#### The \`--authentication-id\` flag
 
-Setting up local auth data can be troublesome. You'd have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
+Setting up local auth data can be troublesome. For instance, in OAuth2, you may have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
 
 The \`--authentication-id\` flag (\`-a\` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use \`-a\` to specify an existing production authentication/connection. The available authentications can be found at https://zapier.com/app/assets/connections. Check https://zpr.io/z8SjFTdnTFZ2 for more instructions.
 
-When \`-a -\` is specified, such as \`zapier invoke auth test -a -\`, the command will interactively prompt you to select one of your available authentications.
+When \`-a -\` is specified, such as \`zapier-platform invoke auth test -a -\`, the command will interactively prompt you to select one of your available authentications.
 
-If you know your authentication ID, you can specify it directly, such as \`zapier invoke auth test -a 123456\`.
+If you know your authentication ID, you can specify it directly, such as \`zapier-platform invoke auth test -a 123456\`.
+
+The \`-a\` flag also works in remote mode with the \`-r\` flag. In remote mode, if \`-a\` is not specified, such as \`zapier-platform invoke -r\`, the command will prompt you to select one of your available authentications.
 
 #### Testing authentication
 
 To test if the auth data is correct, run either one of these:
 
 \`\`\`
-zapier invoke auth test   # invokes authentication.test method
-zapier invoke auth label  # invokes authentication.test and renders connection label
+zapier-platform invoke auth test   # invokes authentication.test method
+zapier-platform invoke auth label  # invokes authentication.test and renders connection label
 \`\`\`
 
-To refresh stale auth data for OAuth2 or session auth, run \`zapier invoke auth refresh\`. Note that refreshing is only applicable for local auth data in the \`.env\` file.
+To refresh stale auth data for OAuth2 or session auth, run \`zapier-platform invoke auth refresh\`. Note that refreshing is only applicable for local auth data in the \`.env\` file.
 
 ### Invoking a trigger or an action
 
 Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key \`new_recipe\`:
 
 \`\`\`
-zapier invoke trigger new_recipe
+zapier-platform invoke trigger new_recipe      # (local mode)
+zapier-platform invoke trigger new_recipe -r   # (remote mode)
 \`\`\`
 
 To add input data, use the \`--inputData\` flag (\`-i\` for short). The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
