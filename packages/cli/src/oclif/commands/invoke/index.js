@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
 const { localAppCommand } = require('../../../utils/local');
+const { readAppPackageJson } = require('../../../utils/misc');
 const { getLinkedAppConfig, readCredentials } = require('../../../utils/api');
 const { AUTH_KEY } = require('../../../constants');
 
@@ -79,6 +80,8 @@ class InvokeCommand extends BaseCommand {
     // Execution context that will be passed around
     const context = {
       // Data directly from command args and flags
+      remote: this.flags.remote,
+      version: this.flags.version || (await readAppPackageJson()).version,
       authId: this.flags['authentication-id'],
       nonInteractive: this.flags['non-interactive'] || !process.stdin.isTTY,
       actionType: this.args.actionType,
@@ -114,6 +117,13 @@ class InvokeCommand extends BaseCommand {
       console.warn(
         'The .env file does not exist or is empty. ' +
           'You may need to set some environment variables in there if your code uses process.env.',
+      );
+    }
+
+    if (context.remote && !context.version) {
+      throw new Error(
+        'Cannot determine the version to invoke. ' +
+          'Specify `--version` or make sure your package.json has a `version` field.',
       );
     }
 
@@ -165,16 +175,29 @@ class InvokeCommand extends BaseCommand {
     context.appId = (await getLinkedAppConfig(null, false))?.id;
     context.deployKey = (await readCredentials(false))[AUTH_KEY];
 
-    if (context.authId === '-' || context.authId === '') {
+    if (
+      context.authId === '-' ||
+      context.authId === '' ||
+      (context.remote && !context.authId)
+    ) {
       if (context.nonInteractive) {
         throw new Error(
-          "You cannot specify '-' or an empty string for `--authentication-id` in non-interactive mode.",
+          'You must specify an `--authentication-id` (an integer) in non-interactive mode.',
         );
       }
       context.authId = (await promptForAuthentication(this)).toString();
     }
 
     if (context.authId) {
+      context.authId = parseInt(context.authId);
+      if (isNaN(context.authId)) {
+        throw new Error(
+          "`--authentication-id` must be an integer or '-' to select from available authentications.",
+        );
+      }
+    }
+
+    if (context.authId && !context.remote) {
       // Fill authData with curlies if we're in relay mode
       const authFields = context.appDefinition.authentication.fields || [];
       for (const field of authFields) {
@@ -354,6 +377,17 @@ InvokeCommand.flags = buildFlags({
         'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
       default: 9000,
     }),
+    remote: Flags.boolean({
+      char: 'r',
+      description:
+        'Run your trigger/action remotely on Zapier production servers instead of locally. This requires deploying your integration first. Because this (remote) mode uses the same set of API endpoints as the Zap editor and other Zapier products, it allows you to verify exactly how your code will behave in production. Note that `--authentication-id` is required and implied in remote mode, as a production authentication is necessary to invoke in production.',
+      default: false,
+    }),
+    version: Flags.string({
+      char: 'v',
+      description:
+        'Only used when `--remote` is set. Specify a deployed version to invoke instead of the one currently set in your local package.json.',
+    }),
     'authentication-id': Flags.string({
       char: 'a',
       description:
@@ -378,17 +412,20 @@ InvokeCommand.args = {
 };
 
 InvokeCommand.examples = [
-  'zapier invoke',
-  'zapier invoke auth start',
-  'zapier invoke auth refresh',
-  'zapier invoke auth test',
-  'zapier invoke auth label',
-  'zapier invoke trigger new_recipe',
-  `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
-  'zapier invoke search find_recipe -i @file.json --non-interactive',
-  'cat file.json | zapier invoke trigger new_recipe -i @-',
-  'zapier invoke search find_ticket --authentication-id 12345',
-  'zapier invoke create add_ticket -a -',
+  'zapier-platform invoke',
+  'zapier-platform invoke auth start',
+  'zapier-platform invoke auth refresh',
+  'zapier-platform invoke auth test',
+  'zapier-platform invoke auth label',
+  'zapier-platform invoke trigger new_recipe',
+  `zapier-platform invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
+  'zapier-platform invoke search find_recipe -i @file.json --non-interactive',
+  'cat file.json | zapier-platform invoke trigger new_recipe -i @-',
+  'zapier-platform invoke search find_ticket --authentication-id 12345',
+  'zapier-platform invoke create add_ticket -a -',
+  'zapier-platform invoke trigger new_recipe --remote',
+  'zapier-platform invoke trigger new_recipe -r -a 12345',
+  'zapier-platform invoke -r -v 2.0.0 -a -',
 ];
 InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/search action locally.
 

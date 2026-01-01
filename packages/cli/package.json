@@ -105,6 +105,7 @@
         "!invoke/logger.js",
         "!invoke/prompts.js",
         "!invoke/relay.js",
+        "!invoke/remote.js",
         "!invoke/auth/**"
       ]
     },
