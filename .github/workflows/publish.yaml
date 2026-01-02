@@ -34,17 +34,41 @@ jobs:
         run: pnpm install
 
       - name: Publish zapier-platform-schema
-        run: pnpm publish --provenance --dry-run --no-git-checks
+        run: |
+          if git diff origin/main HEAD --name-only | grep -q "packages/schema/package.json"; then
+            echo "Publishing zapier-platform-schema"
+            pnpm publish --provenance --dry-run --no-git-checks
+          else
+            echo "Skipping publishing zapier-platform-schema (no version change)"
+          fi
         working-directory: packages/schema
 
       - name: Publish zapier-platform-core
-        run: pnpm publish --provenance --dry-run --no-git-checks
+        run: |
+          if git diff origin/main HEAD --name-only | grep -q "packages/core/package.json"; then
+            echo "Publishing zapier-platform-core"
+            pnpm publish --provenance --dry-run --no-git-checks
+          else
+            echo "Skipping publishing zapier-platform-core (no version change)"
+          fi
         working-directory: packages/core
 
       - name: Publish zapier-platform-cli
-        run: pnpm publish --provenance --dry-run --no-git-checks
+        run: |
+          if git diff origin/main HEAD --name-only | grep -q "packages/cli/package.json"; then
+            echo "Publishing zapier-platform-cli"
+            pnpm publish --provenance --dry-run --no-git-checks
+          else
+            echo "Skipping publishing zapier-platform-cli (no version change)"
+          fi
         working-directory: packages/cli
 
       - name: Publish zapier-platform-legacy-scripting-runner
-        run: pnpm publish --provenance --dry-run --no-git-checks
+        run: |
+          if git diff origin/main HEAD --name-only | grep -q "packages/legacy-scripting-runner/package.json"; then
+            echo "Publishing zapier-platform-legacy-scripting-runner"
+            pnpm publish --provenance --dry-run --no-git-checks
+          else
+            echo "Skipping publishing zapier-platform-legacy-scripting-runner (no version change)"
+          fi
         working-directory: packages/legacy-scripting-runner
