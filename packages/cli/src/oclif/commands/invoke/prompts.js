@@ -1,6 +1,7 @@
 const _ = require('lodash');
 
 const { listAuthentications } = require('../../../utils/api');
+const { fetchChoices } = require('./remote');
 
 /**
  * Formats a field definition for display in prompts.
@@ -72,6 +73,55 @@ const getMissingRequiredInputFields = (inputData, inputFields) => {
 };
 
 /**
+ * Fetches choices for a dynamic dropdown field.
+ * @param {import('../../ZapierBaseCommand')} command - The command instance for prompting
+ * @param {Object} context - The execution context
+ * @param {Object} field - The field definition
+ * @param {Function} invokeAction - Function to invoke actions (used for dynamic dropdowns)
+ * @returns {Promise<Array<Object>>} Array of choices formatted as { name, value } objects
+ */
+const getDynamicDropdownChoices = async (
+  command,
+  context,
+  field,
+  invokeAction,
+) => {
+  if (context.remote) {
+    return (await fetchChoices(context, field.key)).map((c) => ({
+      name: `${c.label} (${c.value})`,
+      value: c.value,
+    }));
+  } else {
+    const [triggerKey, idField, labelField] = field.dynamic.split('.');
+    const trigger = context.appDefinition.triggers[triggerKey];
+    if (!trigger) {
+      throw new Error(
+        `Cannot find trigger "${triggerKey}" for dynamic dropdown of field "${field.key}".`,
+      );
+    }
+    const newContext = {
+      ...context,
+      nonInteractive: true,
+      actionType: 'trigger',
+      actionKey: triggerKey,
+      actionTypePlural: 'triggers',
+      meta: {
+        ...context.meta,
+        isFillingDynamicDropdown: true,
+      },
+    };
+    return (await invokeAction(command, newContext)).map((c) => {
+      const id = c[idField] ?? 'null';
+      const label = getLabelForDynamicDropdown(c, labelField, idField);
+      return {
+        name: `${label} (${id})`,
+        value: id,
+      };
+    });
+  }
+};
+
+/**
  * Normalizes static choices into an array of { name, value } objects for
  * prompting.
  * @param {Array|string|Object} choices - The static choices definition
@@ -100,6 +150,32 @@ const getStaticChoices = (choices) => {
 };
 
 /**
+ * Gets choices for a dropdown field, handling both static and dynamic cases.
+ * @param {import('../../ZapierBaseCommand')} command - The command instance for prompting
+ * @param {Object} context - The execution context
+ * @param {Object} field - The field definition
+ * @param {Function} invokeAction - Function to invoke actions (used for dynamic dropdowns)
+ * @returns {Promise<Array<Object>>} Array of choices formatted as { name, value } objects
+ */
+const getStaticOrDynamicDropdownChoices = async (
+  command,
+  context,
+  field,
+  invokeAction,
+) => {
+  if (field.dynamic) {
+    return await getDynamicDropdownChoices(
+      command,
+      context,
+      field,
+      invokeAction,
+    );
+  } else {
+    return getStaticChoices(field.choices);
+  }
+};
+
+/**
  * Prompts the user for a single field value.
  * Handles dynamic dropdowns, boolean fields, and regular text input.
  * @param {import('../../ZapierBaseCommand')} command - The command instance for prompting
@@ -110,40 +186,14 @@ const getStaticChoices = (choices) => {
  */
 const promptForField = async (command, context, field, invokeAction) => {
   const message = formatFieldDisplay(field) + ':';
-  if (field.dynamic) {
-    // Dyanmic dropdown
-    const [triggerKey, idField, labelField] = field.dynamic.split('.');
-    const trigger = context.appDefinition.triggers[triggerKey];
-    if (!trigger) {
-      throw new Error(
-        `Cannot find trigger "${triggerKey}" for dynamic dropdown of field "${field.key}".`,
-      );
-    }
-    const newContext = {
-      ...context,
-      actionType: 'trigger',
-      actionKey: triggerKey,
-      actionTypePlural: 'triggers',
-      meta: {
-        ...context.meta,
-        isFillingDynamicDropdown: true,
-      },
-    };
-    const choices = await invokeAction(command, newContext);
-    return command.promptWithList(
-      message,
-      choices.map((c) => {
-        const id = c[idField] ?? 'null';
-        const label = getLabelForDynamicDropdown(c, labelField, idField);
-        return {
-          name: `${label} (${id})`,
-          value: id,
-        };
-      }),
-      { useStderr: true },
+  if (field.dynamic || field.choices) {
+    const choices = await getStaticOrDynamicDropdownChoices(
+      command,
+      context,
+      field,
+      invokeAction,
     );
-  } else if (field.choices) {
-    const choices = getStaticChoices(field.choices);
+    console.log('choices:', choices);
     if (choices.length === 0) {
       // No choices available, fall back to text input
       return command.prompt(message, { useStderr: true });

@@ -70,7 +70,10 @@ const fetchChoices = async (context, inputFieldKey) => {
       },
     },
   );
-  return responseData.choices;  // TODO: rename the fields
+  return responseData.choices.map((choice) => ({
+    value: choice.key,
+    label: choice.label,
+  }));
 };
 
 const formatInvokeResults = (context, results) => {
