@@ -72,6 +72,34 @@ const getMissingRequiredInputFields = (inputData, inputFields) => {
 };
 
 /**
+ * Normalizes static choices into an array of { name, value } objects for
+ * prompting.
+ * @param {Array|string|Object} choices - The static choices definition
+ * @return {Array<Object>} Array of choices formatted as { name, value }
+ */
+const getStaticChoices = (choices) => {
+  if (Array.isArray(choices)) {
+    // Can be an array of string or an array of { value, label }
+    if (choices.length === 0) {
+      return [];
+    } else if (typeof choices[0] === 'string') {
+      return choices.map((x) => ({ name: `${x} (${x})`, value: x }));
+    } else {
+      return choices.map((c) => ({
+        name: `${c.label} (${c.value})`,
+        value: c.value,
+      }));
+    }
+  } else {
+    // If choices is not an array, then it must be an object of { value: label }
+    return Object.entries(choices).map(([value, label]) => ({
+      name: `${label} (${value})`,
+      value,
+    }));
+  }
+};
+
+/**
  * Prompts the user for a single field value.
  * Handles dynamic dropdowns, boolean fields, and regular text input.
  * @param {import('../../ZapierBaseCommand')} command - The command instance for prompting
@@ -114,6 +142,14 @@ const promptForField = async (command, context, field, invokeAction) => {
       }),
       { useStderr: true },
     );
+  } else if (field.choices) {
+    const choices = getStaticChoices(field.choices);
+    if (choices.length === 0) {
+      // No choices available, fall back to text input
+      return command.prompt(message, { useStderr: true });
+    } else {
+      return command.promptWithList(message, choices, { useStderr: true });
+    }
   } else if (field.type === 'boolean') {
     const yes = await command.confirm(message, false, !field.required, true);
     return yes ? 'yes' : 'no';
@@ -233,12 +269,7 @@ const promptForInputFieldEdit = async (
  * @param {Function} invokeAction - Function to invoke actions (used for dynamic dropdowns)
  * @returns {Promise<void>}
  */
-const promptForFields = async (
-  command,
-  context,
-  inputFields,
-  invokeAction,
-) => {
+const promptForFields = async (command, context, inputFields, invokeAction) => {
   await promptOrErrorForRequiredInputFields(
     command,
     context,
