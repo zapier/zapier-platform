@@ -427,29 +427,31 @@ InvokeCommand.examples = [
   'zapier-platform invoke trigger new_recipe -r -a 12345',
   'zapier-platform invoke -r -v 2.0.0 -a -',
 ];
-InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/search action locally.
+InvokeCommand.description = `Invoke an authentication method, a trigger, or a create/search action locally or remotely.
 
-This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
+This command allows you to invoke your integration's authentication, triggers, and actions. With this tool, you can test and debug your integration code directly from your terminal without leaving your development environment and opening a browser.
 
 Why use this command?
 
-* Fast feedback loop: Write code and run this command to verify if it works immediately
-* Step-by-step debugging: Running locally means you can use a debugger to step through your code
-* Untruncated logs: View complete logs and errors in your terminal
+* Fast feedback loops: Verify your code changes instantly.
+* Step-by-step debugging: Use a debugger to step through your code locally.
+* Untruncated logs: View complete HTTP logs and errors in your terminal.
 
 ### Modes
 
-The \`invoke\` command supports three modes:
+The \`invoke\` command works in three modes:
 
-1. Local mode: runs your code locally, and sends outgoing requests directly from your local machine.
-2. Relay mode: runs your code locally, but proxies all outgoing requests through Zapier using production authentication data.
+1. Local mode (default): runs your code locally, and sends outgoing requests directly from your local machine.
+2. Relay mode (experimental): runs your code locally, but proxies all outgoing requests through Zapier using production authentication data.
 3. Remote mode: runs your code and sends outgoing requests entirely in/from Zapier production environment.
 
 **Local mode** is the default mode. Without the \`--remote\` (or \`-r\`) flag or the \`--authentication-id\` (or \`-a\`) flag, the command runs in local mode. It's useful when you want to quickly test your integration code locally. You'll need to set up local auth data in the \`.env\` file using the \`zapier-platform invoke auth start\` command.
 
-**Relay mode** is currently EXPERIMENTAL. It's enabled when the \`-a\` flag is specified. It's useful when you want to test code locally but setting up local auth data is troublesome, such as when your OAuth2 server requires a non-localhost or HTTPS redirect URI. By specifying \`-a <authentication-id>\`, all outgoing requests will be proxied through Zapier's relay service using the production authentication data with the given authentication ID. See the **Authentication** section below for more details.
+**Relay mode** is currently experimental. It's enabled when the \`-a\` flag is specified. It's useful when you want to test code locally but setting up local auth data is troublesome, such as when your OAuth2 server requires a non-localhost or HTTPS redirect URI. By specifying \`-a <authentication-id>\`, all outgoing requests will be proxied through Zapier's relay service using the production auth data with the given authentication ID. See the **Authentication** section below for more details.
 
-**Remote mode** is enabled when the \`--remote\` (or \`-r\`) flag is specified. It's useful when you want to verify how your code behaves in Zapier production environment. Note that remote mode requires deploying your integration first. If the \`-a\` flag is not specified, the command will prompt you to select one of your available authentications/connections in production.
+Both local and relay mode **emulate** how your code would run in Zapier production environment, so the behavior might not be exactly the same. But we consider every inconsistency a bug or a limitation to be fixed. For 100% match with production behavior, use remote mode.
+
+**Remote mode** is enabled when the \`--remote\` (or \`-r\`) flag is specified. It's useful when you want to verify how your code behaves in Zapier production environment. Note that remote mode requires deploying your integration first. If the \`-a\` flag is not specified, the command will prompt you to select one of your available authentications/connections in production. By default, the remote mode invokes the \`version\` set in your \`package.json\`. You can use the \`--version\` (or \`-v\`) flag to specify a different deployed version.
 
 ### Authentication
 
@@ -515,9 +517,9 @@ When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the comman
 
 The \`--debug\` flag will show you the HTTP request logs and any console logs you have in your code.
 
-### Limitations
+### Limitations in local and relay Mode
 
-The following is a non-exhaustive list of current limitations and may be supported in the future:
+The following is a non-exhaustive list of current limitations in local and relay mode. We may support them in the future.
 
 - Hook triggers, including REST hook subscribe/unsubscribe
 - Line items
