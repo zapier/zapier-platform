@@ -1,0 +1,86 @@
+name: Publish
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - 'main'
+
+jobs:
+  publish:
+    name: Publish to npm
+    if: (github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-'))
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for OIDC trusted publishing
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.24.0
+          run_install: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Publish zapier-platform-schema
+        run: |
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-schema version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
+            echo "Publishing zapier-platform-schema"
+            pnpm publish --provenance --no-git-checks
+          else
+            echo "Skipping zapier-platform-schema (already published)"
+          fi
+        working-directory: packages/schema
+
+      - name: Publish zapier-platform-core
+        run: |
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-core version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
+            echo "Publishing zapier-platform-core"
+            pnpm publish --provenance --no-git-checks
+          else
+            echo "Skipping zapier-platform-core (already published)"
+          fi
+        working-directory: packages/core
+
+      - name: Publish zapier-platform-cli
+        run: |
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-cli version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
+            echo "Publishing zapier-platform-cli"
+            pnpm publish --provenance --no-git-checks
+          else
+            echo "Skipping zapier-platform-cli (already published)"
+          fi
+        working-directory: packages/cli
+
+      - name: Publish zapier-platform-legacy-scripting-runner
+        run: |
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-legacy-scripting-runner version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
+            echo "Publishing zapier-platform-legacy-scripting-runner"
+            pnpm publish --provenance --no-git-checks
+          else
+            echo "Skipping zapier-platform-legacy-scripting-runner (already published)"
+          fi
+        working-directory: packages/legacy-scripting-runner

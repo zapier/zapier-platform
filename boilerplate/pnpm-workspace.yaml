@@ -1,0 +1,2 @@
+# Don't use symlinks in node_modules so we can zip it
+nodeLinker: hoisted
