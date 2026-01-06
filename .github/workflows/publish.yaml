@@ -35,40 +35,52 @@ jobs:
 
       - name: Publish zapier-platform-schema
         run: |
-          if git diff origin/main HEAD --name-only | grep -q "packages/schema/package.json"; then
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-schema version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
             echo "Publishing zapier-platform-schema"
             pnpm publish --provenance --no-git-checks
           else
-            echo "Skipping publishing zapier-platform-schema (no version change)"
+            echo "Skipping zapier-platform-schema (already published)"
           fi
         working-directory: packages/schema
 
       - name: Publish zapier-platform-core
         run: |
-          if git diff origin/main HEAD --name-only | grep -q "packages/core/package.json"; then
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-core version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
             echo "Publishing zapier-platform-core"
             pnpm publish --provenance --no-git-checks
           else
-            echo "Skipping publishing zapier-platform-core (no version change)"
+            echo "Skipping zapier-platform-core (already published)"
           fi
         working-directory: packages/core
 
       - name: Publish zapier-platform-cli
         run: |
-          if git diff origin/main HEAD --name-only | grep -q "packages/cli/package.json"; then
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-cli version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
             echo "Publishing zapier-platform-cli"
             pnpm publish --provenance --no-git-checks
           else
-            echo "Skipping publishing zapier-platform-cli (no version change)"
+            echo "Skipping zapier-platform-cli (already published)"
           fi
         working-directory: packages/cli
 
       - name: Publish zapier-platform-legacy-scripting-runner
         run: |
-          if git diff origin/main HEAD --name-only | grep -q "packages/legacy-scripting-runner/package.json"; then
+          PUBLISHED_VERSION=$(pnpm view zapier-platform-legacy-scripting-runner version)
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+
+          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
             echo "Publishing zapier-platform-legacy-scripting-runner"
             pnpm publish --provenance --no-git-checks
           else
-            echo "Skipping publishing zapier-platform-legacy-scripting-runner (no version change)"
+            echo "Skipping zapier-platform-legacy-scripting-runner (already published)"
           fi
         working-directory: packages/legacy-scripting-runner
