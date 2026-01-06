@@ -37,7 +37,7 @@ jobs:
         run: |
           if git diff origin/main HEAD --name-only | grep -q "packages/schema/package.json"; then
             echo "Publishing zapier-platform-schema"
-            pnpm publish --provenance --dry-run --no-git-checks
+            pnpm publish --provenance --no-git-checks
           else
             echo "Skipping publishing zapier-platform-schema (no version change)"
           fi
@@ -47,7 +47,7 @@ jobs:
         run: |
           if git diff origin/main HEAD --name-only | grep -q "packages/core/package.json"; then
             echo "Publishing zapier-platform-core"
-            pnpm publish --provenance --dry-run --no-git-checks
+            pnpm publish --provenance --no-git-checks
           else
             echo "Skipping publishing zapier-platform-core (no version change)"
           fi
@@ -57,7 +57,7 @@ jobs:
         run: |
           if git diff origin/main HEAD --name-only | grep -q "packages/cli/package.json"; then
             echo "Publishing zapier-platform-cli"
-            pnpm publish --provenance --dry-run --no-git-checks
+            pnpm publish --provenance --no-git-checks
           else
             echo "Skipping publishing zapier-platform-cli (no version change)"
           fi
@@ -67,7 +67,7 @@ jobs:
         run: |
           if git diff origin/main HEAD --name-only | grep -q "packages/legacy-scripting-runner/package.json"; then
             echo "Publishing zapier-platform-legacy-scripting-runner"
-            pnpm publish --provenance --dry-run --no-git-checks
+            pnpm publish --provenance --no-git-checks
           else
             echo "Skipping publishing zapier-platform-legacy-scripting-runner (no version change)"
           fi
