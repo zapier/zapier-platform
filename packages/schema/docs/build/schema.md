@@ -1434,7 +1434,7 @@ Key | Required | Type | Description
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
 `dependsOn` | no | `array`[`string`] | Specifies which other input fields this field depends on. These must be filled before this one becomes enabled, and when their values change, this field's value should be cleared.
-`resourceKey` | no | `string` | Explicitly links this input field to a resource or asset. If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.
+`resource` | no | `string` | Explicitly links this input field to a resource or asset. Supports dot notation for field references (e.g., "contact.email"). If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.
 `choices` | no | oneOf([/FieldChoicesSchema](#fieldchoicesschema), [/FieldDynamicChoicesSchema](#fielddynamicchoicesschema)) | Describes how to populate this dropdown. Can be a static list or a dynamic object with pagination and search support.
 `placeholder` | no | `string` | An example value that is not saved.
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
@@ -1463,11 +1463,7 @@ Key | Required | Type | Description
 * `{ key: 'email', group: 'contact' }`
 * `{ key: 'spreadsheet', dependsOn: [ 'folder' ] }`
 * `{ key: 'worksheet', dependsOn: [ 'folder', 'spreadsheet' ] }`
-* `{
-  key: 'spreadsheet_id',
-  resourceKey: 'spreadsheets',
-  choices: { perform: '$func$0$f$' }
-}`
+* `{ key: 'spreadsheet_id', resource: 'spreadsheets', choices: { perform: '$func$0$f$' } }`
 
 #### Anti-Examples
 

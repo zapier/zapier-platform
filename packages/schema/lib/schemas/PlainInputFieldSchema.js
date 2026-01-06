@@ -46,9 +46,9 @@ module.exports = makeSchema(
         type: 'array',
         items: { type: 'string' },
       },
-      resourceKey: {
+      resource: {
         description:
-          'Explicitly links this input field to a resource or asset. If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.',
+          'Explicitly links this input field to a resource or asset. Supports dot notation for field references (e.g., "contact.email"). If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.',
         type: 'string',
         minLength: 1,
       },
@@ -134,7 +134,7 @@ module.exports = makeSchema(
       },
       {
         key: 'spreadsheet_id',
-        resourceKey: 'spreadsheets',
+        resource: 'spreadsheets',
         choices: { perform: '$func$0$f$' },
       },
     ],

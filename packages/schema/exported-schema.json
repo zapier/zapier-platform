@@ -776,8 +776,8 @@
             "type": "string"
           }
         },
-        "resourceKey": {
-          "description": "Explicitly links this input field to a resource or asset. If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.",
+        "resource": {
+          "description": "Explicitly links this input field to a resource or asset. Supports dot notation for field references (e.g., \"contact.email\"). If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.",
           "type": "string",
           "minLength": 1
         },
