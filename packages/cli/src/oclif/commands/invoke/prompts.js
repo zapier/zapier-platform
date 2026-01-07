@@ -193,7 +193,6 @@ const promptForField = async (command, context, field, invokeAction) => {
       field,
       invokeAction,
     );
-    console.log('choices:', choices);
     if (choices.length === 0) {
       // No choices available, fall back to text input
       return command.prompt(message, { useStderr: true });
