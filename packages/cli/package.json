@@ -95,19 +95,9 @@
   },
   "oclif": {
     "commands": {
-      "strategy": "pattern",
-      "target": "./src/oclif/commands",
-      "globPatterns": [
-        "**/*.js",
-        "!invoke/action.js",
-        "!invoke/env.js",
-        "!invoke/input-types.js",
-        "!invoke/logger.js",
-        "!invoke/prompts.js",
-        "!invoke/relay.js",
-        "!invoke/remote.js",
-        "!invoke/auth/**"
-      ]
+      "strategy": "explicit",
+      "target": "./src/oclif/oCommands",
+      "identifier": "COMMANDS"
     },
     "additionalHelpFlags": [
       "-h"

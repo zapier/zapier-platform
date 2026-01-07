@@ -1,6 +1,8 @@
-// this is needed for the old help command so it can import new command info
-
-module.exports = {
+// This list tells oclif which commands we want to expose.
+// See the oclif.commands setting in packages/cli/package.json.
+// The build-docs script (packages/cli/scripts/docs.js) also uses this list
+// to generate the command reference documentation.
+const COMMANDS = {
   analytics: require('./commands/analytics'),
   apps: true,
   build: require('./commands/build'),
@@ -50,3 +52,5 @@ module.exports = {
   validate: require('./commands/validate'),
   versions: require('./commands/versions'),
 };
+
+module.exports = { COMMANDS };

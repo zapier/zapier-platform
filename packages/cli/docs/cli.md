@@ -442,7 +442,6 @@ The following is a non-exhaustive list of current limitations in local and relay
 - Buffered create actions
 - Search-or-create actions
 - Search-powered fields
-- Field choices
 - autoRefresh for OAuth2 and session auth
 
 
