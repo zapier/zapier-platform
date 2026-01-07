@@ -5,7 +5,7 @@
 Before installing the development version of the Zapier Platform CLI, ensure you have:
 
 - Node.js (refer to `.tool-versions` for the recommended version)
-- pnpm (`npm install -g pnpm`)
+- pnpm
 - Git
 
 We recommend using `asdf` to manage Node.js and pnpm versions consistently.
