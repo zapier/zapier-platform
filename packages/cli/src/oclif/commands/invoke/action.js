@@ -29,7 +29,15 @@ const invokeAction = async (command, context) => {
 
   await promptForFields(command, context, staticInputFields, invokeAction);
 
-  const adverb = context.remote ? 'remotely' : 'locally';
+  let adverb;
+  if (context.remote) {
+    adverb = 'remotely';
+  } else if (context.authId) {
+    adverb = 'locally with relay';
+  } else {
+    adverb = 'locally';
+  }
+
   let methodName = `${context.actionTypePlural}.${action.key}.operation.inputFields`;
   startSpinner(`Invoking ${methodName} ${adverb}`);
 
