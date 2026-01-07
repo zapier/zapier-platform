@@ -30,9 +30,22 @@ Uses a function to fetch choices directly. Define it with `choices.perform`:
   key: 'planet_id',
   type: 'integer',
   label: 'Home Planet',
+  asset: 'planet', // Explicit asset linking (see below)
   choices: {
     perform: getPlanetChoices,
   },
+}
+```
+
+#### Asset Linking
+
+The `asset` property explicitly links an input field to an asset. This is particularly important for perform-based dropdowns since they don't have a `dynamic` property to derive the asset from.
+
+```javascript
+{
+  key: 'spreadsheet_id',
+  asset: 'spreadsheet',
+  choices: { perform: getSpreadsheets },
 }
 ```
 
@@ -76,7 +89,7 @@ const getPlanetChoices = async (z, bundle) => {
 This integration uses the [Star Wars API](https://swapi.dev/) to demonstrate:
 
 - **Species dropdown** - Trigger-based pattern using the `species` trigger
-- **Planet dropdown** - Perform-based pattern with pagination
+- **Planet dropdown** - Perform-based pattern with pagination and explicit `asset` linking
 
 ## Getting Started
 

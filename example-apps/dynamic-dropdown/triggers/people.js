@@ -86,6 +86,7 @@ module.exports = {
         label: 'Home Planet (perform-based)',
         helpText:
           'Filter by home planet. Uses perform-based dynamic dropdown with pagination support.',
+        asset: 'planet', // Explicit asset linking for perform-based dropdowns
         choices: {
           perform: getPlanetChoices,
         },
