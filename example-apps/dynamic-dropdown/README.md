@@ -31,7 +31,7 @@ zapier scaffold trigger contact
 zapier scaffold create contact
 ``` 
 
-Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md.
+Find out more on the latest docs: https://docs.zapier.com/platform
 
 # dynamic-dropdown
 
@@ -139,4 +139,4 @@ zapier test
 zapier push
 ```
 
-Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md
+Find out more on the latest docs: https://docs.zapier.com/platform

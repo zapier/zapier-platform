@@ -104,4 +104,4 @@ zapier test
 zapier push
 ```
 
-Find out more on the latest docs: https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md
+Find out more on the latest docs: https://docs.zapier.com/platform
