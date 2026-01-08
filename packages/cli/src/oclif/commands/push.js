@@ -38,7 +38,7 @@ class PushCommand extends ZapierBaseCommand {
 
     if (!skipDepInstall) {
       this.log(
-        `\nTip: Try ${colors.bold.underline('zapier push --skip-dep-install')} for faster builds.`,
+        `\nTip: Try ${colors.bold.underline('zapier-platform push --skip-dep-install')} for faster builds.`,
       );
     }
   }
