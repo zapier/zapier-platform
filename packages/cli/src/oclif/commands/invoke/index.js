@@ -517,7 +517,7 @@ When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the comman
 
 The \`--debug\` flag will show you the HTTP request logs and any console logs you have in your code.
 
-### Limitations in local and relay Mode
+### Limitations in local and relay mode
 
 The following is a non-exhaustive list of current limitations in local and relay mode. We may support them in the future.
 
@@ -525,7 +525,6 @@ The following is a non-exhaustive list of current limitations in local and relay
 - Line items
 - Output hydration
 - File upload
-- Dynamic dropdown pagination
 - Function-based connection label
 - Buffered create actions
 - Search-or-create actions

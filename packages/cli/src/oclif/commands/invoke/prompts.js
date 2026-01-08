@@ -164,12 +164,24 @@ const getStaticOrDynamicDropdownChoices = async (
   invokeAction,
 ) => {
   if (field.dynamic) {
-    return await getDynamicDropdownChoices(
+    const choices = await getDynamicDropdownChoices(
       command,
       context,
       field,
       invokeAction,
     );
+    const page = context.meta.page || 0;
+    if (page) {
+      choices.unshift({
+        name: `>>> PREVIOUS PAGE <<<`,
+        value: '__prev_page__',
+      });
+    }
+    choices.push({
+      name: `>>> NEXT PAGE <<<`,
+      value: '__next_page__',
+    });
+    return choices;
   } else {
     return getStaticChoices(field.choices);
   }
@@ -187,23 +199,44 @@ const getStaticOrDynamicDropdownChoices = async (
 const promptForField = async (command, context, field, invokeAction) => {
   const message = formatFieldDisplay(field) + ':';
   if (field.dynamic || field.choices) {
-    const choices = await getStaticOrDynamicDropdownChoices(
-      command,
-      context,
-      field,
-      invokeAction,
-    );
-    if (choices.length === 0) {
-      // No choices available, fall back to text input
-      return command.prompt(message, { useStderr: true });
-    } else {
-      return command.promptWithList(message, choices, { useStderr: true });
+    let answer;
+    while (
+      !answer ||
+      answer === '__next_page__' ||
+      answer === '__prev_page__'
+    ) {
+      let page = 0;
+      switch (answer) {
+        case '__next_page__':
+          page = (context.meta.page || 0) + 1;
+          break;
+        case '__prev_page__':
+          page = Math.max((context.meta.page || 0) - 1, 0);
+          break;
+      }
+      context = {
+        ...context,
+        meta: {
+          ...context.meta,
+          page,
+        },
+      };
+      const choices = await getStaticOrDynamicDropdownChoices(
+        command,
+        context,
+        field,
+        invokeAction,
+      );
+      answer = await command.promptWithList(message, choices, {
+        useStderr: true,
+      });
     }
+    return answer;
   } else if (field.type === 'boolean') {
     const yes = await command.confirm(message, false, !field.required, true);
     return yes ? 'yes' : 'no';
   } else {
-    return command.prompt(message, { useStderr: true });
+    return await command.prompt(message, { useStderr: true });
   }
 };
 
