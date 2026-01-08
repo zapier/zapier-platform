@@ -71,6 +71,8 @@ const fetchChoices = async (context, inputFieldKey) => {
       },
     },
   );
+  // Maybe we need to use responseData.next_page once we have function-based
+  // dynamic choices?
   return responseData.choices.map((choice) => ({
     value: choice.key,
     label: choice.label,
