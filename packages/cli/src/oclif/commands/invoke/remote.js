@@ -67,6 +67,7 @@ const fetchChoices = async (context, inputFieldKey) => {
         authentication_id: context.authId,
         params: context.inputData,
         input_field_key: inputFieldKey,
+        page: String(context.meta.page || 0),
       },
     },
   );
