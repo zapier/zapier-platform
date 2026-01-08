@@ -73,11 +73,17 @@ const invokeAction = async (command, context) => {
 
   // Preserve original inputData as inputDataRaw before type resolution
   const inputDataRaw = { ...context.inputData };
-  const inputData = resolveInputDataTypes(
-    context.inputData,
-    inputFields,
-    context.timezone,
-  );
+  let inputData;
+  if (context.remote) {
+    // Let the remote server resolve input data types
+    inputData = { ...context.inputData };
+  } else {
+    inputData = resolveInputDataTypes(
+      context.inputData,
+      inputFields,
+      context.timezone,
+    );
+  }
   methodName = `${context.actionTypePlural}.${action.key}.operation.perform`;
 
   startSpinner(`Invoking ${methodName} ${adverb}`);
