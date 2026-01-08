@@ -227,8 +227,7 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
         break;
       // TODO: Handle 'list' and 'dict' types?
       default:
-        // 'string' type
-        inputData[k] = String(v);
+        // No need to do anything with 'string' type?
         break;
     }
   }
