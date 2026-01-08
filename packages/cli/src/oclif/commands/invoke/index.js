@@ -41,35 +41,6 @@ const readStream = async (stream) => {
   return chunks.join('');
 };
 
-/**
- * Recursively finds all non-string primitive values in a data structure.
- * Used to validate that inputData contains only string values.
- * @param {*} data - The data to search
- * @param {string} [path='inputData'] - The current path for error reporting
- * @returns {Array<{path: string, value: *}>} Array of objects with path and non-string value
- */
-const findNonStringPrimitives = (data, path = 'inputData') => {
-  if (typeof data === 'number' || typeof data === 'boolean' || data === null) {
-    return [{ path, value: data }];
-  } else if (typeof data === 'string') {
-    return [];
-  } else if (Array.isArray(data)) {
-    const paths = [];
-    for (let i = 0; i < data.length; i++) {
-      paths.push(...findNonStringPrimitives(data[i], `${path}[${i}]`));
-    }
-    return paths;
-  } else if (_.isPlainObject(data)) {
-    const paths = [];
-    for (const [k, v] of Object.entries(data)) {
-      paths.push(...findNonStringPrimitives(v, `${path}.${k}`));
-    }
-    return paths;
-  } else {
-    throw new Error('Unexpected data type');
-  }
-};
-
 class InvokeCommand extends BaseCommand {
   /**
    * Main entry point for the invoke command. Handles auth operations (start, test, label, refresh)
@@ -305,17 +276,6 @@ class InvokeCommand extends BaseCommand {
         context.inputData = JSON.parse(inputData);
       } else {
         context.inputData = {};
-      }
-
-      // inputData should only contain strings
-      const nonStringPrimitives = findNonStringPrimitives(context.inputData);
-      if (nonStringPrimitives.length) {
-        throw new Error(
-          'All primitive values in --inputData must be strings. Found non-string values in these paths:\n' +
-            nonStringPrimitives
-              .map(({ path, value }) => `* ${value} at ${path}`)
-              .join('\n'),
-        );
       }
 
       const output = await invokeAction(this, context);
