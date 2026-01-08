@@ -32,6 +32,9 @@ class PushCommand extends ZapierBaseCommand {
     this.log(
       `\nPush complete! Built ${BUILD_PATH} and ${SOURCE_PATH} and uploaded them to Zapier.`,
     );
+    this.log(
+      `Now you can test it using ${colors.bold.underline('zapier-platform invoke -r')}.`,
+    );
 
     if (!skipDepInstall) {
       this.log(
