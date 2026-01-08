@@ -46,6 +46,7 @@ const { findCorePackageDir, isWindows, runCommand } = require('./misc');
 const { isBlocklisted, respectGitIgnore } = require('./ignore');
 const { localAppCommand } = require('./local');
 const { throwForInvalidVersion } = require('./version');
+const { getPackageManager } = require('./package-manager');
 
 const debug = require('debug')('zapier:build');
 
@@ -592,7 +593,7 @@ const testBuildZip = async (zipPath) => {
 
 const _buildFunc = async (
   {
-    skipNpmInstall = false,
+    skipDepInstall = false,
     disableDependencyDetection = false,
     skipValidation = false,
     printProgress = true,
@@ -609,7 +610,7 @@ const _buildFunc = async (
   const appDir = process.cwd();
 
   let workingDir;
-  if (skipNpmInstall) {
+  if (skipDepInstall) {
     workingDir = appDir;
     debug('Building in app directory: ', workingDir);
   } else {
@@ -628,16 +629,25 @@ const _buildFunc = async (
   const buildDir = path.join(appDir, BUILD_DIR);
   await fse.ensureDir(buildDir);
 
-  if (!skipNpmInstall) {
+  if (!skipDepInstall) {
     maybeStartSpinner('Copying project to temp directory');
     const copyFilter = (src) => !src.endsWith('.zip');
     await copyDir(appDir, workingDir, { filter: copyFilter });
 
     maybeEndSpinner();
-    maybeStartSpinner('Installing project dependencies');
-    const output = await runCommand('npm', ['install', '--production'], {
-      cwd: workingDir,
-    });
+    const packageManager = await getPackageManager();
+
+    maybeStartSpinner(
+      `Installing project dependencies using ${packageManager.executable}`,
+    );
+
+    const output = await runCommand(
+      packageManager.executable,
+      ['install', '--production'],
+      {
+        cwd: workingDir,
+      },
+    );
 
     // `npm install` may fail silently without returning a non-zero exit code,
     // need to check further here
@@ -744,7 +754,7 @@ const _buildFunc = async (
 
   maybeEndSpinner();
 
-  if (skipNpmInstall) {
+  if (skipDepInstall) {
     maybeStartSpinner('Cleaning up temp files');
     await deleteZapierWrapper(workingDir);
     fs.rmSync(path.join(workingDir, 'definition.json'));

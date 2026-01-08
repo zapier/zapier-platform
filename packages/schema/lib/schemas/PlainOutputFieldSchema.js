@@ -44,12 +44,40 @@ module.exports = makeSchema(
           'Prevents triggering on new output until all values for fields with this property remain unchanged for 2 polls. It can be used to, e.g., not trigger on a new contact until the contact has completed typing their name. NOTE that this only applies to the `outputFields` of polling triggers.',
         type: 'boolean',
       },
+      sample: {
+        description:
+          'An example value for this field. Can be any type (string, number, boolean, object, array, null) to match the expected field output. Values provided here will be combined with values in the operation level `sample` field, with this field taking precedence. This is most useful when using a function to generate dynamic `outputFields`.',
+        oneOf: [
+          { type: 'string' },
+          { type: 'number' },
+          { type: 'boolean' },
+          { type: 'object' },
+          { type: 'array' },
+          { type: 'null' },
+        ],
+      },
     },
     examples: [
       { key: 'abc' },
       { key: 'abc', children: [{ key: 'abc' }] },
       { key: 'abc', type: 'number', label: 'neat' },
       { key: 'abc', type: 'number' },
+      { key: 'name', type: 'string', sample: 'John Doe' },
+      { key: 'price', type: 'number', sample: 29.99 },
+      { key: 'is_active', type: 'boolean', sample: true },
+      { key: 'tags', list: true, sample: ['work', 'urgent'] },
+      {
+        key: 'metadata',
+        sample: { created_at: '2025-01-15', author: 'system' },
+      },
+      {
+        key: 'address',
+        sample: { street: '123 Main St', city: 'London' },
+        children: [
+          { key: 'street', sample: '123 Main St' },
+          { key: 'city', sample: 'London' },
+        ],
+      },
     ],
     antiExamples: [
       {

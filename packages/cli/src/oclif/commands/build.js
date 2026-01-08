@@ -12,11 +12,11 @@ const colors = require('colors/safe');
 
 class BuildCommand extends BaseCommand {
   async perform() {
-    const skipNpmInstall = this.flags['skip-npm-install'];
+    const skipDepInstall = this.flags['skip-dep-install'];
     await buildAndOrUpload(
       { build: true },
       {
-        skipNpmInstall,
+        skipDepInstall,
         disableDependencyDetection: this.flags['disable-dependency-detection'],
         skipValidation: this.flags['skip-validation'],
       },
@@ -27,9 +27,9 @@ class BuildCommand extends BaseCommand {
         `Now you can upload them with the ${colors.bold.underline('zapier upload')} command.`,
     );
 
-    if (!skipNpmInstall) {
+    if (!skipDepInstall) {
       this.log(
-        `\nTip: Try ${colors.bold.underline('zapier build --skip-npm-install')} for faster builds.`,
+        `\nTip: Try ${colors.bold.underline('zapier build --skip-dep-install')} for faster builds.`,
       );
     }
   }
@@ -40,9 +40,10 @@ BuildCommand.flags = buildFlags({
     'disable-dependency-detection': Flags.boolean({
       description: `Disable "smart" file inclusion. By default, Zapier only includes files that are required by your entry point (\`index.js\` by default). If you (or your dependencies) require files dynamically (such as with \`require(someVar)\`), then you may see "Cannot find module" errors. Disabling this may make your \`build.zip\` too large. If that's the case, try using the \`includeInBuild\` option in your \`${CURRENT_APP_FILE}\`. See the docs about \`includeInBuild\` for more info.`,
     }),
-    'skip-npm-install': Flags.boolean({
+    'skip-dep-install': Flags.boolean({
+      aliases: ['skip-npm-install'],
       description:
-        'Skips installing a fresh copy of npm dependencies for shorter build time. Helpful for using yarn, pnpm, or local copies of dependencies.',
+        '[alias: --skip-npm-install]\nSkips installing a fresh copy of dependencies for shorter build time. Helpful for using yarn, pnpm, or local copies of dependencies.',
     }),
     'skip-validation': Flags.boolean({
       description:

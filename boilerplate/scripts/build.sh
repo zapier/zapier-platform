@@ -49,8 +49,16 @@ inspect_build() {
     temp_dir="`dirname $1`/_temp"
     unzip -q $1 -d $temp_dir
     find $temp_dir/node_modules/zapier-platform-*/package.json | (xargs cat | jq '{name, version}')
-    echo 'deasync bindings:'
-    ls $temp_dir/node_modules/deasync/bin
+
+    pushd $temp_dir > /dev/null
+    EXIT_CODE=$(node zapierwrapper.js)
+    if [[ $EXIT_CODE -eq 0 ]]; then
+        echo "Entry point can be loaded successfully ✅"
+    else
+        echo "Entry point failed to load ❌"
+    fi
+    popd > /dev/null
+
     rm -rf $temp_dir
 }
 
@@ -100,8 +108,7 @@ TARGET_FILE="$BUILD_DIR/$CORE_VERSION.zip"
 rm -f $TARGET_FILE
 
 # Build core and legacy-scripting-runner locally. Needs to generate a unique filename
-# with a timestamp to avoid yarn using cached packages.
-# See https://github.com/yarnpkg/yarn/issues/2165.
+# with a timestamp to avoid the package manager using any cache.
 TIMESTAMP=`date +"%s"`
 CORE_PACK_FILENAME="core-$TIMESTAMP.tgz"
 LEGACY_PACK_FILENAME="legacy-$TIMESTAMP.tgz"
@@ -113,14 +120,14 @@ if [ "$1" == "" ]; then
     echo "> core from local, version $CORE_VERSION"
 
     pushd $CORE_DIR > /dev/null
-    yarn pack --filename "$BOILERPLATE_DIR/$CORE_PACK_FILENAME"
+    pnpm pack --out "$BOILERPLATE_DIR/$CORE_PACK_FILENAME"
     popd > /dev/null
 
     if [ "$2" == "" ]; then
         echo "> legacy-scripting-runner from local, version $LEGACY_VERSION"
 
         pushd $LEGACY_DIR > /dev/null
-        yarn pack --filename "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
+        pnpm pack --out "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
         popd > /dev/null
 
         # Replace core and legacy-scripting-runner versions in package.json
@@ -138,7 +145,7 @@ else
         echo "> legacy-scripting-runner from local, version $LEGACY_VERSION"
 
         pushd $LEGACY_DIR > /dev/null
-        yarn pack --filename "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
+        pnpm pack --out "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
         popd > /dev/null
 
         # Replace core and legacy-scripting-runner versions in package.json
@@ -154,7 +161,7 @@ fi
 # Install boilerplate deps
 pushd $BOILERPLATE_DIR > /dev/null
 echo "{\"version\": \"1.0.0\", \"platformVersion\": \"$CORE_VERSION\"}" > definition.json
-yarn --no-lockfile
+pnpm install --no-lockfile
 popd > /dev/null
 
 # Monkey patch boilerplate package.json so zapier-platform-core and
@@ -172,16 +179,12 @@ zip -R $TARGET_FILE '*.js' '*.cjs' '*.json' '*/linux-x64-node-14/*.node' '*/linu
 rm -f zapierwrapper.js definition.json core-*.tgz legacy-*.tgz
 # rm -rf node_modules
 
-# Don't let yarn pile up useless caches of local packages.
-# See https://github.com/yarnpkg/yarn/issues/6037.
-yarn cache clean zapier-platform-core zapier-platform-schema zapier-platform-legacy-scripting-runner
-
 popd > /dev/null
 
 # Undo the monkey patch on boilerplate package.json
 update_deps "$BOILERPLATE_DIR/package.json" PLACEHOLDER PLACEHOLDER
 
-echo -e "\nDone! Here's your output zip file:"
+echo -e "\nDone! Here's your output zip file (size should be 4-6 MB):"
 ls -hl $TARGET_FILE
 
 echo -e "\nInspecting what's inside the zip:"

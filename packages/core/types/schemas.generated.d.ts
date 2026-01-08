@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 18.0.5
+ * zapier-platform-schema version: 18.0.7
  *  schema-to-ts compiler version: 0.1.0
  */
 import type {
@@ -1555,6 +1555,22 @@ export interface PlainOutputField {
    * `outputFields` of polling triggers.
    */
   steadyState?: boolean;
+
+  /**
+   * An example value for this field. Can be any type (string, number,
+   * boolean, object, array, null) to match the expected field output.
+   * Values provided here will be combined with values in the
+   * operation level `sample` field, with this field taking
+   * precedence. This is most useful when using a function to generate
+   * dynamic `outputFields`.
+   */
+  sample?:
+    | string
+    | number
+    | boolean
+    | Record<string, unknown>
+    | unknown[]
+    | null;
 }
 
 /** An array or collection of input field groups. */

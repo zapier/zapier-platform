@@ -537,7 +537,7 @@ describe('build in lerna monorepo', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -616,7 +616,7 @@ describe('build in lerna monorepo', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -699,6 +699,13 @@ describe('build in yarn workspaces', function () {
     // Will be used to test yarn-linked zapier-platform-core package works
     runCommand('yarn', ['link'], {
       cwd: path.dirname(monorepo.corePackage.path),
+      env: {
+        ...process.env,
+        // Workaround for yarn 1.22.21
+        // https://github.com/yarnpkg/yarn/issues/9015
+        // https://github.com/yarnpkg/yarn/commit/a84723816a81908214a5eb69fbf55fec0326b35a
+        SKIP_YARN_COREPACK_CHECK: '1',
+      },
     });
   });
 
@@ -744,7 +751,7 @@ describe('build in yarn workspaces', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -826,7 +833,7 @@ describe('build in yarn workspaces', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -916,7 +923,7 @@ describe('build in yarn workspaces', function () {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -924,7 +931,7 @@ describe('build in yarn workspaces', function () {
     );
     await decompress(zipPath, unzipDir);
 
-    // `zapier build --skip-npm-install` uses the common ancestor of the app
+    // `zapier build --skip-dep-install` uses the common ancestor of the app
     // directory (monorepo.repoDir) and the zapier-platform repo.
     // In GitHub's CI environment, zipRoot will be:
     // - '/' on Linux and macOS
@@ -1076,7 +1083,7 @@ describe('build in pnpm workspaces', () => {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -1247,7 +1254,7 @@ describe('build in pnpm workspaces', () => {
     await build.buildAndOrUpload(
       { build: true, upload: false },
       {
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
@@ -1830,7 +1837,7 @@ export default {
       { build: true, upload: false },
       {
         cwd: appDir,
-        skipNpmInstall: true,
+        skipDepInstall: true,
         skipValidation: true,
         printProgress: false,
         checkOutdated: false,
