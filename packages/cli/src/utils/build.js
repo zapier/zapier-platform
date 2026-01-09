@@ -46,7 +46,11 @@ const { findCorePackageDir, isWindows, runCommand } = require('./misc');
 const { isBlocklisted, respectGitIgnore } = require('./ignore');
 const { localAppCommand } = require('./local');
 const { throwForInvalidVersion } = require('./version');
-const { getPackageManager } = require('./package-manager');
+const {
+  getPackageManager,
+  hasWorkspaceProtocol,
+  findWorkspaceRoot,
+} = require('./package-manager');
 
 const debug = require('debug')('zapier:build');
 
@@ -630,31 +634,67 @@ const _buildFunc = async (
   await fse.ensureDir(buildDir);
 
   if (!skipDepInstall) {
-    maybeStartSpinner('Copying project to temp directory');
-    const copyFilter = (src) => !src.endsWith('.zip');
-    await copyDir(appDir, workingDir, { filter: copyFilter });
-
-    maybeEndSpinner();
+    const packageJsonPath = path.join(appDir, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
     const packageManager = await getPackageManager();
 
-    maybeStartSpinner(
-      `Installing project dependencies using ${packageManager.executable}`,
-    );
+    const usePnpmDeploy =
+      packageManager.executable === 'pnpm' && hasWorkspaceProtocol(packageJson);
 
-    const output = await runCommand(
-      packageManager.executable,
-      ['install', '--production'],
-      {
+    if (usePnpmDeploy) {
+      // Use pnpm deploy for workspace: protocol support
+      maybeStartSpinner('Deploying project using pnpm deploy');
+
+      const workspaceRoot = await findWorkspaceRoot(appDir);
+      if (!workspaceRoot) {
+        throw new Error(
+          'Found workspace: protocol dependencies but could not find pnpm-workspace.yaml.\n' +
+            'Ensure you are in a pnpm workspace, or use --skip-dep-install.',
+        );
+      }
+
+      const packageFilter =
+        packageJson.name || `./${path.relative(workspaceRoot, appDir)}`;
+
+      debug(`Using pnpm deploy from workspace root: ${workspaceRoot}`);
+      debug(`Filter: ${packageFilter}, Target: ${workingDir}`);
+
+      await runCommand(
+        'pnpm',
+        ['--filter', packageFilter, 'deploy', '--legacy', '--prod', workingDir],
+        { cwd: workspaceRoot },
+      );
+
+      // pnpm deploy doesn't copy dotfiles, copy them if present
+      for (const dotfile of ['.gitignore', '.zapierapprc']) {
+        const src = path.join(appDir, dotfile);
+        if (fs.existsSync(src)) {
+          fs.copyFileSync(src, path.join(workingDir, dotfile));
+        }
+      }
+
+      maybeEndSpinner();
+    } else {
+      // Standard flow: copy + install
+      maybeStartSpinner('Copying project to temp directory');
+      const copyFilter = (src) => !src.endsWith('.zip');
+      await copyDir(appDir, workingDir, { filter: copyFilter });
+
+      maybeEndSpinner();
+      maybeStartSpinner(
+        `Installing project dependencies using ${packageManager.executable}`,
+      );
+
+      await runCommand(packageManager.executable, ['install', '--production'], {
         cwd: workingDir,
-      },
-    );
+      });
+    }
 
-    // `npm install` may fail silently without returning a non-zero exit code,
-    // need to check further here
+    // Verify core package was installed
     const corePath = path.join(workingDir, 'node_modules', PLATFORM_PACKAGE);
     if (!fs.existsSync(corePath)) {
       throw new Error(
-        'Could not install dependencies properly. Error log:\n' + output.stderr,
+        'Could not install dependencies properly. Check the output above for errors.',
       );
     }
   }
