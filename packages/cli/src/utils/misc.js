@@ -72,7 +72,9 @@ const runCommand = (command, args, options) => {
       if (code === 0) {
         resolve({ stdout, stderr });
       } else {
-        reject(new Error(stderr));
+        // Include stdout in error if stderr is empty (some tools like pnpm output errors to stdout)
+        const errorOutput = stderr || stdout;
+        reject(new Error(errorOutput));
       }
     });
   });
