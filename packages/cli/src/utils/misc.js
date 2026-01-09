@@ -230,6 +230,12 @@ const printVersionInfo = (context) => {
   context.line(versions.join('\n'));
 };
 
+const readAppPackageJson = async (appDir) => {
+  appDir = appDir || process.cwd();
+  const packageJsonPath = path.resolve(appDir, 'package.json');
+  return await fse.readJson(packageJsonPath);
+};
+
 module.exports = {
   camelCase,
   entryPoint,
@@ -240,6 +246,7 @@ module.exports = {
   npmInstall,
   printVersionInfo,
   promiseDoWhile,
+  readAppPackageJson,
   runCommand,
   snakeCase,
 };
