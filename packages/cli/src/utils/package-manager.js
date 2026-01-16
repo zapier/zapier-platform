@@ -30,10 +30,11 @@ const packageManagers = {
 
 const defaultPackageManager = packageManagers.npm;
 
-// Traverse up directory tree to find something
+// Traverse up directory tree to find something (max 5 levels)
+const MAX_UPWARD_LEVELS = 5;
 const findUpward = async (startDir, predicate) => {
   let dir = startDir;
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < MAX_UPWARD_LEVELS; i++) {
     const result = await predicate(dir);
     if (result) {
       return result;
