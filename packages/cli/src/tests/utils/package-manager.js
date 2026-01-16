@@ -180,18 +180,13 @@ describe('package manager utils', () => {
     });
 
     it('should find pnpm lock file in parent directory', async () => {
-      const cwd = process.cwd();
       mock(
         {
-          [cwd]: {
-            'package.json': JSON.stringify({ name: 'nested-app' }),
-          },
-          [require('path').dirname(cwd)]: {
-            'pnpm-lock.yaml': '',
-          },
+          'package.json': JSON.stringify({ name: 'nested-app' }),
+          '../pnpm-lock.yaml': '',
         },
         {
-          createCwd: false,
+          createCwd: true,
           createTmp: true,
         },
       );
@@ -204,18 +199,13 @@ describe('package manager utils', () => {
     });
 
     it('should find packageManager in parent package.json', async () => {
-      const cwd = process.cwd();
       mock(
         {
-          [cwd]: {
-            'package.json': JSON.stringify({ name: 'nested-app' }),
-          },
-          [require('path').dirname(cwd)]: {
-            'package.json': JSON.stringify({ packageManager: 'yarn@3.0.0' }),
-          },
+          'package.json': JSON.stringify({ name: 'nested-app' }),
+          '../package.json': JSON.stringify({ packageManager: 'yarn@3.0.0' }),
         },
         {
-          createCwd: false,
+          createCwd: true,
           createTmp: true,
         },
       );
@@ -228,21 +218,16 @@ describe('package manager utils', () => {
     });
 
     it('should prefer local packageManager over parent lock file', async () => {
-      const cwd = process.cwd();
       mock(
         {
-          [cwd]: {
-            'package.json': JSON.stringify({
-              name: 'nested-app',
-              packageManager: 'yarn@3.0.0',
-            }),
-          },
-          [require('path').dirname(cwd)]: {
-            'pnpm-lock.yaml': '',
-          },
+          'package.json': JSON.stringify({
+            name: 'nested-app',
+            packageManager: 'yarn@3.0.0',
+          }),
+          '../pnpm-lock.yaml': '',
         },
         {
-          createCwd: false,
+          createCwd: true,
           createTmp: true,
         },
       );
