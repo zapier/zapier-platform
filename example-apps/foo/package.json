@@ -1,8 +1,7 @@
 {
-  "name": "minimal",
+  "name": ".",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "jest --testTimeout 10000"
   },
@@ -10,7 +9,8 @@
     "zapier-platform-core": "18.1.0"
   },
   "devDependencies": {
-    "jest": "^25.5.3"
+    "jest": "^29.6.0"
   },
-  "private": true
+  "private": true,
+  "main": "index.js"
 }
