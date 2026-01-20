@@ -1,6 +1,5 @@
 const { pathExists, readFile } = require('fs-extra');
 const path = require('path');
-const debug = require('debug')('zapier:package-manager');
 
 const packageManagers = {
   npm: {
@@ -50,69 +49,45 @@ const findUpward = async (startDir, predicate) => {
 };
 
 const getPackageManager = async (flags = {}) => {
-  debug('Detecting package manager from:', process.cwd());
-
   // 1. Check force flags
   for (const config of Object.values(packageManagers)) {
     if (config.forceFlag && flags[config.forceFlag]) {
-      debug('Using forced package manager:', config.executable);
       return config;
     }
   }
 
-  // 2. Check packageManager field in package.json (traverse up)
-  let foundDir = null;
-  const pmFromPkgJson = await findUpward(process.cwd(), async (dir) => {
+  // 2. Traverse up: check packageManager field, then lock files per directory
+  const found = await findUpward(process.cwd(), async (dir) => {
+    // First, check packageManager field in package.json
     const pkgPath = path.join(dir, 'package.json');
     if (await pathExists(pkgPath)) {
-      const pkg = JSON.parse(await readFile(pkgPath, 'utf-8'));
-      if (pkg.packageManager) {
-        debug(
-          'Found packageManager field "%s" in %s',
-          pkg.packageManager,
-          pkgPath,
-        );
+      let pkg;
+      try {
+        pkg = JSON.parse(await readFile(pkgPath, 'utf-8'));
+      } catch {
+        pkg = null;
+      }
+      if (pkg?.packageManager) {
         for (const [name, config] of Object.entries(packageManagers)) {
           if (pkg.packageManager.startsWith(name)) {
-            foundDir = dir;
             return config;
           }
         }
       }
     }
-    return null;
-  });
-  if (pmFromPkgJson) {
-    debug(
-      'Detected %s from packageManager field in %s',
-      pmFromPkgJson.executable,
-      foundDir,
-    );
-    return pmFromPkgJson;
-  }
 
-  // 3. Check for lock files (traverse up, check all lock files per directory)
-  const foundLock = await findUpward(process.cwd(), async (dir) => {
+    // Then, check lock files
     for (const config of Object.values(packageManagers)) {
       const lockPath = path.join(dir, config.lockFile);
       if (await pathExists(lockPath)) {
-        debug('Found lock file: %s', lockPath);
-        return { config, dir };
+        return config;
       }
     }
+
     return null;
   });
-  if (foundLock) {
-    debug(
-      'Detected %s from lock file in %s',
-      foundLock.config.executable,
-      foundLock.dir,
-    );
-    return foundLock.config;
-  }
 
-  debug('No package manager detected, defaulting to npm');
-  return defaultPackageManager;
+  return found || defaultPackageManager;
 };
 
 module.exports = {
