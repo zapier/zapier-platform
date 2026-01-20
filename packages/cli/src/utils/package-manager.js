@@ -60,8 +60,13 @@ const getPackageManager = async (flags = {}) => {
   const pmFromPkgJson = await findUpward(process.cwd(), async (dir) => {
     const pkgPath = path.join(dir, 'package.json');
     if (await pathExists(pkgPath)) {
-      const pkg = JSON.parse(await readFile(pkgPath, 'utf-8'));
-      if (pkg.packageManager) {
+      let pkg;
+      try {
+        pkg = JSON.parse(await readFile(pkgPath, 'utf-8'));
+      } catch (err) {
+        pkg = null;
+      }
+      if (pkg?.packageManager) {
         for (const [name, config] of Object.entries(packageManagers)) {
           if (pkg.packageManager.startsWith(name)) {
             return config;
