@@ -69,7 +69,7 @@ const getPackageManager = async (flags = {}) => {
       }
       if (pkg?.packageManager) {
         for (const [name, config] of Object.entries(packageManagers)) {
-          if (pkg.packageManager.startsWith(name)) {
+          if (pkg.packageManager?.startsWith(name)) {
             return config;
           }
         }
