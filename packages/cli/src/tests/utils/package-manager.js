@@ -238,5 +238,25 @@ describe('package manager utils', () => {
         executable: 'yarn',
       });
     });
+
+    it('should prefer local lock file over parent lock file', async () => {
+      mock(
+        {
+          'package.json': JSON.stringify({ name: 'nested-app' }),
+          'yarn.lock': '',
+          '../package-lock.json': '',
+        },
+        {
+          createCwd: true,
+          createTmp: true,
+        },
+      );
+
+      const man = await getPackageManager({});
+
+      man.should.containEql({
+        executable: 'yarn',
+      });
+    });
   });
 });
