@@ -288,7 +288,6 @@ const FailerFunc404 = {
     operation: {
       perform: async (z, bundle) => {
         const response = await z.request({ url: `${HTTPBIN_URL}/status/404` });
-        debugger;
         return response.data;
       },
     },
