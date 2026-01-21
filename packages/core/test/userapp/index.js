@@ -277,6 +277,24 @@ const FailerFuncPromise = {
   },
 };
 
+const FailerFunc404 = {
+  key: 'failerfunc404',
+  noun: 'failerfunc404',
+  list: {
+    display: {
+      label: 'New Failer Func 404',
+      description: 'Just fails with a 404 ResponseError.',
+    },
+    operation: {
+      perform: async (z, bundle) => {
+        const response = await z.request({ url: `${HTTPBIN_URL}/status/404` });
+        debugger;
+        return response.data;
+      },
+    },
+  },
+};
+
 const StaticInputFields = {
   key: 'staticinputfields',
   noun: 'staticinputfields',
@@ -627,6 +645,7 @@ const App = {
     [FailerFunc.key]: FailerFunc,
     [FailerFuncAsync.key]: FailerFuncAsync,
     [FailerFuncPromise.key]: FailerFuncPromise,
+    [FailerFunc404.key]: FailerFunc404,
     [StaticInputFields.key]: StaticInputFields,
     [DynamicSyncInputFields.key]: DynamicSyncInputFields,
     [DynamicAsyncInputFields.key]: DynamicAsyncInputFields,
