@@ -227,6 +227,7 @@ const createLambdaHandler = (appRawOrPath) => {
         }`;
         const logData = { err, log_type: 'error' };
         const loggedErr = await logErrorAndReturn(logMsg, logData, err);
+        await logger.end();
         reject(loggedErr);
       });
 
@@ -258,6 +259,7 @@ const createLambdaHandler = (appRawOrPath) => {
           const input = createInput(compiledApp, event, logger, logBuffer, rpc);
           const output = await app(input);
           const result = cleaner.maskOutput(output);
+          await logger.end();
           resolve(result);
         } catch (err) {
           const logMsg = `Unhandled error: ${err}\n${
@@ -265,9 +267,8 @@ const createLambdaHandler = (appRawOrPath) => {
           }`;
           const logData = { err, log_type: 'error' };
           const loggedErr = await logErrorAndReturn(logMsg, logData, err);
-          reject(loggedErr);
-        } finally {
           await logger.end();
+          reject(loggedErr);
         }
       });
     });
