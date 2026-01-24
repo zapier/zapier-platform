@@ -20,7 +20,7 @@
   "dependencies": {
     "async": "2.4.1",
     "content-disposition": "0.5.2",
-    "lodash": "4.17.11",
+    "lodash": "4.17.23",
     "node-fetch": "1.7.1",
     "zapier-platform-core": "18.1.0"
   },
