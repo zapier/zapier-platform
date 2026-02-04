@@ -51,6 +51,7 @@ module.exports = makeSchema(
           'Explicitly links this input field to a resource. Use the resource key (e.g., "spreadsheet") or dot notation for resource fields (e.g., "spreadsheet.url"). If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.',
         type: 'string',
         minLength: 1,
+        pattern: '^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)?$',
       },
       choices: {
         description:
