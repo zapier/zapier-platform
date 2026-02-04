@@ -5,6 +5,7 @@ const { customLogger } = require('./logger');
 const { localAppCommandWithRelayErrorHandler } = require('./relay');
 const { promptForFields } = require('./prompts');
 const resolveInputDataTypes = require('./input-types');
+const { fetchInputFields, remoteInvoke } = require('./remote');
 
 /**
  * Invokes a trigger, create, or search action locally.
@@ -28,26 +29,40 @@ const invokeAction = async (command, context) => {
 
   await promptForFields(command, context, staticInputFields, invokeAction);
 
-  let methodName = `${context.actionTypePlural}.${action.key}.operation.inputFields`;
-  startSpinner(`Invoking ${methodName}`);
+  let adverb;
+  if (context.remote) {
+    adverb = 'remotely';
+  } else if (context.authId) {
+    adverb = 'locally with relay';
+  } else {
+    adverb = 'locally';
+  }
 
-  const inputFields = await localAppCommandWithRelayErrorHandler({
-    command: 'execute',
-    method: methodName,
-    bundle: {
-      inputData: context.inputData,
-      inputDataRaw: context.inputData, // At this point, inputData hasn't been transformed yet
-      authData: context.authData,
-      meta: context.meta,
-    },
-    zcacheTestObj: context.zcacheTestObj,
-    cursorTestObj: context.cursorTestObj,
-    customLogger,
-    calledFromCliInvoke: true,
-    appId: context.appId,
-    deployKey: context.deployKey,
-    relayAuthenticationId: context.authId,
-  });
+  let methodName = `${context.actionTypePlural}.${action.key}.operation.inputFields`;
+  startSpinner(`Invoking ${methodName} ${adverb}`);
+
+  let inputFields;
+  if (context.remote) {
+    inputFields = await fetchInputFields(context);
+  } else {
+    inputFields = await localAppCommandWithRelayErrorHandler({
+      command: 'execute',
+      method: methodName,
+      bundle: {
+        inputData: context.inputData,
+        inputDataRaw: context.inputData, // At this point, inputData hasn't been transformed yet
+        authData: context.authData,
+        meta: context.meta,
+      },
+      zcacheTestObj: context.zcacheTestObj,
+      cursorTestObj: context.cursorTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
+      appId: context.appId,
+      deployKey: context.deployKey,
+      relayAuthenticationId: context.authId,
+    });
+  }
   endSpinner();
 
   debug('inputFields:', inputFields);
@@ -58,31 +73,42 @@ const invokeAction = async (command, context) => {
 
   // Preserve original inputData as inputDataRaw before type resolution
   const inputDataRaw = { ...context.inputData };
-  const inputData = resolveInputDataTypes(
-    context.inputData,
-    inputFields,
-    context.timezone,
-  );
+  let inputData;
+  if (context.remote) {
+    // Let the remote server resolve input data types
+    inputData = { ...context.inputData };
+  } else {
+    inputData = resolveInputDataTypes(
+      context.inputData,
+      inputFields,
+      context.timezone,
+    );
+  }
   methodName = `${context.actionTypePlural}.${action.key}.operation.perform`;
 
-  startSpinner(`Invoking ${methodName}`);
-  const output = await localAppCommandWithRelayErrorHandler({
-    command: 'execute',
-    method: methodName,
-    bundle: {
-      inputData,
-      inputDataRaw,
-      authData: context.authData,
-      meta: context.meta,
-    },
-    zcacheTestObj: context.zcacheTestObj,
-    cursorTestObj: context.cursorTestObj,
-    customLogger,
-    calledFromCliInvoke: true,
-    appId: context.appId,
-    deployKey: context.deployKey,
-    relayAuthenticationId: context.authId,
-  });
+  startSpinner(`Invoking ${methodName} ${adverb}`);
+  let output;
+  if (context.remote) {
+    output = await remoteInvoke(context);
+  } else {
+    output = await localAppCommandWithRelayErrorHandler({
+      command: 'execute',
+      method: methodName,
+      bundle: {
+        inputData,
+        inputDataRaw,
+        authData: context.authData,
+        meta: context.meta,
+      },
+      zcacheTestObj: context.zcacheTestObj,
+      cursorTestObj: context.cursorTestObj,
+      customLogger,
+      calledFromCliInvoke: true,
+      appId: context.appId,
+      deployKey: context.deployKey,
+      relayAuthenticationId: context.authId,
+    });
+  }
   endSpinner();
 
   return output;

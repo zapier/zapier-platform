@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
 const { localAppCommand } = require('../../../utils/local');
+const { readAppPackageJson } = require('../../../utils/misc');
 const { getLinkedAppConfig, readCredentials } = require('../../../utils/api');
 const { AUTH_KEY } = require('../../../constants');
 
@@ -40,35 +41,6 @@ const readStream = async (stream) => {
   return chunks.join('');
 };
 
-/**
- * Recursively finds all non-string primitive values in a data structure.
- * Used to validate that inputData contains only string values.
- * @param {*} data - The data to search
- * @param {string} [path='inputData'] - The current path for error reporting
- * @returns {Array<{path: string, value: *}>} Array of objects with path and non-string value
- */
-const findNonStringPrimitives = (data, path = 'inputData') => {
-  if (typeof data === 'number' || typeof data === 'boolean' || data === null) {
-    return [{ path, value: data }];
-  } else if (typeof data === 'string') {
-    return [];
-  } else if (Array.isArray(data)) {
-    const paths = [];
-    for (let i = 0; i < data.length; i++) {
-      paths.push(...findNonStringPrimitives(data[i], `${path}[${i}]`));
-    }
-    return paths;
-  } else if (_.isPlainObject(data)) {
-    const paths = [];
-    for (const [k, v] of Object.entries(data)) {
-      paths.push(...findNonStringPrimitives(v, `${path}.${k}`));
-    }
-    return paths;
-  } else {
-    throw new Error('Unexpected data type');
-  }
-};
-
 class InvokeCommand extends BaseCommand {
   /**
    * Main entry point for the invoke command. Handles auth operations (start, test, label, refresh)
@@ -79,6 +51,8 @@ class InvokeCommand extends BaseCommand {
     // Execution context that will be passed around
     const context = {
       // Data directly from command args and flags
+      remote: this.flags.remote,
+      version: this.flags.version || (await readAppPackageJson()).version,
       authId: this.flags['authentication-id'],
       nonInteractive: this.flags['non-interactive'] || !process.stdin.isTTY,
       actionType: this.args.actionType,
@@ -114,6 +88,13 @@ class InvokeCommand extends BaseCommand {
       console.warn(
         'The .env file does not exist or is empty. ' +
           'You may need to set some environment variables in there if your code uses process.env.',
+      );
+    }
+
+    if (context.remote && !context.version) {
+      throw new Error(
+        'Cannot determine the version to invoke. ' +
+          'Specify `--version` or make sure your package.json has a `version` field.',
       );
     }
 
@@ -165,16 +146,29 @@ class InvokeCommand extends BaseCommand {
     context.appId = (await getLinkedAppConfig(null, false))?.id;
     context.deployKey = (await readCredentials(false))[AUTH_KEY];
 
-    if (context.authId === '-' || context.authId === '') {
+    if (
+      context.authId === '-' ||
+      context.authId === '' ||
+      (context.remote && !context.authId)
+    ) {
       if (context.nonInteractive) {
         throw new Error(
-          "You cannot specify '-' or an empty string for `--authentication-id` in non-interactive mode.",
+          'You must specify an `--authentication-id` (an integer) in non-interactive mode.',
         );
       }
       context.authId = (await promptForAuthentication(this)).toString();
     }
 
     if (context.authId) {
+      context.authId = parseInt(context.authId);
+      if (isNaN(context.authId)) {
+        throw new Error(
+          "`--authentication-id` must be an integer or '-' to select from available authentications.",
+        );
+      }
+    }
+
+    if (context.authId && !context.remote) {
       // Fill authData with curlies if we're in relay mode
       const authFields = context.appDefinition.authentication.fields || [];
       for (const field of authFields) {
@@ -205,7 +199,7 @@ class InvokeCommand extends BaseCommand {
           }
           await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
           console.warn(
-            'Auth data appended to .env file. Run `zapier invoke auth test` to test it.',
+            'Auth data appended to .env file. Run `zapier-platform invoke auth test` to test it.',
           );
           return;
         }
@@ -223,7 +217,7 @@ class InvokeCommand extends BaseCommand {
           }
           await appendEnv(newAuthData, AUTH_FIELD_ENV_PREFIX);
           console.warn(
-            'Auth data has been refreshed and appended to .env file. Run `zapier invoke auth test` to test it.',
+            'Auth data has been refreshed and appended to .env file. Run `zapier-platform invoke auth test` to test it.',
           );
           return;
         }
@@ -282,17 +276,6 @@ class InvokeCommand extends BaseCommand {
         context.inputData = JSON.parse(inputData);
       } else {
         context.inputData = {};
-      }
-
-      // inputData should only contain strings
-      const nonStringPrimitives = findNonStringPrimitives(context.inputData);
-      if (nonStringPrimitives.length) {
-        throw new Error(
-          'All primitive values in --inputData must be strings. Found non-string values in these paths:\n' +
-            nonStringPrimitives
-              .map(({ path, value }) => `* ${value} at ${path}`)
-              .join('\n'),
-        );
       }
 
       const output = await invokeAction(this, context);
@@ -354,6 +337,17 @@ InvokeCommand.flags = buildFlags({
         'Only used by `auth start` subcommand. The local port that will be used to start the local HTTP server to listen for the OAuth2 callback. This port can be different from the one in the redirect URI if you have port forwarding set up.',
       default: 9000,
     }),
+    remote: Flags.boolean({
+      char: 'r',
+      description:
+        'Run your trigger/action remotely on Zapier production servers instead of locally. This requires deploying your integration first. Because this (remote) mode uses the same set of API endpoints as the Zap editor and other Zapier products, it allows you to verify exactly how your code will behave in production. Note that `--authentication-id` is required and implied in remote mode, as a production authentication is necessary to invoke in production.',
+      default: false,
+    }),
+    version: Flags.string({
+      char: 'v',
+      description:
+        'Only used when `--remote` is set. Specify a deployed version to invoke instead of the one currently set in your local package.json.',
+    }),
     'authentication-id': Flags.string({
       char: 'a',
       description:
@@ -378,37 +372,56 @@ InvokeCommand.args = {
 };
 
 InvokeCommand.examples = [
-  'zapier invoke',
-  'zapier invoke auth start',
-  'zapier invoke auth refresh',
-  'zapier invoke auth test',
-  'zapier invoke auth label',
-  'zapier invoke trigger new_recipe',
-  `zapier invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
-  'zapier invoke search find_recipe -i @file.json --non-interactive',
-  'cat file.json | zapier invoke trigger new_recipe -i @-',
-  'zapier invoke search find_ticket --authentication-id 12345',
-  'zapier invoke create add_ticket -a -',
+  'zapier-platform invoke',
+  'zapier-platform invoke auth start',
+  'zapier-platform invoke auth refresh',
+  'zapier-platform invoke auth test',
+  'zapier-platform invoke auth label',
+  'zapier-platform invoke trigger new_recipe',
+  `zapier-platform invoke create add_recipe --inputData '{"title": "Pancakes"}'`,
+  'zapier-platform invoke search find_recipe -i @file.json --non-interactive',
+  'cat file.json | zapier-platform invoke trigger new_recipe -i @-',
+  'zapier-platform invoke search find_ticket --authentication-id 12345',
+  'zapier-platform invoke create add_ticket -a -',
+  'zapier-platform invoke trigger new_recipe --remote',
+  'zapier-platform invoke trigger new_recipe -r -a 12345',
+  'zapier-platform invoke -r -v 2.0.0 -a -',
 ];
-InvokeCommand.description = `Invoke an auth operation, a trigger, or a create/search action locally.
+InvokeCommand.description = `Invoke an authentication method, a trigger, or a create/search action locally or remotely.
 
-This command emulates how Zapier production environment would invoke your integration. It runs code locally, so you can use this command to quickly test your integration without deploying it to Zapier. This is especially useful for debugging and development.
+This command allows you to invoke your integration's authentication, triggers, and actions. With this tool, you can test and debug your integration code directly from your terminal without leaving your development environment and opening a browser.
 
 Why use this command?
 
-* Fast feedback loop: Write code and run this command to verify if it works immediately
-* Step-by-step debugging: Running locally means you can use a debugger to step through your code
-* Untruncated logs: View complete logs and errors in your terminal
+* Fast feedback loops: Verify your code changes instantly.
+* Step-by-step debugging: Use a debugger to step through your code locally.
+* Untruncated logs: View complete HTTP logs and errors in your terminal.
+
+### Modes
+
+The \`invoke\` command works in three modes:
+
+1. Local mode (default): runs your code locally, and sends outgoing requests directly from your local machine.
+2. Relay mode (experimental): runs your code locally, but proxies all outgoing requests through Zapier using production authentication data.
+3. Remote mode: runs your code and sends outgoing requests entirely in/from Zapier production environment.
+
+**Local mode** is the default mode. Without the \`--remote\` (or \`-r\`) flag or the \`--authentication-id\` (or \`-a\`) flag, the command runs in local mode. It's useful when you want to quickly test your integration code locally. You'll need to set up local auth data in the \`.env\` file using the \`zapier-platform invoke auth start\` command.
+
+**Relay mode** is currently experimental. It's enabled when the \`-a\` flag is specified. It's useful when you want to test code locally but setting up local auth data is troublesome, such as when your OAuth2 server requires a non-localhost or HTTPS redirect URI. By specifying \`-a <authentication-id>\`, all outgoing requests will be proxied through Zapier's relay service using the production auth data with the given authentication ID. See the **Authentication** section below for more details.
+
+Both local and relay mode **emulate** how your code would run in Zapier production environment, so the behavior might not be exactly the same. But we consider every inconsistency a bug or a limitation to be fixed. For 100% match with production behavior, use remote mode.
+
+**Remote mode** is enabled when the \`--remote\` (or \`-r\`) flag is specified. It's useful when you want to verify how your code behaves in Zapier production environment. Note that remote mode requires deploying your integration first. If the \`-a\` flag is not specified, the command will prompt you to select one of your available authentications/connections in production. By default, the remote mode invokes the \`version\` set in your \`package.json\`. You can use the \`--version\` (or \`-v\`) flag to specify a different deployed version.
 
 ### Authentication
 
-You can supply the authentcation data in two ways: Load from the local \`.env\` file or use the (experimental) \`--authentication-id\` flag.
+You can supply the authentcation data in two ways: Load from the local \`.env\` file or use the \`--authentication-id\` flag.
 
 #### The local \`.env\` file
 
-This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have a \`.env\` file yet, you can use the \`zapier invoke auth start\` command to help you initialize it, or you can manually create it.
+This command loads environment variables and \`authData\` from the \`.env\` file in the current directory. If you don't have a \`.env\` file yet, you can use the \`zapier-platform invoke auth start\` command to help you initialize it, or you can manually create it.
 
-The \`zapier invoke auth start\` subcommand will prompt you for the necessary auth fields and save them to the \`.env\` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
+The \`zapier-platform invoke auth start\` subcommand will prompt you for the necessary auth fields and save them to the \`.env\` file. For OAuth2, it will start a local HTTP server, open the authorization URL in the browser, wait for the OAuth2 redirect, and get the access token.
 
 Each line in the \`.env\` file should follow one of these formats:
 
@@ -426,33 +439,36 @@ authData_account_name='zapier'
 \`\`\`
 
 
-#### The \`--authentication-id\` flag (EXPERIMENTAL)
+#### The \`--authentication-id\` flag
 
-Setting up local auth data can be troublesome. You'd have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
+Setting up local auth data can be troublesome. For instance, in OAuth2, you may have to configure your app server to allow localhost redirect URIs or use a port forwarding tool. This is sometimes not easy to get right.
 
 The \`--authentication-id\` flag (\`-a\` for short) gives you an alternative (and perhaps easier) way to supply your auth data. You can use \`-a\` to specify an existing production authentication/connection. The available authentications can be found at https://zapier.com/app/assets/connections. Check https://zpr.io/z8SjFTdnTFZ2 for more instructions.
 
-When \`-a -\` is specified, such as \`zapier invoke auth test -a -\`, the command will interactively prompt you to select one of your available authentications.
+When \`-a -\` is specified, such as \`zapier-platform invoke auth test -a -\`, the command will interactively prompt you to select one of your available authentications.
 
-If you know your authentication ID, you can specify it directly, such as \`zapier invoke auth test -a 123456\`.
+If you know your authentication ID, you can specify it directly, such as \`zapier-platform invoke auth test -a 123456\`.
+
+The \`-a\` flag also works in remote mode with the \`-r\` flag. In remote mode, if \`-a\` is not specified, such as \`zapier-platform invoke -r\`, the command will prompt you to select one of your available authentications.
 
 #### Testing authentication
 
 To test if the auth data is correct, run either one of these:
 
 \`\`\`
-zapier invoke auth test   # invokes authentication.test method
-zapier invoke auth label  # invokes authentication.test and renders connection label
+zapier-platform invoke auth test   # invokes authentication.test method
+zapier-platform invoke auth label  # invokes authentication.test and renders connection label
 \`\`\`
 
-To refresh stale auth data for OAuth2 or session auth, run \`zapier invoke auth refresh\`. Note that refreshing is only applicable for local auth data in the \`.env\` file.
+To refresh stale auth data for OAuth2 or session auth, run \`zapier-platform invoke auth refresh\`. Note that refreshing is only applicable for local auth data in the \`.env\` file.
 
 ### Invoking a trigger or an action
 
 Once you have the correct auth data, you can test an trigger, a search, or a create action. For example, here's how you invoke a trigger with the key \`new_recipe\`:
 
 \`\`\`
-zapier invoke trigger new_recipe
+zapier-platform invoke trigger new_recipe      # (local mode)
+zapier-platform invoke trigger new_recipe -r   # (remote mode)
 \`\`\`
 
 To add input data, use the \`--inputData\` flag (\`-i\` for short). The input data can come from the command directly, a file, or stdin. See **EXAMPLES** below.
@@ -461,20 +477,18 @@ When you miss any command arguments, such as ACTIONTYPE or ACTIONKEY, the comman
 
 The \`--debug\` flag will show you the HTTP request logs and any console logs you have in your code.
 
-### Limitations
+### Limitations in local and relay mode
 
-The following is a non-exhaustive list of current limitations and may be supported in the future:
+The following is a non-exhaustive list of current limitations in local and relay mode. We may support them in the future.
 
 - Hook triggers, including REST hook subscribe/unsubscribe
 - Line items
 - Output hydration
 - File upload
-- Dynamic dropdown pagination
 - Function-based connection label
 - Buffered create actions
 - Search-or-create actions
 - Search-powered fields
-- Field choices
 - autoRefresh for OAuth2 and session auth
 `;
 

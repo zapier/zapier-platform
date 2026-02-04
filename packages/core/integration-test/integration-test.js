@@ -785,7 +785,7 @@ const doTest = (runner) => {
         mocky.clearLogs();
       });
 
-      const testError = async (method, errorMessage, logMessage) => {
+      const testError = (method, errorMessage, logMessage) => {
         it(`should catch errors from ${method}`, async () => {
           const event = {
             command: 'execute',
@@ -801,8 +801,6 @@ const doTest = (runner) => {
           }
 
           if (logMessage) {
-            // wait for the logger to finish
-            await sleep(2000);
             const logs = mocky.getLogs();
             const log = logs[0];
             log.message.should.startWith(logMessage);
@@ -810,6 +808,11 @@ const doTest = (runner) => {
         });
       };
 
+      testError(
+        'resources.failerfunc404.list.operation.perform',
+        '{"status":404,', // ResponseError JSON-encodes the response body in its .message
+        `404 GET ${HTTPBIN_URL}/status/404`,
+      );
       testError(
         'resources.failerfuncasync.list.operation.perform',
         'Uncaught failure on async function!',

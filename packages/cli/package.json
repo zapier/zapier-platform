@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-cli",
-  "version": "18.0.7",
+  "version": "18.1.1",
   "description": "The CLI for managing integrations in Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -59,7 +59,7 @@
     "ignore": "7.0.5",
     "inquirer": "8.2.5",
     "jscodeshift": "^17.3.0",
-    "lodash": "4.17.21",
+    "lodash": "4.17.23",
     "luxon": "3.7.1",
     "marked": "15.0.12",
     "marked-terminal": "7.3.0",
@@ -95,18 +95,9 @@
   },
   "oclif": {
     "commands": {
-      "strategy": "pattern",
-      "target": "./src/oclif/commands",
-      "globPatterns": [
-        "**/*.js",
-        "!invoke/action.js",
-        "!invoke/env.js",
-        "!invoke/input-types.js",
-        "!invoke/logger.js",
-        "!invoke/prompts.js",
-        "!invoke/relay.js",
-        "!invoke/auth/**"
-      ]
+      "strategy": "explicit",
+      "target": "./src/oclif/oCommands",
+      "identifier": "COMMANDS"
     },
     "additionalHelpFlags": [
       "-h"

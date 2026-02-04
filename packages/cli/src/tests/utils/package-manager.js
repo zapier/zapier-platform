@@ -178,5 +178,85 @@ describe('package manager utils', () => {
         useDoubleHyphenBeforeArgs: false,
       });
     });
+
+    it('should find pnpm lock file in parent directory', async () => {
+      mock(
+        {
+          'package.json': JSON.stringify({ name: 'nested-app' }),
+          '../pnpm-lock.yaml': '',
+        },
+        {
+          createCwd: true,
+          createTmp: true,
+        },
+      );
+
+      const man = await getPackageManager({});
+
+      man.should.containEql({
+        executable: 'pnpm',
+      });
+    });
+
+    it('should find packageManager in parent package.json', async () => {
+      mock(
+        {
+          'package.json': JSON.stringify({ name: 'nested-app' }),
+          '../package.json': JSON.stringify({ packageManager: 'yarn@3.0.0' }),
+        },
+        {
+          createCwd: true,
+          createTmp: true,
+        },
+      );
+
+      const man = await getPackageManager({});
+
+      man.should.containEql({
+        executable: 'yarn',
+      });
+    });
+
+    it('should prefer local packageManager over parent lock file', async () => {
+      mock(
+        {
+          'package.json': JSON.stringify({
+            name: 'nested-app',
+            packageManager: 'yarn@3.0.0',
+          }),
+          '../pnpm-lock.yaml': '',
+        },
+        {
+          createCwd: true,
+          createTmp: true,
+        },
+      );
+
+      const man = await getPackageManager({});
+
+      man.should.containEql({
+        executable: 'yarn',
+      });
+    });
+
+    it('should prefer local lock file over parent lock file', async () => {
+      mock(
+        {
+          'package.json': JSON.stringify({ name: 'nested-app' }),
+          'yarn.lock': '',
+          '../package-lock.json': '',
+        },
+        {
+          createCwd: true,
+          createTmp: true,
+        },
+      );
+
+      const man = await getPackageManager({});
+
+      man.should.containEql({
+        executable: 'yarn',
+      });
+    });
   });
 });

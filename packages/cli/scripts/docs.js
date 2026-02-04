@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 'use strict';
 
-const fs = require('fs');
+const fs = require('node:fs');
 
-const commands = require('../src/oclif/oCommands');
+const { COMMANDS } = require('../src/oclif/oCommands');
 
 // Takes all the cmd.docs and puts them into a big md file.
 const generateCliMarkdown = () => {
   return (
-    Object.keys(commands)
+    Object.keys(COMMANDS)
       .sort()
       // topics (such as `env` are listed as "true" in the commands so aliases play nice, but they don't need to be in docs
-      .filter((name) => commands[name] !== true)
-      .filter((name) => !commands[name].hide)
+      .filter((name) => COMMANDS[name] !== true)
+      .filter((name) => !COMMANDS[name].hide)
       .map((name) => {
-        return commands[name].markdownHelp(name);
+        return COMMANDS[name].markdownHelp(name);
       })
       .join('\n\n\n')
   );
