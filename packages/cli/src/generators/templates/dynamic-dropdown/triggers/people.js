@@ -51,6 +51,16 @@ const perform = async (z, bundle) => {
     });
   }
 
+  if (bundle.inputData.planet_id) {
+    // The Zap's setup has requested a specific home planet. Filter people by
+    // homeworld (SWAPI people have a homeworld URL).
+    peopleArray = peopleArray.filter((person) => {
+      if (!person.homeworld) return false;
+      const homeworldID = extractID(person.homeworld);
+      return homeworldID === bundle.inputData.planet_id;
+    });
+  }
+
   return peopleArray.map((person) => {
     person.id = extractID(person.url);
     return person;
