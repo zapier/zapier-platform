@@ -319,7 +319,7 @@ const promptForField = async (command, context, field, invokeAction) => {
     let answer;
 
     // Paging state for perform-based choices (token-based pagination)
-    let pagingTokenStack = [];
+    const pagingTokenStack = [];
     let currentPagingToken = null;
     let nextPagingToken = null;
 
