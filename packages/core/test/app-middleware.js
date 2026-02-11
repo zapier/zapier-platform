@@ -146,8 +146,9 @@ describe('app middleware', () => {
       // this limit is lower than res, so do not stash, let it fail
       input._zapier.event.autostashPayloadOutputLimit = 8 * 1024 * 1024;
 
-      const output = app(input);
-      output.should.not.have.property('resultsUrl');
+      await app(input).should.be.rejectedWith(
+        /Response size of \d+ bytes exceeds maximum allowed size: 8388608/,
+      );
     });
     it('should always stash if autostash limit is -1', async () => {
       const rpc = makeRpc();
