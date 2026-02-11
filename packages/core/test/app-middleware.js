@@ -146,6 +146,16 @@ describe('app middleware', () => {
       // this limit is lower than res, so do not stash, let it fail
       input._zapier.event.autostashPayloadOutputLimit = 8 * 1024 * 1024;
 
+      let rejected = false;
+      try {
+        await app(input);
+      } catch (err) {
+        rejected = true;
+        err.message.should.match(
+          /Response size of \d+ bytes exceeds maximum allowed size: 8388608/,
+        );
+      }
+      rejected.should.be.true('Expected promise to be rejected');
       await app(input).should.be.rejectedWith(
         /Response size of \d+ bytes exceeds maximum allowed size: 8388608/,
       );
