@@ -84,3 +84,19 @@ jobs:
             echo "Skipping zapier-platform-legacy-scripting-runner (already published)"
           fi
         working-directory: packages/legacy-scripting-runner
+
+      - name: Build boilerplate zip
+        run: |
+          cd boilerplate
+          ./scripts/build.sh
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::996097627176:role/zapier-platform-github-actions-production
+          aws-region: us-east-1
+
+      - name: Upload boilerplate zip to S3
+        run: |
+          CORE_VERSION=$(jq -r '.version' packages/core/package.json)
+          aws s3 cp "boilerplate/build/$CORE_VERSION.zip" s3://zapier-dev-platform-cli-boilerplates/$CORE_VERSION.zip
