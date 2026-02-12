@@ -1,0 +1,38 @@
+name: Upload Boilerplate (Test)
+
+on:
+  push:
+    branches:
+      - test-release
+
+permissions:
+  id-token: write # Required for OIDC
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build boilerplate zip
+        run: |
+          cd boilerplate
+          ./scripts/build.sh
+
+      - name: Debug OIDC token claims
+        run: |
+          TOKEN=$(curl -s -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=sts.amazonaws.com")
+          echo "$TOKEN" | jq -r '.value' | cut -d. -f2 | base64 -d 2>/dev/null | jq '{sub, aud, iss, repository, repository_owner, ref}'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::996097627176:role/zapier-platform-github-actions-production
+          aws-region: us-east-1
+
+      - name: Upload boilerplate zip to S3
+        run: |
+          CORE_VERSION=$(jq -r '.version' packages/core/package.json)
+          aws s3 cp "boilerplate/build/$CORE_VERSION.zip" s3://zapier-dev-platform-cli-boilerplates/test-boilerplate.zip
