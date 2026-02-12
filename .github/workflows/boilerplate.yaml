@@ -28,6 +28,9 @@ jobs:
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Build boilerplate zip
         run: |
           cd boilerplate
