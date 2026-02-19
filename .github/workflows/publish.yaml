@@ -1,15 +1,15 @@
 name: Publish
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - 'main'
 
 jobs:
   publish:
     name: Publish to npm
-    if: (github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-'))
+    # Only publish when a release branch is merged (detected via commit message from merge)
+    if: startsWith(github.event.head_commit.message, 'Merge pull request') && contains(github.event.head_commit.message, '/release-')
     runs-on: ubuntu-latest
     environment: production
     permissions:
