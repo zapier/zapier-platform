@@ -79,7 +79,20 @@ const extractItem = async (item, realOutputPath) => {
       // symlink on Windows requires Administrator privilege. But that's fine
       // because we only run decompress on Windows in CI tests, which do run
       // with Administrator privilege.
-      await fsP.symlink(item.linkname, dest);
+      try {
+        await fsP.symlink(item.linkname, dest);
+      } catch (err) {
+        // When a package manager uses symlinks (e.g. pnpm), the zip may
+        // contain both file entries and a symlink entry for the same path.
+        // Since we extract in parallel, the file entries can create a
+        // directory at `dest` before the symlink is created, causing
+        // EEXIST.
+        if (err.code === 'EEXIST' && err.syscall === 'symlink') {
+          // Safe to ignore this error, the content is already there.
+        } else {
+          throw err;
+        }
+      }
     }
   } else {
     await fsP.writeFile(dest, item.data, { mode });
