@@ -1,15 +1,13 @@
 name: Publish
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - 'main'
 
 jobs:
   publish:
     name: Publish to npm
-    if: (github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-'))
     runs-on: ubuntu-latest
     environment: production
     permissions:
