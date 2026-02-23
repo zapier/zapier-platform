@@ -8,8 +8,6 @@ on:
 jobs:
   publish:
     name: Publish to npm
-    # Only publish when a release branch is merged (detected via commit message from merge)
-    if: startsWith(github.event.head_commit.message, 'Merge pull request') && contains(github.event.head_commit.message, '/release-')
     runs-on: ubuntu-latest
     environment: production
     permissions:
