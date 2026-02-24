@@ -45,10 +45,17 @@ const createLegacyScriptingRunner = (z, input) => {
     }
 
     if (!LegacyScriptingRunner) {
-      console.warn(
-        'Failed to load zapier-platform-legacy-scripting-runner.\nError details:',
-        e.message,
-      );
+      // Only warn when the package is installed but failed to load
+      const isNotInstalled =
+        e.code === 'MODULE_NOT_FOUND' &&
+        e.message?.includes('zapier-platform-legacy-scripting-runner');
+      if (!isNotInstalled) {
+        console.warn(
+          'Failed to load zapier-platform-legacy-scripting-runner.\nError details:',
+          e.message,
+        );
+      }
+
       return null;
     }
   }

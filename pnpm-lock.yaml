@@ -291,7 +291,7 @@ importers:
         specifier: 5.0.2
         version: 5.0.2
       form-data:
-        specifier: ~2.3.2
+        specifier: 2.3.3
         version: 2.3.3
       jquery:
         specifier: 3.5.0
