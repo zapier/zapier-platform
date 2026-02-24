@@ -43,10 +43,14 @@ const createLegacyScriptingRunner = (z, input) => {
     } catch (e2) {
       // Do nothing
     }
-  }
 
-  if (!LegacyScriptingRunner) {
-    return null;
+    if (!LegacyScriptingRunner) {
+      console.warn(
+        'Failed to load zapier-platform-legacy-scripting-runner.\nError details:',
+        e.message,
+      );
+      return null;
+    }
   }
 
   if (version === 'dev' || semver.gte(version, '3.0.0')) {
