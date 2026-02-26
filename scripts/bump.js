@@ -417,7 +417,7 @@ const main = async () => {
     }
     return [`zapier-platform-${packageName}@${version}`];
   });
-  const tagDeleteCmd = tags.map((t) => `git tag -d ${t}`).join(' && ');
+  const tagDeleteCmd = `git tag -d ${tags.join(' ')}`;
   console.log(
     `To revert, run ${bold.underline('git reset --hard HEAD~1')} and ${bold.underline(tagDeleteCmd)}.`,
   );
