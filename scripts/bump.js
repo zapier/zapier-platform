@@ -10,11 +10,20 @@ const semver = require('semver');
 
 const REPO_DIR = path.dirname(__dirname);
 
-// Non-interactive mode:
-//   ./scripts/bump.js <new_version>                  — bumps cli, core, schema (default)
-//   ./scripts/bump.js <package_name> <new_version>   — bumps specified package
-// package_name: "cli", "core", or "schema" (all three are bumped together) or "legacy-scripting-runner"
-// new_version: a semver version like "15.9.1" or a bump type like "patch", "minor", "major"
+// Interactive mode for humans:
+//   node bump.js
+//
+// Non-interactive mode for AI agents:
+//   node bump.js <new_version>                  — bumps cli, core, schema (default)
+//   node bump.js <package_name> <new_version>   — bumps specified package
+//
+// package_name:
+//   - "cli", "core", or "schema" (all three are bumped together)
+//   - "legacy-scripting-runner"
+//
+// new_version:
+//   - a semver version like "15.9.1"
+//   - or a bump type: "patch", "minor", "major"
 const args = process.argv.slice(2);
 const nonInteractive = args.length > 0;
 
@@ -371,7 +380,7 @@ const main = async () => {
     // TODO: Roll back
     console.error(err.message);
     console.error(
-      `Now you may have to use ${bold.underline('git restore')} and ` +
+      `Now you may have to use ${bold.underline('git reset')} and ` +
         `${bold.underline('git tag -d')} to roll back the changes.`,
     );
     return 1;
@@ -381,6 +390,19 @@ const main = async () => {
     `\nDone! Review the change with ${bold.underline(
       'git diff HEAD~1..HEAD',
     )} then ${bold.underline('git push origin HEAD --tags')}.`,
+  );
+  const tags = Object.keys(versionsToBump).flatMap((packageName) => {
+    const version = versionsToBump[packageName];
+    if (packageName === 'cli, core, schema') {
+      return ['cli', 'core', 'schema'].map(
+        (p) => `zapier-platform-${p}@${version}`,
+      );
+    }
+    return [`zapier-platform-${packageName}@${version}`];
+  });
+  const tagDeleteCmd = tags.map((t) => `git tag -d ${t}`).join(' && ');
+  console.log(
+    `To revert, run ${bold.underline('git reset --hard HEAD~1')} and ${bold.underline(tagDeleteCmd)}.`,
   );
   return 0;
 };
