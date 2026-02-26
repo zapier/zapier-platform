@@ -32,7 +32,8 @@ const makePath = (path, newSegment) =>
 const processBaseError = (err, path) => {
   const completePath = makePath(path, err.property)
     .replace(/\.instance\.?/g, '.')
-    .replace(/\.instance$/, '');
+    .replace(/\.instance$/, '')
+    .replace(/\.$/, ''); // Remove any trailing dots
 
   const subSchemas = err.message.match(/\[subschema \d+\]/g);
   if (subSchemas) {

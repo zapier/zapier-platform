@@ -650,6 +650,26 @@
       "type": "string",
       "pattern": "^[a-zA-Z0-9_]+\\.[a-zA-Z0-9_\\s\\[\\]]+(\\.[a-zA-Z0-9_\\s\\[\\]]+(,[a-zA-Z0-9_\\s\\[\\]]+)*)?$"
     },
+    "FieldDynamicChoicesSchema": {
+      "id": "/FieldDynamicChoicesSchema",
+      "description": "Describes dynamic dropdowns powered by a perform function or request.",
+      "type": "object",
+      "required": ["perform"],
+      "properties": {
+        "perform": {
+          "description": "A function or request that returns choices for this dynamic dropdown.",
+          "oneOf": [
+            {
+              "$ref": "/FunctionSchema"
+            },
+            {
+              "$ref": "/RequestSchema"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "FieldMetaSchema": {
       "id": "/FieldMetaSchema",
       "type": "object",
@@ -749,9 +769,29 @@
           "description": "A reference to a trigger that will power a dynamic dropdown.",
           "$ref": "/RefResourceSchema"
         },
+        "dependsOn": {
+          "description": "Specifies which other input fields this field depends on. These must be filled before this one becomes enabled, and when their values change, this field's value should be cleared.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "resource": {
+          "description": "Explicitly links this input field to a resource. Use the resource key (e.g., \"spreadsheet\") or dot notation for resource fields (e.g., \"spreadsheet.url\"). If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.",
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-zA-Z0-9_]+(\\.[a-zA-Z0-9_]+)?$"
+        },
         "choices": {
-          "description": "An object of machine keys and human values to populate a static dropdown.",
-          "$ref": "/FieldChoicesSchema"
+          "description": "Describes how to populate this dropdown. Can be a static list or a dynamic object with pagination and search support.",
+          "oneOf": [
+            {
+              "$ref": "/FieldChoicesSchema"
+            },
+            {
+              "$ref": "/FieldDynamicChoicesSchema"
+            }
+          ]
         },
         "placeholder": {
           "description": "An example value that is not saved.",

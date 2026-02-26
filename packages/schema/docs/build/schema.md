@@ -41,6 +41,7 @@ Alternatively, modify the URL directly: https://github.com/zapier/zapier-platfor
 * [/CreatesSchema](#createsschema)
 * [/FieldChoiceWithLabelSchema](#fieldchoicewithlabelschema)
 * [/FieldChoicesSchema](#fieldchoicesschema)
+* [/FieldDynamicChoicesSchema](#fielddynamicchoicesschema)
 * [/FieldMetaSchema](#fieldmetaschema)
 * [/FlatObjectSchema](#flatobjectschema)
 * [/FunctionRequireSchema](#functionrequireschema)
@@ -1040,6 +1041,36 @@ Yes | Yes | Array of [FieldChoiceWithLabel](#fieldchoicewithlabelschema)
 
 -----
 
+## /FieldDynamicChoicesSchema
+
+Describes dynamic dropdowns powered by a perform function or request.
+
+#### Details
+
+* **Type** - `object`
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@18.1.1/packages/schema/lib/schemas/FieldDynamicChoicesSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`perform` | **yes** | oneOf([/FunctionSchema](#functionschema), [/RequestSchema](#requestschema)) | A function or request that returns choices for this dynamic dropdown.
+
+#### Examples
+
+* `{ perform: '$func$0$f$' }`
+* `{ perform: { source: 'return []' } }`
+* `{ perform: { method: 'GET', url: 'https://api.example.com/choices' } }`
+
+#### Anti-Examples
+
+* `{}` - _Missing required key: perform_
+* `{ someKey: 'value' }` - _Missing required key: perform_
+* `{ perform: 'invalid' }` - _Invalid value for key: perform (must be a function or request)_
+* `{ perform: '$func$0$f$', unknownKey: 'value' }` - _Invalid extra property: unknownKey_
+
+-----
+
 ## /FieldMetaSchema
 
 Allows for additional metadata to be stored on the field.
@@ -1402,7 +1433,9 @@ Key | Required | Type | Description
 `helpText` | no | `string` | A human readable description of this value (IE: "The first part of a full name."). You can use Markdown.
 `search` | no | [/RefResourceSchema](#refresourceschema) | A reference to a search that will guide the user to add a search step to populate this field when creating a Zap.
 `dynamic` | no | [/RefResourceSchema](#refresourceschema) | A reference to a trigger that will power a dynamic dropdown.
-`choices` | no | [/FieldChoicesSchema](#fieldchoicesschema) | An object of machine keys and human values to populate a static dropdown.
+`dependsOn` | no | `array`[`string`] | Specifies which other input fields this field depends on. These must be filled before this one becomes enabled, and when their values change, this field's value should be cleared.
+`resource` | no | `string` | Explicitly links this input field to a resource. Use the resource key (e.g., "spreadsheet") or dot notation for resource fields (e.g., "spreadsheet.url"). If not set for dynamic dropdowns, the resource is derived implicitly from the `dynamic` property.
+`choices` | no | oneOf([/FieldChoicesSchema](#fieldchoicesschema), [/FieldDynamicChoicesSchema](#fielddynamicchoicesschema)) | Describes how to populate this dropdown. Can be a static list or a dynamic object with pagination and search support.
 `placeholder` | no | `string` | An example value that is not saved.
 `altersDynamicFields` | no | `boolean` | Does the value of this field affect the definitions of other fields in the set?
 `computed` | no | `boolean` | Is this field automatically populated (and hidden from the user)? Note: Only OAuth, Session Auth, and certain internal use cases support fields with this key.
@@ -1416,6 +1449,7 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: { mobile: 'Mobile Phone' } }`
 * `{ key: 'abc', choices: [ 'first', 'second', 'third' ] }`
 * `{ key: 'abc', choices: [ { label: 'Red', sample: '#f00', value: '#f00' } ] }`
+* `{ key: 'abc', choices: { perform: '$func$0$f$' } }`
 * `{ key: 'abc', children: [ { key: 'abc' } ] }`
 * `{ key: 'abc', type: 'integer' }`
 * ```
@@ -1427,6 +1461,9 @@ Key | Required | Type | Description
   ```
 * `{ key: 'name', group: 'contact' }`
 * `{ key: 'email', group: 'contact' }`
+* `{ key: 'spreadsheet', dependsOn: [ 'folder' ] }`
+* `{ key: 'worksheet', dependsOn: [ 'folder', 'spreadsheet' ] }`
+* `{ key: 'spreadsheet_id', resource: 'spreadsheet', choices: { perform: '$func$0$f$' } }`
 
 #### Anti-Examples
 

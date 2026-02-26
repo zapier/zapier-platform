@@ -1,5 +1,107 @@
-# The "dynamic-dropdown" Template
+# dynamic-dropdown
 
-This example integration uses the [Star Wars API](https://swapi.info/) to provide a dynamic listing of choices for an `inputField` in a trigger.
+This example integration demonstrates how to create **dynamic dropdowns** (also known as dynamic choices) in Zapier integrations.
 
-![](https://cdn.zappy.app/d985065c5098089795d9b60c77791e12.png)
+## Dynamic Dropdown Patterns
+
+There are two ways to implement dynamic dropdowns:
+
+### 1. Trigger-based (Legacy Pattern)
+
+Uses a separate trigger to fetch choices. Reference it with the `dynamic` property:
+
+```javascript
+{
+  key: 'species_id',
+  type: 'integer',
+  label: 'Species',
+  dynamic: 'species.id.name',  // Format: "triggerKey.idField.labelField"
+}
+```
+
+The trigger (`species`) fetches data, and Zapier uses `id` for the value and `name` for the display label.
+
+### 2. Perform-based (New Pattern)
+
+Uses a function to fetch choices directly. Define it with `choices.perform`:
+
+```javascript
+{
+  key: 'planet_id',
+  type: 'integer',
+  label: 'Home Planet',
+  resource: 'planet', // Explicit resource linking (see below)
+  choices: {
+    perform: getPlanetChoices,
+  },
+}
+```
+
+#### Resource Linking
+
+The `resource` property explicitly links an input field to a resource. This is particularly important for perform-based dropdowns since they don't have a `dynamic` property to derive the resource from.
+
+```javascript
+{
+  key: 'spreadsheet_id',
+  resource: 'spreadsheet',
+  choices: { perform: getSpreadsheets },
+}
+```
+
+The perform function must return:
+
+```javascript
+{
+  results: [
+    { id: '1', label: 'Tatooine' },
+    { id: '2', label: 'Alderaan' },
+  ],
+  paging_token: 'https://api.example.com/planets?page=2',  // or null if no more pages
+}
+```
+
+#### Pagination Support
+
+The perform function receives `bundle.meta.paging_token` for subsequent page requests:
+
+```javascript
+const getPlanetChoices = async (z, bundle) => {
+  // First request: paging_token is undefined
+  // Subsequent requests: paging_token is the value you returned previously
+  const url = bundle.meta.paging_token || 'https://api.example.com/planets';
+
+  const response = await z.request({ url });
+
+  return {
+    results: response.data.results.map((item) => ({
+      id: item.id,
+      label: item.name,
+    })),
+    // Return null when there are no more pages
+    paging_token: response.data.next,
+  };
+};
+```
+
+## This Example
+
+This integration uses the [Star Wars API](https://swapi.dev/) to demonstrate:
+
+- **Species dropdown** - Trigger-based pattern using the `species` trigger
+- **Planet dropdown** - Perform-based pattern with pagination and explicit `resource` linking
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Run tests
+zapier test
+
+# Push to Zapier
+zapier push
+```
+
+Find out more on the latest docs: https://docs.zapier.com/platform
