@@ -25,6 +25,23 @@ const REPO_DIR = path.dirname(__dirname);
 //   - a semver version like "15.9.1"
 //   - or a bump type: "patch", "minor", "major"
 const args = process.argv.slice(2);
+
+if (['--help', '-h', 'help'].includes(args[0])) {
+  console.log(`Usage:
+  pnpm bump                                  Interactive mode (for humans)
+  pnpm bump <new_version>                    Bump cli, core, schema (default)
+  pnpm bump <package_name> <new_version>     Bump specified package
+
+package_name:
+  cli | core | schema        Any one of these bumps all three together
+  legacy-scripting-runner    Bumped independently
+
+new_version:
+  patch, minor, major        Bump type
+  X.Y.Z                      Exact semver version (e.g. 15.9.1)`);
+  process.exit(0);
+}
+
 const nonInteractive = args.length > 0;
 
 const MAIN_PACKAGES = ['cli', 'core', 'schema'];
@@ -380,8 +397,8 @@ const main = async () => {
     // TODO: Roll back
     console.error(err.message);
     console.error(
-      `Now you may have to use ${bold.underline('git reset')} and ` +
-        `${bold.underline('git tag -d')} to roll back the changes.`,
+      `Now you may have to use ${bold.underline('git reset --hard HEAD~1')} and ` +
+        `${bold.underline('git tag -d <tags>')} to roll back the changes.`,
     );
     return 1;
   }
