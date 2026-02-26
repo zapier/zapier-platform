@@ -186,8 +186,24 @@ type PrimitiveFieldResultTypesWithChoiceHints<$Field extends PlainInputField> =
 /**
  * A function that returns a list of plain fields, sync or async.
  * Can be used as a member of an array of input fields itself.
+ *
+ * @deprecated Use known/unknown field functions instead.
  */
 export type InputFieldFunction<
+  $InputData extends InputDataConstraint = InputDataDefault,
+> = (
+  z: ZObject,
+  bundle: Bundle<$InputData>,
+) => PlainInputField[] | Promise<PlainInputField[]>;
+
+export type KnownInputFieldFunction<
+  $InputData extends InputDataConstraint = InputDataDefault,
+> = (
+  z: ZObject,
+  bundle: Bundle<$InputData>,
+) => PlainInputField[] | Promise<PlainInputField[]>;
+
+export type UnknownInputFieldFunction<
   $InputData extends InputDataConstraint = InputDataDefault,
 > = (
   z: ZObject,
