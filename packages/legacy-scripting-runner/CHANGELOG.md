@@ -1,3 +1,10 @@
+## 4.0.2
+
+_Released 2026-02-26_
+
+- :bug: Add explicit `form-data` dependency to work with pnpm strict module isolation ([#1247](https://github.com/zapier/zapier-platform/pull/1247))
+- :hammer: Bump `lodash` from 4.17.21 to 4.17.23 ([#1235](https://github.com/zapier/zapier-platform/pull/1235))
+
 ## 4.0.1
 
 _Release 2025-11-14_
