@@ -10,6 +10,40 @@ const semver = require('semver');
 
 const REPO_DIR = path.dirname(__dirname);
 
+// Non-interactive mode:
+//   ./scripts/bump.js <new_version>                  — bumps cli, core, schema (default)
+//   ./scripts/bump.js <package_name> <new_version>   — bumps specified package
+// package_name: "cli", "core", or "schema" (all three are bumped together) or "legacy-scripting-runner"
+// new_version: a semver version like "15.9.1" or a bump type like "patch", "minor", "major"
+const args = process.argv.slice(2);
+const nonInteractive = args.length > 0;
+
+const MAIN_PACKAGES = ['cli', 'core', 'schema'];
+
+const resolvePackageArg = (arg) => {
+  if (MAIN_PACKAGES.includes(arg)) {
+    return 'cli, core, schema';
+  }
+  if (arg === 'legacy-scripting-runner') {
+    return arg;
+  }
+  throw new Error(
+    `Unknown package "${arg}". Valid values: ${MAIN_PACKAGES.join(', ')}, legacy-scripting-runner`,
+  );
+};
+
+const resolveVersionArg = (arg, currentVersion) => {
+  if (['patch', 'minor', 'major'].includes(arg)) {
+    return semver.inc(currentVersion, arg);
+  }
+  if (semver.valid(arg)) {
+    return arg;
+  }
+  throw new Error(
+    `Invalid version "${arg}". Use a semver version (e.g. 15.9.1) or a bump type (patch, minor, major).`,
+  );
+};
+
 const readJson = (path) => {
   return JSON.parse(fs.readFileSync(path, { encoding: 'utf8' }));
 };
@@ -55,6 +89,11 @@ const confirmIfMasterBranch = async () => {
   });
   const branch = (result.stdout || '').trim();
   if (branch === 'master' || branch === 'main') {
+    if (nonInteractive) {
+      throw new Error(
+        `This was supposed to be run on a feature branch, but you're on ${branch}.`,
+      );
+    }
     const answer = await inquirer.prompt([
       {
         type: 'confirm',
@@ -288,15 +327,36 @@ const main = async () => {
   // Currently we bump cli, core, schema together
   PACKAGE_ORIG_VERSIONS['cli, core, schema'] = PACKAGE_ORIG_VERSIONS.cli;
 
-  const packagesToBump = await promptPackagesToBump();
-  if (packagesToBump.length === 0) {
-    console.error('No packages selected, nothing to do here.');
-    return 1;
-  }
-
+  let packagesToBump;
   const versionsToBump = {};
-  for (const packageName of packagesToBump) {
-    versionsToBump[packageName] = await promptVersionToBump(packageName);
+
+  if (nonInteractive) {
+    try {
+      let packageName, versionArg;
+      if (args.length === 1) {
+        packageName = 'cli, core, schema';
+        versionArg = args[0];
+      } else {
+        packageName = resolvePackageArg(args[0]);
+        versionArg = args[1];
+      }
+      const currentVersion = PACKAGE_ORIG_VERSIONS[packageName];
+      const version = resolveVersionArg(versionArg, currentVersion);
+      packagesToBump = [packageName];
+      versionsToBump[packageName] = version;
+    } catch (err) {
+      console.error(err.message);
+      return 1;
+    }
+  } else {
+    packagesToBump = await promptPackagesToBump();
+    if (packagesToBump.length === 0) {
+      console.error('No packages selected, nothing to do here.');
+      return 1;
+    }
+    for (const packageName of packagesToBump) {
+      versionsToBump[packageName] = await promptVersionToBump(packageName);
+    }
   }
 
   Object.keys(versionsToBump).map((packageName) => {
