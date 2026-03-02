@@ -72,7 +72,7 @@ const runCommand = (command, args, options) => {
       if (code === 0) {
         resolve({ stdout, stderr });
       } else {
-        reject(new Error(stderr));
+        reject(new Error(stderr || stdout));
       }
     });
   });
