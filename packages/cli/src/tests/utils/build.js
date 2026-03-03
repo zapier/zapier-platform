@@ -1421,7 +1421,14 @@ describe('build in pnpm workspaces', () => {
     fs.existsSync(path.join(unzipDir, 'common', 'hello', 'index.js'));
   });
 
-  it('core and legacy-scripting-runner should find each other from app-3', async () => {
+  it('core and legacy-scripting-runner should find each other from app-3', async function () {
+    if (process.platform === 'win32') {
+      // Skipping because pnpm doesn't use symlinks on Windows
+      // (it uses junctions)
+      this.skip('test');
+      return;
+    }
+
     const appDir = path.join(monorepo.repoDir, 'packages', 'app-3');
     const zipPath = path.join(appDir, 'build', 'build.zip');
 
