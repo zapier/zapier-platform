@@ -89,10 +89,27 @@ const npmPackCore = async () => {
   };
 };
 
+const npmPackLegacyScriptingRunner = () => {
+  const legacyDir = resolve(
+    __dirname,
+    '../../../../packages/legacy-scripting-runner',
+  );
+  const stdout = runCommand('npm', ['pack'], { cwd: legacyDir });
+  const filename = getLastNonEmptyString(stdout.split('\n'));
+  const filePath = join(legacyDir, filename);
+  return {
+    path: filePath,
+    cleanup: () => {
+      unlinkSync(filePath);
+    },
+  };
+};
+
 module.exports = {
   IS_WINDOWS,
   getNewTempDirPath,
   npmPackCore,
+  npmPackLegacyScriptingRunner,
   randomStr,
   runCommand,
 };
