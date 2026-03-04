@@ -36,6 +36,14 @@
     "underscore": "1.13.7",
     "@xmldom/xmldom": "0.8.11"
   },
+  "peerDependencies": {
+    "zapier-platform-core": ">=14"
+  },
+  "peerDependenciesMeta": {
+    "zapier-platform-core": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "aws-sdk": "^2.1397.0",
     "nock": "13.3.1",

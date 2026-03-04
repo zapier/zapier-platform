@@ -75,6 +75,14 @@
     "nock": "^13.5.4",
     "tsd": "^0.31.1"
   },
+  "peerDependencies": {
+    "zapier-platform-legacy-scripting-runner": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "zapier-platform-legacy-scripting-runner": {
+      "optional": true
+    }
+  },
   "optionalDependencies": {
     "@types/node": "^20.3.1"
   }

@@ -11,6 +11,7 @@ const {
   IS_WINDOWS,
   getNewTempDirPath,
   npmPackCore,
+  npmPackLegacyScriptingRunner,
   runCommand,
 } = require('../_helpers');
 
@@ -488,6 +489,39 @@ const setupPnpmMonorepo = async () => {
   - 'common/*'
 linkWorkspacePackages: true`,
   );
+
+  // Pack local legacy-scripting-runner (which declares core as optional peer dep)
+  const lsrPackage = npmPackLegacyScriptingRunner();
+
+  // Third integration: app-3, CJS, depending on both core and
+  // legacy-scripting-runner
+  fs.outputFileSync(
+    path.join(monorepo.repoDir, 'packages', 'app-3', 'index.js'),
+    `const lsr = require('zapier-platform-legacy-scripting-runner');
+module.exports = {
+	version: require('./package.json').version,
+	platformVersion: require('zapier-platform-core').version,
+};`,
+  );
+  fs.outputFileSync(
+    path.join(monorepo.repoDir, 'packages', 'app-3', 'package.json'),
+    JSON.stringify({
+      name: 'app-3',
+      version: '1.0.0',
+      main: 'index.js',
+      dependencies: {
+        'zapier-platform-core': monorepo.corePackage.path,
+        'zapier-platform-legacy-scripting-runner': lsrPackage.path,
+      },
+      private: true,
+    }),
+  );
+
+  const origCleanup = monorepo.cleanup;
+  monorepo.cleanup = () => {
+    origCleanup();
+    lsrPackage.cleanup();
+  };
 
   return monorepo;
 };
@@ -1385,6 +1419,75 @@ describe('build in pnpm workspaces', () => {
     helloPackageJson.name.should.equal('common-hello');
     helloPackageJson.version.should.equal('1.0.0');
     fs.existsSync(path.join(unzipDir, 'common', 'hello', 'index.js'));
+  });
+
+  it('core and legacy-scripting-runner should find each other from app-3', async function () {
+    if (process.platform === 'win32') {
+      // Skipping because pnpm doesn't use symlinks on Windows
+      // (it uses junctions)
+      this.skip('test');
+      return;
+    }
+
+    const appDir = path.join(monorepo.repoDir, 'packages', 'app-3');
+    const zipPath = path.join(appDir, 'build', 'build.zip');
+
+    process.chdir(appDir);
+
+    await build.buildAndOrUpload(
+      { build: true, upload: false },
+      {
+        skipDepInstall: true,
+        skipValidation: true,
+        printProgress: false,
+        checkOutdated: false,
+      },
+    );
+    await decompress(zipPath, unzipDir);
+
+    const pnpmNmDir = path.join(unzipDir, 'node_modules', '.pnpm');
+
+    // Find the virtual store entries for core and legacy-scripting-runner
+    const coreEntries = fs
+      .readdirSync(pnpmNmDir)
+      .filter((d) => d.startsWith('zapier-platform-core@'));
+    coreEntries.length.should.equal(1);
+
+    const lsrEntries = fs
+      .readdirSync(pnpmNmDir)
+      .filter((d) => d.startsWith('zapier-platform-legacy-scripting-runner@'));
+
+    // Find the lsr entry that has core in its node_modules (the one resolved
+    // with the peer dep). There may be a second entry without core — that's
+    // the one referenced by core's own optional peer dep.
+    const lsrWithCore = lsrEntries.find((d) =>
+      fs.existsSync(
+        path.join(pnpmNmDir, d, 'node_modules', 'zapier-platform-core'),
+      ),
+    );
+    should.exist(
+      lsrWithCore,
+      'legacy-scripting-runner should have core in its node_modules via peer dep',
+    );
+
+    // core should be a symlink inside lsr's node_modules (peer dep link)
+    const coreInLsr = path.join(
+      pnpmNmDir,
+      lsrWithCore,
+      'node_modules',
+      'zapier-platform-core',
+    );
+    fs.lstatSync(coreInLsr).isSymbolicLink().should.be.true();
+
+    // lsr should be a symlink inside core's node_modules (peer dep link)
+    const lsrInCore = path.join(
+      pnpmNmDir,
+      coreEntries[0],
+      'node_modules',
+      'zapier-platform-legacy-scripting-runner',
+    );
+    fs.existsSync(lsrInCore).should.be.true();
+    fs.lstatSync(lsrInCore).isSymbolicLink().should.be.true();
   });
 });
 
