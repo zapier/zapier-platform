@@ -1,3 +1,7 @@
+## 4.0.6
+
+- :bug: Declare optional peer dependency to fix pnpm strict module resolution ([#1255](https://github.com/zapier/zapier-platform/pull/1255))
+
 ## 4.0.5
 
 _Released 2026-02-26_
