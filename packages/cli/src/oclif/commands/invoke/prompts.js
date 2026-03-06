@@ -1,7 +1,10 @@
 const _ = require('lodash');
 
 const { listAuthentications } = require('../../../utils/api');
+const { startSpinner, endSpinner } = require('../../../utils/display');
 const { fetchChoices } = require('./remote');
+const { localAppCommandWithRelayErrorHandler } = require('./relay');
+const { customLogger } = require('./logger');
 
 /**
  * Formats a field definition for display in prompts.
@@ -122,6 +125,96 @@ const getDynamicDropdownChoices = async (
 };
 
 /**
+ * Checks whether a field uses perform-based dynamic choices (choices: { perform }).
+ * @param {Object} field - The field definition
+ * @returns {boolean} True if the field has perform-based choices
+ */
+const isPerformBasedChoices = (field) =>
+  field.choices &&
+  typeof field.choices === 'object' &&
+  !Array.isArray(field.choices) &&
+  field.choices.perform !== undefined;
+
+/**
+ * Fetches choices for a perform-based dynamic dropdown field.
+ * @param {import('../../ZapierBaseCommand')} command - The command instance
+ * @param {Object} context - The execution context
+ * @param {Object} field - The field definition with choices.perform
+ * @returns {Promise<{choices: Array<Object>, nextPagingToken: string|null}>}
+ */
+const getPerformBasedChoices = async (command, context, field) => {
+  if (context.remote) {
+    const choices = (await fetchChoices(context, field.key)).map((c) => ({
+      name: `${c.label} (${c.value})`,
+      value: c.value,
+    }));
+    return { choices, nextPagingToken: null };
+  }
+
+  // Find the field's index in the action's inputFields array
+  const action =
+    context.appDefinition[context.actionTypePlural][context.actionKey];
+  const allInputFields = action.operation.inputFields || [];
+  const fieldIndex = allInputFields.findIndex(
+    (f) => f.key === field.key && f.choices && f.choices.perform,
+  );
+  if (fieldIndex === -1) {
+    throw new Error(
+      `Cannot find perform-based choices for field "${field.key}" in ` +
+        `${context.actionTypePlural}.${context.actionKey}.operation.inputFields.`,
+    );
+  }
+
+  const methodName = `${context.actionTypePlural}.${context.actionKey}.operation.inputFields.${fieldIndex}.choices.perform`;
+  const displayName = `${context.actionTypePlural}.${context.actionKey}.operation.inputFields[${fieldIndex}].choices.perform`;
+  const adverb = context.remote
+    ? 'remotely'
+    : context.authId
+      ? 'locally with relay'
+      : 'locally';
+  startSpinner(`Invoking ${displayName} ${adverb}`);
+  const result = await localAppCommandWithRelayErrorHandler({
+    command: 'execute',
+    method: methodName,
+    bundle: {
+      inputData: context.inputData,
+      inputDataRaw: context.inputData,
+      authData: context.authData,
+      meta: {
+        ...context.meta,
+        isFillingDynamicDropdown: true,
+      },
+    },
+    zcacheTestObj: context.zcacheTestObj,
+    cursorTestObj: context.cursorTestObj,
+    customLogger,
+    calledFromCliInvoke: true,
+    appId: context.appId,
+    deployKey: context.deployKey,
+    relayAuthenticationId: context.authId,
+  });
+  endSpinner();
+
+  // The perform function returns { results: [{ id, label }, ...], paging_token }
+  // or a plain array of { id, label } objects
+  let results, nextPagingToken;
+  if (Array.isArray(result)) {
+    results = result;
+    nextPagingToken = null;
+  } else {
+    results = result.results || [];
+    nextPagingToken = result.paging_token || null;
+  }
+
+  const choices = results.map((c) => ({
+    name: `${c.label || c.id} (${c.id})`,
+    value: String(c.id),
+  }));
+
+  return { choices, nextPagingToken };
+};
+
+/**
  * Normalizes static choices into an array of { name, value } objects for
  * prompting.
  * @param {Array|string|Object} choices - The static choices definition
@@ -150,18 +243,22 @@ const getStaticChoices = (choices) => {
 };
 
 /**
- * Gets choices for a dropdown field, handling both static and dynamic cases.
+ * Gets choices for a dropdown field, handling static, trigger-based dynamic,
+ * and perform-based dynamic cases.
  * @param {import('../../ZapierBaseCommand')} command - The command instance for prompting
  * @param {Object} context - The execution context
  * @param {Object} field - The field definition
- * @param {Function} invokeAction - Function to invoke actions (used for dynamic dropdowns)
- * @returns {Promise<Array<Object>>} Array of choices formatted as { name, value } objects
+ * @param {Function} invokeAction - Function to invoke actions (used for trigger-based dynamic dropdowns)
+ * @param {Object} [pagingState] - Pagination state for perform-based choices
+ * @param {boolean} [pagingState.hasPreviousPage] - Whether there is a previous page
+ * @returns {Promise<{choices: Array<Object>, nextPagingToken: string|null}>}
  */
 const getStaticOrDynamicDropdownChoices = async (
   command,
   context,
   field,
   invokeAction,
+  pagingState,
 ) => {
   if (field.dynamic) {
     const choices = await getDynamicDropdownChoices(
@@ -181,9 +278,28 @@ const getStaticOrDynamicDropdownChoices = async (
       name: `>>> NEXT PAGE <<<`,
       value: '__next_page__',
     });
-    return choices;
+    return { choices, nextPagingToken: null };
+  } else if (isPerformBasedChoices(field)) {
+    const { choices, nextPagingToken } = await getPerformBasedChoices(
+      command,
+      context,
+      field,
+    );
+    if (pagingState && pagingState.hasPreviousPage) {
+      choices.unshift({
+        name: `>>> PREVIOUS PAGE <<<`,
+        value: '__prev_page__',
+      });
+    }
+    if (nextPagingToken) {
+      choices.push({
+        name: `>>> NEXT PAGE <<<`,
+        value: '__next_page__',
+      });
+    }
+    return { choices, nextPagingToken };
   } else {
-    return getStaticChoices(field.choices);
+    return { choices: getStaticChoices(field.choices), nextPagingToken: null };
   }
 };
 
@@ -199,35 +315,64 @@ const getStaticOrDynamicDropdownChoices = async (
 const promptForField = async (command, context, field, invokeAction) => {
   const message = formatFieldDisplay(field) + ':';
   if (field.dynamic || field.choices) {
+    const performBased = isPerformBasedChoices(field);
     let answer;
+
+    // Paging state for perform-based choices (token-based pagination)
+    const pagingTokenStack = [];
+    let currentPagingToken = null;
+    let nextPagingToken = null;
+
     while (
       !answer ||
       answer === '__next_page__' ||
       answer === '__prev_page__'
     ) {
-      let page = 0;
-      switch (answer) {
-        case '__next_page__':
-          page = (context.meta.page || 0) + 1;
-          break;
-        case '__prev_page__':
-          page = Math.max((context.meta.page || 0) - 1, 0);
-          break;
+      if (performBased) {
+        switch (answer) {
+          case '__next_page__':
+            pagingTokenStack.push(currentPagingToken);
+            currentPagingToken = nextPagingToken;
+            break;
+          case '__prev_page__':
+            currentPagingToken = pagingTokenStack.pop() || null;
+            break;
+        }
+        context = {
+          ...context,
+          meta: {
+            ...context.meta,
+            paging_token: currentPagingToken,
+          },
+        };
+      } else {
+        let page = 0;
+        switch (answer) {
+          case '__next_page__':
+            page = (context.meta.page || 0) + 1;
+            break;
+          case '__prev_page__':
+            page = Math.max((context.meta.page || 0) - 1, 0);
+            break;
+        }
+        context = {
+          ...context,
+          meta: {
+            ...context.meta,
+            page,
+          },
+        };
       }
-      context = {
-        ...context,
-        meta: {
-          ...context.meta,
-          page,
-        },
-      };
-      const choices = await getStaticOrDynamicDropdownChoices(
+
+      const result = await getStaticOrDynamicDropdownChoices(
         command,
         context,
         field,
         invokeAction,
+        { hasPreviousPage: pagingTokenStack.length > 0 },
       );
-      answer = await command.promptWithList(message, choices, {
+      nextPagingToken = result.nextPagingToken;
+      answer = await command.promptWithList(message, result.choices, {
         useStderr: true,
       });
     }
