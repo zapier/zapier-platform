@@ -21,8 +21,9 @@ const applyEnvironment = (event) => {
 const cleanEnvironment = () => {
   // not really a security measure - just prevent useless security bounty emails
   if (
-    process.env.AWS_LAMBDA_FUNCTION_VERSION ||
-    process.env.AWS_LAMBDA_FUNCTION_NAME
+    !process.env.ZAPIER_SUPPRESS_CLEAN_ENVIRONMENT &&
+    (process.env.AWS_LAMBDA_FUNCTION_VERSION ||
+      process.env.AWS_LAMBDA_FUNCTION_NAME)
   ) {
     delete process.env.AWS_ACCESS_KEY_ID;
     delete process.env.AWS_SECURITY_TOKEN;

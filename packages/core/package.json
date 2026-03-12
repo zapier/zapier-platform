@@ -1,6 +1,6 @@
 {
   "name": "zapier-platform-core",
-  "version": "18.1.1",
+  "version": "18.2.3",
   "description": "The core SDK for CLI apps in the Zapier Developer Platform.",
   "repository": "zapier/zapier-platform",
   "homepage": "https://platform.zapier.com/",
@@ -74,6 +74,14 @@
     "mock-fs": "^5.5.0",
     "nock": "^13.5.4",
     "tsd": "^0.31.1"
+  },
+  "peerDependencies": {
+    "zapier-platform-legacy-scripting-runner": ">=3"
+  },
+  "peerDependenciesMeta": {
+    "zapier-platform-legacy-scripting-runner": {
+      "optional": true
+    }
   },
   "optionalDependencies": {
     "@types/node": "^20.3.1"

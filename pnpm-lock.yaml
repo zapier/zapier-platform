@@ -246,6 +246,9 @@ importers:
       semver:
         specifier: 7.7.2
         version: 7.7.2
+      zapier-platform-legacy-scripting-runner:
+        specifier: '>=3'
+        version: 4.0.5(encoding@0.1.13)
       zapier-platform-schema:
         specifier: workspace:*
         version: link:../schema
@@ -290,6 +293,9 @@ importers:
       flat:
         specifier: 5.0.2
         version: 5.0.2
+      form-data:
+        specifier: 2.3.3
+        version: 2.3.3
       jquery:
         specifier: 3.5.0
         version: 3.5.0
@@ -6417,6 +6423,10 @@ packages:
     resolution: {integrity: sha512-zDf30BHQ9M5/6CCfiSidB0VGUZsftgap9g54raJLreFT2VBoXtvYBZlIRlFBs9ny/oX5eO6RVzNaWmPqM7JG/w==}
     engines: {node: '>=16', npm: '>=5.6.0'}
 
+  zapier-platform-legacy-scripting-runner@4.0.5:
+    resolution: {integrity: sha512-t3xKobBN798GwtgO139hK2EYz4GEdRar52NhomGREwRrGl+uyLMxYAae+2+BpAStqAeu+yYhIc2DzXydGLjU0Q==}
+    engines: {node: '>=8.10.0', npm: '>=5.6.0'}
+
   zapier-platform-schema@18.0.1:
     resolution: {integrity: sha512-NTmWeieNP0IXiDWxOQWGnhygMLcdFeQTkMUITR03Z4JmuVBXJRXfVdswu//of6tUUckR3JId0qXc1A5SBnXyBg==}
 
@@ -8522,7 +8532,7 @@ snapshots:
   '@types/vinyl@2.0.12':
     dependencies:
       '@types/expect': 1.20.4
-      '@types/node': 22.19.1
+      '@types/node': 20.19.25
 
   '@types/wrap-ansi@3.0.0': {}
 
@@ -11235,7 +11245,7 @@ snapshots:
 
   mem-fs@4.1.2:
     dependencies:
-      '@types/node': 22.19.1
+      '@types/node': 20.19.25
       '@types/vinyl': 2.0.12
       vinyl: 3.0.1
       vinyl-file: 5.0.0
@@ -13519,6 +13529,23 @@ snapshots:
       zapier-platform-schema: 18.0.1
     optionalDependencies:
       '@types/node': 20.19.25
+    transitivePeerDependencies:
+      - encoding
+
+  zapier-platform-legacy-scripting-runner@4.0.5(encoding@0.1.13):
+    dependencies:
+      '@xmldom/xmldom': 0.8.11
+      async: 2.6.4
+      flat: 5.0.2
+      form-data: 2.3.3
+      jquery: 3.5.0
+      jsdom: 7.0.0
+      lodash: 4.17.23
+      moment-timezone: 0.5.43
+      node-fetch: 2.6.7(encoding@0.1.13)
+      request: 2.88.2
+      synckit: 0.6.0
+      underscore: 1.13.7
     transitivePeerDependencies:
       - encoding
 

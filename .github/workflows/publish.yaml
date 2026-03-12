@@ -1,16 +1,15 @@
 name: Publish
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - 'main'
 
 jobs:
   publish:
     name: Publish to npm
-    if: (github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'release-'))
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       id-token: write  # Required for OIDC trusted publishing
 
@@ -32,6 +31,24 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::996097627176:role/zapier-platform-github-actions-production
+          aws-region: us-east-1
+
+      - name: Build and upload boilerplate zip
+        run: |
+          CORE_VERSION=$(jq -r '.version' packages/core/package.json)
+          if aws s3 ls "s3://zapier-dev-platform-cli-boilerplates/$CORE_VERSION.zip" 2>/dev/null; then
+            echo "Skipping boilerplate (already uploaded)"
+          else
+            echo "Building and uploading boilerplate"
+            cd boilerplate
+            ./scripts/build.sh
+            aws s3 cp "build/$CORE_VERSION.zip" "s3://zapier-dev-platform-cli-boilerplates/$CORE_VERSION.zip"
+          fi
 
       - name: Publish zapier-platform-schema
         run: |
