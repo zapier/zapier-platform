@@ -50,6 +50,7 @@ module.exports = makeSchema({
         'password',
         'copy',
         'code',
+        'json',
       ],
     },
     required: {

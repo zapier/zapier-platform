@@ -76,6 +76,11 @@ module.exports = makeSchema(
           "References a group key from the operation's inputFieldGroups to organize this field with others.",
         $ref: KeySchema.id,
       },
+      schema: {
+        description:
+          'A JSON Schema object that validates the structure of the JSON input. Only applicable when type is "json".',
+        type: 'object',
+      },
     },
     examples: [
       { key: 'abc' },

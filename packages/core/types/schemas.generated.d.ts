@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 18.2.2
+ * zapier-platform-schema version: 18.2.3
  *  schema-to-ts compiler version: 0.1.0
  */
 import type {
@@ -1703,7 +1703,8 @@ export interface PlainInputField {
     | 'file'
     | 'password'
     | 'copy'
-    | 'code';
+    | 'code'
+    | 'json';
 
   /** If this value is required or not. */
   required?: boolean;
@@ -1783,6 +1784,12 @@ export interface PlainInputField {
    * organize this field with others.
    */
   group?: Key;
+
+  /**
+   * A JSON Schema object that validates the structure of the JSON
+   * input. Only applicable when type is "json".
+   */
+  schema?: Record<string, unknown>;
 }
 
 /** Object for visual grouping of input fields. */
