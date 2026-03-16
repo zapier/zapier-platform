@@ -6,8 +6,31 @@ on:
       - 'main'
 
 jobs:
+  check:
+    name: Check for unpublished versions
+    runs-on: ubuntu-latest
+    outputs:
+      should_publish: ${{ steps.check-publish.outputs.should_publish }}
+      schema_needs_publish: ${{ steps.check-publish.outputs.schema_needs_publish }}
+      core_needs_publish: ${{ steps.check-publish.outputs.core_needs_publish }}
+      cli_needs_publish: ${{ steps.check-publish.outputs.cli_needs_publish }}
+      lsr_needs_publish: ${{ steps.check-publish.outputs.lsr_needs_publish }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Compare local vs published versions
+        id: check-publish
+        run: ./scripts/check-publish.sh
+
   publish:
     name: Publish to npm
+    needs: check
+    if: needs.check.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -33,12 +56,14 @@ jobs:
         run: pnpm install
 
       - name: Configure AWS credentials
+        if: needs.check.outputs.core_needs_publish == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::996097627176:role/zapier-platform-github-actions-production
           aws-region: us-east-1
 
       - name: Build and upload boilerplate zip
+        if: needs.check.outputs.core_needs_publish == 'true'
         run: |
           CORE_VERSION=$(jq -r '.version' packages/core/package.json)
           if aws s3 ls "s3://zapier-dev-platform-cli-boilerplates/$CORE_VERSION.zip" 2>/dev/null; then
@@ -51,53 +76,21 @@ jobs:
           fi
 
       - name: Publish zapier-platform-schema
-        run: |
-          PUBLISHED_VERSION=$(pnpm view zapier-platform-schema version)
-          LOCAL_VERSION=$(node -p "require('./package.json').version")
-
-          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
-            echo "Publishing zapier-platform-schema"
-            pnpm publish --provenance --no-git-checks
-          else
-            echo "Skipping zapier-platform-schema (already published)"
-          fi
+        if: needs.check.outputs.schema_needs_publish == 'true'
+        run: pnpm publish --provenance --no-git-checks
         working-directory: packages/schema
 
       - name: Publish zapier-platform-core
-        run: |
-          PUBLISHED_VERSION=$(pnpm view zapier-platform-core version)
-          LOCAL_VERSION=$(node -p "require('./package.json').version")
-
-          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
-            echo "Publishing zapier-platform-core"
-            pnpm publish --provenance --no-git-checks
-          else
-            echo "Skipping zapier-platform-core (already published)"
-          fi
+        if: needs.check.outputs.core_needs_publish == 'true'
+        run: pnpm publish --provenance --no-git-checks
         working-directory: packages/core
 
       - name: Publish zapier-platform-cli
-        run: |
-          PUBLISHED_VERSION=$(pnpm view zapier-platform-cli version)
-          LOCAL_VERSION=$(node -p "require('./package.json').version")
-
-          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
-            echo "Publishing zapier-platform-cli"
-            pnpm publish --provenance --no-git-checks
-          else
-            echo "Skipping zapier-platform-cli (already published)"
-          fi
+        if: needs.check.outputs.cli_needs_publish == 'true'
+        run: pnpm publish --provenance --no-git-checks
         working-directory: packages/cli
 
       - name: Publish zapier-platform-legacy-scripting-runner
-        run: |
-          PUBLISHED_VERSION=$(pnpm view zapier-platform-legacy-scripting-runner version)
-          LOCAL_VERSION=$(node -p "require('./package.json').version")
-
-          if [ "$PUBLISHED_VERSION" != "$LOCAL_VERSION" ]; then
-            echo "Publishing zapier-platform-legacy-scripting-runner"
-            pnpm publish --provenance --no-git-checks
-          else
-            echo "Skipping zapier-platform-legacy-scripting-runner (already published)"
-          fi
+        if: needs.check.outputs.lsr_needs_publish == 'true'
+        run: pnpm publish --provenance --no-git-checks
         working-directory: packages/legacy-scripting-runner

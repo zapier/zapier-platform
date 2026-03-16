@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# Exit on any command failure; in pipelines, fail if any command (not just the
+# last) returns non-zero.
+set -eo pipefail
+
 #
 # Build boilerplate - a zip file that is generated as if you `zapier build` an empty CLI
 # app. This zip file acts as a runtime for all the UI apps.
@@ -46,20 +51,66 @@ update_deps() {
 }
 
 inspect_build() {
+    local zip_file=$1
+    local expected_core=$2
+    local expected_schema=$2
+    local expected_legacy=$3
+
+    temp_dir="`dirname $zip_file`/_temp"
+    unzip -q $zip_file -d $temp_dir
+
+    # Build a JSON object of expected versions and compare against actual
+    actual=$(find $temp_dir/node_modules -maxdepth 2 -name package.json -path "*/zapier-platform-*/*" | xargs cat | jq -s '
+        map({(.name): .version}) | add')
+    echo "$actual" | jq .
+
+    rm -rf $temp_dir
+
+    expected=$(jq -n \
+        --arg core "$expected_core" \
+        --arg schema "$expected_schema" \
+        --arg legacy "$expected_legacy" \
+        '{"zapier-platform-core": $core, "zapier-platform-schema": $schema, "zapier-platform-legacy-scripting-runner": $legacy}')
+
+    if [ "$actual" == "$expected" ]; then
+        echo "All dependency versions match ✅"
+    else
+        echo "ERROR: dependency version mismatch ❌"
+        echo "Expected: $expected"
+        return 1
+    fi
+}
+
+check_size() {
+    local min_mb=3
+    local max_mb=10
+    local min_bytes=$((min_mb * 1024 * 1024))
+    local max_bytes=$((max_mb * 1024 * 1024))
+    local file_size=$(stat -f%z "$1" 2>/dev/null || stat -c%s "$1")
+    local size_mb=$(echo "scale=2; $file_size / 1024 / 1024" | bc)
+    if [[ $file_size -lt $min_bytes || $file_size -gt $max_bytes ]]; then
+        echo "ERROR: zip file size ${size_mb} MB is outside expected range (${min_mb}-${max_mb} MB) ❌"
+        return 1
+    else
+        echo "Zip file size ${size_mb} MB is within expected range (${min_mb}-${max_mb} MB) ✅"
+    fi
+}
+
+test_build() {
     temp_dir="`dirname $1`/_temp"
     unzip -q $1 -d $temp_dir
-    find $temp_dir/node_modules/zapier-platform-*/package.json | (xargs cat | jq '{name, version}')
 
     pushd $temp_dir > /dev/null
-    EXIT_CODE=$(node zapierwrapper.js)
+    EXIT_CODE=$(node zapierwrapper.js) || true
+    popd > /dev/null
+    rm -rf $temp_dir
+
     if [[ $EXIT_CODE -eq 0 ]]; then
         echo "Entry point can be loaded successfully ✅"
     else
         echo "Entry point failed to load ❌"
+        return 1
     fi
-    popd > /dev/null
-
-    rm -rf $temp_dir
 }
 
 # Get the absolute path of the directory holding this script file
@@ -70,15 +121,35 @@ popd > /dev/null
 
 REPO_DIR=$(dirname $(dirname $SCRIPT_DIR))
 CORE_DIR="$REPO_DIR/packages/core"
+SCHEMA_DIR="$REPO_DIR/packages/schema"
 LEGACY_DIR="$REPO_DIR/packages/legacy-scripting-runner"
 BOILERPLATE_DIR="$REPO_DIR/boilerplate"
 
 BUILD_DIR="$BOILERPLATE_DIR/build"
 
+# Restore modified files on exit (success or failure)
+cleanup() {
+    local exit_code=$?
+    # Restore pnpm-workspace.yaml if a backup exists
+    if [ -f "$BOILERPLATE_DIR/pnpm-workspace.yaml.bak" ]; then
+        mv "$BOILERPLATE_DIR/pnpm-workspace.yaml.bak" "$BOILERPLATE_DIR/pnpm-workspace.yaml"
+    fi
+    # Restore package.json placeholders
+    update_deps "$BOILERPLATE_DIR/package.json" PLACEHOLDER PLACEHOLDER
+    exit $exit_code
+}
+trap cleanup EXIT
+
 # Prevent leftover old builds from being included in new build
 if [ -d $BUILD_DIR ]; then
     echo "Removing existing boilerplate/build directory..."
     rm -r "$BUILD_DIR"
+fi
+
+# Prevent stale dependencies from being included in new build
+if [ -d "$BOILERPLATE_DIR/node_modules" ]; then
+    echo "Removing existing boilerplate/node_modules directory..."
+    rm -r "$BOILERPLATE_DIR/node_modules"
 fi
 
 mkdir -p $BUILD_DIR
@@ -111,6 +182,7 @@ rm -f $TARGET_FILE
 # with a timestamp to avoid the package manager using any cache.
 TIMESTAMP=`date +"%s"`
 CORE_PACK_FILENAME="core-$TIMESTAMP.tgz"
+SCHEMA_PACK_FILENAME="schema-$TIMESTAMP.tgz"
 LEGACY_PACK_FILENAME="legacy-$TIMESTAMP.tgz"
 
 echo "Building..."
@@ -121,6 +193,13 @@ if [ "$1" == "" ]; then
 
     pushd $CORE_DIR > /dev/null
     pnpm pack --out "$BOILERPLATE_DIR/$CORE_PACK_FILENAME"
+    popd > /dev/null
+
+    # Also pack schema so core's transitive dependency resolves locally
+    # instead of from npm (which may not have the current version yet)
+    echo "> schema from local"
+    pushd $SCHEMA_DIR > /dev/null
+    pnpm pack --out "$BOILERPLATE_DIR/$SCHEMA_PACK_FILENAME"
     popd > /dev/null
 
     if [ "$2" == "" ]; then
@@ -161,7 +240,15 @@ fi
 # Install boilerplate deps
 pushd $BOILERPLATE_DIR > /dev/null
 echo "{\"version\": \"1.0.0\", \"platformVersion\": \"$CORE_VERSION\"}" > definition.json
+
+# When building core from local, replace the placeholder in pnpm-workspace.yaml
+# with an override so schema resolves from the local tarball
+if [ "$1" == "" ]; then
+    sed -i.bak "s|# OVERRIDES_PLACEHOLDER|overrides:\n  zapier-platform-schema: \"./$SCHEMA_PACK_FILENAME\"|" pnpm-workspace.yaml
+fi
+
 pnpm install --no-lockfile
+
 popd > /dev/null
 
 # Monkey patch boilerplate package.json so zapier-platform-core and
@@ -173,19 +260,17 @@ pushd $BOILERPLATE_DIR > /dev/null
 
 # Build the zip!
 # the node-X segment in the next line should match the latest major version
-zip -R $TARGET_FILE '*.js' '*.cjs' '*.json' '*/linux-x64-node-14/*.node' '*/linux-x64-node-16/*.node' '*/linux-x64-node-18/*.node'
+zip -9 -R $TARGET_FILE '*.js' '*.cjs' '*.json'
 
 # Remove generated files
-rm -f zapierwrapper.js definition.json core-*.tgz legacy-*.tgz
-# rm -rf node_modules
+rm -f zapierwrapper.js definition.json core-*.tgz schema-*.tgz legacy-*.tgz
+rm -rf node_modules
 
 popd > /dev/null
 
-# Undo the monkey patch on boilerplate package.json
-update_deps "$BOILERPLATE_DIR/package.json" PLACEHOLDER PLACEHOLDER
-
-echo -e "\nDone! Here's your output zip file (size should be 4-6 MB):"
+echo -e "\nDone! Here's your output zip file (size should be 4-6 MB normally):"
 ls -hl $TARGET_FILE
 
-echo -e "\nInspecting what's inside the zip:"
-inspect_build $TARGET_FILE
+check_size $TARGET_FILE
+inspect_build $TARGET_FILE $CORE_VERSION $LEGACY_VERSION
+test_build $TARGET_FILE
