@@ -2,15 +2,15 @@
   "name": "dynamic-dropdown",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "test": "jest --testTimeout 10000"
   },
   "dependencies": {
-    "zapier-platform-core": "18.2.3"
+    "zapier-platform-core": "18.3.0"
   },
   "devDependencies": {
     "jest": "^29.6.0"
   },
-  "private": true
+  "private": true,
+  "main": "index.js"
 }

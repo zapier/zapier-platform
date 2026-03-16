@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 18.2.3
+ * zapier-platform-schema version: 18.3.0
  *  schema-to-ts compiler version: 0.1.0
  */
 import type {
@@ -1703,7 +1703,8 @@ export interface PlainInputField {
     | 'file'
     | 'password'
     | 'copy'
-    | 'code';
+    | 'code'
+    | 'json';
 
   /** If this value is required or not. */
   required?: boolean;
@@ -1744,10 +1745,25 @@ export interface PlainInputField {
   dynamic?: RefResource;
 
   /**
-   * An object of machine keys and human values to populate a static
-   * dropdown.
+   * Specifies which other input fields this field depends on. These
+   * must be filled before this one becomes enabled, and when their
+   * values change, this field's value should be cleared.
    */
-  choices?: FieldChoices;
+  dependsOn?: string[];
+
+  /**
+   * Explicitly links this input field to a resource. Use the resource
+   * key (e.g., "spreadsheet") or dot notation for resource fields
+   * (e.g., "spreadsheet.url"). If not set for dynamic dropdowns, the
+   * resource is derived implicitly from the `dynamic` property.
+   */
+  resource?: string;
+
+  /**
+   * Describes how to populate this dropdown. Can be a static list or
+   * a dynamic object with pagination and search support.
+   */
+  choices?: FieldChoices | FieldDynamicChoices;
 
   /** An example value that is not saved. */
   placeholder?: string;
@@ -1783,6 +1799,12 @@ export interface PlainInputField {
    * organize this field with others.
    */
   group?: Key;
+
+  /**
+   * A JSON Schema object that describes the expected structure of the
+   * JSON value. Only valid when `type` is `json`.
+   */
+  schema?: Record<string, unknown>;
 }
 
 /** Object for visual grouping of input fields. */
@@ -1802,6 +1824,18 @@ export interface InputFieldGroup {
  * format of: `{resource_key}.{foreign_key}(.{human_label_key})`.
  */
 export type RefResource = string;
+
+/**
+ * Describes dynamic dropdowns powered by a perform function or
+ * request.
+ */
+export interface FieldDynamicChoices {
+  /**
+   * A function or request that returns choices for this dynamic
+   * dropdown.
+   */
+  perform: Function | Request;
+}
 
 /** Allows for additional metadata to be stored on the field. */
 export type FieldMeta = Record<string, string | number | boolean>;
