@@ -1,2 +1,7 @@
 # Don't use symlinks in node_modules so we can zip it
 nodeLinker: hoisted
+
+# When building from local code (no args to build.sh), the line below is
+# replaced with an overrides section so core's transitive dependency on
+# zapier-platform-schema resolves from a local tarball instead of npm.
+# OVERRIDES_PLACEHOLDER
