@@ -50,6 +50,7 @@ module.exports = makeSchema({
         'password',
         'copy',
         'code',
+        'json',
       ],
     },
     required: {
@@ -97,6 +98,9 @@ module.exports = makeSchema({
 
     // 6. A field with type=integer
     { key: 'abc_int', type: 'integer' },
+
+    // 7. A field with type=json
+    { key: 'abc_json', type: 'json' },
   ],
   antiExamples: [
     {
