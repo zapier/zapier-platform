@@ -169,10 +169,10 @@ fi
 # Get legacy-scripting-runner version
 if [ "$2" == "" ]; then
     pushd $LEGACY_DIR > /dev/null
-    LEGACY_VERSION="$(node -p "require('./package.json').version")"
+    LSR_VERSION="$(node -p "require('./package.json').version")"
     popd > /dev/null
 else
-    LEGACY_VERSION=$2
+    LSR_VERSION=$2
 fi
 
 TARGET_FILE="$BUILD_DIR/$CORE_VERSION.zip"
@@ -203,7 +203,7 @@ if [ "$1" == "" ]; then
     popd > /dev/null
 
     if [ "$2" == "" ]; then
-        echo "> legacy-scripting-runner from local, version $LEGACY_VERSION"
+        echo "> legacy-scripting-runner from local, version $LSR_VERSION"
 
         pushd $LEGACY_DIR > /dev/null
         pnpm pack --out "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
@@ -212,16 +212,16 @@ if [ "$1" == "" ]; then
         # Replace core and legacy-scripting-runner versions in package.json
         update_deps "$BOILERPLATE_DIR/package.json" "./$CORE_PACK_FILENAME" "./$LEGACY_PACK_FILENAME"
     else
-        echo "> legacy-scripting-runner from npm, version $LEGACY_VERSION"
+        echo "> legacy-scripting-runner from npm, version $LSR_VERSION"
 
         # Replace core and legacy-scripting-runner versions in package.json
-        update_deps "$BOILERPLATE_DIR/package.json" "./$CORE_PACK_FILENAME" $LEGACY_VERSION
+        update_deps "$BOILERPLATE_DIR/package.json" "./$CORE_PACK_FILENAME" $LSR_VERSION
     fi
 else
     echo "> core from from npm, version $CORE_VERSION"
 
     if [ "$2" == "" ]; then
-        echo "> legacy-scripting-runner from local, version $LEGACY_VERSION"
+        echo "> legacy-scripting-runner from local, version $LSR_VERSION"
 
         pushd $LEGACY_DIR > /dev/null
         pnpm pack --out "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
@@ -230,10 +230,10 @@ else
         # Replace core and legacy-scripting-runner versions in package.json
         update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION "./$LEGACY_PACK_FILENAME"
     else
-        echo "> legacy-scripting-runner from npm, version: $LEGACY_VERSION"
+        echo "> legacy-scripting-runner from npm, version: $LSR_VERSION"
 
         # Replace core and legacy-scripting-runner versions in package.json
-        update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION $LEGACY_VERSION
+        update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION $LSR_VERSION
     fi
 fi
 
@@ -254,7 +254,7 @@ popd > /dev/null
 # Monkey patch boilerplate package.json so zapier-platform-core and
 # zapier-platform-legacy-scripting-runner have version numbers specified instead
 # of local file path
-update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION $LEGACY_VERSION
+update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION $LSR_VERSION
 
 pushd $BOILERPLATE_DIR > /dev/null
 
@@ -272,5 +272,5 @@ echo -e "\nDone! Here's your output zip file (size should be 4-6 MB normally):"
 ls -hl $TARGET_FILE
 
 check_size $TARGET_FILE
-inspect_build $TARGET_FILE $CORE_VERSION $LEGACY_VERSION
+inspect_build $TARGET_FILE $CORE_VERSION $LSR_VERSION
 test_build $TARGET_FILE
