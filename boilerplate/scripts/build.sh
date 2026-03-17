@@ -36,16 +36,16 @@ set -eo pipefail
 update_deps() {
     package_json=$1
     core_version=$2
-    legacy_version=$3
+    lsr_version=$3
 
     cmd_for_core="s|\"zapier-platform-core\": \"[^\"]*\""
     cmd_for_core+="|\"zapier-platform-core\": \"$core_version\"|g"
 
-    cmd_for_legacy="s|\"zapier-platform-legacy-scripting-runner\": \"[^\"]*\""
-    cmd_for_legacy+="|\"zapier-platform-legacy-scripting-runner\": \"$legacy_version\"|g"
+    cmd_for_lsr="s|\"zapier-platform-legacy-scripting-runner\": \"[^\"]*\""
+    cmd_for_lsr+="|\"zapier-platform-legacy-scripting-runner\": \"$lsr_version\"|g"
 
     sed -i.bak "$cmd_for_core" "$package_json"
-    sed -i.bak "$cmd_for_legacy" "$package_json"
+    sed -i.bak "$cmd_for_lsr" "$package_json"
 
     rm -f "$package_json.bak"
 }
@@ -53,8 +53,8 @@ update_deps() {
 inspect_build() {
     local zip_file=$1
     local expected_core=$2
-    local expected_schema=$2
-    local expected_legacy=$3
+    local expected_schema=$3
+    local expected_lsr=$4
 
     temp_dir="`dirname $zip_file`/_temp"
     unzip -q $zip_file -d $temp_dir
@@ -69,8 +69,8 @@ inspect_build() {
     expected=$(jq -n \
         --arg core "$expected_core" \
         --arg schema "$expected_schema" \
-        --arg legacy "$expected_legacy" \
-        '{"zapier-platform-core": $core, "zapier-platform-schema": $schema, "zapier-platform-legacy-scripting-runner": $legacy}')
+        --arg lsr "$expected_lsr" \
+        '{"zapier-platform-core": $core, "zapier-platform-schema": $schema, "zapier-platform-legacy-scripting-runner": $lsr}')
 
     if [ "$actual" == "$expected" ]; then
         echo "All dependency versions match ✅"
@@ -122,7 +122,7 @@ popd > /dev/null
 REPO_DIR=$(dirname $(dirname $SCRIPT_DIR))
 CORE_DIR="$REPO_DIR/packages/core"
 SCHEMA_DIR="$REPO_DIR/packages/schema"
-LEGACY_DIR="$REPO_DIR/packages/legacy-scripting-runner"
+LSR_DIR="$REPO_DIR/packages/legacy-scripting-runner"
 BOILERPLATE_DIR="$REPO_DIR/boilerplate"
 
 BUILD_DIR="$BOILERPLATE_DIR/build"
@@ -166,9 +166,13 @@ else
     CORE_VERSION=$1
 fi
 
+# core, schema, and cli are always published together, so they should use the same
+# version
+SCHEMA_VERSION=$CORE_VERSION
+
 # Get legacy-scripting-runner version
 if [ "$2" == "" ]; then
-    pushd $LEGACY_DIR > /dev/null
+    pushd $LSR_DIR > /dev/null
     LSR_VERSION="$(node -p "require('./package.json').version")"
     popd > /dev/null
 else
@@ -183,7 +187,7 @@ rm -f $TARGET_FILE
 TIMESTAMP=`date +"%s"`
 CORE_PACK_FILENAME="core-$TIMESTAMP.tgz"
 SCHEMA_PACK_FILENAME="schema-$TIMESTAMP.tgz"
-LEGACY_PACK_FILENAME="legacy-$TIMESTAMP.tgz"
+LSR_PACK_FILENAME="lsr-$TIMESTAMP.tgz"
 
 echo "Building..."
 
@@ -205,12 +209,12 @@ if [ "$1" == "" ]; then
     if [ "$2" == "" ]; then
         echo "> legacy-scripting-runner from local, version $LSR_VERSION"
 
-        pushd $LEGACY_DIR > /dev/null
-        pnpm pack --out "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
+        pushd $LSR_DIR > /dev/null
+        pnpm pack --out "$BOILERPLATE_DIR/$LSR_PACK_FILENAME"
         popd > /dev/null
 
         # Replace core and legacy-scripting-runner versions in package.json
-        update_deps "$BOILERPLATE_DIR/package.json" "./$CORE_PACK_FILENAME" "./$LEGACY_PACK_FILENAME"
+        update_deps "$BOILERPLATE_DIR/package.json" "./$CORE_PACK_FILENAME" "./$LSR_PACK_FILENAME"
     else
         echo "> legacy-scripting-runner from npm, version $LSR_VERSION"
 
@@ -223,12 +227,12 @@ else
     if [ "$2" == "" ]; then
         echo "> legacy-scripting-runner from local, version $LSR_VERSION"
 
-        pushd $LEGACY_DIR > /dev/null
-        pnpm pack --out "$BOILERPLATE_DIR/$LEGACY_PACK_FILENAME"
+        pushd $LSR_DIR > /dev/null
+        pnpm pack --out "$BOILERPLATE_DIR/$LSR_PACK_FILENAME"
         popd > /dev/null
 
         # Replace core and legacy-scripting-runner versions in package.json
-        update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION "./$LEGACY_PACK_FILENAME"
+        update_deps "$BOILERPLATE_DIR/package.json" $CORE_VERSION "./$LSR_PACK_FILENAME"
     else
         echo "> legacy-scripting-runner from npm, version: $LSR_VERSION"
 
@@ -263,7 +267,7 @@ pushd $BOILERPLATE_DIR > /dev/null
 zip -9 -R $TARGET_FILE '*.js' '*.cjs' '*.json'
 
 # Remove generated files
-rm -f zapierwrapper.js definition.json core-*.tgz schema-*.tgz legacy-*.tgz
+rm -f zapierwrapper.js definition.json core-*.tgz schema-*.tgz lsr-*.tgz
 rm -rf node_modules
 
 popd > /dev/null
@@ -272,5 +276,5 @@ echo -e "\nDone! Here's your output zip file (size should be 4-6 MB normally):"
 ls -hl $TARGET_FILE
 
 check_size $TARGET_FILE
-inspect_build $TARGET_FILE $CORE_VERSION $LSR_VERSION
+inspect_build $TARGET_FILE $CORE_VERSION $SCHEMA_VERSION $LSR_VERSION
 test_build $TARGET_FILE
