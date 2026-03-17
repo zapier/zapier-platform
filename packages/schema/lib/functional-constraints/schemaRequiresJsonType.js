@@ -38,7 +38,7 @@ const schemaRequiresJsonType = (definition, mainSchema) => {
       _.each(definition[actionType], (actionDef) => {
         if (actionDef.operation && actionDef.operation.inputFields) {
           _.each(actionDef.operation.inputFields, (field, index) => {
-            const path = `instance.${actionType}.${actionDef.key}.inputFields[${index}]`;
+            const path = `instance.${actionType}.${actionDef.key}.operation.inputFields[${index}]`;
             errors = errors.concat(checkField(field, path));
           });
         }
