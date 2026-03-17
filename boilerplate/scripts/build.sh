@@ -101,16 +101,17 @@ test_build() {
     unzip -q $1 -d $temp_dir
 
     pushd $temp_dir > /dev/null
-    EXIT_CODE=$(node zapierwrapper.js) || true
+    local rc=0
+    node zapierwrapper.js || rc=$?
     popd > /dev/null
     rm -rf $temp_dir
 
-    if [[ $EXIT_CODE -eq 0 ]]; then
+    if [[ $rc -eq 0 ]]; then
         echo "Entry point can be loaded successfully ✅"
     else
         echo "Entry point failed to load ❌"
-        return 1
     fi
+    return $rc
 }
 
 # Get the absolute path of the directory holding this script file
