@@ -252,7 +252,8 @@
             "file",
             "password",
             "copy",
-            "code"
+            "code",
+            "json"
           ]
         },
         "required": {
@@ -727,7 +728,8 @@
             "file",
             "password",
             "copy",
-            "code"
+            "code",
+            "json"
           ]
         },
         "required": {
@@ -818,6 +820,10 @@
         "group": {
           "description": "References a group key from the operation's inputFieldGroups to organize this field with others.",
           "$ref": "/KeySchema"
+        },
+        "schema": {
+          "description": "A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.",
+          "type": "object"
         }
       },
       "additionalProperties": false

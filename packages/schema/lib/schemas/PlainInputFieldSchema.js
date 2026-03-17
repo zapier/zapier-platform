@@ -93,6 +93,11 @@ module.exports = makeSchema(
           "References a group key from the operation's inputFieldGroups to organize this field with others.",
         $ref: KeySchema.id,
       },
+      schema: {
+        description:
+          'A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.',
+        type: 'object',
+      },
     },
     examples: [
       { key: 'abc' },
@@ -124,6 +129,16 @@ module.exports = makeSchema(
       {
         key: 'email',
         group: 'contact',
+      },
+      {
+        key: 'payload',
+        type: 'json',
+        schema: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+          },
+        },
       },
       {
         key: 'spreadsheet',
@@ -171,7 +186,10 @@ module.exports = makeSchema(
         reason:
           'Invalid value for key: choices (must be either object or array)',
       },
-
+      {
+        example: { key: 'abc', type: 'string', schema: { type: 'object' } },
+        reason: 'schema is only valid when type is json',
+      },
       {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:

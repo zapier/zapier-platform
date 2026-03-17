@@ -1424,7 +1424,7 @@ Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `key` | **yes** | `string` | A unique machine readable key for this value (IE: "fname").
 `label` | no | `string` | A human readable label for this value (IE: "First Name").
-`type` | no | `string` in (`'string'`, `'text'`, `'integer'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`, `'copy'`, `'code'`) | The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
+`type` | no | `string` in (`'string'`, `'text'`, `'integer'`, `'number'`, `'boolean'`, `'datetime'`, `'file'`, `'password'`, `'copy'`, `'code'`, `'json'`) | The type of this value. Use `string` for basic text input, `text` for a large, `<textarea>` style box, and `code` for a `<textarea>` with a fixed-width font. Field type of `file` will accept either a file object or a string. If a URL is provided in the string, Zapier will automatically make a GET for that file. Otherwise, a .txt file will be generated.
 `required` | no | `boolean` | If this value is required or not.
 `default` | no | `string` | A default value that is saved the first time a Zap is created.
 `list` | no | `boolean` | Acts differently when used in inputFields vs. when used in outputFields. In inputFields: Can a user provide multiples of this field? In outputFields: Does this field return an array of items of type `type`?
@@ -1442,6 +1442,7 @@ Key | Required | Type | Description
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 `meta` | no | [/FieldMetaSchema](#fieldmetaschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
 `group` | no | [/KeySchema](#keyschema) | References a group key from the operation's inputFieldGroups to organize this field with others.
+`schema` | no | `object` | A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.
 
 #### Examples
 
@@ -1461,6 +1462,13 @@ Key | Required | Type | Description
   ```
 * `{ key: 'name', group: 'contact' }`
 * `{ key: 'email', group: 'contact' }`
+* ```
+  {
+    key: 'payload',
+    type: 'json',
+    schema: { type: 'object', properties: { name: { type: 'string' } } }
+  }
+  ```
 * `{ key: 'spreadsheet', dependsOn: [ 'folder' ] }`
 * `{ key: 'worksheet', dependsOn: [ 'folder', 'spreadsheet' ] }`
 * `{ key: 'spreadsheet_id', resource: 'spreadsheet', choices: { perform: '$func$0$f$' } }`
@@ -1474,6 +1482,7 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: [ 3 ] }` - _Invalid value for key: choices (if an array, must be of either string or FieldChoiceWithLabelSchema)_
 * `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
 * `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
+* `{ key: 'abc', type: 'string', schema: { type: 'object' } }` - _schema is only valid when type is json_
 * `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of PlainInputFieldSchema)_
 
 -----
