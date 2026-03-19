@@ -1483,6 +1483,7 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
 * `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
 * `{ key: 'abc', type: 'string', schema: { type: 'object' } }` - _schema is only valid when type is json_
+* `{ key: 'abc', type: 'json', schema: { type: 'foobar' } }` - _schema must contain a valid JSON Schema (invalid type)_
 * `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of PlainInputFieldSchema)_
 
 -----

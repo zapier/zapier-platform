@@ -191,6 +191,14 @@ module.exports = makeSchema(
         reason: 'schema is only valid when type is json',
       },
       {
+        example: {
+          key: 'abc',
+          type: 'json',
+          schema: { type: 'foobar' }, // TODO is this really invalid
+        },
+        reason: 'schema must contain a valid JSON Schema (invalid type)',
+      },
+      {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:
           'Invalid value for key: children (must be array of PlainInputFieldSchema)',
