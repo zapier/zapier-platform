@@ -18,122 +18,142 @@ const VALID_JSON_SCHEMA_TYPES = [
   'null',
 ];
 
+// JSON Schema meta-schema (Draft 4 subset) used to validate user-provided
+// schemas via jsonschema.Validator instead of hand-rolled recursive checks.
+const JSON_SCHEMA_META_SCHEMA = {
+  id: '/JsonSchemaMetaSchema',
+  type: 'object',
+  properties: {
+    type: {
+      anyOf: [
+        { type: 'string', enum: VALID_JSON_SCHEMA_TYPES },
+        {
+          type: 'array',
+          items: { type: 'string', enum: VALID_JSON_SCHEMA_TYPES },
+          minItems: 1,
+          uniqueItems: true,
+        },
+      ],
+    },
+    properties: {
+      type: 'object',
+      additionalProperties: { $ref: '/JsonSchemaMetaSchema' },
+    },
+    items: {
+      anyOf: [
+        { $ref: '/JsonSchemaMetaSchema' },
+        {
+          type: 'array',
+          items: { $ref: '/JsonSchemaMetaSchema' },
+          minItems: 1,
+        },
+      ],
+    },
+    required: {
+      type: 'array',
+      items: { type: 'string' },
+    },
+    additionalProperties: {
+      anyOf: [{ type: 'boolean' }, { $ref: '/JsonSchemaMetaSchema' }],
+    },
+    allOf: {
+      type: 'array',
+      items: { $ref: '/JsonSchemaMetaSchema' },
+      minItems: 1,
+    },
+    anyOf: {
+      type: 'array',
+      items: { $ref: '/JsonSchemaMetaSchema' },
+      minItems: 1,
+    },
+    oneOf: {
+      type: 'array',
+      items: { $ref: '/JsonSchemaMetaSchema' },
+      minItems: 1,
+    },
+    not: { $ref: '/JsonSchemaMetaSchema' },
+    enum: { type: 'array', minItems: 1 },
+  },
+  additionalProperties: true,
+};
+
+// Reusable validator instance with the meta-schema pre-loaded.
+const metaValidator = new jsonschema.Validator();
+metaValidator.addSchema(JSON_SCHEMA_META_SCHEMA, JSON_SCHEMA_META_SCHEMA.id);
+
 /**
- * Recursively validates that an object is a structurally valid JSON Schema.
+ * Translates a jsonschema ValidationError from meta-schema validation
+ * into human-readable error message(s).
+ * @returns {string[]}
+ */
+const formatMetaSchemaError = (error, rootPath) => {
+  const relativePath = error.property.replace(/^instance\.?/, '');
+  const fullPath = relativePath ? `${rootPath}.${relativePath}` : rootPath;
+
+  // "type" field: invalid JSON Schema type value
+  if (/\.type$/.test(error.property) || error.property === 'instance.type') {
+    if (error.name === 'anyOf') {
+      const value = error.instance;
+      if (typeof value === 'string') {
+        return [
+          `${fullPath}: invalid type "${value}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`,
+        ];
+      }
+      if (Array.isArray(value)) {
+        const messages = [];
+        value.forEach((t, i) => {
+          if (typeof t !== 'string' || !VALID_JSON_SCHEMA_TYPES.includes(t)) {
+            messages.push(
+              `${fullPath}[${i}]: invalid type "${t}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`,
+            );
+          }
+        });
+        return messages.length > 0
+          ? messages
+          : [`${fullPath}: must be a string or array of strings`];
+      }
+      return [`${fullPath}: must be a string or array of strings`];
+    }
+  }
+
+  // Non-object where a JSON Schema object is expected
+  if (error.name === 'type' && _.isEqual(error.argument, ['object'])) {
+    return [`${fullPath}: must be a valid JSON Schema object`];
+  }
+
+  // Non-array where an array is expected (required, enum, allOf, etc.)
+  if (error.name === 'type' && _.isEqual(error.argument, ['array'])) {
+    return [`${fullPath}: must be an array`];
+  }
+
+  // anyOf failure for fields expecting a schema (items, additionalProperties)
+  if (error.name === 'anyOf') {
+    const value = error.instance;
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      return [`${fullPath}: must be a valid JSON Schema object`];
+    }
+    return [`${fullPath}: must be a valid JSON Schema`];
+  }
+
+  // Default fallback
+  return [`${fullPath}: ${error.message}`];
+};
+
+/**
+ * Validates that an object is a structurally valid JSON Schema using the
+ * jsonschema library against a meta-schema.
  * Returns an array of error message strings.
  */
-const collectSchemaErrors = (schema, path) => {
-  const errors = [];
-
+const collectSchemaErrors = (schema, rootPath) => {
   if (typeof schema !== 'object' || schema === null || Array.isArray(schema)) {
-    errors.push(`${path}: must be a valid JSON Schema object`);
-    return errors;
+    return [`${rootPath}: must be a valid JSON Schema object`];
   }
 
-  // Validate "type"
-  if ('type' in schema) {
-    if (typeof schema.type === 'string') {
-      if (!VALID_JSON_SCHEMA_TYPES.includes(schema.type)) {
-        errors.push(
-          `${path}.type: invalid type "${schema.type}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`,
-        );
-      }
-    } else if (Array.isArray(schema.type)) {
-      schema.type.forEach((t, i) => {
-        if (typeof t !== 'string' || !VALID_JSON_SCHEMA_TYPES.includes(t)) {
-          errors.push(
-            `${path}.type[${i}]: invalid type "${t}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`,
-          );
-        }
-      });
-    } else {
-      errors.push(`${path}.type: must be a string or array of strings`);
-    }
-  }
-
-  // Validate "properties"
-  if ('properties' in schema) {
-    if (
-      typeof schema.properties !== 'object' ||
-      schema.properties === null ||
-      Array.isArray(schema.properties)
-    ) {
-      errors.push(`${path}.properties: must be an object`);
-    } else {
-      Object.keys(schema.properties).forEach((key) => {
-        errors.push(
-          ...collectSchemaErrors(
-            schema.properties[key],
-            `${path}.properties.${key}`,
-          ),
-        );
-      });
-    }
-  }
-
-  // Validate "items"
-  if ('items' in schema) {
-    if (Array.isArray(schema.items)) {
-      schema.items.forEach((item, i) => {
-        errors.push(...collectSchemaErrors(item, `${path}.items[${i}]`));
-      });
-    } else {
-      errors.push(...collectSchemaErrors(schema.items, `${path}.items`));
-    }
-  }
-
-  // Validate "required"
-  if ('required' in schema) {
-    if (!Array.isArray(schema.required)) {
-      errors.push(`${path}.required: must be an array`);
-    } else {
-      schema.required.forEach((r, i) => {
-        if (typeof r !== 'string') {
-          errors.push(`${path}.required[${i}]: must be a string`);
-        }
-      });
-    }
-  }
-
-  // Validate "additionalProperties"
-  if ('additionalProperties' in schema) {
-    if (typeof schema.additionalProperties !== 'boolean') {
-      errors.push(
-        ...collectSchemaErrors(
-          schema.additionalProperties,
-          `${path}.additionalProperties`,
-        ),
-      );
-    }
-  }
-
-  // Validate "allOf", "anyOf", "oneOf"
-  ['allOf', 'anyOf', 'oneOf'].forEach((keyword) => {
-    if (keyword in schema) {
-      if (!Array.isArray(schema[keyword])) {
-        errors.push(`${path}.${keyword}: must be an array`);
-      } else {
-        schema[keyword].forEach((subSchema, i) => {
-          errors.push(
-            ...collectSchemaErrors(subSchema, `${path}.${keyword}[${i}]`),
-          );
-        });
-      }
-    }
+  const result = metaValidator.validate(schema, JSON_SCHEMA_META_SCHEMA);
+  const errors = [];
+  result.errors.forEach((error) => {
+    errors.push(...formatMetaSchemaError(error, rootPath));
   });
-
-  // Validate "not"
-  if ('not' in schema) {
-    errors.push(...collectSchemaErrors(schema.not, `${path}.not`));
-  }
-
-  // Validate "enum"
-  if ('enum' in schema) {
-    if (!Array.isArray(schema.enum)) {
-      errors.push(`${path}.enum: must be an array`);
-    }
-  }
-
   return errors;
 };
 
