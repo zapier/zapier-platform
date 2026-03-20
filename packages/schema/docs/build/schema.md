@@ -1305,27 +1305,13 @@ An array or collection of input fields.
 
 ## /JsonSchemaSchema
 
-A JSON Schema (Draft 4 subset) that describes the expected structure of a JSON value.
+A JSON Schema object that describes the expected structure of a JSON value. Validated against the official JSON Schema Draft 4 meta-schema via the schemaRequiresJsonType functional constraint.
 
 #### Details
 
 * **Type** - `object`
 * [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@18.3.0/packages/schema/lib/schemas/JsonSchemaSchema.js)
 
-#### Properties
-
-Key | Required | Type | Description
---- | -------- | ---- | -----------
-`type` | no | anyOf(`string` in (`'object'`, `'array'`, `'string'`, `'number'`, `'integer'`, `'boolean'`, `'null'`), `array`[`string` in (`'object'`, `'array'`, `'string'`, `'number'`, `'integer'`, `'boolean'`, `'null'`)]) | The JSON Schema type or array of types.
-`properties` | no | `object` | An object mapping property names to their JSON Schemas.
-`items` | no | anyOf([/JsonSchemaSchema](#jsonschemaschema), `array`[[/JsonSchemaSchema](#jsonschemaschema)]) | Schema for array items. Can be a single schema or an array of schemas.
-`required` | no | `array`[`string`] | An array of required property names.
-`additionalProperties` | no | anyOf(`boolean`, [/JsonSchemaSchema](#jsonschemaschema)) | Whether additional properties are allowed, or a schema they must match.
-`allOf` | no | `array`[[/JsonSchemaSchema](#jsonschemaschema)] | An array of schemas that the value must match all of.
-`anyOf` | no | `array`[[/JsonSchemaSchema](#jsonschemaschema)] | An array of schemas that the value must match at least one of.
-`oneOf` | no | `array`[[/JsonSchemaSchema](#jsonschemaschema)] | An array of schemas that the value must match exactly one of.
-`not` | no | [/JsonSchemaSchema](#jsonschemaschema) | A schema that the value must not match.
-`enum` | no | `array` | An array of allowed values.
 
 #### Examples
 
@@ -1353,9 +1339,7 @@ Key | Required | Type | Description
 
 #### Anti-Examples
 
-* `{ type: 'foobar' }` - _Invalid JSON Schema type value_
-* `{ type: 'object', required: 'name' }` - _required must be an array_
-* `{ type: 'string', enum: 'not-an-array' }` - _enum must be an array_
+* `[ 'not', 'an', 'object' ]` - _JSON Schema must be an object, not an array_
 
 -----
 

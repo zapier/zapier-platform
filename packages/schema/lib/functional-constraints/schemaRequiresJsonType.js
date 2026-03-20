@@ -8,9 +8,93 @@ const PLAIN_INPUT_FIELD_SCHEMA_ID = '/PlainInputFieldSchema';
 const actionTypes = ['triggers', 'searches', 'creates', 'bulkReads'];
 const resourceMethods = ['get', 'list', 'hook', 'search', 'create'];
 
-const checkField = (field, path) => {
+// Load official JSON Schema Draft 4 meta-schema
+const draft4MetaSchema = require('jsonschema/schema/draft-04/schema.json');
+
+const metaValidator = new jsonschema.Validator();
+
+const VALID_JSON_SCHEMA_TYPES = [
+  'object',
+  'array',
+  'string',
+  'number',
+  'integer',
+  'boolean',
+  'null',
+];
+
+// Translates jsonschema ValidationError from meta-schema validation
+// into a human-readable error message.
+const formatMetaSchemaError = (error, rootPath) => {
+  const relativePath = error.property.replace(/^instance\.?/, '');
+  const fullPath = relativePath ? `${rootPath}.${relativePath}` : rootPath;
+
+  // "type" field: invalid JSON Schema type value
+  if (/\.type$/.test(error.property) || error.property === 'instance.type') {
+    if (error.name === 'anyOf') {
+      const value = error.instance;
+      if (typeof value === 'string') {
+        return `${fullPath}: invalid type "${value}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`;
+      }
+      if (Array.isArray(value)) {
+        const invalid = value.filter(
+          (t) => typeof t !== 'string' || !VALID_JSON_SCHEMA_TYPES.includes(t),
+        );
+        if (invalid.length > 0) {
+          return invalid
+            .map(
+              (t) =>
+                `${fullPath}: invalid type "${t}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`,
+            )
+            .join('; ');
+        }
+        return `${fullPath}: must be a string or array of strings`;
+      }
+      return `${fullPath}: must be a string or array of strings`;
+    }
+  }
+
+  // Non-object where a JSON Schema object is expected
+  if (error.name === 'type' && _.isEqual(error.argument, ['object'])) {
+    return `${fullPath}: must be a valid JSON Schema object`;
+  }
+
+  // Non-array where an array is expected (required, enum, allOf, etc.)
+  if (error.name === 'type' && _.isEqual(error.argument, ['array'])) {
+    const fieldName = fullPath.split('.').pop();
+    return `${fieldName}: must be an array`;
+  }
+
+  // anyOf failure for fields expecting a schema or specific structure
+  if (error.name === 'anyOf') {
+    const value = error.instance;
+    if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+      return `${fullPath}: must be a valid JSON Schema object`;
+    }
+    return `${fullPath}: must be a valid JSON Schema`;
+  }
+
+  // Default fallback
+  return `${fullPath}: ${error.message}`;
+};
+
+// Validates that an object is a structurally valid JSON schema
+// using the Draft 4 meta-schema via jsonschema library.
+// Returns an array of error message strings
+const collectSchemaErrors = (schema, rootPath) => {
+  if (typeof schema !== 'object' || schema === null || Array.isArray(schema)) {
+    return [`${rootPath}: must be a valid JSON Schema object`];
+  }
+
+  const result = metaValidator.validate(schema, draft4MetaSchema);
+  return result.errors.map((error) => formatMetaSchemaError(error, rootPath));
+};
+
+const checkSchemaField = (field, path) => {
+  const errors = [];
+
   if (_.has(field, 'schema') && field.type !== 'json') {
-    return [
+    errors.push(
       new jsonschema.ValidationError(
         'must have `type` set to `json` when `schema` is provided.',
         field,
@@ -19,10 +103,26 @@ const checkField = (field, path) => {
         'invalidSchema',
         'schema',
       ),
-    ];
+    );
   }
 
-  return [];
+  if (_.has(field, 'schema') && field.type === 'json') {
+    const schemaErrors = collectSchemaErrors(field.schema, 'schema');
+    schemaErrors.forEach((message) => {
+      errors.push(
+        new jsonschema.ValidationError(
+          `has an invalid JSON Schema in \`schema\`: ${message}`,
+          field,
+          '/PlainInputFieldSchema',
+          path,
+          'invalidJsonSchema',
+          'schema',
+        ),
+      );
+    });
+  }
+
+  return errors;
 };
 
 const schemaRequiresJsonType = (definition, mainSchema) => {
@@ -30,7 +130,7 @@ const schemaRequiresJsonType = (definition, mainSchema) => {
 
   // Handle individual field validation (for auto-tests of examples/antiExamples)
   if (mainSchema.id === PLAIN_INPUT_FIELD_SCHEMA_ID) {
-    errors = errors.concat(checkField(definition, 'instance'));
+    errors = errors.concat(checkSchemaField(definition, 'instance'));
   }
 
   // Handle full app definition validation
@@ -40,7 +140,7 @@ const schemaRequiresJsonType = (definition, mainSchema) => {
         if (actionDef.operation && actionDef.operation.inputFields) {
           _.each(actionDef.operation.inputFields, (field, index) => {
             const path = `instance.${actionType}.${actionDef.key}.operation.inputFields[${index}]`;
-            errors = errors.concat(checkField(field, path));
+            errors = errors.concat(checkSchemaField(field, path));
           });
         }
       });
@@ -58,7 +158,7 @@ const schemaRequiresJsonType = (definition, mainSchema) => {
         ) {
           _.each(resource[method].operation.inputFields, (field, index) => {
             const path = `instance.resources.${resourceKey}.${method}.operation.inputFields[${index}]`;
-            errors = errors.concat(checkField(field, path));
+            errors = errors.concat(checkSchemaField(field, path));
           });
         }
       });

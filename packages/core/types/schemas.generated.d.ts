@@ -1804,7 +1804,7 @@ export interface PlainInputField {
    * A JSON Schema object that describes the expected structure of the
    * JSON value. Only valid when `type` is `json`.
    */
-  schema?: Record<string, unknown>;
+  schema?: JsonSchema;
 }
 
 /** Object for visual grouping of input fields. */
@@ -1839,3 +1839,61 @@ export interface FieldDynamicChoices {
 
 /** Allows for additional metadata to be stored on the field. */
 export type FieldMeta = Record<string, string | number | boolean>;
+
+/**
+ * A JSON Schema (Draft 4 subset) that describes the expected
+ * structure of a JSON value.
+ */
+export interface JsonSchema {
+  /** The JSON Schema type or array of types. */
+  type?:
+    | 'object'
+    | 'array'
+    | 'string'
+    | 'number'
+    | 'integer'
+    | 'boolean'
+    | 'null'
+    | (
+        | 'object'
+        | 'array'
+        | 'string'
+        | 'number'
+        | 'integer'
+        | 'boolean'
+        | 'null'
+      )[];
+
+  /** An object mapping property names to their JSON Schemas. */
+  properties?: Record<string, unknown>;
+
+  /**
+   * Schema for array items. Can be a single schema or an array of
+   * schemas.
+   */
+  items?: JsonSchema | JsonSchema[];
+
+  /** An array of required property names. */
+  required?: string[];
+
+  /**
+   * Whether additional properties are allowed, or a schema they must
+   * match.
+   */
+  additionalProperties?: boolean | JsonSchema;
+
+  /** An array of schemas that the value must match all of. */
+  allOf?: JsonSchema[];
+
+  /** An array of schemas that the value must match at least one of. */
+  anyOf?: JsonSchema[];
+
+  /** An array of schemas that the value must match exactly one of. */
+  oneOf?: JsonSchema[];
+
+  /** A schema that the value must not match. */
+  not?: JsonSchema;
+
+  /** An array of allowed values. */
+  enum?: unknown[];
+}
