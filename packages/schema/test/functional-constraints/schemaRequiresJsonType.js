@@ -274,7 +274,7 @@ describe('schemaRequiresJsonType', () => {
                 {
                   key: 'payload',
                   type: 'json',
-                  schema: { type: 'foobar' },
+                  schema: { type: 'not-a-type' },
                 },
               ],
             },
@@ -285,7 +285,7 @@ describe('schemaRequiresJsonType', () => {
       const results = schema.validateAppDefinition(definition);
       results.errors.should.have.length(1);
       results.errors[0].stack.should.containEql('invalid JSON Schema');
-      results.errors[0].stack.should.containEql('invalid type "foobar"');
+      results.errors[0].stack.should.containEql('invalid type "not-a-type"');
     });
 
     it('should error for an invalid type in a nested property', () => {
