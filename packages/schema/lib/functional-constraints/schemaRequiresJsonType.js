@@ -91,36 +91,43 @@ const collectSchemaErrors = (schema, rootPath) => {
 };
 
 const checkSchemaField = (field, path) => {
-  const errors = [];
+  let errors = [];
 
-  if (_.has(field, 'schema') && field.type !== 'json') {
-    errors.push(
-      new jsonschema.ValidationError(
-        'must have `type` set to `json` when `schema` is provided.',
-        field,
-        '/PlainInputFieldSchema',
-        path,
-        'invalidSchema',
-        'schema',
-      ),
-    );
-  }
-
-  if (_.has(field, 'schema') && field.type === 'json') {
-    const schemaErrors = collectSchemaErrors(field.schema, 'schema');
-    schemaErrors.forEach((message) => {
+  if (_.has(field, 'schema')) {
+    if (field.type !== 'json') {
       errors.push(
         new jsonschema.ValidationError(
-          `has an invalid JSON Schema in \`schema\`: ${message}`,
+          'must have `type` set to `json` when `schema` is provided.',
           field,
           '/PlainInputFieldSchema',
           path,
-          'invalidJsonSchema',
+          'invalidSchema',
           'schema',
         ),
       );
-    });
+    } else {
+      const schemaErrors = collectSchemaErrors(field.schema, 'schema');
+      schemaErrors.forEach((message) => {
+        errors.push(
+          new jsonschema.ValidationError(
+            `has an invalid JSON Schema in \`schema\`: ${message}`,
+            field,
+            '/PlainInputFieldSchema',
+            path,
+            'invalidJsonSchema',
+            'schema',
+          ),
+        );
+      });
+    }
   }
+
+  // Recurse into children (nested PlainInputFieldSchema)
+  (field.children || []).forEach((child, childIndex) => {
+    errors = errors.concat(
+      checkSchemaField(child, `${path}.children[${childIndex}]`),
+    );
+  });
 
   return errors;
 };
