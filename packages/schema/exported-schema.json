@@ -699,6 +699,121 @@
       "minLength": 2,
       "pattern": "^[a-zA-Z]+[a-zA-Z0-9_]*$"
     },
+    "JsonSchemaSchema": {
+      "id": "/JsonSchemaSchema",
+      "description": "A JSON Schema (Draft 4 subset) that describes the expected structure of a JSON value.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The JSON Schema type or array of types.",
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "object",
+                "array",
+                "string",
+                "number",
+                "integer",
+                "boolean",
+                "null"
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "object",
+                  "array",
+                  "string",
+                  "number",
+                  "integer",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          ]
+        },
+        "properties": {
+          "description": "An object mapping property names to their JSON Schemas.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "/JsonSchemaSchema"
+          }
+        },
+        "items": {
+          "description": "Schema for array items. Can be a single schema or an array of schemas.",
+          "anyOf": [
+            {
+              "$ref": "/JsonSchemaSchema"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "/JsonSchemaSchema"
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "required": {
+          "description": "An array of required property names.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": {
+          "description": "Whether additional properties are allowed, or a schema they must match.",
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "/JsonSchemaSchema"
+            }
+          ]
+        },
+        "allOf": {
+          "description": "An array of schemas that the value must match all of.",
+          "type": "array",
+          "items": {
+            "$ref": "/JsonSchemaSchema"
+          },
+          "minItems": 1
+        },
+        "anyOf": {
+          "description": "An array of schemas that the value must match at least one of.",
+          "type": "array",
+          "items": {
+            "$ref": "/JsonSchemaSchema"
+          },
+          "minItems": 1
+        },
+        "oneOf": {
+          "description": "An array of schemas that the value must match exactly one of.",
+          "type": "array",
+          "items": {
+            "$ref": "/JsonSchemaSchema"
+          },
+          "minItems": 1
+        },
+        "not": {
+          "description": "A schema that the value must not match.",
+          "$ref": "/JsonSchemaSchema"
+        },
+        "enum": {
+          "description": "An array of allowed values.",
+          "type": "array",
+          "minItems": 1
+        }
+      },
+      "additionalProperties": true
+    },
     "PlainInputFieldSchema": {
       "description": "Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "id": "/PlainInputFieldSchema",
@@ -823,7 +938,7 @@
         },
         "schema": {
           "description": "A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.",
-          "type": "object"
+          "$ref": "/JsonSchemaSchema"
         }
       },
       "additionalProperties": false

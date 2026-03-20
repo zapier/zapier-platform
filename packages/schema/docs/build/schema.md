@@ -51,6 +51,7 @@ Alternatively, modify the URL directly: https://github.com/zapier/zapier-platfor
 * [/InputFieldGroupSchema](#inputfieldgroupschema)
 * [/InputFieldGroupsSchema](#inputfieldgroupsschema)
 * [/InputFieldsSchema](#inputfieldsschema)
+* [/JsonSchemaSchema](#jsonschemaschema)
 * [/KeySchema](#keyschema)
 * [/LockObjectSchema](#lockobjectschema)
 * [/MiddlewaresSchema](#middlewaresschema)
@@ -1302,6 +1303,62 @@ An array or collection of input fields.
 
 -----
 
+## /JsonSchemaSchema
+
+A JSON Schema (Draft 4 subset) that describes the expected structure of a JSON value.
+
+#### Details
+
+* **Type** - `object`
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@18.3.0/packages/schema/lib/schemas/JsonSchemaSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`type` | no | anyOf(`string` in (`'object'`, `'array'`, `'string'`, `'number'`, `'integer'`, `'boolean'`, `'null'`), `array`[`string` in (`'object'`, `'array'`, `'string'`, `'number'`, `'integer'`, `'boolean'`, `'null'`)]) | The JSON Schema type or array of types.
+`properties` | no | `object` | An object mapping property names to their JSON Schemas.
+`items` | no | anyOf([/JsonSchemaSchema](#jsonschemaschema), `array`[[/JsonSchemaSchema](#jsonschemaschema)]) | Schema for array items. Can be a single schema or an array of schemas.
+`required` | no | `array`[`string`] | An array of required property names.
+`additionalProperties` | no | anyOf(`boolean`, [/JsonSchemaSchema](#jsonschemaschema)) | Whether additional properties are allowed, or a schema they must match.
+`allOf` | no | `array`[[/JsonSchemaSchema](#jsonschemaschema)] | An array of schemas that the value must match all of.
+`anyOf` | no | `array`[[/JsonSchemaSchema](#jsonschemaschema)] | An array of schemas that the value must match at least one of.
+`oneOf` | no | `array`[[/JsonSchemaSchema](#jsonschemaschema)] | An array of schemas that the value must match exactly one of.
+`not` | no | [/JsonSchemaSchema](#jsonschemaschema) | A schema that the value must not match.
+`enum` | no | `array` | An array of allowed values.
+
+#### Examples
+
+* `{ type: 'object', properties: { name: { type: 'string' } } }`
+* `{ type: 'array', items: { type: 'string' } }`
+* `{ type: [ 'string', 'null' ] }`
+* `{}`
+* ```
+  {
+    allOf: [
+      { type: 'object' },
+      { properties: { name: { type: 'string' } } }
+    ],
+    not: { type: 'array' }
+  }
+  ```
+* ```
+  {
+    type: 'object',
+    properties: { name: { type: 'string' }, age: { type: 'integer' } },
+    required: [ 'name' ],
+    additionalProperties: false
+  }
+  ```
+
+#### Anti-Examples
+
+* `{ type: 'foobar' }` - _Invalid JSON Schema type value_
+* `{ type: 'object', required: 'name' }` - _required must be an array_
+* `{ type: 'string', enum: 'not-an-array' }` - _enum must be an array_
+
+-----
+
 ## /KeySchema
 
 A unique identifier for this item.
@@ -1442,7 +1499,7 @@ Key | Required | Type | Description
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 `meta` | no | [/FieldMetaSchema](#fieldmetaschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
 `group` | no | [/KeySchema](#keyschema) | References a group key from the operation's inputFieldGroups to organize this field with others.
-`schema` | no | `object` | A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.
+`schema` | no | [/JsonSchemaSchema](#jsonschemaschema) | A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.
 
 #### Examples
 
