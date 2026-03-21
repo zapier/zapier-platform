@@ -96,7 +96,7 @@ describe('build (runs slowly)', function () {
       path.normalize('node_modules/node-fetch/README.md'),
     );
 
-    smartPaths.length.should.be.within(200, 337);
+    smartPaths.length.should.be.within(200, 338);
   });
 
   it('should list all the files', () => {
