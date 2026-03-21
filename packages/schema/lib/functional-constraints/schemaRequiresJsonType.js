@@ -9,7 +9,7 @@ const actionTypes = ['triggers', 'searches', 'creates', 'bulkReads'];
 const resourceMethods = ['get', 'list', 'hook', 'search', 'create'];
 
 // Load official JSON Schema Draft 4 meta-schema
-const draft4MetaSchema = require('jsonschema/schema/draft-04/schema.json');
+const draft4MetaSchema = require('json-metaschema/draft-04-schema.json');
 
 const metaValidator = new jsonschema.Validator();
 
