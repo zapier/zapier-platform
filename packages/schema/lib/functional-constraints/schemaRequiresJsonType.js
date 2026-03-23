@@ -8,8 +8,17 @@ const PLAIN_INPUT_FIELD_SCHEMA_ID = '/PlainInputFieldSchema';
 const actionTypes = ['triggers', 'searches', 'creates', 'bulkReads'];
 const resourceMethods = ['get', 'list', 'hook', 'search', 'create'];
 
-// Load official JSON Schema Draft 4 meta-schema
+// Load supported JSON Schema meta-schemas
 const draft4MetaSchema = require('json-metaschema/draft-04-schema.json');
+const draft6MetaSchema = require('json-metaschema/draft-06-schema.json');
+const draft7MetaSchema = require('json-metaschema/draft-07-schema.json');
+
+// Map of supported $schema URIs (without trailing #) to their meta-schemas
+const SUPPORTED_META_SCHEMAS = {
+  'http://json-schema.org/draft-04/schema': draft4MetaSchema,
+  'http://json-schema.org/draft-06/schema': draft6MetaSchema,
+  'http://json-schema.org/draft-07/schema': draft7MetaSchema,
+};
 
 const metaValidator = new jsonschema.Validator();
 
@@ -78,16 +87,46 @@ const formatMetaSchemaError = (error, rootPath) => {
   return `${fullPath}: ${error.message}`;
 };
 
+// Resolves which meta-schema to validate against based on the $schema field.
+// Returns { metaSchema, error } where error is a string if $schema is unsupported.
+const resolveMetaSchema = (schema) => {
+  if (!schema.$schema) {
+    return { metaSchema: draft4MetaSchema, error: null };
+  }
+
+  if (typeof schema.$schema !== 'string') {
+    return { metaSchema: null, error: '`$schema` must be a string' };
+  }
+
+  const normalizedUri = schema.$schema.replace(/#$/, '');
+  const metaSchema = SUPPORTED_META_SCHEMAS[normalizedUri];
+
+  if (!metaSchema) {
+    const supported = Object.keys(SUPPORTED_META_SCHEMAS).join(', ');
+    return {
+      metaSchema: null,
+      error: `unsupported JSON Schema version "${schema.$schema}". Supported versions: ${supported}`,
+    };
+  }
+
+  return { metaSchema, error: null };
+};
+
 // Validates that an object is a structurally valid JSON schema
-// using the Draft 4 meta-schema via jsonschema library.
+// using the appropriate meta-schema via jsonschema library.
 // Returns an array of error message strings
 const collectSchemaErrors = (schema, rootPath) => {
   if (typeof schema !== 'object' || schema === null || Array.isArray(schema)) {
     return [`${rootPath}: must be a valid JSON Schema object`];
   }
 
-  const result = metaValidator.validate(schema, draft4MetaSchema);
-  return result.errors.map((error) => formatMetaSchemaError(error, rootPath));
+  const { metaSchema, error } = resolveMetaSchema(schema);
+  if (error) {
+    return [`${rootPath}: ${error}`];
+  }
+
+  const result = metaValidator.validate(schema, metaSchema);
+  return result.errors.map((err) => formatMetaSchemaError(err, rootPath));
 };
 
 const checkSchemaField = (field, path) => {
