@@ -202,7 +202,10 @@
       "oneOf": [
         {
           "type": "object",
-          "minProperties": 1
+          "minProperties": 1,
+          "not": {
+            "required": ["perform"]
+          }
         },
         {
           "type": "array",

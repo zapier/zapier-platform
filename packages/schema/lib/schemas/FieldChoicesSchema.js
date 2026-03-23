@@ -13,6 +13,7 @@ module.exports = makeSchema(
       {
         type: 'object',
         minProperties: 1,
+        not: { required: ['perform'] },
       },
       {
         type: 'array',

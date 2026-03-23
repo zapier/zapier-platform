@@ -301,6 +301,109 @@ describe('app', () => {
   });
 });
 
+describe('dynamic choices disambiguation', () => {
+  const FieldChoicesSchema = require('../lib/schemas/FieldChoicesSchema');
+  const FieldDynamicChoicesSchema = require('../lib/schemas/FieldDynamicChoicesSchema');
+
+  it('FieldChoicesSchema should reject objects with a perform key', () => {
+    const { errors } = FieldChoicesSchema.validate({ perform: '$func$0$f$' });
+    errors.should.not.have.length(0);
+  });
+
+  it('FieldDynamicChoicesSchema should accept objects with a perform key', () => {
+    const { errors } = FieldDynamicChoicesSchema.validate({
+      perform: '$func$0$f$',
+    });
+    errors.should.have.length(0);
+  });
+
+  it('FieldChoicesSchema should still accept static object choices', () => {
+    const { errors } = FieldChoicesSchema.validate({
+      high: 'High',
+      medium: 'Medium',
+      low: 'Low',
+    });
+    errors.should.have.length(0);
+  });
+
+  it('FieldChoicesSchema should still accept static array choices', () => {
+    const { errors } = FieldChoicesSchema.validate(['open', 'closed']);
+    errors.should.have.length(0);
+  });
+
+  it('should validate an app with dynamic choices on an input field', () => {
+    const definition = {
+      version: '1.0.0',
+      platformVersion: '1.0.0',
+      triggers: {
+        newThing: {
+          key: 'newThing',
+          noun: 'Thing',
+          display: {
+            label: 'New Thing',
+            description: 'Triggers on new things.',
+          },
+          operation: {
+            type: 'polling',
+            perform: '$func$0$f$',
+            sample: { id: 1 },
+            inputFields: [
+              {
+                key: 'org',
+                label: 'Organization',
+                helpText: 'Pick one.',
+                type: 'string',
+                required: true,
+                choices: { perform: '$func$1$f$' },
+              },
+            ],
+          },
+        },
+      },
+    };
+    const results = schema.validateAppDefinition(definition);
+    results.errors.should.have.length(0);
+  });
+
+  it('should validate an app with both static and dynamic choices', () => {
+    const definition = {
+      version: '1.0.0',
+      platformVersion: '1.0.0',
+      triggers: {
+        newThing: {
+          key: 'newThing',
+          noun: 'Thing',
+          display: {
+            label: 'New Thing',
+            description: 'Triggers on new things.',
+          },
+          operation: {
+            type: 'polling',
+            perform: '$func$0$f$',
+            sample: { id: 1 },
+            inputFields: [
+              {
+                key: 'org',
+                choices: { perform: '$func$1$f$' },
+              },
+              {
+                key: 'priority',
+                choices: { high: 'High', low: 'Low' },
+              },
+              {
+                key: 'status',
+                choices: ['open', 'closed'],
+              },
+            ],
+          },
+        },
+      },
+    };
+    const results = schema.validateAppDefinition(definition);
+    results.errors.should.have.length(0);
+  });
+});
+
 describe('auto test', () => {
   const _exportedSchema = schema.exportSchema();
   Object.keys(_exportedSchema.schemas).map((id) =>
