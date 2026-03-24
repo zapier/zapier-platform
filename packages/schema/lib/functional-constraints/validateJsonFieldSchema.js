@@ -14,6 +14,7 @@ const draft6MetaSchema = require('json-metaschema/draft-06-schema.json');
 const draft7MetaSchema = require('json-metaschema/draft-07-schema.json');
 
 // Map of supported $schema URIs (without trailing #) to their meta-schemas
+// HTTPS supported but normalized below
 const SUPPORTED_META_SCHEMAS = {
   'http://json-schema.org/draft-04/schema': draft4MetaSchema,
   'http://json-schema.org/draft-06/schema': draft6MetaSchema,
@@ -91,14 +92,16 @@ const formatMetaSchemaError = (error, rootPath) => {
 // Returns { metaSchema, error } where error is a string if $schema is unsupported.
 const resolveMetaSchema = (schema) => {
   if (!schema.$schema) {
-    return { metaSchema: draft4MetaSchema, error: null };
+    return { metaSchema: draft7MetaSchema, error: null };
   }
 
   if (typeof schema.$schema !== 'string') {
     return { metaSchema: null, error: '`$schema` must be a string' };
   }
 
-  const normalizedUri = schema.$schema.replace(/#$/, '');
+  const normalizedUri = schema.$schema
+    .replace(/#$/, '')
+    .replace(/^https:/, 'http:');
   const metaSchema = SUPPORTED_META_SCHEMAS[normalizedUri];
 
   if (!metaSchema) {
