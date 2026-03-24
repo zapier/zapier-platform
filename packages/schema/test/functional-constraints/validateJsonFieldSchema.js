@@ -542,21 +542,33 @@ describe('validateJsonFieldSchema', () => {
       results.errors.should.have.length(0);
     });
 
-    it('should not error for a Draft 7 schema using if/then/else', () => {
+    it('should not error for a Draft 7 schema using exclusiveMinimum as a number', () => {
       const results = schema.validateAppDefinition(
         makeDefinition({
-          $schema: 'http://json-schema.org/draft-07/schema#',
+          $schema: 'https://json-schema.org/draft-07/schema#',
           type: 'object',
           properties: {
-            type: { type: 'string', enum: ['a', 'b'] },
-            value: { type: 'string' },
+            age: { type: 'integer', exclusiveMinimum: 5 },
           },
-          if: { properties: { type: { const: 'a' } } },
-          then: { required: ['value'] },
-          else: {},
         }),
       );
       results.errors.should.have.length(0);
+    });
+
+    it('should error for a Draft 4 schema using exclusiveMinimum as a number', () => {
+      const results = schema.validateAppDefinition(
+        makeDefinition({
+          $schema: 'https://json-schema.org/draft-04/schema#',
+          type: 'object',
+          properties: {
+            age: { type: 'integer', exclusiveMinimum: 5 },
+          },
+        }),
+      );
+      results.errors.should.have.length(2);
+      results.errors[0].stack.should.containEql('exclusiveMinimum');
+      results.errors[0].stack.should.containEql('is not of a type(s) boolean');
+      results.errors[1].stack.should.containEql('minimum not found');
     });
 
     it('should error for unsupported Draft 2019-09 $schema', () => {

@@ -38,10 +38,5 @@ module.exports = makeSchema({
       example: ['not', 'an', 'object'],
       reason: 'JSON Schema must be an object, not an array',
     },
-    {
-      example: { type: 'string' },
-      reason:
-        "JSON Schema type should be an object or an array. If a primitive is needed, use `type: 'string'` on the input field directly",
-    },
   ],
 });
