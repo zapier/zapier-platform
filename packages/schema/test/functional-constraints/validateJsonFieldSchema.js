@@ -30,7 +30,7 @@ const makeDefinition = (fieldSchema) => ({
   },
 });
 
-describe('schemaRequiresJsonType', () => {
+describe('validateJsonFieldSchema', () => {
   describe('standard action validation', () => {
     it('should not error when type is json and schema is provided', () => {
       const results = schema.validateAppDefinition(

@@ -171,7 +171,7 @@ const checkSchemaField = (field, path) => {
   return errors;
 };
 
-const schemaRequiresJsonType = (definition, mainSchema) => {
+const validateJsonFieldSchema = (definition, mainSchema) => {
   let errors = [];
 
   // Handle individual field validation (for auto-tests of examples/antiExamples)
@@ -214,4 +214,4 @@ const schemaRequiresJsonType = (definition, mainSchema) => {
   return errors;
 };
 
-module.exports = schemaRequiresJsonType;
+module.exports = validateJsonFieldSchema;

@@ -1305,7 +1305,7 @@ An array or collection of input fields.
 
 ## /JsonSchemaSchema
 
-A JSON Schema object that describes the expected structure of a JSON value. Validated against JSON Schema Draft 4, 6, or 7 meta-schema (based on the `$schema` field, defaulting to Draft 4) via the schemaRequiresJsonType functional constraint.
+A JSON Schema object that describes the expected structure of a JSON value. Validated against JSON Schema Draft 4, 6, or 7 meta-schema (based on the `$schema` field, defaulting to Draft 4) via the validateJsonFieldSchema functional constraint.
 
 #### Details
 
