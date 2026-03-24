@@ -65,7 +65,12 @@ const formatMetaSchemaError = (error, rootPath) => {
   }
 
   // Non-object where a JSON Schema object is expected
-  if (error.name === 'type' && _.isEqual(error.argument, ['object'])) {
+  // Draft 7 allows boolean schemas, so argument may be ['object', 'boolean']
+  if (
+    error.name === 'type' &&
+    Array.isArray(error.argument) &&
+    error.argument.includes('object')
+  ) {
     return `${fullPath}: must be a valid JSON Schema object`;
   }
 
@@ -148,6 +153,29 @@ const checkSchemaField = (field, path) => {
         ),
       );
     } else {
+      // Root schema type must be object or array, not primitives
+      const rootType = field.schema.type;
+      if (rootType !== undefined) {
+        const types = Array.isArray(rootType) ? rootType : [rootType];
+        const invalidTypes = types.filter(
+          (t) => t !== 'object' && t !== 'array',
+        );
+        if (invalidTypes.length > 0) {
+          errors.push(
+            new jsonschema.ValidationError(
+              `has an invalid JSON Schema in \`schema\`: schema: root \`type\` must be "object" or "array", got ${invalidTypes.map((t) => `"${t}"`).join(', ')}`,
+              field,
+              '/PlainInputFieldSchema',
+              path,
+              'invalidJsonSchema',
+              'schema',
+            ),
+          );
+          // Skip meta-schema validation if root type is invalid
+          return errors;
+        }
+      }
+
       const schemaErrors = collectSchemaErrors(field.schema, 'schema');
       schemaErrors.forEach((message) => {
         errors.push(

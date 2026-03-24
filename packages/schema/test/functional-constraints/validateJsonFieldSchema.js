@@ -134,10 +134,10 @@ describe('validateJsonFieldSchema', () => {
       results.errors.should.have.length(0);
     });
 
-    it('should not error for a schema with type as an array', () => {
+    it('should not error for a schema with type as an array of object and array', () => {
       const results = schema.validateAppDefinition(
         makeDefinition({
-          type: ['string', 'null'],
+          type: ['object', 'array'],
         }),
       );
       results.errors.should.have.length(0);
@@ -158,15 +158,6 @@ describe('validateJsonFieldSchema', () => {
         }),
       );
       results.errors.should.have.length(0);
-    });
-
-    it('should error for an invalid type value', () => {
-      const results = schema.validateAppDefinition(
-        makeDefinition({ type: 'not-a-type' }),
-      );
-      results.errors.should.have.length(1);
-      results.errors[0].stack.should.containEql('invalid JSON Schema');
-      results.errors[0].stack.should.containEql('invalid type "not-a-type"');
     });
 
     it('should error for an invalid type in a nested property', () => {
@@ -211,8 +202,11 @@ describe('validateJsonFieldSchema', () => {
     it('should report multiple errors for multiple invalid fields', () => {
       const results = schema.validateAppDefinition(
         makeDefinition({
-          type: 'badtype',
+          type: 'object',
           required: 'not-array',
+          properties: {
+            name: { type: 'not-a-type' },
+          },
         }),
       );
       results.errors.should.have.length(2);
@@ -231,10 +225,30 @@ describe('validateJsonFieldSchema', () => {
       );
     });
 
+    it('should error when root schema type is a primitive string', () => {
+      const results = schema.validateAppDefinition(
+        makeDefinition({ type: 'string' }),
+      );
+      results.errors.should.have.length(1);
+      results.errors[0].stack.should.containEql(
+        'root `type` must be "object" or "array"',
+      );
+    });
+
+    it('should error when root schema type is an array of primitives', () => {
+      const results = schema.validateAppDefinition(
+        makeDefinition({ type: ['string', 'null'] }),
+      );
+      results.errors.should.have.length(1);
+      results.errors[0].stack.should.containEql(
+        'root `type` must be "object" or "array"',
+      );
+    });
+
     it('should error for invalid enum value', () => {
       const results = schema.validateAppDefinition(
         makeDefinition({
-          type: 'string',
+          type: 'object',
           enum: 'not-an-array',
         }),
       );
@@ -272,7 +286,9 @@ describe('validateJsonFieldSchema', () => {
 
       const results = schema.validateAppDefinition(definition);
       results.errors.should.have.length(1);
-      results.errors[0].stack.should.containEql('invalid type "badtype"');
+      results.errors[0].stack.should.containEql(
+        'root `type` must be "object" or "array"',
+      );
     });
   });
 
@@ -352,7 +368,9 @@ describe('validateJsonFieldSchema', () => {
 
       const results = schema.validateAppDefinition(definition);
       results.errors.should.have.length(1);
-      results.errors[0].stack.should.containEql('invalid type "badtype"');
+      results.errors[0].stack.should.containEql(
+        'root `type` must be "object" or "array"',
+      );
     });
 
     it('should error for schema without type json in a child field', () => {
@@ -470,7 +488,7 @@ describe('validateJsonFieldSchema', () => {
   });
 
   describe('$schema draft version support', () => {
-    it('should not error for a schema with no $schema (defaults to Draft 4)', () => {
+    it('should not error for a schema with no $schema (defaults to Draft 7)', () => {
       const results = schema.validateAppDefinition(
         makeDefinition({
           type: 'object',
@@ -480,7 +498,7 @@ describe('validateJsonFieldSchema', () => {
       results.errors.should.have.length(0);
     });
 
-    it('should not error for a schema with explicit Draft 4 $schema', () => {
+    it('should not error for a schema with Draft 4 $schema', () => {
       const results = schema.validateAppDefinition(
         makeDefinition({
           $schema: 'http://json-schema.org/draft-04/schema#',

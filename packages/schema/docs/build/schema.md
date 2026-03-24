@@ -1317,7 +1317,6 @@ A JSON Schema object that describes the expected structure of a JSON value. Vali
 
 * `{ type: 'object', properties: { name: { type: 'string' } } }`
 * `{ type: 'array', items: { type: 'string' } }`
-* `{ type: [ 'string', 'null' ] }`
 * `{}`
 * ```
   {
@@ -1347,6 +1346,7 @@ A JSON Schema object that describes the expected structure of a JSON value. Vali
 #### Anti-Examples
 
 * `[ 'not', 'an', 'object' ]` - _JSON Schema must be an object, not an array_
+* `{ type: 'string' }` - _JSON Schema type should be an object or an array. If a primitive is needed, use `type: 'string'` on the input field directly_
 
 -----
 
