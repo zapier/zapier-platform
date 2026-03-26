@@ -23,19 +23,18 @@ const SUPPORTED_META_SCHEMAS = {
 
 const metaValidator = new jsonschema.Validator();
 
-const VALID_JSON_SCHEMA_TYPES = [
-  'object',
-  'array',
-  'string',
-  'number',
-  'integer',
-  'boolean',
-  'null',
-];
-
 // Translates jsonschema ValidationError from meta-schema validation
 // into a human-readable error message.
 const formatMetaSchemaError = (error, rootPath) => {
+  const ALLOWED_TYPE_NAMES = [
+    'object',
+    'array',
+    'string',
+    'number',
+    'integer',
+    'boolean',
+    'null',
+  ];
   const relativePath = error.property.replace(/^instance\.?/, '');
   const fullPath = relativePath ? `${rootPath}.${relativePath}` : rootPath;
 
@@ -44,17 +43,17 @@ const formatMetaSchemaError = (error, rootPath) => {
     if (error.name === 'anyOf') {
       const value = error.instance;
       if (typeof value === 'string') {
-        return `${fullPath}: invalid type "${value}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`;
+        return `${fullPath}: invalid type "${value}". Must be one of: ${ALLOWED_TYPE_NAMES.join(', ')}`;
       }
       if (Array.isArray(value)) {
         const invalid = value.filter(
-          (t) => typeof t !== 'string' || !VALID_JSON_SCHEMA_TYPES.includes(t),
+          (t) => typeof t !== 'string' || !ALLOWED_TYPE_NAMES.includes(t),
         );
         if (invalid.length > 0) {
           return invalid
             .map(
               (t) =>
-                `${fullPath}: invalid type "${t}". Must be one of: ${VALID_JSON_SCHEMA_TYPES.join(', ')}`,
+                `${fullPath}: invalid type "${t}". Must be one of: ${ALLOWED_TYPE_NAMES.join(', ')}`,
             )
             .join('; ');
         }
