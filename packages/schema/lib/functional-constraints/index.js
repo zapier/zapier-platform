@@ -23,7 +23,7 @@ const checks = [
   require('./pollingThrottle'),
   require('./AuthFieldisSafe'),
   require('./inputFieldGroupsConstraints'),
-  require('./schemaRequiresJsonType'),
+  require('./validateJsonFieldSchema'),
 ];
 
 const runFunctionalConstraints = (definition, mainSchema) => {

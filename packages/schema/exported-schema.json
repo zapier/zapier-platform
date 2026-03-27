@@ -702,6 +702,12 @@
       "minLength": 2,
       "pattern": "^[a-zA-Z]+[a-zA-Z0-9_]*$"
     },
+    "JsonSchemaSchema": {
+      "id": "/JsonSchemaSchema",
+      "description": "A JSON Schema object that describes the expected structure of a JSON value. Validated against JSON Schema Draft 4, 6, or 7 meta-schema (based on the `$schema` field, defaulting to Draft 7) via the validateJsonFieldSchema functional constraint.",
+      "type": "object",
+      "additionalProperties": true
+    },
     "PlainInputFieldSchema": {
       "description": "Field schema specialized for input fields. In addition to the requirements below, the following keys are mutually exclusive:\n\n* `children` & `list`\n* `children` & `dict`\n* `children` & `type`\n* `children` & `placeholder`\n* `children` & `helpText`\n* `children` & `default`\n* `dict` & `list`\n* `dynamic` & `dict`\n* `dynamic` & `choices`",
       "id": "/PlainInputFieldSchema",
@@ -826,7 +832,7 @@
         },
         "schema": {
           "description": "A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.",
-          "type": "object"
+          "$ref": "/JsonSchemaSchema"
         }
       },
       "additionalProperties": false
