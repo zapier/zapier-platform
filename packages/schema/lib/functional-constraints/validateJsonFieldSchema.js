@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const jsonschema = require('jsonschema');
 
+const JSON_SCHEMA_SCHEMA_ID = '/JsonSchemaSchema';
 const PLAIN_INPUT_FIELD_SCHEMA_ID = '/PlainInputFieldSchema';
 
 const actionTypes = ['triggers', 'searches', 'creates', 'bulkReads'];
@@ -206,7 +207,13 @@ const validateJsonFieldSchema = (definition, mainSchema) => {
 
   // Handle individual field validation (for auto-tests of examples/antiExamples)
   if (mainSchema.id === PLAIN_INPUT_FIELD_SCHEMA_ID) {
-    errors = errors.concat(checkSchemaField(definition, 'instance'));
+    return checkSchemaField(definition, 'instance');
+  } else if (mainSchema.id === JSON_SCHEMA_SCHEMA_ID) {
+    return checkSchemaField(
+      // Make a fake PlainInputField object so checkSchemaField detects a json type and `schema` property
+      { key: 'placeholder_field_key', type: 'json', schema: definition },
+      'instance',
+    );
   }
 
   // Handle full app definition validation
