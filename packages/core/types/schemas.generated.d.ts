@@ -1804,7 +1804,7 @@ export interface PlainInputField {
    * A JSON Schema object that describes the expected structure of the
    * JSON value. Only valid when `type` is `json`.
    */
-  schema?: Record<string, unknown>;
+  schema?: JsonSchema;
 }
 
 /** Object for visual grouping of input fields. */
@@ -1839,3 +1839,11 @@ export interface FieldDynamicChoices {
 
 /** Allows for additional metadata to be stored on the field. */
 export type FieldMeta = Record<string, string | number | boolean>;
+
+/**
+ * A JSON Schema object that describes the expected structure of a
+ * JSON value. Validated against JSON Schema Draft 4, 6, or 7
+ * meta-schema (based on the `$schema` field, defaulting to Draft 7)
+ * via the validateJsonFieldSchema functional constraint.
+ */
+export type JsonSchema = Record<string, unknown>;

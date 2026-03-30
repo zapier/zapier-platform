@@ -51,6 +51,7 @@ Alternatively, modify the URL directly: https://github.com/zapier/zapier-platfor
 * [/InputFieldGroupSchema](#inputfieldgroupschema)
 * [/InputFieldGroupsSchema](#inputfieldgroupsschema)
 * [/InputFieldsSchema](#inputfieldsschema)
+* [/JsonSchemaSchema](#jsonschemaschema)
 * [/KeySchema](#keyschema)
 * [/LockObjectSchema](#lockobjectschema)
 * [/MiddlewaresSchema](#middlewaresschema)
@@ -1302,6 +1303,53 @@ An array or collection of input fields.
 
 -----
 
+## /JsonSchemaSchema
+
+A JSON Schema object that describes the expected structure of a JSON value. Validated against JSON Schema Draft 4, 6, or 7 meta-schema (based on the `$schema` field, defaulting to Draft 7) via the validateJsonFieldSchema functional constraint.
+
+#### Details
+
+* **Type** - `object`
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@18.3.0/packages/schema/lib/schemas/JsonSchemaSchema.js)
+
+
+#### Examples
+
+* `{ type: 'object', properties: { name: { type: 'string' } } }`
+* `{ type: 'array', items: { type: 'string' } }`
+* `{}`
+* ```
+  {
+    allOf: [
+      { type: 'object' },
+      { properties: { name: { type: 'string' } } }
+    ],
+    not: { type: 'array' }
+  }
+  ```
+* ```
+  {
+    type: 'object',
+    properties: { name: { type: 'string' }, age: { type: 'integer' } },
+    required: [ 'name' ],
+    additionalProperties: false
+  }
+  ```
+* ```
+  {
+    '$schema': 'http://json-schema.org/draft-07/schema#',
+    type: 'object',
+    properties: { name: { type: 'string' } }
+  }
+  ```
+
+#### Anti-Examples
+
+* `[ 'not', 'an', 'object' ]` - _JSON Schema must be an object, not an array_
+* `{ type: 'string' }` - _JSON Schema type should be an object or an array. If a primitive is needed, use `type: 'string'` on the input field directly_
+
+-----
+
 ## /KeySchema
 
 A unique identifier for this item.
@@ -1442,7 +1490,7 @@ Key | Required | Type | Description
 `inputFormat` | no | `string` | Useful when you expect the input to be part of a longer string. Put "{{input}}" in place of the user's input (IE: "https://{{input}}.yourdomain.com").
 `meta` | no | [/FieldMetaSchema](#fieldmetaschema) | Allows for additional metadata to be stored on the field. Supports simple key-values only (no sub-objects or arrays).
 `group` | no | [/KeySchema](#keyschema) | References a group key from the operation's inputFieldGroups to organize this field with others.
-`schema` | no | `object` | A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.
+`schema` | no | [/JsonSchemaSchema](#jsonschemaschema) | A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.
 
 #### Examples
 
@@ -1483,6 +1531,7 @@ Key | Required | Type | Description
 * `{ key: 'abc', choices: [ { label: 'Red', value: '#f00' } ] }` - _Invalid value for key: choices (if an array of FieldChoiceWithLabelSchema, must provide key `sample`)_
 * `{ key: 'abc', choices: 'mobile' }` - _Invalid value for key: choices (must be either object or array)_
 * `{ key: 'abc', type: 'string', schema: { type: 'object' } }` - _schema is only valid when type is json_
+* `{ key: 'abc', type: 'json', schema: { type: 'foobar' } }` - _schema must contain a valid JSON Schema (invalid type)_
 * `{ key: 'abc', children: [ '$func$2$f$' ] }` - _Invalid value for key: children (must be array of PlainInputFieldSchema)_
 
 -----

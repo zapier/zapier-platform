@@ -7,6 +7,7 @@ const FieldDynamicChoicesSchema = require('./FieldDynamicChoicesSchema');
 const PlainFieldSchema = require('./PlainFieldSchema');
 const FieldMetaSchema = require('./FieldMetaSchema');
 const KeySchema = require('./KeySchema');
+const JsonSchemaSchema = require('./JsonSchemaSchema');
 
 module.exports = makeSchema(
   {
@@ -96,7 +97,7 @@ module.exports = makeSchema(
       schema: {
         description:
           'A JSON Schema object that describes the expected structure of the JSON value. Only valid when `type` is `json`.',
-        type: 'object',
+        $ref: JsonSchemaSchema.id,
       },
     },
     examples: [
@@ -191,6 +192,14 @@ module.exports = makeSchema(
         reason: 'schema is only valid when type is json',
       },
       {
+        example: {
+          key: 'abc',
+          type: 'json',
+          schema: { type: 'foobar' },
+        },
+        reason: 'schema must contain a valid JSON Schema (invalid type)',
+      },
+      {
         example: { key: 'abc', children: ['$func$2$f$'] },
         reason:
           'Invalid value for key: children (must be array of PlainInputFieldSchema)',
@@ -205,5 +214,6 @@ module.exports = makeSchema(
     FieldMetaSchema,
     PlainFieldSchema,
     KeySchema,
+    JsonSchemaSchema,
   ],
 );
