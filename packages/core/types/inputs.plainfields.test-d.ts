@@ -1,6 +1,6 @@
 import { expectAssignable, expectType } from 'tsd';
 
-import type { PlainFieldContribution } from './inputs';
+import type { PlainFieldContribution, JsonFieldValue } from './inputs';
 
 //
 // Parent fields (where `children` is set)
@@ -636,3 +636,76 @@ expectAssignable<optionalStringArrayChoicesAutoCompleteUnions>({
   optional_string_array_choices_auto_complete_unions: 'alpha',
 });
 expectAssignable<optionalStringArrayChoicesAutoCompleteUnions>({});
+
+//
+// JSON fields (where `type: 'json'` is set)
+//
+
+// Required json primitive field.
+type primitiveRequiredJsonResult = PlainFieldContribution<{
+  key: 'primitive_required_json';
+  type: 'json';
+  required: true;
+}>;
+expectType<primitiveRequiredJsonResult>(
+  {} as { primitive_required_json: JsonFieldValue },
+);
+expectAssignable<primitiveRequiredJsonResult>({
+  primitive_required_json: { name: 'test' },
+});
+expectAssignable<primitiveRequiredJsonResult>({
+  primitive_required_json: ['a', 'b'],
+});
+
+// Optional json primitive field.
+type primitiveOptionalJsonResult = PlainFieldContribution<{
+  key: 'primitive_optional_json';
+  type: 'json';
+}>;
+expectAssignable<primitiveOptionalJsonResult>({
+  primitive_optional_json: { nested: { deep: true } },
+});
+expectAssignable<primitiveOptionalJsonResult>({
+  primitive_optional_json: [1, 2, 3],
+});
+expectAssignable<primitiveOptionalJsonResult>({
+  primitive_optional_json: undefined,
+});
+expectAssignable<primitiveOptionalJsonResult>({});
+
+// Required json list field.
+type jsonListRequiredResult = PlainFieldContribution<{
+  key: 'list_required_json';
+  type: 'json';
+  required: true;
+  list: true;
+}>;
+expectType<jsonListRequiredResult>(
+  {} as { list_required_json: JsonFieldValue[] },
+);
+expectAssignable<jsonListRequiredResult>({
+  list_required_json: [{ a: 1 }, { b: 2 }],
+});
+
+// Json field as a child of a parent field.
+type jsonChildResult = PlainFieldContribution<{
+  key: 'parent_with_json';
+  children: [
+    { key: 'json_child'; type: 'json'; required: true },
+    { key: 'string_child'; type: 'string'; required: true },
+  ];
+}>;
+expectAssignable<jsonChildResult>({
+  json_child: { key: 'value' },
+  string_child: 'hello',
+});
+expectType<jsonChildResult>(
+  {} as {
+    json_child: JsonFieldValue;
+    string_child: string;
+    parent_with_json?: {
+      json_child: JsonFieldValue;
+      string_child: string;
+    }[];
+  },
+);

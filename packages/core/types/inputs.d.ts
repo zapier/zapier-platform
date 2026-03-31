@@ -103,6 +103,26 @@ type Merge<T extends object[]> = T extends [infer F, ...infer R]
 // MAIN BITS
 // =========
 
+/**
+ * Any value that is valid in JSON, including primitives. Used for
+ * nested values inside a json field's object or array.
+ */
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+/**
+ * The root-level type of a `json` input field. Per the platform's
+ * functional constraint, a json field's root schema.type must be
+ * "object" or "array" — bare primitives are not allowed at the top
+ * level. Nested values inside can be any JsonValue.
+ */
+export type JsonFieldValue = JsonValue[] | { [key: string]: JsonValue };
+
 type InputDataConstraint = Record<string, unknown>;
 type InputDataDefault = Record<string, undefined>;
 
@@ -130,7 +150,9 @@ type FieldResultTypes = {
       ? number
       : $FieldType extends 'boolean'
         ? boolean
-        : never; // Ignore `copy` and any other non-value types
+        : $FieldType extends 'json'
+          ? JsonFieldValue
+          : never; // Ignore `copy` and any other non-value types
 };
 
 /**

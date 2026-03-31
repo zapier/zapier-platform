@@ -9,6 +9,7 @@
 import type {
   InferInputData,
   InputFieldFunctionWithInputs,
+  JsonFieldValue,
   StringHints,
 } from './inputs';
 import { defineInputFields } from '.';
@@ -58,6 +59,7 @@ const typeComboInputs = defineInputFields([
   { key: 'boolean_type', type: 'boolean', required: true },
   { key: 'datetime_type', type: 'datetime', required: true },
   { key: 'file_type', type: 'file', required: true },
+  { key: 'json_type', type: 'json', required: true },
 ]);
 const typeComboResult: InferInputData<typeof typeComboInputs> = {
   string_type: 'a',
@@ -69,6 +71,7 @@ const typeComboResult: InferInputData<typeof typeComboInputs> = {
   boolean_type: true,
   datetime_type: 'datetime',
   file_type: 'file',
+  json_type: { key: 'value' },
 };
 expectType<{
   string_type: string;
@@ -80,6 +83,7 @@ expectType<{
   boolean_type: boolean;
   datetime_type: string;
   file_type: string;
+  json_type: JsonFieldValue;
 }>(typeComboResult);
 
 //
