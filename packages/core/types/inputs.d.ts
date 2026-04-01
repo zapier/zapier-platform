@@ -3,6 +3,7 @@ import type {
   PlainInputField,
 } from './schemas.generated';
 import type { ZObject, Bundle } from './custom';
+import type { FromSchema, JSONSchema } from 'json-schema-to-ts';
 
 // #region UTILITIES
 
@@ -178,7 +179,11 @@ type PrimitiveFieldResultType<$Field extends PlainInputField> = $Field extends {
   type: infer $T extends PlainInputField['type'];
 }
   ? $T extends string
-    ? FieldResultTypes[$T]
+    ? $T extends 'json'
+      ? $Field extends { schema: infer $S extends JSONSchema }
+        ? FromSchema<$S>
+        : JsonFieldValue
+      : FieldResultTypes[$T]
     : string
   : string;
 

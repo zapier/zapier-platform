@@ -87,6 +87,34 @@ expectType<{
 }>(typeComboResult);
 
 //
+// Test json field with schema infers specific type via InferInputData.
+const jsonSchemaInputs = defineInputFields([
+  {
+    key: 'typed_json',
+    type: 'json',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        count: { type: 'number' },
+      },
+      required: ['name'],
+      additionalProperties: false,
+    },
+  },
+  { key: 'plain_json', type: 'json', required: true },
+]);
+const jsonSchemaResult: InferInputData<typeof jsonSchemaInputs> = {
+  typed_json: { name: 'hello' },
+  plain_json: { key: 'value' },
+};
+expectType<{
+  typed_json: { name: string; count?: number };
+  plain_json: JsonFieldValue;
+}>(jsonSchemaResult);
+
+//
 // Test that copy fields are never appear in the bundle.
 const copyComboInputs = defineInputFields([
   { key: 'copy_type', type: 'copy' },

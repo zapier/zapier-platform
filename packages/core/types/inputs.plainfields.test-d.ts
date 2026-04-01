@@ -687,6 +687,69 @@ expectAssignable<jsonListRequiredResult>({
   list_required_json: [{ a: 1 }, { b: 2 }],
 });
 
+// Json field with schema — infers specific type from schema.
+type jsonWithSchemaResult = PlainFieldContribution<{
+  key: 'payload';
+  type: 'json';
+  required: true;
+  schema: {
+    type: 'object';
+    properties: {
+      name: { type: 'string' };
+      age: { type: 'number' };
+    };
+    required: ['name'];
+    additionalProperties: false;
+  };
+}>;
+expectType<jsonWithSchemaResult>(
+  {} as { payload: { name: string; age?: number } },
+);
+
+// Json field with schema, optional.
+type jsonWithSchemaOptionalResult = PlainFieldContribution<{
+  key: 'data';
+  type: 'json';
+  schema: {
+    type: 'object';
+    properties: {
+      items: { type: 'array'; items: { type: 'string' } };
+    };
+  };
+}>;
+expectAssignable<jsonWithSchemaOptionalResult>({
+  data: { items: ['a', 'b'] },
+});
+expectAssignable<jsonWithSchemaOptionalResult>({});
+
+// Json field with schema + list.
+type jsonWithSchemaListResult = PlainFieldContribution<{
+  key: 'payloads';
+  type: 'json';
+  required: true;
+  list: true;
+  schema: {
+    type: 'object';
+    properties: {
+      id: { type: 'number' };
+    };
+    additionalProperties: false;
+  };
+}>;
+expectType<jsonWithSchemaListResult>(
+  {} as { payloads: { id?: number }[] },
+);
+
+// Json field WITHOUT schema still falls back to JsonFieldValue.
+type jsonNoSchemaResult = PlainFieldContribution<{
+  key: 'raw';
+  type: 'json';
+  required: true;
+}>;
+expectType<jsonNoSchemaResult>(
+  {} as { raw: JsonFieldValue },
+);
+
 // Json field as a child of a parent field.
 type jsonChildResult = PlainFieldContribution<{
   key: 'parent_with_json';
