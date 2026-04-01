@@ -1,4 +1,5 @@
 const debug = require('debug')('zapier:invoke');
+const _ = require('lodash');
 
 const { startSpinner, endSpinner } = require('../../../utils/display');
 const { customLogger } = require('./logger');
@@ -71,8 +72,9 @@ const invokeAction = async (command, context) => {
     await promptForFields(command, context, inputFields, invokeAction);
   }
 
-  // Preserve original inputData as inputDataRaw before type resolution
-  const inputDataRaw = { ...context.inputData };
+  // Preserve original inputData as inputDataRaw before type resolution (deep
+  // copy needed because resolveInputDataTypes mutates nested objects in-place)
+  const inputDataRaw = _.cloneDeep(context.inputData);
   let inputData;
   if (context.remote) {
     // Let the remote server resolve input data types

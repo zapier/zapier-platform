@@ -57,7 +57,8 @@ const parseDecimal = (s) => {
     }
   }
   const cleaned = chars.join('').replace(/[.,-]$/, '');
-  return parseFloat(cleaned);
+  const result = parseFloat(cleaned);
+  return isNaN(result) ? 0 : result;
 };
 
 /**
@@ -232,7 +233,14 @@ const resolveInputDataTypes = (inputData, inputFields, timezone) => {
     }
   }
 
-  // TODO: Handle line items (fields with "children")
+  // Handle line items (fields with "children")
+  for (const field of inputFields) {
+    if (field.children && field.children.length && Array.isArray(inputData[field.key])) {
+      for (const item of inputData[field.key]) {
+        resolveInputDataTypes(item, field.children, timezone);
+      }
+    }
+  }
 
   return inputData;
 };

@@ -71,8 +71,41 @@ const getLabelForDynamicDropdown = (obj, preferredKey, fallbackKey) => {
  */
 const getMissingRequiredInputFields = (inputData, inputFields) => {
   return inputFields.filter(
-    (f) => f.required && !f.default && !inputData[f.key],
+    (f) =>
+      f.required &&
+      !f.default &&
+      (inputData[f.key] == null || inputData[f.key] === ''),
   );
+};
+
+/**
+ * Finds required child fields (line items) that are missing values in any row.
+ * @param {Object} inputData - The current input data
+ * @param {Array<Object>} inputFields - Array of field definitions
+ * @returns {Array<Object>} Array of required child fields missing in at least one row
+ */
+const getMissingRequiredChildFields = (inputData, inputFields) => {
+  const missing = [];
+  for (const field of inputFields) {
+    if (!field.children || !field.children.length) {
+      continue;
+    }
+    const items = inputData[field.key];
+    if (!Array.isArray(items)) {
+      continue;
+    }
+    const requiredChildren = field.children.filter(
+      (c) => c.required && c.type !== 'copy' && !c.default,
+    );
+    for (const item of items) {
+      for (const c of requiredChildren) {
+        if (item[c.key] == null || item[c.key] === '') {
+          missing.push(c);
+        }
+      }
+    }
+  }
+  return missing;
 };
 
 /**
@@ -324,7 +357,8 @@ const promptForField = async (command, context, field, invokeAction) => {
     let nextPagingToken = null;
 
     while (
-      !answer ||
+      answer == null ||
+      answer === '' ||
       answer === '__next_page__' ||
       answer === '__prev_page__'
     ) {
@@ -378,8 +412,12 @@ const promptForField = async (command, context, field, invokeAction) => {
     }
     return answer;
   } else if (field.type === 'boolean') {
-    const yes = await command.confirm(message, false, !field.required, true);
-    return yes ? 'yes' : 'no';
+    if (field.required) {
+      const yes = await command.confirm(message, false, false, true);
+      return yes ? 'yes' : 'no';
+    } else {
+      return await command.prompt(message + ' (yes/no)', { useStderr: true });
+    }
   } else {
     return await command.prompt(message, { useStderr: true });
   }
@@ -400,6 +438,7 @@ const promptOrErrorForRequiredInputFields = async (
   inputFields,
   invokeAction,
 ) => {
+  // Check top-level required fields
   const missingFields = getMissingRequiredInputFields(
     context.inputData,
     inputFields,
@@ -418,6 +457,49 @@ const promptOrErrorForRequiredInputFields = async (
         f,
         invokeAction,
       );
+    }
+  }
+
+  // Check required child fields (line items) per row
+  const missingChildFields = getMissingRequiredChildFields(
+    context.inputData,
+    inputFields,
+  );
+  if (missingChildFields.length) {
+    if (context.nonInteractive || context.meta.isFillingDynamicDropdown) {
+      throw new Error(
+        "You're in non-interactive mode, so you must at least specify these required fields with --inputData: \n" +
+          missingChildFields
+            .map((f) => '* ' + formatFieldDisplay(f))
+            .join('\n'),
+      );
+    }
+    // Prompt per row for missing child fields
+    for (const field of inputFields) {
+      if (!field.children || !field.children.length) {
+        continue;
+      }
+      const items = context.inputData[field.key];
+      if (!Array.isArray(items)) {
+        continue;
+      }
+      const requiredChildren = field.children.filter(
+        (c) => c.required && c.type !== 'copy' && !c.default,
+      );
+      for (let i = 0; i < items.length; i++) {
+        for (const c of requiredChildren) {
+          if (items[i][c.key] == null || items[i][c.key] === '') {
+            const label = field.label || field.key;
+            console.error(`\n${label} (row ${i + 1}):`);
+            items[i][c.key] = await promptForField(
+              command,
+              context,
+              c,
+              invokeAction,
+            );
+          }
+        }
+      }
     }
   }
 };
@@ -451,8 +533,22 @@ const promptForInputFieldEdit = async (
       } else {
         name = f.key;
       }
-      if (context.inputData[f.key]) {
-        name += ` [current: "${context.inputData[f.key]}"]`;
+      const currentValue = context.inputData[f.key];
+      if (currentValue != null && currentValue !== '') {
+        if (Array.isArray(currentValue)) {
+          const MAX_LEN = 60;
+          const csv = currentValue
+            .map((item) => `{${Object.values(item).join(',')}}`)
+            .join(', ');
+          const count = `(${currentValue.length} ${currentValue.length === 1 ? 'item' : 'items'})`;
+          if (csv.length <= MAX_LEN) {
+            name += ` [${csv}] ${count}`;
+          } else {
+            name += ` [${csv.slice(0, MAX_LEN)}...] ${count}`;
+          }
+        } else {
+          name += ` [current: "${currentValue}"]`;
+        }
       } else if (f.default) {
         name += ` [default: "${f.default}"]`;
       }
@@ -479,12 +575,143 @@ const promptForInputFieldEdit = async (
     }
 
     const field = inputFields.find((f) => f.key === fieldKey);
-    context.inputData[fieldKey] = await promptForField(
-      command,
-      context,
-      field,
-      invokeAction,
+    if (field.children && field.children.length) {
+      await promptForLineItemEdit(command, context, field, invokeAction);
+    } else {
+      context.inputData[fieldKey] = await promptForField(
+        command,
+        context,
+        field,
+        invokeAction,
+      );
+    }
+  }
+};
+
+/**
+ * Prompts the user to add a new line item row by prompting for each child field.
+ * @param {import('../../ZapierBaseCommand')} command - The command instance
+ * @param {Object} context - The execution context
+ * @param {Object} field - The parent field definition with children
+ * @param {Function} invokeAction - Function to invoke actions
+ * @returns {Promise<Object>} The new row object
+ */
+const promptForNewLineItemRow = async (
+  command,
+  context,
+  field,
+  invokeAction,
+) => {
+  const row = {};
+  for (const child of field.children) {
+    if (child.default) {
+      row[child.key] = child.default;
+    }
+    if (child.required) {
+      row[child.key] = await promptForField(
+        command,
+        context,
+        child,
+        invokeAction,
+      );
+    }
+  }
+  return row;
+};
+
+/**
+ * Sub-menu for editing line item rows: add, edit, remove rows.
+ * @param {import('../../ZapierBaseCommand')} command - The command instance
+ * @param {Object} context - The execution context (inputData will be mutated)
+ * @param {Object} field - The parent field definition with children
+ * @param {Function} invokeAction - Function to invoke actions
+ * @returns {Promise<void>}
+ */
+const promptForLineItemEdit = async (command, context, field, invokeAction) => {
+  if (!Array.isArray(context.inputData[field.key])) {
+    context.inputData[field.key] = [];
+  }
+  const items = context.inputData[field.key];
+  const label = field.label || field.key;
+
+  while (true) {
+    const choices = [
+      { name: '>>> BACK <<<', short: 'BACK', value: '__back__' },
+      { name: '>>> ADD ITEM <<<', value: '__add__' },
+    ];
+    for (let i = 0; i < items.length; i++) {
+      const parts = Object.entries(items[i])
+        .map(([k, v]) => `${k}: ${JSON.stringify(v)}`)
+        .join(', ');
+      choices.push({
+        name: parts ? `[${i}] {${parts}}` : `[${i}] Empty item - select to edit`,
+        value: `__select_${i}`,
+      });
+    }
+
+    const action = await command.promptWithList(
+      `${label} [${items.length} ${items.length === 1 ? 'item' : 'items'}]:`,
+      choices,
+      { useStderr: true },
     );
+
+    if (action === '__back__') {
+      break;
+    } else if (action === '__add__') {
+      const row = await promptForNewLineItemRow(
+        command,
+        context,
+        field,
+        invokeAction,
+      );
+      items.push(row);
+    } else if (action.startsWith('__select_')) {
+      const idx = parseInt(action.slice(9));
+      // Sub-menu loop for editing/deleting the selected item
+      while (true) {
+        const editChoices = [
+          { name: '>>> BACK <<<', short: 'BACK', value: '__back__' },
+        ];
+        for (const child of field.children) {
+          const current = items[idx] && items[idx][child.key];
+          let choiceName;
+          if (child.label) {
+            choiceName = `${child.label} (${child.key})`;
+          } else {
+            choiceName = child.key;
+          }
+          if (current != null) {
+            choiceName += ` [current: "${current}"]`;
+          }
+          editChoices.push({ name: choiceName, value: child.key });
+        }
+        editChoices.push({
+          name: '>>> DELETE ITEM <<<',
+          value: '__delete__',
+        });
+
+        const editAction = await command.promptWithList(
+          'Edit or delete the item?',
+          editChoices,
+          { useStderr: true },
+        );
+
+        if (editAction === '__back__') {
+          break;
+        } else if (editAction === '__delete__') {
+          items.splice(idx, 1);
+          break;
+        } else {
+          const child = field.children.find((c) => c.key === editAction);
+          items[idx][editAction] = await promptForField(
+            command,
+            context,
+            child,
+            invokeAction,
+          );
+        }
+      }
+    }
   }
 };
 

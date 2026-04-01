@@ -37,22 +37,48 @@ const fetchInputFields = async (context) => {
       },
     },
   );
-  return responseData.needs.map((need) => {
-    return {
-      key: need.key,
-      type: FIELD_TYPE_MAP[need.type] || need.type,
-      required: need.required,
-      default: need.default,
-      choices: need.choices,
-      label: need.label,
-      helpText: need.help_text,
-      inputFormat: need.input_format,
-      dynamic: need.prefill,
-      list: need.list,
-      placeholder: need.placeholder,
-      alterDynamicFields: need.alter_dynamic_fields ?? false,
-    };
+  const mapNeed = (need) => ({
+    key: need.key,
+    type: FIELD_TYPE_MAP[need.type] || need.type,
+    required: need.required,
+    default: need.default,
+    choices: need.choices,
+    label: need.label,
+    helpText: need.help_text,
+    inputFormat: need.input_format,
+    dynamic: need.prefill,
+    list: need.list,
+    placeholder: need.placeholder,
+    alterDynamicFields: need.alter_dynamic_fields ?? false,
   });
+
+  // Group child fields (those with parent_key) under their parent
+  const parentKeys = new Set(
+    responseData.needs.filter((n) => n.parent_key).map((n) => n.parent_key),
+  );
+  const fields = [];
+  const childrenByParent = {};
+  for (const need of responseData.needs) {
+    if (need.parent_key) {
+      if (!childrenByParent[need.parent_key]) {
+        childrenByParent[need.parent_key] = [];
+      }
+      childrenByParent[need.parent_key].push(mapNeed(need));
+    } else {
+      fields.push(mapNeed(need));
+    }
+  }
+  // Add parent fields for any parent_key that doesn't have a corresponding
+  // top-level field in the response, then attach children
+  for (const parentKey of parentKeys) {
+    let parent = fields.find((f) => f.key === parentKey);
+    if (!parent) {
+      parent = { key: parentKey };
+      fields.push(parent);
+    }
+    parent.children = childrenByParent[parentKey];
+  }
+  return fields;
 };
 
 const fetchChoices = async (context, inputFieldKey) => {

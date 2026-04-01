@@ -146,10 +146,12 @@ class InvokeCommand extends BaseCommand {
     context.appId = (await getLinkedAppConfig(null, false))?.id;
     context.deployKey = (await readCredentials(false))[AUTH_KEY];
 
+    const hasAuth = Boolean(context.appDefinition.authentication);
+
     if (
       context.authId === '-' ||
       context.authId === '' ||
-      (context.remote && !context.authId)
+      (context.remote && !context.authId && hasAuth)
     ) {
       if (context.nonInteractive) {
         throw new Error(
@@ -157,6 +159,12 @@ class InvokeCommand extends BaseCommand {
         );
       }
       context.authId = (await promptForAuthentication(this)).toString();
+    }
+
+    if (context.remote && !context.authId && !hasAuth) {
+      // The remote invoke API requires authentication_id in the POST body,
+      // but the server accepts 0 for apps without authentication configured.
+      context.authId = '0';
     }
 
     if (context.authId) {
@@ -482,7 +490,6 @@ The \`--debug\` flag will show you the HTTP request logs and any console logs yo
 The following is a non-exhaustive list of current limitations in local and relay mode. We may support them in the future.
 
 - Hook triggers, including REST hook subscribe/unsubscribe
-- Line items
 - Output hydration
 - File upload
 - Function-based connection label
