@@ -28,6 +28,7 @@ class VersionsCommand extends BaseCommand {
         ['Legacy Date', 'legacy_date'],
         ['Deprecation Date', 'deprecation_date'],
         ['Created at', 'date'],
+        ['Updated at', 'last_changed'],
       ],
       emptyMessage:
         'No versions to show. Try adding one with the `zapier push` command',
