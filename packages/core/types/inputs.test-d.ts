@@ -9,6 +9,7 @@
 import type {
   InferInputData,
   InputFieldFunctionWithInputs,
+  JsonFieldValue,
   StringHints,
 } from './inputs';
 import { defineInputFields } from '.';
@@ -58,6 +59,7 @@ const typeComboInputs = defineInputFields([
   { key: 'boolean_type', type: 'boolean', required: true },
   { key: 'datetime_type', type: 'datetime', required: true },
   { key: 'file_type', type: 'file', required: true },
+  { key: 'json_type', type: 'json', required: true },
 ]);
 const typeComboResult: InferInputData<typeof typeComboInputs> = {
   string_type: 'a',
@@ -69,6 +71,7 @@ const typeComboResult: InferInputData<typeof typeComboInputs> = {
   boolean_type: true,
   datetime_type: 'datetime',
   file_type: 'file',
+  json_type: { key: 'value' },
 };
 expectType<{
   string_type: string;
@@ -80,7 +83,36 @@ expectType<{
   boolean_type: boolean;
   datetime_type: string;
   file_type: string;
+  json_type: JsonFieldValue;
 }>(typeComboResult);
+
+//
+// Test json field with schema infers specific type via InferInputData.
+const jsonSchemaInputs = defineInputFields([
+  {
+    key: 'typed_json',
+    type: 'json',
+    required: true,
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        count: { type: 'number' },
+      },
+      required: ['name'],
+      additionalProperties: false,
+    },
+  },
+  { key: 'plain_json', type: 'json', required: true },
+]);
+const jsonSchemaResult: InferInputData<typeof jsonSchemaInputs> = {
+  typed_json: { name: 'hello' },
+  plain_json: { key: 'value' },
+};
+expectType<{
+  typed_json: { name: string; count?: number };
+  plain_json: JsonFieldValue;
+}>(jsonSchemaResult);
 
 //
 // Test that copy fields are never appear in the bundle.
