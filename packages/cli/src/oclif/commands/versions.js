@@ -4,7 +4,7 @@ const { buildFlags } = require('../buildFlags');
 
 const { listVersions } = require('../../utils/api');
 
-class VersionCommand extends BaseCommand {
+class VersionsCommand extends BaseCommand {
   async perform() {
     this.startSpinner('Loading versions');
     const { versions } = await listVersions();
@@ -41,8 +41,8 @@ class VersionCommand extends BaseCommand {
   }
 }
 
-VersionCommand.skipValidInstallCheck = true;
-VersionCommand.flags = buildFlags({
+VersionsCommand.skipValidInstallCheck = true;
+VersionsCommand.flags = buildFlags({
   commandFlags: {
     all: Flags.boolean({
       char: 'a',
@@ -51,6 +51,6 @@ VersionCommand.flags = buildFlags({
   },
   opts: { format: true },
 });
-VersionCommand.description = `List the versions of your integration available for use in Zapier automations.`;
+VersionsCommand.description = `List the versions of your integration available for use in Zapier automations.`;
 
-module.exports = VersionCommand;
+module.exports = VersionsCommand;
