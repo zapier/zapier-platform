@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 18.3.0
+ * zapier-platform-schema version: 18.4.0
  *  schema-to-ts compiler version: 0.1.0
  */
 import type {
@@ -289,7 +289,11 @@ export interface AppFlags {
    * via middleware), [Shorthand
    * requests](https://github.com/zapier/zapier-platform/blob/main/packages/cli/README.md#shorthand-http-requests)
    * _always_ call `throwForStatus()`. `z.request()` calls can also
-   * ignore this flag if they set `skipThrowForStatus` directly
+   * ignore this flag if they set `skipThrowForStatus` directly. It is
+   * important to note that for oauth2 or session auths with
+   * `authRefresh:true`, `401` status codes will throw a
+   * `RefreshAuthError` regardless of `skipThrowForStatus`, and will
+   * need to be handled manually if intervention is required.
    */
   skipThrowForStatus?: boolean;
 
