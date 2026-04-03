@@ -323,6 +323,7 @@ describe('smoke tests - setup will take some time', function () {
       { name: 'session-auth' },
       { name: 'dynamic-dropdown' },
       { name: 'files' },
+      { name: 'line-items' },
       { name: 'minimal', module: 'commonjs' },
       { name: 'minimal', module: 'esm' },
       { name: 'search-or-create' },
@@ -390,6 +391,36 @@ describe('smoke tests - setup will take some time', function () {
             const firstPerson = people[0];
             firstPerson.id.should.eql(1);
             firstPerson.name.should.eql('Luke Skywalker');
+          },
+        },
+      ],
+      'line-items': [
+        {
+          files: [
+            {
+              name: 'order.json',
+              content:
+                '{"name":"Test Order","line_items":[{"product_name":"Pens","quantity":"12","price":"1.50"},{"product_name":"Notebooks","quantity":"3","price":"8.99"}]}',
+            },
+          ],
+          command: [
+            'invoke',
+            'create',
+            'order',
+            '--inputData',
+            '@order.json',
+            '--non-interactive',
+          ],
+          verify: (output) => {
+            const result = JSON.parse(output);
+            const body = JSON.parse(result.data);
+            body.name.should.eql('Test Order');
+            body.line_items.should.have.length(2);
+            body.line_items[0].product_name.should.eql('Pens');
+            body.line_items[0].quantity.should.eql(12);
+            body.line_items[0].price.should.eql(1.5);
+            body.line_items[1].product_name.should.eql('Notebooks');
+            body.line_items[1].quantity.should.eql(3);
           },
         },
       ],

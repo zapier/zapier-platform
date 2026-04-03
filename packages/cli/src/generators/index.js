@@ -217,6 +217,7 @@ const TEMPLATE_ROUTES = {
   'digest-auth': writeForAuthTemplate,
   'dynamic-dropdown': writeForStandaloneTemplate,
   files: writeForStandaloneTemplate,
+  'line-items': writeForStandaloneTemplate,
   minimal: writeForMinimalTemplate,
   'oauth1-trello': writeForAuthTemplate,
   oauth2: writeForAuthTemplate,
@@ -246,12 +247,12 @@ const ProjectGeneratorPromise = createGeneratorClass((Generator) => {
       this.destinationRoot(path.resolve(this.options.path));
 
       const jsFilter = filter(['*.js', '*.json', '*.ts'], { restore: true });
-      this.queueTransformStream([
+      this.queueTransformStream(
         { disabled: true },
         jsFilter,
         prettier({ singleQuote: true }),
         jsFilter.restore,
-      ]);
+      );
     }
 
     async prompting() {
