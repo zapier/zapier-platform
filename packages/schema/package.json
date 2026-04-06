@@ -16,7 +16,7 @@
     "preversion": "git pull && pnpm test && pnpm build",
     "test": "mocha -t 10s --recursive test --exit",
     "smoke-test": "mocha -t 10s --recursive smoke-test --exit",
-    "test:debug": "mocha --recursive --inspect-brk test",
+    "test:debug": "mocha inspect --recursive test",
     "lint": "eslint lib",
     "lint:fix": "eslint --fix lib",
     "coverage": "istanbul cover _mocha -- --recursive",
