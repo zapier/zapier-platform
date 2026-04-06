@@ -72,7 +72,7 @@ inspect_build() {
         --arg lsr "$expected_lsr" \
         '{"zapier-platform-core": $core, "zapier-platform-schema": $schema, "zapier-platform-legacy-scripting-runner": $lsr}')
 
-    if [ "$actual" == "$expected" ]; then
+    if echo "$actual" | jq -e --argjson expected "$expected" '. == $expected' > /dev/null 2>&1; then
         echo "All dependency versions match ✅"
     else
         echo "ERROR: dependency version mismatch ❌"
