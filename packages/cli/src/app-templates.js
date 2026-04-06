@@ -20,6 +20,7 @@ module.exports = [
   // features
   'dynamic-dropdown',
   'files',
+  'line-items',
   'middleware',
   'resource',
   'rest-hooks',
