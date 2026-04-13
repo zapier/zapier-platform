@@ -30,7 +30,7 @@
   "dependencies": {
     "json-metaschema": "1.3.0",
     "jsonschema": "1.5.0",
-    "lodash": "4.17.23"
+    "lodash": "4.18.1"
   },
   "devDependencies": {
     "fs-extra": "^11.3.0",
