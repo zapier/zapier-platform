@@ -6,7 +6,15 @@ const constants = require('../constants');
 const request = require('./request-client-internal');
 const { genId } = require('./data');
 
-const FALLBACK_RPC = process.env.ZAPIER_BASE_ENDPOINT + '/platform/rpc/cli';
+const RPC_HOSTS = {
+  'https://zapier.com': 'https://rpc.zapier.com/cli',
+  'https://zapier-staging.com': 'https://rpc.zapier-staging.com/cli',
+};
+const FALLBACK_RPC =
+  RPC_HOSTS[process.env.ZAPIER_BASE_ENDPOINT] ||
+  (process.env.ZAPIER_BASE_ENDPOINT
+    ? `${process.env.ZAPIER_BASE_ENDPOINT}/platform/rpc/cli`
+    : RPC_HOSTS['https://zapier.com']);
 
 const rpcCacheMock = (zcacheTestObj, method, key, value = null, ttl = null) => {
   if (method === 'zcache_get') {
