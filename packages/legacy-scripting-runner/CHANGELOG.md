@@ -1,3 +1,8 @@
+## 4.0.7
+
+- :hammer: Bump `underscore` from 1.13.7 to 1.13.8 ([#1256](https://github.com/zapier/zapier-platform/pull/1256))
+- :hammer: Bump `lodash` from 4.17.23 to 4.18.1 ([#1274](https://github.com/zapier/zapier-platform/pull/1274))
+
 ## 4.0.6
 
 - :bug: Declare optional peer dependency to fix pnpm strict module resolution ([#1255](https://github.com/zapier/zapier-platform/pull/1255))
