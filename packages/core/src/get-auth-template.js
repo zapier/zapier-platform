@@ -51,16 +51,45 @@ const buildPlaceholderAuthData = (auth) => {
   if (auth.type === 'oauth2') {
     authData.access_token =
       authData.access_token || '{{bundle.authData.access_token}}';
-    authData.refresh_token =
-      authData.refresh_token || '{{bundle.authData.refresh_token}}';
+    if (
+      auth.oauth2Config &&
+      auth.oauth2Config.autoRefresh &&
+      auth.oauth2Config.refreshAccessToken
+    ) {
+      authData.refresh_token =
+        authData.refresh_token || '{{bundle.authData.refresh_token}}';
+    }
   }
-  if (auth.type === 'session') {
-    authData.sessionKey =
-      authData.sessionKey || '{{bundle.authData.sessionKey}}';
-  }
+  // Session auth has no standard fields — all fields are user-declared.
 
   return authData;
 };
+
+// Wrap placeholderAuthData in a Proxy that returns truthy values for any
+// undeclared key accessed by middleware. Used for divergence detection:
+// if middleware branches on undeclared authData fields, the Proxy run will
+// produce a different template than the plain run.
+const buildProxyAuthData = (placeholderAuthData) =>
+  new Proxy(placeholderAuthData, {
+    get(target, prop) {
+      if (prop in target) {
+        return target[prop];
+      }
+      // Symbol properties (e.g. Symbol.toPrimitive) and internal props should pass through
+      if (typeof prop === 'symbol') {
+        return undefined;
+      }
+      return `__undeclared_${prop}__`;
+    },
+    has(target, prop) {
+      // Make `'key' in authData` return true for any string key
+      return typeof prop === 'string' || prop in target;
+    },
+  });
+
+// Check if two templates are structurally equal (same keys and values).
+const templatesEqual = (a, b) =>
+  JSON.stringify(cleanTemplate(a)) === JSON.stringify(cleanTemplate(b));
 
 // Extract headers/params/body from a captured request, stripping defaults.
 const extractTemplate = (req) => {
@@ -91,13 +120,101 @@ const extractTemplate = (req) => {
   return template;
 };
 
+// --- Legacy scripting auth support ---
+// Minimal reimplementation of the legacy scripting runner's beforeRequest
+// middleware, just enough to inject auth fields into headers/params.
+// Adapted from zapier-platform-legacy-scripting-runner/middleware-factory.js.
+
+const renderLegacyTemplate = (templateString, context) => {
+  if (typeof templateString !== 'string') {
+    return templateString;
+  }
+  return templateString.replace(/\{\{([^}]+)\}\}/g, (_, key) => {
+    const trimmed = key.trim();
+    return trimmed in context ? context[trimmed] : '';
+  });
+};
+
+const renderAuthMapping = (authMapping, authData) => {
+  if (!authMapping || Object.keys(authMapping).length === 0) {
+    return authData;
+  }
+  const result = {};
+  for (const [k, v] of Object.entries(authMapping)) {
+    result[k] = renderLegacyTemplate(v, authData);
+  }
+  return result;
+};
+
+const createLegacyBeforeRequest = (app) => {
+  const authType = app.authentication && app.authentication.type;
+  const legacy = app.legacy || {};
+  const authMapping =
+    (legacy.authentication && legacy.authentication.mapping) || {};
+  const placement =
+    (legacy.authentication && legacy.authentication.placement) || 'header';
+
+  return (req, z, bundle) => {
+    const authData = bundle.authData || {};
+    if (!authData || Object.keys(authData).length === 0) {
+      return req;
+    }
+
+    if (authType === 'oauth2') {
+      if (authData.access_token) {
+        if (placement === 'header' || placement === 'both') {
+          req.headers.Authorization =
+            req.headers.Authorization || `Bearer ${authData.access_token}`;
+        }
+        if (placement === 'querystring' || placement === 'both') {
+          req.params = req.params || {};
+          req.params.access_token =
+            req.params.access_token || authData.access_token;
+        }
+      }
+    } else if (authType === 'session' || authType === 'custom') {
+      const rendered = renderAuthMapping(authMapping, authData);
+      if (placement === 'header' || placement === 'both') {
+        const lowerHeaders = {};
+        for (const [k, v] of Object.entries(req.headers)) {
+          lowerHeaders[k.toLowerCase()] = v;
+        }
+        for (const [k, v] of Object.entries(rendered)) {
+          if (!lowerHeaders[k.toLowerCase()]) {
+            req.headers[k] = v;
+          }
+        }
+      }
+      if (placement === 'querystring' || placement === 'both') {
+        req.params = req.params || {};
+        for (const [k, v] of Object.entries(rendered)) {
+          req.params[k] = req.params[k] || v;
+        }
+      }
+    } else if (authType === 'basic' || authType === 'digest') {
+      const username = renderLegacyTemplate(
+        authMapping.username || '',
+        authData,
+      );
+      const password = renderLegacyTemplate(
+        authMapping.password || '',
+        authData,
+      );
+      bundle.authData.username = username;
+      bundle.authData.password = password;
+    }
+
+    return req;
+  };
+};
+
 // Stub z object used for pipeline capture and test function survival.
-const createStubZ = () => ({
+const createStubZ = (compiledApp) => ({
   console: { log: () => {}, error: () => {}, warn: () => {} },
   errors: require('./errors'),
   JSON: { parse: JSON.parse, stringify: JSON.stringify },
   legacyScripting: {
-    beforeRequest: (request) => request,
+    beforeRequest: createLegacyBeforeRequest(compiledApp),
     afterResponse: (response) => response,
     run: () => ({}),
   },
@@ -118,7 +235,7 @@ const runPipelineSurvival = async (
   compiledApp,
   input,
   auth,
-  placeholderAuthData
+  placeholderAuthData,
 ) => {
   const syntheticInput = {
     _zapier: {
@@ -160,7 +277,7 @@ const runPipelineSurvival = async (
     });
   };
 
-  const stubZ = createStubZ();
+  const stubZ = createStubZ(compiledApp);
   const syntheticBundle = {
     authData: placeholderAuthData,
     inputData: {},
@@ -195,7 +312,11 @@ const runPipelineSurvival = async (
 // Run placeholder authData through authentication.test (when it's a function).
 // Stubs z.request AND monkey-patches http/https/fetch to capture outbound requests.
 // Returns { template, requestMade, error? }.
-const runTestFunctionSurvival = async (testFn, placeholderAuthData) => {
+const runTestFunctionSurvival = async (
+  testFn,
+  placeholderAuthData,
+  compiledApp,
+) => {
   let capturedReq = null;
 
   const capture = (req) => {
@@ -205,13 +326,14 @@ const runTestFunctionSurvival = async (testFn, placeholderAuthData) => {
   };
 
   // Stub z.request
-  const stubZ = createStubZ();
+  const stubZ = createStubZ(compiledApp);
   stubZ.request = async (reqOrUrl) => {
     capture(typeof reqOrUrl === 'string' ? { url: reqOrUrl } : reqOrUrl);
     return {
       status: 200,
       headers: {},
       getHeader: () => undefined,
+      throwForStatus: () => {},
       data: {},
       content: '{}',
       json: {},
@@ -238,8 +360,7 @@ const runTestFunctionSurvival = async (testFn, placeholderAuthData) => {
           : null;
 
       if (typeof args[0] === 'string' || args[0] instanceof URL) {
-        const parsed =
-          typeof args[0] === 'string' ? new URL(args[0]) : args[0];
+        const parsed = typeof args[0] === 'string' ? new URL(args[0]) : args[0];
         options =
           typeof args[1] === 'object' && args[1] !== null
             ? { url: parsed.href, ...args[1] }
@@ -359,7 +480,12 @@ const getAuthTemplate = async (compiledApp, input) => {
   if (requestTemplate && Object.keys(requestTemplate).length > 0) {
     const cleaned = cleanTemplate(requestTemplate);
     if (Object.keys(cleaned).length > 0) {
-      return { supported: true, authType, source: 'requestTemplate', template: cleaned };
+      return {
+        supported: true,
+        authType,
+        source: 'requestTemplate',
+        template: cleaned,
+      };
     }
     // requestTemplate exists but has no useful content — fall through to Step 2
   }
@@ -374,7 +500,7 @@ const getAuthTemplate = async (compiledApp, input) => {
       compiledApp,
       input,
       auth,
-      placeholderAuthData
+      placeholderAuthData,
     );
 
     if (error) {
@@ -387,7 +513,27 @@ const getAuthTemplate = async (compiledApp, input) => {
     }
 
     if (hasAuthPlaceholders(template)) {
-      return { supported: true, authType, source: 'beforeRequest', template: cleanTemplate(template) };
+      // Divergence check: run again with Proxy authData that returns truthy
+      // values for undeclared keys. If the template differs, middleware
+      // branches on runtime authData we can't predict.
+      const proxyAuthData = buildProxyAuthData(placeholderAuthData);
+      const { template: proxyTemplate, error: proxyError } =
+        await runPipelineSurvival(compiledApp, input, auth, proxyAuthData);
+
+      if (proxyError || !templatesEqual(template, proxyTemplate)) {
+        return {
+          supported: false,
+          reason: 'middleware_not_static',
+          authType,
+        };
+      }
+
+      return {
+        supported: true,
+        authType,
+        source: 'beforeRequest',
+        template: cleanTemplate(template),
+      };
     }
 
     // --- Step 3b: placeholders did not survive ---
@@ -409,7 +555,12 @@ const getAuthTemplate = async (compiledApp, input) => {
       template.params = { ...auth.test.params };
     }
 
-    return { supported: true, authType, source: 'authentication.test', template: cleanTemplate(template) };
+    return {
+      supported: true,
+      authType,
+      source: 'authentication.test',
+      template: cleanTemplate(template),
+    };
   }
 
   // --- Step 5: authentication.test is a function ---
@@ -417,7 +568,8 @@ const getAuthTemplate = async (compiledApp, input) => {
     const placeholderAuthData = buildPlaceholderAuthData(auth);
     const { template, requestMade, error } = await runTestFunctionSurvival(
       auth.test,
-      placeholderAuthData
+      placeholderAuthData,
+      compiledApp,
     );
 
     if (error && !requestMade) {
@@ -440,7 +592,25 @@ const getAuthTemplate = async (compiledApp, input) => {
     }
 
     if (hasAuthPlaceholders(template)) {
-      return { supported: true, authType, source: 'authentication.test', template: cleanTemplate(template) };
+      // Divergence check: run again with Proxy authData
+      const proxyAuthData = buildProxyAuthData(placeholderAuthData);
+      const { template: proxyTemplate, error: proxyError } =
+        await runTestFunctionSurvival(auth.test, proxyAuthData, compiledApp);
+
+      if (proxyError || !templatesEqual(template, proxyTemplate)) {
+        return {
+          supported: false,
+          reason: 'test_function_not_static',
+          authType,
+        };
+      }
+
+      return {
+        supported: true,
+        authType,
+        source: 'authentication.test',
+        template: cleanTemplate(template),
+      };
     }
 
     return {

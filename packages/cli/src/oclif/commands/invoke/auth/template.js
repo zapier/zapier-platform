@@ -1,4 +1,3 @@
-const { startSpinner, endSpinner } = require('../../../../utils/display');
 const { customLogger } = require('../logger');
 const { localAppCommand } = require('../../../../utils/local');
 
@@ -9,14 +8,12 @@ const { localAppCommand } = require('../../../../utils/local');
  * @returns {Promise<*>} The auth template result
  */
 const templateAuth = async (context) => {
-  startSpinner('Invoking getAuthTemplate');
   const result = await localAppCommand({
     command: 'getAuthTemplate',
     bundle: {},
     customLogger,
     calledFromCliInvoke: true,
   });
-  endSpinner();
   return result;
 };
 
