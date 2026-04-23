@@ -12,6 +12,14 @@ const sanitizeHeaders = require('./http-middlewares/before/sanatize-headers');
 
 const { REPLACE_CURLIES } = require('./constants');
 
+const http = require('http');
+const https = require('https');
+const vm = require('vm');
+const _ = require('lodash');
+const { Readable } = require('stream');
+const { EventEmitter } = require('events');
+const errors = require('./errors');
+
 // --- Helpers ---
 
 const hasAuthPlaceholders = (obj) => {
@@ -23,13 +31,20 @@ const hasAuthPlaceholders = (obj) => {
 // base64). Returns true if the template has placeholders but none of
 // them are bundle.authData, AND the app has declared auth fields that
 // should have survived.
-const hasConsumedAuthFields = (template, auth) => {
-  const s = JSON.stringify(template);
-  const hasAuthData = /\{\{\s*bundle\.authData\./.test(s);
-  const hasProcessEnv = /\{\{\s*process\.env\./.test(s);
-  const hasDeclaredFields =
-    auth && auth.fields && auth.fields.some((f) => f.key);
-  return hasProcessEnv && !hasAuthData && hasDeclaredFields;
+// Build a supported:true result, but check if auth fields were consumed
+// by encoding (e.g., base64). If so, override to supported:false.
+const supportedResult = (authType, source, template, auth) => {
+  if (template && Object.keys(template).length > 0) {
+    const s = JSON.stringify(template);
+    const hasAuthData = /\{\{\s*bundle\.authData\./.test(s);
+    const hasProcessEnv = /\{\{\s*process\.env\./.test(s);
+    const hasDeclaredFields =
+      auth && auth.fields && auth.fields.some((f) => f.key);
+    if (hasProcessEnv && !hasAuthData && hasDeclaredFields) {
+      return { supported: false, reason: 'auth_fields_consumed', authType };
+    }
+  }
+  return { supported: true, authType, source, template };
 };
 
 // Core's normalizeEmptyParamFields strips {{curlies}} from param values
@@ -168,6 +183,41 @@ const buildProxyAuthData = (placeholderAuthData) =>
 // Check if two templates are structurally equal (same keys and values).
 const templatesEqual = (a, b) =>
   JSON.stringify(cleanTemplate(a)) === JSON.stringify(cleanTemplate(b));
+
+// Run fn with process.env proxied to return placeholders for unknown vars.
+const withProxiedEnv = async (fn) => {
+  const origEnv = process.env;
+  process.env = new Proxy(origEnv, {
+    get(target, prop) {
+      if (prop in target) {
+        return target[prop];
+      }
+      if (typeof prop === 'symbol') {
+        return undefined;
+      }
+      return `{{process.env.${prop}}}`;
+    },
+  });
+  try {
+    return await fn();
+  } finally {
+    process.env = origEnv;
+  }
+};
+
+const buildSyntheticInput = (input, placeholderAuthData) => ({
+  _zapier: {
+    ...input._zapier,
+    event: {
+      ...input._zapier.event,
+      bundle: {
+        authData: placeholderAuthData,
+        inputData: {},
+        meta: {},
+      },
+    },
+  },
+});
 
 // Create a String-like object whose comparison methods always return a fixed
 // truthy/falsy result. Used to detect middleware that branches on request.url.
@@ -332,8 +382,7 @@ const loadLegacyZap = (compiledApp) => {
   if (!src) {
     return null;
   }
-  const vm = require('vm');
-  const sandbox = { Zap: {}, _: require('lodash'), z: { JSON }, $: {} };
+  const sandbox = { Zap: {}, _, z: { JSON }, $: {} };
   try {
     vm.runInNewContext(src, sandbox);
   } catch {
@@ -383,12 +432,12 @@ const getLegacyOperationUrl = (compiledApp, typeOf, key) => {
 };
 
 // Stub z object used for pipeline capture and test function survival.
-const createStubZ = (compiledApp) => {
-  const Zap = loadLegacyZap(compiledApp);
+const createStubZ = (compiledApp, cachedZap) => {
+  const Zap = cachedZap !== undefined ? cachedZap : loadLegacyZap(compiledApp);
 
   const stubZ = {
     console: { log: () => {}, error: () => {}, warn: () => {} },
-    errors: require('./errors'),
+    errors,
     JSON: { parse: JSON.parse, stringify: JSON.stringify },
     legacyScripting: {
       beforeRequest: createLegacyBeforeRequest(compiledApp),
@@ -455,26 +504,14 @@ const createStubZ = (compiledApp) => {
 // Run placeholder authData through the beforeRequest middleware pipeline.
 // Captures the prepared request right before it would be sent over HTTP.
 // Returns { template, error? }.
-const runPipelineSurvival = async (
+const runMiddlewareSurvival = async (
   compiledApp,
   input,
   auth,
   placeholderAuthData,
-  { url = 'https://example.com', urlProbe, reqOverrides = {} } = {},
+  { url = 'https://example.com', urlProbe, reqOverrides = {}, cachedZap } = {},
 ) => {
-  const syntheticInput = {
-    _zapier: {
-      ...input._zapier,
-      event: {
-        ...input._zapier.event,
-        bundle: {
-          authData: placeholderAuthData,
-          inputData: {},
-          meta: {},
-        },
-      },
-    },
-  };
+  const syntheticInput = buildSyntheticInput(input, placeholderAuthData);
 
   const httpBefores = [
     createInjectInputMiddleware(syntheticInput),
@@ -512,7 +549,7 @@ const runPipelineSurvival = async (
     });
   };
 
-  const stubZ = createStubZ(compiledApp);
+  const stubZ = createStubZ(compiledApp, cachedZap);
   const syntheticBundle = {
     authData: placeholderAuthData,
     inputData: {},
@@ -524,35 +561,20 @@ const runPipelineSurvival = async (
     extraArgs: [stubZ, syntheticBundle],
   });
 
-  // Proxy process.env so middleware reading env vars (e.g.,
-  // process.env.CLIENT_ID) gets a placeholder instead of undefined.
-  const origEnv = process.env;
-  process.env = new Proxy(origEnv, {
-    get(target, prop) {
-      if (prop in target) {
-        return target[prop];
-      }
-      if (typeof prop === 'symbol') {
-        return undefined;
-      }
-      return `{{process.env.${prop}}}`;
-    },
-  });
-
   try {
-    await client({
-      method: 'GET',
-      headers: {},
-      params: {},
-      ...reqOverrides,
-      url,
-      merge: true,
-      [REPLACE_CURLIES]: true,
-    });
+    await withProxiedEnv(() =>
+      client({
+        method: 'GET',
+        headers: {},
+        params: {},
+        ...reqOverrides,
+        url,
+        merge: true,
+        [REPLACE_CURLIES]: true,
+      }),
+    );
   } catch (err) {
     return { template: {}, error: err.message };
-  } finally {
-    process.env = origEnv;
   }
 
   if (!capturedReq) {
@@ -579,23 +601,8 @@ const runTestFunctionSurvival = async (
     }
   };
 
-  // Build a middleware-aware z.request stub that runs the beforeRequest
-  // pipeline (just like the real z.request does), then captures the
-  // prepared request instead of sending it over HTTP.
   const auth = compiledApp.authentication || {};
-  const syntheticInput = {
-    _zapier: {
-      ...input._zapier,
-      event: {
-        ...input._zapier.event,
-        bundle: {
-          authData: placeholderAuthData,
-          inputData: {},
-          meta: {},
-        },
-      },
-    },
-  };
+  const syntheticInput = buildSyntheticInput(input, placeholderAuthData);
 
   const httpBefores = [
     createInjectInputMiddleware(syntheticInput),
@@ -652,10 +659,6 @@ const runTestFunctionSurvival = async (
     };
   };
 
-  // Monkey-patch http.request, https.request, http.get, https.get
-  const http = require('http');
-  const https = require('https');
-
   const origHttpRequest = http.request;
   const origHttpsRequest = https.request;
   const origHttpGet = http.get;
@@ -691,8 +694,6 @@ const runTestFunctionSurvival = async (
       // Return a no-op request that doesn't actually connect.
       // Use a real Readable stream so libraries that call .pipe() or
       // .setEncoding() (e.g. xmlrpc's SAX deserializer) work correctly.
-      const { Readable } = require('stream');
-      const { EventEmitter } = require('events');
       const fakeReq = new EventEmitter();
       fakeReq.write = () => {};
       fakeReq.end = () => {
@@ -745,22 +746,8 @@ const runTestFunctionSurvival = async (
     meta: {},
   };
 
-  // Proxy process.env so middleware reading env vars gets placeholders.
-  const origEnv = process.env;
-  process.env = new Proxy(origEnv, {
-    get(target, prop) {
-      if (prop in target) {
-        return target[prop];
-      }
-      if (typeof prop === 'symbol') {
-        return undefined;
-      }
-      return `{{process.env.${prop}}}`;
-    },
-  });
-
   try {
-    await testFn(stubZ, bundle);
+    await withProxiedEnv(() => testFn(stubZ, bundle));
   } catch (err) {
     // If a request was captured before the error, use its template.
     // Many test functions crash parsing the stub response (e.g.,
@@ -771,8 +758,6 @@ const runTestFunctionSurvival = async (
     }
     return { template: {}, requestMade: false, error: err.message };
   } finally {
-    // Restore originals
-    process.env = origEnv;
     http.request = origHttpRequest;
     https.request = origHttpsRequest;
     http.get = origHttpGet;
@@ -806,6 +791,10 @@ const getAuthTemplate = async (compiledApp, input) => {
   //   return { supported: false, reason: 'oauth1', authType };
   // }
 
+  const placeholderAuthData = buildPlaceholderAuthData(auth);
+  let beforeRequestTemplate;
+  let beforeRequestFailed = false;
+
   // --- Step 1: requestTemplate ---
   // If the app declares a requestTemplate, that IS the auth template.
   // No need to run middleware — requestTemplate is merged into every request.
@@ -829,12 +818,7 @@ const getAuthTemplate = async (compiledApp, input) => {
         })) ||
       (cleaned.params && Object.keys(cleaned.params).length > 0);
     if (Object.keys(cleaned).length > 0 && hasAuthContent) {
-      return {
-        supported: true,
-        authType,
-        source: 'requestTemplate',
-        template: cleaned,
-      };
+      return supportedResult(authType, 'requestTemplate', cleaned, auth);
     }
     // requestTemplate has no auth content — fall through to Step 2
   }
@@ -844,8 +828,7 @@ const getAuthTemplate = async (compiledApp, input) => {
   // This captures auth injected by middleware (most common pattern).
   const beforeRequest = ensureArray(compiledApp.beforeRequest);
   if (beforeRequest.length > 0) {
-    const placeholderAuthData = buildPlaceholderAuthData(auth);
-    const { template, error } = await runPipelineSurvival(
+    const { template, error } = await runMiddlewareSurvival(
       compiledApp,
       input,
       auth,
@@ -869,7 +852,7 @@ const getAuthTemplate = async (compiledApp, input) => {
         // Divergence check: authData proxy
         const proxyAuthData = buildProxyAuthData(placeholderAuthData);
         const { template: proxyTemplate, error: proxyError } =
-          await runPipelineSurvival(compiledApp, input, auth, proxyAuthData);
+          await runMiddlewareSurvival(compiledApp, input, auth, proxyAuthData);
 
         restoreStrippedParams(proxyTemplate, proxyAuthData);
 
@@ -890,12 +873,24 @@ const getAuthTemplate = async (compiledApp, input) => {
             { template: urlTrueTemplate, error: urlTrueError },
             { template: urlFalseTemplate, error: urlFalseError },
           ] = await Promise.all([
-            runPipelineSurvival(compiledApp, input, auth, placeholderAuthData, {
-              urlProbe: urlProbeTrue,
-            }),
-            runPipelineSurvival(compiledApp, input, auth, placeholderAuthData, {
-              urlProbe: urlProbeFalse,
-            }),
+            runMiddlewareSurvival(
+              compiledApp,
+              input,
+              auth,
+              placeholderAuthData,
+              {
+                urlProbe: urlProbeTrue,
+              },
+            ),
+            runMiddlewareSurvival(
+              compiledApp,
+              input,
+              auth,
+              placeholderAuthData,
+              {
+                urlProbe: urlProbeFalse,
+              },
+            ),
           ]);
 
           if (
@@ -918,7 +913,7 @@ const getAuthTemplate = async (compiledApp, input) => {
             // beforeRequest succeeded. Store the template — if authentication.test
             // produces a superset (e.g., adds per-operation auth headers from
             // legacy scripting hooks), we'll prefer that instead.
-            var beforeRequestTemplate = cleanTemplate(template); // eslint-disable-line no-var
+            beforeRequestTemplate = cleanTemplate(template);
           }
         } // end else (proxy check passed)
       }
@@ -935,7 +930,7 @@ const getAuthTemplate = async (compiledApp, input) => {
 
     // beforeRequest couldn't produce a usable template — remember this so
     // that if authentication.test also fails, we return not-supported.
-    var beforeRequestFailed = !beforeRequestTemplate; // eslint-disable-line no-var
+    beforeRequestFailed = !beforeRequestTemplate;
   }
 
   // --- Step 3: authentication.test is an object (request config) ---
@@ -944,7 +939,7 @@ const getAuthTemplate = async (compiledApp, input) => {
   if (auth.test && typeof auth.test !== 'function') {
     const placeholderAuthData = buildPlaceholderAuthData(auth);
     const testReq = auth.test;
-    const { template, error } = await runPipelineSurvival(
+    const { template, error } = await runMiddlewareSurvival(
       compiledApp,
       input,
       auth,
@@ -982,7 +977,7 @@ const getAuthTemplate = async (compiledApp, input) => {
       // Divergence checks: authData proxy + URL probe
       const proxyAuthData = buildProxyAuthData(placeholderAuthData);
       const { template: proxyTemplate, error: proxyError } =
-        await runPipelineSurvival(compiledApp, input, auth, proxyAuthData, {
+        await runMiddlewareSurvival(compiledApp, input, auth, proxyAuthData, {
           url: testReq.url || 'https://example.com',
           reqOverrides: testReqOverrides,
         });
@@ -1009,11 +1004,11 @@ const getAuthTemplate = async (compiledApp, input) => {
         { template: urlTrueTemplate, error: urlTrueError },
         { template: urlFalseTemplate, error: urlFalseError },
       ] = await Promise.all([
-        runPipelineSurvival(compiledApp, input, auth, placeholderAuthData, {
+        runMiddlewareSurvival(compiledApp, input, auth, placeholderAuthData, {
           urlProbe: urlProbeTrue,
           reqOverrides: testReqOverrides,
         }),
-        runPipelineSurvival(compiledApp, input, auth, placeholderAuthData, {
+        runMiddlewareSurvival(compiledApp, input, auth, placeholderAuthData, {
           urlProbe: urlProbeFalse,
           reqOverrides: testReqOverrides,
         }),
@@ -1036,12 +1031,12 @@ const getAuthTemplate = async (compiledApp, input) => {
         finalTemplate.params = { ...finalTemplate.params, ...testReq.params };
       }
 
-      return {
-        supported: true,
+      return supportedResult(
         authType,
-        source: 'authentication.test',
-        template: cleanTemplate(finalTemplate),
-      };
+        'authentication.test',
+        cleanTemplate(finalTemplate),
+        auth,
+      );
     }
 
     return {
@@ -1053,7 +1048,6 @@ const getAuthTemplate = async (compiledApp, input) => {
 
   // --- Step 4: authentication.test is a function ---
   if (typeof auth.test === 'function') {
-    const placeholderAuthData = buildPlaceholderAuthData(auth);
     const { template, requestMade, error } = await runTestFunctionSurvival(
       auth.test,
       placeholderAuthData,
@@ -1129,31 +1123,29 @@ const getAuthTemplate = async (compiledApp, input) => {
           beforeRequestTemplate &&
           !isSuperset(testTemplate, beforeRequestTemplate)
         ) {
-          return {
-            supported: true,
+          return supportedResult(
             authType,
-            source: 'beforeRequest',
-            template: beforeRequestTemplate,
-          };
+            'beforeRequest',
+            beforeRequestTemplate,
+            auth,
+          );
         }
 
-        return {
-          supported: true,
+        return supportedResult(
           authType,
-          source: 'authentication.test',
-          template: testTemplate,
-        };
+          'authentication.test',
+          testTemplate,
+          auth,
+        );
       }
 
-      // Test function captured a request but no auth placeholders.
-      // Fall back to beforeRequestTemplate if available.
       if (beforeRequestTemplate) {
-        return {
-          supported: true,
+        return supportedResult(
           authType,
-          source: 'beforeRequest',
-          template: beforeRequestTemplate,
-        };
+          'beforeRequest',
+          beforeRequestTemplate,
+          auth,
+        );
       }
 
       return {
@@ -1167,35 +1159,15 @@ const getAuthTemplate = async (compiledApp, input) => {
   // No authentication.test captured a request. Use beforeRequestTemplate
   // if available.
   if (beforeRequestTemplate) {
-    return {
-      supported: true,
+    return supportedResult(
       authType,
-      source: 'beforeRequest',
-      template: beforeRequestTemplate,
-    };
+      'beforeRequest',
+      beforeRequestTemplate,
+      auth,
+    );
   }
 
   return { supported: true, authType, source: 'none', template: {} };
 };
 
-// Wrapper: validate the result before returning. If the template has
-// placeholders but auth fields were consumed by encoding (e.g., base64),
-// override to supported: false.
-const getAuthTemplateValidated = async (compiledApp, input) => {
-  const result = await getAuthTemplate(compiledApp, input);
-  if (
-    result.supported &&
-    result.template &&
-    Object.keys(result.template).length > 0 &&
-    hasConsumedAuthFields(result.template, compiledApp.authentication)
-  ) {
-    return {
-      supported: false,
-      reason: 'auth_fields_consumed',
-      authType: result.authType,
-    };
-  }
-  return result;
-};
-
-module.exports = getAuthTemplateValidated;
+module.exports = getAuthTemplate;
