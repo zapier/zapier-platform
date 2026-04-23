@@ -19,6 +19,19 @@ const hasAuthPlaceholders = (obj) => {
   return /\{\{\s*bundle\.authData\./.test(s) || /\{\{\s*process\.env\./.test(s);
 };
 
+// Check if auth field placeholders were consumed by encoding (e.g.,
+// base64). Returns true if the template has placeholders but none of
+// them are bundle.authData, AND the app has declared auth fields that
+// should have survived.
+const hasConsumedAuthFields = (template, auth) => {
+  const s = JSON.stringify(template);
+  const hasAuthData = /\{\{\s*bundle\.authData\./.test(s);
+  const hasProcessEnv = /\{\{\s*process\.env\./.test(s);
+  const hasDeclaredFields =
+    auth && auth.fields && auth.fields.some((f) => f.key);
+  return hasProcessEnv && !hasAuthData && hasDeclaredFields;
+};
+
 // Core's normalizeEmptyParamFields strips {{curlies}} from param values
 // (designed for production where curlies are already resolved). In our
 // placeholder survival test, this destroys placeholders. This function
@@ -1165,4 +1178,24 @@ const getAuthTemplate = async (compiledApp, input) => {
   return { supported: true, authType, source: 'none', template: {} };
 };
 
-module.exports = getAuthTemplate;
+// Wrapper: validate the result before returning. If the template has
+// placeholders but auth fields were consumed by encoding (e.g., base64),
+// override to supported: false.
+const getAuthTemplateValidated = async (compiledApp, input) => {
+  const result = await getAuthTemplate(compiledApp, input);
+  if (
+    result.supported &&
+    result.template &&
+    Object.keys(result.template).length > 0 &&
+    hasConsumedAuthFields(result.template, compiledApp.authentication)
+  ) {
+    return {
+      supported: false,
+      reason: 'auth_fields_consumed',
+      authType: result.authType,
+    };
+  }
+  return result;
+};
+
+module.exports = getAuthTemplateValidated;
