@@ -288,8 +288,8 @@ importers:
   packages/legacy-scripting-runner:
     dependencies:
       '@xmldom/xmldom':
-        specifier: 0.8.11
-        version: 0.8.11
+        specifier: 0.8.13
+        version: 0.8.13
       async:
         specifier: 2.6.4
         version: 2.6.4
@@ -2035,6 +2035,10 @@ packages:
     resolution: {integrity: sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==}
     engines: {node: '>=10.0.0'}
     deprecated: this version has critical issues, please update to the latest version
+
+  '@xmldom/xmldom@0.8.13':
+    resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
+    engines: {node: '>=10.0.0'}
 
   '@yeoman/adapter@1.6.0':
     resolution: {integrity: sha512-oJw/i6zUDdfsT5VOPuANDDEWs5NhlMq5+rmyZIVdgBTXalbCw6nUfJQOblO2Fnq+Ov6CxlyzDBTWQvL5cEjA+g==}
@@ -8610,6 +8614,8 @@ snapshots:
       tinyrainbow: 2.0.0
 
   '@xmldom/xmldom@0.8.11': {}
+
+  '@xmldom/xmldom@0.8.13': {}
 
   '@yeoman/adapter@1.6.0(@types/node@22.19.1)':
     dependencies:
