@@ -15,7 +15,7 @@ const { REPLACE_CURLIES } = require('./constants');
 const http = require('http');
 const https = require('https');
 const vm = require('vm');
-const _ = require('lodash');
+const lodash = require('lodash');
 const { Readable } = require('stream');
 const { EventEmitter } = require('events');
 const errors = require('./errors');
@@ -382,7 +382,7 @@ const loadLegacyZap = (compiledApp) => {
   if (!src) {
     return null;
   }
-  const sandbox = { Zap: {}, _, z: { JSON }, $: {} };
+  const sandbox = { Zap: {}, _: lodash, z: { JSON }, $: {} };
   try {
     vm.runInNewContext(src, sandbox);
   } catch {
