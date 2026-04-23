@@ -1,7 +1,5 @@
 'use strict';
 
-const _ = require('lodash');
-
 const applyMiddleware = require('./middleware');
 const ensureArray = require('./tools/ensure-array');
 
@@ -49,9 +47,8 @@ const renderFromTest = (test, authData) => {
     if (typeof value !== 'string') {
       return value;
     }
-    return value.replace(
-      /\{\{bundle\.authData\.(\w+)\}\}/g,
-      (match, key) => (authData[key] !== undefined ? authData[key] : match)
+    return value.replace(/\{\{bundle\.authData\.(\w+)\}\}/g, (match, key) =>
+      authData[key] !== undefined ? authData[key] : match,
     );
   };
 
