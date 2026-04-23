@@ -16,7 +16,7 @@ const { REPLACE_CURLIES } = require('./constants');
 
 const hasAuthPlaceholders = (obj) => {
   const s = JSON.stringify(obj);
-  return /\{\{bundle\.authData\./.test(s) || /\{\{process\.env\./.test(s);
+  return /\{\{\s*bundle\.authData\./.test(s) || /\{\{\s*process\.env\./.test(s);
 };
 
 // Core's normalizeEmptyParamFields strips {{curlies}} from param values
@@ -799,7 +799,23 @@ const getAuthTemplate = async (compiledApp, input) => {
   const requestTemplate = compiledApp.requestTemplate;
   if (requestTemplate && Object.keys(requestTemplate).length > 0) {
     const cleaned = cleanTemplate(requestTemplate);
-    if (Object.keys(cleaned).length > 0) {
+    // Return requestTemplate if it has auth placeholders or auth-like
+    // header names. Skip if it only has non-auth headers (Accept,
+    // Content-Type, User-Agent) — auth may come from beforeRequest.
+    const hasAuthContent =
+      hasAuthPlaceholders(cleaned) ||
+      (cleaned.headers &&
+        Object.keys(cleaned.headers).some((k) => {
+          const lower = k.toLowerCase();
+          return (
+            lower === 'authorization' ||
+            lower.includes('api-key') ||
+            lower.includes('apikey') ||
+            lower.includes('token')
+          );
+        })) ||
+      (cleaned.params && Object.keys(cleaned.params).length > 0);
+    if (Object.keys(cleaned).length > 0 && hasAuthContent) {
       return {
         supported: true,
         authType,
@@ -807,7 +823,7 @@ const getAuthTemplate = async (compiledApp, input) => {
         template: cleaned,
       };
     }
-    // requestTemplate exists but has no useful content — fall through to Step 2
+    // requestTemplate has no auth content — fall through to Step 2
   }
 
   // --- Step 2: beforeRequest middleware ---
