@@ -1,4 +1,3 @@
-const { startSpinner, endSpinner } = require('../../../../utils/display');
 const { customLogger } = require('../logger');
 const { localAppCommand } = require('../../../../utils/local');
 
@@ -8,7 +7,6 @@ const { localAppCommand } = require('../../../../utils/local');
  * @returns {Promise<*>} The rendered auth template result
  */
 const renderAuth = async (context) => {
-  startSpinner('Invoking renderAuthTemplate');
   try {
     const result = await localAppCommand({
       command: 'renderAuthTemplate',
@@ -18,10 +16,8 @@ const renderAuth = async (context) => {
       customLogger,
       calledFromCliInvoke: true,
     });
-    endSpinner();
     return result;
   } catch (err) {
-    endSpinner();
     if (err.message && err.message.includes('Unexpected command')) {
       throw new Error(
         '`auth render` requires latest version of zapier-platform-core. ' +

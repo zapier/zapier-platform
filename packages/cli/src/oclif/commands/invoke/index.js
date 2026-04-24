@@ -185,6 +185,18 @@ class InvokeCommand extends BaseCommand {
       }
     }
 
+    // Reject unsupported flags early for template/render commands
+    if (
+      context.actionType === 'auth' &&
+      (context.actionKey === 'template' || context.actionKey === 'render') &&
+      (context.remote || context.authId)
+    ) {
+      throw new Error(
+        `The \`--remote\` and \`--authentication-id\` flags are not applicable to \`auth ${context.actionKey}\`. ` +
+          'This command runs locally using auth data from the .env file.',
+      );
+    }
+
     if (context.authId && !context.remote) {
       // Fill authData with curlies if we're in relay mode
       const authFields = context.appDefinition.authentication.fields || [];
@@ -263,23 +275,11 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'template': {
-          if (context.remote || context.authId) {
-            throw new Error(
-              'The `--remote` and `--authentication-id` flags are not applicable to `auth template`. ' +
-                'This command analyzes the app definition locally and does not require credentials.',
-            );
-          }
           const output = await templateAuth(context);
           console.log(JSON.stringify(output, null, 2));
           return;
         }
         case 'render': {
-          if (context.remote || context.authId) {
-            throw new Error(
-              'The `--remote` and `--authentication-id` flags are not applicable to `auth render`. ' +
-                'This command runs locally using auth data from the .env file.',
-            );
-          }
           const output = await renderAuth(context);
           console.log(JSON.stringify(output, null, 2));
           return;
