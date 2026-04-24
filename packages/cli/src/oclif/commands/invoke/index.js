@@ -121,7 +121,14 @@ class InvokeCommand extends BaseCommand {
         throw new Error('You must specify ACTIONKEY in non-interactive mode.');
       }
       if (context.actionType === 'auth') {
-        const actionKeys = ['label', 'refresh', 'render', 'start', 'template', 'test'];
+        const actionKeys = [
+          'label',
+          'refresh',
+          'render',
+          'start',
+          'template',
+          'test',
+        ];
         context.actionKey = await this.promptWithList(
           'Which auth operation would you like to invoke?',
           actionKeys,
@@ -256,11 +263,23 @@ class InvokeCommand extends BaseCommand {
           return;
         }
         case 'template': {
+          if (context.remote || context.authId) {
+            throw new Error(
+              'The `--remote` and `--authentication-id` flags are not applicable to `auth template`. ' +
+                'This command analyzes the app definition locally and does not require credentials.',
+            );
+          }
           const output = await templateAuth(context);
           console.log(JSON.stringify(output, null, 2));
           return;
         }
         case 'render': {
+          if (context.remote || context.authId) {
+            throw new Error(
+              'The `--remote` and `--authentication-id` flags are not applicable to `auth render`. ' +
+                'This command runs locally using auth data from the .env file.',
+            );
+          }
           const output = await renderAuth(context);
           console.log(JSON.stringify(output, null, 2));
           return;
