@@ -358,6 +358,43 @@ describe('schema', () => {
     });
   });
 
+  describe('compileApp with null or undefined appRaw', () => {
+    it('should throw a clear error when appRaw is undefined', () => {
+      (() => schema.compileApp(undefined)).should.throw(
+        /App definition could not be loaded/,
+      );
+    });
+
+    it('should not mention "resources" when appRaw is undefined', () => {
+      let message = '';
+      try {
+        schema.compileApp(undefined);
+      } catch (err) {
+        message = err.message;
+      }
+      message.should.not.containEql('resources');
+    });
+
+    it('should name null/undefined and CJS/ESM export hints in the message', () => {
+      (() => schema.compileApp(undefined)).should.throw(/got undefined/);
+      (() => schema.compileApp(null)).should.throw(/got null/);
+      (() => schema.compileApp(undefined)).should.throw(/module\.exports/);
+      (() => schema.compileApp(undefined)).should.throw(/export default/);
+    });
+
+    it('should throw a clear error when appRaw is null', () => {
+      (() => schema.compileApp(null)).should.throw(
+        /App definition could not be loaded/,
+      );
+    });
+
+    it('should throw a clear error when prepareApp receives undefined', () => {
+      (() => schema.prepareApp(undefined)).should.throw(
+        /App definition could not be loaded/,
+      );
+    });
+  });
+
   describe('compileApp', () => {
     it('should populate hook trigger performList when resource is linked', () => {
       const appRaw = {
