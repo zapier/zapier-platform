@@ -8,6 +8,7 @@ const addBasicAuthHeader = require('./http-middlewares/before/add-basic-auth-hea
 const addQueryParams = require('./http-middlewares/before/add-query-params');
 const createInjectInputMiddleware = require('./http-middlewares/before/inject-input');
 const prepareRequest = require('./http-middlewares/before/prepare-request');
+const oauth1SignRequest = require('./http-middlewares/before/oauth1-sign-request');
 const sanitizeHeaders = require('./http-middlewares/before/sanatize-headers');
 
 const { REPLACE_CURLIES } = require('./constants');
@@ -58,7 +59,7 @@ const renderFromTest = (test, authData) => {
     const headers = {};
     for (const [key, value] of Object.entries(test.headers)) {
       const resolved = resolve(value);
-      if (resolved !== value || /\{\{bundle\.authData\./.test(String(value))) {
+      if (resolved !== value) {
         headers[key] = resolved;
       }
     }
@@ -71,7 +72,7 @@ const renderFromTest = (test, authData) => {
     const params = {};
     for (const [key, value] of Object.entries(test.params)) {
       const resolved = resolve(value);
-      if (resolved !== value || /\{\{bundle\.authData\./.test(String(value))) {
+      if (resolved !== value) {
         params[key] = resolved;
       }
     }
@@ -134,7 +135,6 @@ const renderAuthTemplate = async (compiledApp, input) => {
     // but we still run the middleware for renderAuthTemplate.
     // For now, skip digest middleware since it makes a real HTTP request.
   } else if (authType === 'oauth1') {
-    const oauth1SignRequest = require('./http-middlewares/before/oauth1-sign-request');
     httpBefores.push(oauth1SignRequest);
   }
 
