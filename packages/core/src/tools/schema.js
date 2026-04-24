@@ -109,6 +109,17 @@ const copyPropertiesFromResource = (type, action, appRaw) => {
 };
 
 const compileApp = (appRaw) => {
+  if (appRaw == null) {
+    throw new Error(
+      `App definition could not be loaded (got ${appRaw === null ? 'null' : 'undefined'}). ` +
+        'Try the following:\n' +
+        '  - Point package.json "main" at your built entry (often dist/index.js)\n' +
+        '  - Run your build so dist/ (or the entry path) exists (e.g. tsc, npm run build, or zapier build)\n' +
+        '  - Reinstall dependencies with your package manager (npm, pnpm, or yarn)\n' +
+        '  - If you use a lockfile, make sure it matches package.json (e.g. pnpm install --frozen-lockfile)\n' +
+        '  - Export the full app object from the entry: module.exports = { ... } in CommonJS, or export default in ESM',
+    );
+  }
   appRaw = dataTools.deepCopy(appRaw);
   appRaw = schemaTools.findSourceRequireFunctions(appRaw);
   const extras = convertResourceDos(appRaw);
