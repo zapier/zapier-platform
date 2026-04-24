@@ -24,8 +24,8 @@ const renderAuth = async (context) => {
     endSpinner();
     if (err.message && err.message.includes('Unexpected command')) {
       throw new Error(
-        '`auth render` requires zapier-platform-core from the PDE-7006-auth-template branch. ' +
-          'Symlink it with: ln -sf ~/Projects/zapier-platform/packages/core node_modules/zapier-platform-core',
+        '`auth render` requires latest version of zapier-platform-core. ' +
+          'Upgrade zapier-platform-core in your dependencies.',
       );
     }
     throw err;
