@@ -17,6 +17,8 @@ const {
   appendEnv,
 } = require('./env');
 const { startAuth, testAuth, getAuthLabel, refreshAuth } = require('./auth');
+const { templateAuth } = require('./auth/template');
+const { renderAuth } = require('./auth/render');
 const { invokeAction } = require('./action');
 const { promptForAuthentication } = require('./prompts');
 
@@ -119,7 +121,14 @@ class InvokeCommand extends BaseCommand {
         throw new Error('You must specify ACTIONKEY in non-interactive mode.');
       }
       if (context.actionType === 'auth') {
-        const actionKeys = ['label', 'refresh', 'start', 'test'];
+        const actionKeys = [
+          'label',
+          'refresh',
+          'render',
+          'start',
+          'template',
+          'test',
+        ];
         context.actionKey = await this.promptWithList(
           'Which auth operation would you like to invoke?',
           actionKeys,
@@ -174,6 +183,18 @@ class InvokeCommand extends BaseCommand {
           "`--authentication-id` must be an integer or '-' to select from available authentications.",
         );
       }
+    }
+
+    // Reject unsupported flags early for template/render commands
+    if (
+      context.actionType === 'auth' &&
+      (context.actionKey === 'template' || context.actionKey === 'render') &&
+      (context.remote || context.authId)
+    ) {
+      throw new Error(
+        `The \`--remote\` and \`--authentication-id\` flags are not applicable to \`auth ${context.actionKey}\`. ` +
+          'This command runs locally using auth data from the .env file.',
+      );
     }
 
     if (context.authId && !context.remote) {
@@ -253,10 +274,20 @@ class InvokeCommand extends BaseCommand {
           }
           return;
         }
+        case 'template': {
+          const output = await templateAuth(context);
+          console.log(JSON.stringify(output, null, 2));
+          return;
+        }
+        case 'render': {
+          const output = await renderAuth(context);
+          console.log(JSON.stringify(output, null, 2));
+          return;
+        }
         default:
           throw new Error(
             `Unknown auth operation "${context.actionKey}". ` +
-              'The options are "label", "refresh", "start", and "test". \n',
+              'The options are "label", "refresh", "render", "start", "template", and "test". \n',
           );
       }
     } else {
