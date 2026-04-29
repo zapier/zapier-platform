@@ -8567,7 +8567,7 @@ snapshots:
   '@types/vinyl@2.0.12':
     dependencies:
       '@types/expect': 1.20.4
-      '@types/node': 20.19.25
+      '@types/node': 22.19.1
 
   '@types/wrap-ansi@3.0.0': {}
 
@@ -11291,7 +11291,7 @@ snapshots:
 
   mem-fs@4.1.2:
     dependencies:
-      '@types/node': 20.19.25
+      '@types/node': 22.19.1
       '@types/vinyl': 2.0.12
       vinyl: 3.0.1
       vinyl-file: 5.0.0
