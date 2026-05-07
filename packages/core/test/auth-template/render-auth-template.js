@@ -4,20 +4,26 @@ require('should');
 
 const renderAuthTemplate = require('../../src/auth-template/render-auth-template');
 
-const buildInput = (compiledApp, authData = {}) => ({
-  bundle: { authData },
-  _zapier: {
-    app: compiledApp,
-    event: { bundle: { authData } },
-    promises: [],
-    logger: () => Promise.resolve(),
-    logBuffer: [],
-    whatHappened: [],
-  },
-});
+const buildInput = (compiledApp, authData = {}, bundleExtras = {}) => {
+  const bundle = { authData, ...bundleExtras };
+  return {
+    bundle,
+    _zapier: {
+      app: compiledApp,
+      event: { bundle },
+      promises: [],
+      logger: () => Promise.resolve(),
+      logBuffer: [],
+      whatHappened: [],
+    },
+  };
+};
 
-const run = (compiledApp, authData) =>
-  renderAuthTemplate(compiledApp, buildInput(compiledApp, authData));
+const run = (compiledApp, authData, bundleExtras) =>
+  renderAuthTemplate(
+    compiledApp,
+    buildInput(compiledApp, authData, bundleExtras),
+  );
 
 describe('renderAuthTemplate', () => {
   describe('early returns', () => {
@@ -127,6 +133,96 @@ describe('renderAuthTemplate', () => {
       result.authType.should.eql('custom');
       result.error.should.match(/middleware blew up/);
       result.template.should.deepEqual({});
+    });
+  });
+
+  describe('targetRequest', () => {
+    it('threads url, method, body, headers, and params into the middleware', async () => {
+      let observed = null;
+      const beforeRequest = (req) => {
+        observed = {
+          url: req.url,
+          method: req.method,
+          body: req.body,
+          headers: { ...req.headers },
+          params: { ...req.params },
+        };
+        return req;
+      };
+      await run(
+        {
+          authentication: {
+            type: 'custom',
+            test: { url: 'https://example.com' },
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { api_key: 'x' },
+        {
+          targetRequest: {
+            url: 'https://api.bedrock.aws.com/invoke',
+            method: 'POST',
+            body: '{"prompt":"hi"}',
+            headers: { 'Content-Type': 'application/json' },
+            params: { foo: 'bar' },
+          },
+        },
+      );
+      observed.url.should.eql('https://api.bedrock.aws.com/invoke');
+      observed.method.should.eql('POST');
+      observed.body.should.eql('{"prompt":"hi"}');
+      observed.headers['Content-Type'].should.eql('application/json');
+      observed.params.foo.should.eql('bar');
+    });
+
+    it('falls back to stub values when targetRequest is absent', async () => {
+      let observed = null;
+      const beforeRequest = (req) => {
+        observed = { url: req.url, method: req.method };
+        return req;
+      };
+      await run(
+        {
+          authentication: {
+            type: 'custom',
+            test: { url: 'https://example.com' },
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { api_key: 'x' },
+      );
+      observed.url.should.eql('https://example.com');
+      observed.method.should.eql('GET');
+    });
+
+    it('lets signature-style middleware sign the real request', async () => {
+      // Simulates a SigV4-style signer that hashes method+url+body
+      const beforeRequest = (req, _z, bundle) => {
+        const payload = `${req.method}|${req.url}|${req.body || ''}`;
+        req.headers['X-Signature'] =
+          `sig:${payload}:${bundle.authData.secret_key}`;
+        return req;
+      };
+      const result = await run(
+        {
+          authentication: {
+            type: 'custom',
+            test: { url: 'https://example.com' },
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { secret_key: 'shh' },
+        {
+          targetRequest: {
+            url: 'https://api.example.com/widgets',
+            method: 'POST',
+            body: '{"a":1}',
+          },
+        },
+      );
+      result.template.headers['X-Signature'].should.eql(
+        'sig:POST|https://api.example.com/widgets|{"a":1}:shh',
+      );
     });
   });
 
