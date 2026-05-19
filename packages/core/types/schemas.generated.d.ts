@@ -4,7 +4,7 @@
  * files, and/or the schema-to-ts tool and run its CLI to regenerate
  * these typings.
  *
- * zapier-platform-schema version: 18.5.1
+ * zapier-platform-schema version: 19.0.0
  *  schema-to-ts compiler version: 0.1.0
  */
 import type {
@@ -145,7 +145,14 @@ export type Middlewares = Function[] | Function;
 /** Represents authentication schemes. */
 export interface Authentication {
   /** Choose which scheme you want to use. */
-  type: 'basic' | 'custom' | 'digest' | 'oauth1' | 'oauth2' | 'session';
+  type:
+    | 'basic'
+    | 'custom'
+    | 'digest'
+    | 'oauth1'
+    | 'oauth2'
+    | 'session'
+    | 'oidc_federation';
 
   /**
    * A function or request that confirms the authentication is
@@ -176,6 +183,8 @@ export interface Authentication {
   oauth2Config?: AuthenticationOAuth2Config;
 
   sessionConfig?: AuthenticationSessionConfig;
+
+  oidcFederationConfig?: AuthenticationOIDCFederationConfig;
 }
 
 /**
@@ -486,6 +495,18 @@ export interface AuthenticationSessionConfig {
    * API calls.
    */
   perform: Request | Function;
+}
+
+/** Config for OIDC federation authentication. */
+export interface AuthenticationOIDCFederationConfig {
+  /**
+   * Define how Zapier fetches the additional authData needed to make
+   * API calls.
+   */
+  perform: Request | Function;
+
+  /** The audience of the OIDC token. */
+  audience: string;
 }
 
 /** An object whose values can only be primitives */
@@ -1007,7 +1028,7 @@ export interface BasicHookOperation<
    * ensure the best UX for the end-user. For private apps, this is
    * strongly recommended for testing REST Hooks. Otherwise, you can
    * ignore warnings about this property with the `--without-style`
-   * flag during `zapier push`.
+   * flag during `zapier-platform push`.
    */
   performList?:
     | Request
@@ -1024,7 +1045,8 @@ export interface BasicHookOperation<
    * Note: this is required for public apps to ensure the best UX for
    * the end-user. For private apps, this is strongly recommended for
    * testing REST Hooks. Otherwise, you can ignore warnings about this
-   * property with the `--without-style` flag during `zapier push`.
+   * property with the `--without-style` flag during `zapier-platform
+   * push`.
    */
   performSubscribe?:
     | Request
@@ -1036,7 +1058,7 @@ export interface BasicHookOperation<
    * the best UX for the end-user. For private apps, this is strongly
    * recommended for testing REST Hooks. Otherwise, you can ignore
    * warnings about this property with the `--without-style` flag
-   * during `zapier push`.
+   * during `zapier-platform push`.
    */
   performUnsubscribe?:
     | Request

@@ -15,6 +15,7 @@ const authenticationPaths = [
   'authentication.oauth2Config.getAccessToken',
   'authentication.oauth2Config.refreshAccessToken',
   'authentication.sessionConfig.perform',
+  'authentication.oidcFederationConfig.perform',
 ];
 
 // {type:triggers}.{key:lead}.operation.perform

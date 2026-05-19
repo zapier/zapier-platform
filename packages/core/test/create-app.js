@@ -469,6 +469,22 @@ describe('create-app', () => {
       );
     });
 
+    it('should be applied to oidc federation auth app on z.request in functions', () => {
+      return testResponse(
+        {
+          ...appDefinition,
+          authentication: {
+            type: 'oidc_federation',
+            oidcFederationConfig: {
+              audience: 'audience.example',
+            },
+          },
+        },
+        false,
+        verifyRefreshAuthError,
+      );
+    });
+
     it('should not be applied to custom auth app on z.request in functions', () => {
       return testResponse(
         {

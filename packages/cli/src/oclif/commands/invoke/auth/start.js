@@ -253,6 +253,41 @@ const startSessionAuth = async (command, context) => {
 };
 
 /**
+ * Initializes OIDC federation authentication.
+ * Prompts for auth fields and then calls the oidc federation config perform method.
+ * @param {import('../../../ZapierBaseCommand')} command - The command instance for prompting
+ * @param {Object} context - The execution context
+ * @returns {Promise<Object>} Combined auth data and session data
+ * @throws {Error} If in non-interactive mode
+ */
+const startOIDCFederationAuth = async (command, context) => {
+  if (context.nonInteractive) {
+    throw new Error(
+      'The `auth start` subcommand for "oidc_federation" authentication type only works in interactive mode.',
+    );
+  }
+  const authData = await promptForAuthFields(
+    command,
+    context.appDefinition.authentication.fields,
+  );
+
+  startSpinner('Invoking authentication.oidcFederationConfig.perform');
+  const oidcData = await localAppCommand({
+    command: 'execute',
+    method: 'authentication.oidcFederationConfig.perform',
+    bundle: {
+      authData,
+    },
+    zcacheTestObj: context.zcacheTestObj,
+    customLogger,
+    calledFromCliInvoke: true,
+  });
+  endSpinner();
+
+  return { ...authData, ...oidcData };
+};
+
+/**
  * Main entry point for initializing authentication.
  * Routes to the appropriate auth type handler based on the app definition.
  * @param {import('../../../ZapierBaseCommand')} command - The command instance for prompting
@@ -279,6 +314,8 @@ const startAuth = async (command, context) => {
       return startOAuth2(command, context);
     case 'session':
       return startSessionAuth(command, context);
+    case 'oidc_federation':
+      return startOIDCFederationAuth(command, context);
     default:
       // TODO: Add support for 'digest' and 'oauth1'
       throw new Error(

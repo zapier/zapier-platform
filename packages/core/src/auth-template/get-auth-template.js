@@ -177,6 +177,15 @@ const buildPlaceholderAuthData = (auth) => {
     }
   }
 
+  if (auth.type === 'oidc_federation') {
+    authData.accessKeyId =
+      authData.accessKeyId || wrapAuthSentinel('accessKeyId');
+    authData.secretAccessKey =
+      authData.secretAccessKey || wrapAuthSentinel('secretAccessKey');
+    authData.sessionToken =
+      authData.sessionToken || wrapAuthSentinel('sessionToken');
+  }
+
   return authData;
 };
 

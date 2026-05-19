@@ -595,6 +595,78 @@ const sessionFiles = (language) => {
   };
 };
 
+const oidcFederationAuthFile = (language) => {
+  const getFederationCredentialsFuncName = 'getFederationCredentials';
+  const fileInput = [
+    authTestFunc(language),
+    tokenExchangeFunc(
+      getFederationCredentialsFuncName,
+      language,
+      'https://httpbin.zapier-tooling.com/post',
+      [
+        objProperty('region', 'bundle.authData.region '),
+        objProperty('roleArn', 'bundle.authData.roleArn '),
+        objProperty('sessionName', 'bundle.authData.sessionName '),
+      ],
+      [
+        comment(
+          'FIXME: The fallback values below are just for demo purposes, you should remove them.',
+        ),
+        objProperty(
+          'accessKeyId',
+          'response.data.accessKeyId || "AKIAEXAMPLE"',
+        ),
+        objProperty(
+          'secretAccessKey',
+          'response.data.secretAccessKey || "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"',
+        ),
+        objProperty(
+          'sessionToken',
+          'response.data.sessionToken || "EXAMPLE_SESSION_TOKEN"',
+        ),
+      ],
+    ),
+    authFileExport(
+      language,
+      'oidc_federation',
+      '"oidc_federation" auth uses perform to fetch OIDC federation credentials.',
+      {
+        extraConfigProps: [
+          objProperty(
+            'oidcFederationConfig',
+            obj(
+              objProperty('perform', getFederationCredentialsFuncName),
+              objProperty('audience', strLiteral('audience.example')),
+            ),
+          ),
+        ],
+      },
+    ),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const oidcFederationMiddlewareFile = (language) => {
+  const fileInput = [
+    ...middlewareFileExport(language, {
+      beforeFuncNames: [],
+      afterFuncNames: [],
+    }),
+  ];
+  return language === 'typescript'
+    ? fileTS(standardTypes, ...fileInput)
+    : file(...fileInput);
+};
+
+const oidcFederationFiles = (language) => {
+  return {
+    middleware: oidcFederationMiddlewareFile(language),
+    authentication: oidcFederationAuthFile(language),
+  };
+};
+
 // just different enough from oauth2 that it gets its own function
 const oauth1TokenExchangeFunc = (
   funcName,
@@ -755,4 +827,5 @@ module.exports = {
   oauth1: oauth1Files,
   oauth2: oauth2Files,
   session: sessionFiles,
+  oidc_federation: oidcFederationFiles,
 };

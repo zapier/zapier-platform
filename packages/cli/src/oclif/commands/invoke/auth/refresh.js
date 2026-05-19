@@ -51,6 +51,29 @@ const refreshSessionAuth = async (context) => {
 };
 
 /**
+ * Refreshes OIDC federation authentication by calling the oidc federation config perform method.
+ * @param {Object} context - The execution context with current authData
+ * @returns {Promise<Object>} New oidc federation data
+ */
+const refreshOIDCFederationAuth = async (context) => {
+  startSpinner('Invoking authentication.oidcFederationConfig.perform');
+
+  const sessionData = await localAppCommand({
+    command: 'execute',
+    method: 'authentication.sessionConfig.perform',
+    bundle: {
+      authData: context.authData,
+    },
+    zcacheTestObj: context.zcacheTestObj,
+    customLogger,
+    calledFromCliInvoke: true,
+  });
+
+  endSpinner();
+  return sessionData;
+};
+
+/**
  * Main entry point for refreshing authentication.
  * Routes to the appropriate refresh handler based on authentication type.
  * @param {Object} context - The execution context
@@ -77,6 +100,8 @@ const refreshAuth = async (context) => {
       return refreshOAuth2(context);
     case 'session':
       return refreshSessionAuth(context);
+    case 'oidc_federation':
+      return refreshOIDCFederationAuth(context);
     default:
       throw new Error(
         `This command doesn't support refreshing authentication type "${authentication.type}".`,

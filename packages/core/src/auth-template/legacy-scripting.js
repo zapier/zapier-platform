@@ -55,7 +55,11 @@ const createLegacyBeforeRequest = (app) => {
             req.params.access_token || authData.access_token;
         }
       }
-    } else if (authType === 'session' || authType === 'custom') {
+    } else if (
+      authType === 'session' ||
+      authType === 'custom' ||
+      authType === 'oidc_federation'
+    ) {
       const rendered = renderAuthMapping(authMapping, authData);
       if (placement === 'header' || placement === 'both') {
         const lowerHeaders = {};
