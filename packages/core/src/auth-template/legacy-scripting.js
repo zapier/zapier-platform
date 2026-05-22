@@ -58,7 +58,7 @@ const createLegacyBeforeRequest = (app) => {
     } else if (
       authType === 'session' ||
       authType === 'custom' ||
-      authType === 'oidc_federation'
+      authType === 'oidcFederation'
     ) {
       const rendered = renderAuthMapping(authMapping, authData);
       if (placement === 'header' || placement === 'both') {
