@@ -26,7 +26,7 @@ module.exports = makeSchema(
     examples: [
       {
         perform: { require: 'some/path/to/file.js' },
-        audience: 'audience.example',
+        audience: 'sts.amazonaws.com',
       },
     ],
     antiExamples: [
