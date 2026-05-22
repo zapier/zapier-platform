@@ -30,7 +30,7 @@ module.exports = makeSchema(
           'oauth1',
           'oauth2',
           'session',
-          'oidc_federation',
+          'oidcFederation',
         ],
       },
       test: {
