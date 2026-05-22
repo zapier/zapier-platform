@@ -7,6 +7,7 @@
 
 import { Agent } from 'http';
 import { Headers } from 'node-fetch';
+import type { Request } from './schemas.generated';
 
 // The EXPORTED OBJECT
 export const version: string;
@@ -15,14 +16,28 @@ export const console: Console;
 export const errors: ErrorsModule;
 
 // see: https://github.com/zapier/zapier-platform-cli/issues/339#issue-336888249
+//
+// The runtime (`resolveMethodPath` + `execute.js`) accepts either a perform
+// function or a request-template object as the first argument. The function
+// overload is kept first so `T` is still inferred from the perform's return
+// type at call sites; the request-template overload returns `Promise<unknown>`
+// because the platform returns `response.data` whose shape isn't expressed in
+// the `Request` type. See PDE-7153.
 export const createAppTester: (
   appRaw: object,
   options?: { customStoreKey?: string },
-) => <T, B extends Bundle>(
-  func: (z: ZObject, bundle: B) => T | Promise<T>,
-  bundle?: DeepPartial<B>, // partial so we don't have to make a full bundle in tests
-  clearZcacheBeforeUse?: boolean,
-) => Promise<T>; // appTester always returns a promise
+) => {
+  <T, B extends Bundle>(
+    func: (z: ZObject, bundle: B) => T | Promise<T>,
+    bundle?: DeepPartial<B>, // partial so we don't have to make a full bundle in tests
+    clearZcacheBeforeUse?: boolean,
+  ): Promise<T>; // appTester always returns a promise
+  <B extends Bundle = Bundle>(
+    request: Request,
+    bundle?: DeepPartial<B>,
+    clearZcacheBeforeUse?: boolean,
+  ): Promise<unknown>;
+};
 
 /** Recursively make all properties of an object optional. */
 type DeepPartial<T> = T extends object

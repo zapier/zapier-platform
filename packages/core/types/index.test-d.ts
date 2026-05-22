@@ -12,10 +12,12 @@ import type {
   Bundle,
   Create,
   InputFields,
+  Request,
   Search,
   Trigger,
   ZObject,
 } from '.';
+import { createAppTester } from '.';
 import { expectAssignable, expectDeprecated, expectType } from 'tsd';
 import { defineApp, defineCreate } from './typeHelpers';
 
@@ -214,3 +216,17 @@ async (z: ZObject) => {
   const result = await resp.json();
   expectType<{ id: number; name: string }>(result);
 };
+
+// createAppTester accepts a perform function (T is inferred) and a
+// request-template object (returns Promise<unknown>). See PDE-7153.
+const tester = createAppTester({});
+
+expectType<Promise<{ id: number }>>(
+  tester(async (_z: ZObject, _b: Bundle) => ({ id: 1 })),
+);
+
+const requestTemplate: Request = {
+  url: 'https://example.com/{{bundle.inputData.id}}',
+  method: 'GET',
+};
+expectType<Promise<unknown>>(tester(requestTemplate));
