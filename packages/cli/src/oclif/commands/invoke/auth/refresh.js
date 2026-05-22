@@ -60,7 +60,7 @@ const refreshOIDCFederationAuth = async (context) => {
 
   const sessionData = await localAppCommand({
     command: 'execute',
-    method: 'authentication.sessionConfig.perform',
+    method: 'authentication.oidcFederationConfig.perform',
     bundle: {
       authData: context.authData,
     },
