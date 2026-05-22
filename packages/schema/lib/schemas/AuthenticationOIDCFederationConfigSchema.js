@@ -18,7 +18,7 @@ module.exports = makeSchema(
         oneOf: [{ $ref: RequestSchema.id }, { $ref: FunctionSchema.id }],
       },
       audience: {
-        description: 'The audience of the OIDC token.',
+        description: 'The service the OIDC token is generated for.',
         type: 'string',
       },
     },
