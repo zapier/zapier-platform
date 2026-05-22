@@ -827,5 +827,5 @@ module.exports = {
   oauth1: oauth1Files,
   oauth2: oauth2Files,
   session: sessionFiles,
-  oidc_federation: oidcFederationFiles,
+  oidcFederation: oidcFederationFiles,
 };
