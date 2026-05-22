@@ -32,7 +32,7 @@ module.exports = makeSchema(
     antiExamples: [
       {
         example: {},
-        reason: 'Missing required key: perform',
+        reason: 'Missing required key: perform and audience',
       },
       {
         example: {
