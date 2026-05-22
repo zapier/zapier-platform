@@ -314,7 +314,7 @@ const startAuth = async (command, context) => {
       return startOAuth2(command, context);
     case 'session':
       return startSessionAuth(command, context);
-    case 'oidc_federation':
+    case 'oidcFederation':
       return startOIDCFederationAuth(command, context);
     default:
       // TODO: Add support for 'digest' and 'oauth1'
