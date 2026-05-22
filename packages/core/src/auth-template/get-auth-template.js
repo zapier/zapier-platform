@@ -177,7 +177,7 @@ const buildPlaceholderAuthData = (auth) => {
     }
   }
 
-  if (auth.type === 'oidc_federation') {
+  if (auth.type === 'oidcFederation') {
     authData.accessKeyId =
       authData.accessKeyId || wrapAuthSentinel('accessKeyId');
     authData.secretAccessKey =

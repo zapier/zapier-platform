@@ -666,7 +666,7 @@
           ]
         },
         "audience": {
-          "description": "The audience of the OIDC token.",
+          "description": "The service the OIDC token is generated for.",
           "type": "string"
         }
       },
@@ -2068,7 +2068,7 @@
             "oauth1",
             "oauth2",
             "session",
-            "oidc_federation"
+            "oidcFederation"
           ]
         },
         "test": {

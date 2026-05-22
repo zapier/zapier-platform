@@ -430,15 +430,15 @@ Config for OIDC federation authentication.
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
 `perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches the additional authData needed to make API calls.
-`audience` | **yes** | `string` | The audience of the OIDC token.
+`audience` | **yes** | `string` | The service the OIDC token is generated for.
 
 #### Examples
 
-* `{ perform: { require: 'some/path/to/file.js' }, audience: 'audience.example' }`
+* `{ perform: { require: 'some/path/to/file.js' }, audience: 'sts.amazonaws.com' }`
 
 #### Anti-Examples
 
-* `{}` - _Missing required key: perform_
+* `{}` - _Missing required key: perform and audience_
 * `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: audience_
 
 -----
@@ -456,7 +456,7 @@ Represents authentication schemes.
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`type` | **yes** | `string` in (`'basic'`, `'custom'`, `'digest'`, `'oauth1'`, `'oauth2'`, `'session'`, `'oidc_federation'`) | Choose which scheme you want to use.
+`type` | **yes** | `string` in (`'basic'`, `'custom'`, `'digest'`, `'oauth1'`, `'oauth2'`, `'session'`, `'oidcFederation'`) | Choose which scheme you want to use.
 `test` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | A function or request that confirms the authentication is working.
 `fields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields you can request from the user before they connect your app to Zapier.
 `connectionLabel` | no | anyOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema), `string`) | A string with variables, function, or request that returns the connection label for the authenticated user.

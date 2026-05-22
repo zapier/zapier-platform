@@ -152,7 +152,7 @@ export interface Authentication {
     | 'oauth1'
     | 'oauth2'
     | 'session'
-    | 'oidc_federation';
+    | 'oidcFederation';
 
   /**
    * A function or request that confirms the authentication is
@@ -505,7 +505,7 @@ export interface AuthenticationOIDCFederationConfig {
    */
   perform: Request | Function;
 
-  /** The audience of the OIDC token. */
+  /** The service the OIDC token is generated for. */
   audience: string;
 }
 

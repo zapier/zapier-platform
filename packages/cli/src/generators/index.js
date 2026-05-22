@@ -126,7 +126,7 @@ const authTypes = {
   'oauth1-trello': 'oauth1',
   oauth2: 'oauth2',
   'session-auth': 'session',
-  'oidc-federation-auth': 'oidc_federation',
+  'oidc-federation-auth': 'oidcFederation',
 };
 
 const writeGenericAuth = (gen) => {

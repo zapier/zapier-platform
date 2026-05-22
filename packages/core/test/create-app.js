@@ -474,7 +474,7 @@ describe('create-app', () => {
         {
           ...appDefinition,
           authentication: {
-            type: 'oidc_federation',
+            type: 'oidcFederation',
             oidcFederationConfig: {
               audience: 'audience.example',
             },

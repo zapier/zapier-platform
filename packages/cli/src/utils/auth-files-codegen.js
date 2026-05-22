@@ -628,8 +628,8 @@ const oidcFederationAuthFile = (language) => {
     ),
     authFileExport(
       language,
-      'oidc_federation',
-      '"oidc_federation" auth uses perform to fetch OIDC federation credentials.',
+      'oidcFederation',
+      '"oidcFederation" auth uses perform to fetch OIDC federation credentials.',
       {
         extraConfigProps: [
           objProperty(
