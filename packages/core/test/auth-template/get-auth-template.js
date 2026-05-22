@@ -900,6 +900,39 @@ describe('getAuthTemplate', () => {
         '{{bundle.authData.PHPSESSID}}',
       );
     });
+
+    it('oidcFederation gets standard credential placeholders for common key names', async () => {
+      const beforeRequest = (req, z, bundle) => {
+        req.headers = req.headers || {};
+        req.headers['X-Access-Key-Id'] = bundle.authData.accessKeyId;
+        req.headers['X-Secret-Access-Key'] = bundle.authData.secretAccessKey;
+        req.headers['X-Session-Token'] = bundle.authData.sessionToken;
+        req.headers['X-Access-Token'] = bundle.authData.access_token;
+        req.headers['X-Client-Token'] = bundle.authData.client_token;
+        return req;
+      };
+      const result = await run({
+        authentication: { type: 'oidcFederation', test: STUB_TEST },
+        beforeRequest: [beforeRequest],
+      });
+      result.supported.should.be.true();
+      result.source.should.eql('authentication.test');
+      result.template.headers['X-Access-Key-Id'].should.eql(
+        '{{bundle.authData.accessKeyId}}',
+      );
+      result.template.headers['X-Secret-Access-Key'].should.eql(
+        '{{bundle.authData.secretAccessKey}}',
+      );
+      result.template.headers['X-Session-Token'].should.eql(
+        '{{bundle.authData.sessionToken}}',
+      );
+      result.template.headers['X-Access-Token'].should.eql(
+        '{{bundle.authData.access_token}}',
+      );
+      result.template.headers['X-Client-Token'].should.eql(
+        '{{bundle.authData.client_token}}',
+      );
+    });
   });
 
   describe('regression: addQueryParams should not see urlProbe behavior', () => {
