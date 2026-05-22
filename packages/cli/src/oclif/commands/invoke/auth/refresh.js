@@ -100,7 +100,7 @@ const refreshAuth = async (context) => {
       return refreshOAuth2(context);
     case 'session':
       return refreshSessionAuth(context);
-    case 'oidc_federation':
+    case 'oidcFederation':
       return refreshOIDCFederationAuth(context);
     default:
       throw new Error(
