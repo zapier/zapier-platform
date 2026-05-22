@@ -263,7 +263,7 @@ const startSessionAuth = async (command, context) => {
 const startOIDCFederationAuth = async (command, context) => {
   if (context.nonInteractive) {
     throw new Error(
-      'The `auth start` subcommand for "oidc_federation" authentication type only works in interactive mode.',
+      'The `auth start` subcommand for "oidcFederation" authentication type only works in interactive mode.',
     );
   }
   const authData = await promptForAuthFields(
