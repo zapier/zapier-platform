@@ -126,6 +126,7 @@ const authTypes = {
   'oauth1-trello': 'oauth1',
   oauth2: 'oauth2',
   'session-auth': 'session',
+  'oidc-federation-auth': 'oidcFederation',
 };
 
 const writeGenericAuth = (gen) => {
@@ -224,6 +225,7 @@ const TEMPLATE_ROUTES = {
   openai: writeForStandaloneTemplate,
   'search-or-create': writeForStandaloneTemplate,
   'session-auth': writeForAuthTemplate,
+  'oidc-federation-auth': writeForAuthTemplate,
 };
 
 const ESM_SUPPORTED_TEMPLATES = ['minimal'];
@@ -236,6 +238,7 @@ const TS_SUPPORTED_TEMPLATES = [
   'oauth1-trello',
   'oauth2',
   'session-auth',
+  'oidc-federation-auth',
 ];
 
 const TEMPLATE_CHOICES = Object.keys(TEMPLATE_ROUTES);
