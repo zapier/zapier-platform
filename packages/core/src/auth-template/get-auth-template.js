@@ -122,6 +122,24 @@ const SESSION_AUTH_COMMON_KEYS = [
   'token',
 ];
 
+// Credential keys that oidcFederation perform may return without declaring
+// them in authentication.fields (AWS STS, GCP/Azure token exchange, Vault).
+const OIDC_FEDERATION_COMMON_KEYS = [
+  // AWS STS
+  'accessKeyId',
+  'secretAccessKey',
+  'sessionToken',
+  // GCP / Azure OAuth-style
+  'access_token',
+  'token_type',
+  'expires_in',
+  'expires_on',
+  'token',
+  // Vault
+  'client_token',
+  'accessor',
+];
+
 // Build placeholder authData where each value is an opaque sentinel
 // string. Sentinels survive core's normalize/curly-stripping and any
 // stringification middleware does, so the captured request still
@@ -173,6 +191,12 @@ const buildPlaceholderAuthData = (auth) => {
   // template.
   if (auth.type === 'session') {
     for (const key of SESSION_AUTH_COMMON_KEYS) {
+      authData[key] = authData[key] || wrapAuthSentinel(key);
+    }
+  }
+
+  if (auth.type === 'oidcFederation') {
+    for (const key of OIDC_FEDERATION_COMMON_KEYS) {
       authData[key] = authData[key] || wrapAuthSentinel(key);
     }
   }

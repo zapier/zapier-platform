@@ -145,7 +145,14 @@ export type Middlewares = Function[] | Function;
 /** Represents authentication schemes. */
 export interface Authentication {
   /** Choose which scheme you want to use. */
-  type: 'basic' | 'custom' | 'digest' | 'oauth1' | 'oauth2' | 'session';
+  type:
+    | 'basic'
+    | 'custom'
+    | 'digest'
+    | 'oauth1'
+    | 'oauth2'
+    | 'session'
+    | 'oidcFederation';
 
   /**
    * A function or request that confirms the authentication is
@@ -176,6 +183,8 @@ export interface Authentication {
   oauth2Config?: AuthenticationOAuth2Config;
 
   sessionConfig?: AuthenticationSessionConfig;
+
+  oidcFederationConfig?: AuthenticationOIDCFederationConfig;
 }
 
 /**
@@ -486,6 +495,18 @@ export interface AuthenticationSessionConfig {
    * API calls.
    */
   perform: Request | Function;
+}
+
+/** Config for OIDC federation authentication. */
+export interface AuthenticationOIDCFederationConfig {
+  /**
+   * Define how Zapier fetches the additional authData needed to make
+   * API calls.
+   */
+  perform: Request | Function;
+
+  /** The service the OIDC token is generated for. */
+  audience: string;
 }
 
 /** An object whose values can only be primitives */
