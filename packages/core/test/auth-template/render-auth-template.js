@@ -226,6 +226,92 @@ describe('renderAuthTemplate', () => {
     });
   });
 
+  describe('customRequestProperties', () => {
+    // Slack-shaped middleware: defaults to bot_token, switches to
+    // access_token when the request carries `withUserToken: true`.
+    const slackShapedMiddleware = (req, z, bundle) => {
+      if (req.withManualToken) {
+        return req;
+      }
+      if (bundle.authData.bot_token) {
+        req.headers.Authorization = `Bearer ${bundle.authData.bot_token}`;
+      }
+      if (req.withUserToken) {
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+      }
+      return req;
+    };
+
+    const slackShapedApp = {
+      authentication: {
+        type: 'oauth2',
+        test: { url: 'https://example.com' },
+      },
+      beforeRequest: [slackShapedMiddleware],
+    };
+
+    const slackShapedAuthData = {
+      bot_token: 'xoxb-bot-token',
+      access_token: 'xoxp-user-token',
+    };
+
+    it('spreads custom properties onto the synthetic request', async () => {
+      const result = await run(slackShapedApp, slackShapedAuthData, {
+        customRequestProperties: { withUserToken: true },
+      });
+      result.template.headers.Authorization.should.eql(
+        'Bearer xoxp-user-token',
+      );
+    });
+
+    it('takes the middleware default path when absent', async () => {
+      const result = await run(slackShapedApp, slackShapedAuthData);
+      result.template.headers.Authorization.should.eql('Bearer xoxb-bot-token');
+    });
+
+    it('takes the middleware default path when empty', async () => {
+      const result = await run(slackShapedApp, slackShapedAuthData, {
+        customRequestProperties: {},
+      });
+      result.template.headers.Authorization.should.eql('Bearer xoxb-bot-token');
+    });
+
+    it('supports skip-style flags that suppress auth injection', async () => {
+      const result = await run(slackShapedApp, slackShapedAuthData, {
+        customRequestProperties: { withManualToken: true },
+      });
+      (result.template.headers === undefined ||
+        result.template.headers.Authorization === undefined).should.be.true();
+    });
+
+    it('combines with targetRequest without clobbering HTTP fields', async () => {
+      let observed = null;
+      const observingMiddleware = (req, z, bundle) => {
+        observed = { url: req.url, method: req.method };
+        return slackShapedMiddleware(req, z, bundle);
+      };
+      const result = await run(
+        {
+          ...slackShapedApp,
+          beforeRequest: [observingMiddleware],
+        },
+        slackShapedAuthData,
+        {
+          targetRequest: {
+            url: 'https://slack.com/api/chat.postMessage',
+            method: 'POST',
+          },
+          customRequestProperties: { withUserToken: true },
+        },
+      );
+      observed.url.should.eql('https://slack.com/api/chat.postMessage');
+      observed.method.should.eql('POST');
+      result.template.headers.Authorization.should.eql(
+        'Bearer xoxp-user-token',
+      );
+    });
+  });
+
   describe('auth-type-specific middleware', () => {
     it('basic auth applies the addBasicAuthHeader middleware', async () => {
       const result = await run(
