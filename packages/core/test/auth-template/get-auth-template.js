@@ -938,4 +938,63 @@ describe('getAuthTemplate', () => {
       result.template.should.deepEqual({});
     });
   });
+
+  describe('body extraction', () => {
+    // Regression: Resend's auth test sends an email, and Relay was merging
+    // that payload into every proxied request.
+    it('excludes an auth-test body that carries no auth placeholder', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          fields: [{ key: 'api_key' }],
+          test: {
+            url: 'https://api.resend.com/emails',
+            method: 'POST',
+            headers: { Authorization: 'Bearer {{bundle.authData.api_key}}' },
+            body: {
+              from: 'zapier@resend.dev', // pii:allow
+              to: 'delivered@resend.dev', // pii:allow
+              subject: 'Zapier Auth Check',
+            },
+          },
+        },
+      });
+      result.supported.should.be.true();
+      result.template.should.deepEqual({
+        headers: { Authorization: 'Bearer {{bundle.authData.api_key}}' },
+      });
+    });
+
+    it('keeps an auth-test body that carries an auth placeholder', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          fields: [{ key: 'api_key' }],
+          test: {
+            url: 'https://api.example.com/login',
+            method: 'POST',
+            body: { apiKey: '{{bundle.authData.api_key}}', locale: 'en' },
+          },
+        },
+      });
+      result.supported.should.be.true();
+      result.template.body.should.match(/{{bundle\.authData\.api_key}}/);
+      result.template.headers['content-type'].should.match(/application\/json/);
+    });
+
+    it('strips transport headers the middleware added', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          fields: [{ key: 'api_key' }],
+          test: {
+            url: 'https://api.example.com/me',
+            headers: { Authorization: 'Bearer {{bundle.authData.api_key}}' },
+          },
+        },
+      });
+      result.template.headers.should.not.have.property('user-agent');
+      result.template.headers.should.not.have.property('content-length');
+    });
+  });
 });
