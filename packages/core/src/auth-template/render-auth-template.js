@@ -108,6 +108,12 @@ const renderAuthTemplate = async (compiledApp, input) => {
   // auth (AWS SigV4, OAuth1, HMAC) needs the real url/method/body to compute
   // a valid signature; absent it, the middleware runs against a stub and
   // produces a signature for the wrong request.
+  //
+  // customRequestProperties carries integration-internal middleware flags
+  // (e.g. `withUserToken: true`) that control which credential the
+  // integration's beforeRequest injects. They are spread onto the synthetic
+  // request below — kept separate from targetRequest because they are not
+  // HTTP fields and must not participate in signature computation.
   const bundle = {
     authData: eventBundle.authData || {},
     inputData: eventBundle.inputData || {},
@@ -115,6 +121,7 @@ const renderAuthTemplate = async (compiledApp, input) => {
     subscribeData: eventBundle.subscribeData || {},
     targetUrl: eventBundle.targetUrl || '',
     targetRequest: eventBundle.targetRequest || null,
+    customRequestProperties: eventBundle.customRequestProperties || {},
   };
 
   // Rebuild input with the fully-populated bundle so prepareRequest
@@ -221,7 +228,11 @@ const renderAuthTemplate = async (compiledApp, input) => {
 
   const target = bundle.targetRequest || {};
   try {
+    // customRequestProperties is spread first so the explicit HTTP fields
+    // below always win — registry-supplied flags must never clobber the
+    // request being signed.
     await client({
+      ...bundle.customRequestProperties,
       url: target.url || 'https://example.com',
       method: target.method || 'GET',
       headers: target.headers || {},
