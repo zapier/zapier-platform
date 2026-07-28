@@ -2,6 +2,7 @@
 
 const applyMiddleware = require('../middleware');
 const ensureArray = require('../tools/ensure-array');
+const { createRequestOptions } = require('../tools/request-sugar');
 
 // before middlewares
 const addBasicAuthHeader = require('../http-middlewares/before/add-basic-auth-header');
@@ -289,6 +290,28 @@ const createUrlProbe = (baseUrl, matchAll) => {
   return s;
 };
 
+// `customRequestProperties` rides in on the bundle from the request client.
+// It carries request-level properties that the app's beforeRequest middleware
+// reads while building auth. Unlike authData these are real values, not
+// placeholders, so they go onto the request verbatim — but they must never
+// reach the template, which is a static artifact shared across connections
+//
+// `body` is dropped here rather than at the request sites. extractTemplate
+// reads exactly headers, params and body; every request literal already
+// defines headers and params, so a custom value for those is always
+// overridden — but neither defines body, so a custom one would survive into
+// the template. `form` and `json` go too: sugarBody funnels both into
+// req.body, so they are the same leak through a different key.
+const getCustomRequestProperties = (input) => {
+  const {
+    body: _body,
+    form: _form,
+    json: _json,
+    ...rest
+  } = input?._zapier?.event?.bundle?.customRequestProperties || {};
+  return rest;
+};
+
 // Extract headers/params/body from a captured request, stripping defaults.
 const extractTemplate = (req) => {
   const template = {};
@@ -356,11 +379,14 @@ const extractTemplate = (req) => {
 const createStubZ = (compiledApp, cachedZap) => {
   const Zap = cachedZap !== undefined ? cachedZap : loadLegacyZap(compiledApp);
 
-  const stubRequest = async () => ({
+  // Accepts both z.request shapes so a two-arg call isn't silently reduced to
+  // its url. Echoes the normalized request back the way the real client does.
+  const stubRequest = async (reqOrUrl, options) => ({
     status: 200,
     headers: {},
     data: {},
     content: '{}',
+    request: createRequestOptions(reqOrUrl, options),
   });
 
   const stubZ = {
@@ -369,7 +395,7 @@ const createStubZ = (compiledApp, cachedZap) => {
     JSON: { parse: JSON.parse, stringify: JSON.stringify },
     legacyScripting: buildLegacyScripting(
       compiledApp,
-      (req) => stubZ.request(req),
+      (req, options) => stubZ.request(req, options),
       Zap,
     ),
     request: stubRequest,
@@ -454,9 +480,15 @@ const runMiddlewareSurvival = async (
     extraArgs: [stubZ, syntheticBundle],
   });
 
+  const customRequestProperties = getCustomRequestProperties(input);
+
   try {
     await withProxiedEnv(() =>
       client({
+        // Spread first so everything below takes precedence: custom
+        // properties fill in keys the request doesn't define, but never
+        // override headers/params/url or the rest of the plumbing.
+        ...customRequestProperties,
         method: 'GET',
         headers: {},
         params: {},
@@ -533,9 +565,15 @@ const runTestFunctionSurvival = async (
     extraArgs: [stubZ, syntheticBundle],
   });
 
-  stubZ.request = async (reqOrUrl) => {
-    const req =
-      typeof reqOrUrl === 'string' ? { url: reqOrUrl } : { ...reqOrUrl };
+  // Mirror the real z.request signature via the same sugar helper the app
+  // request client uses (requestSugar.addUrlOrOptions).
+  //
+  // No customRequestProperties here, unlike runMiddlewareSurvival: the
+  // request client doesn't apply them to every outgoing request, and this
+  // path runs the integration's own authentication.test, which passes
+  // whatever it needs through these options itself.
+  stubZ.request = async (reqOrUrl, options) => {
+    const req = { ...createRequestOptions(reqOrUrl, options) };
     // Run through the beforeRequest middleware pipeline
     const response = await client({
       ...req,

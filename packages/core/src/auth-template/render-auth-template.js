@@ -2,6 +2,7 @@
 
 const applyMiddleware = require('../middleware');
 const ensureArray = require('../tools/ensure-array');
+const { createRequestOptions } = require('../tools/request-sugar');
 
 // before middlewares
 const addBasicAuthHeader = require('../http-middlewares/before/add-basic-auth-header');
@@ -180,9 +181,8 @@ const renderAuthTemplate = async (compiledApp, input) => {
   // pipeline — that would re-invoke beforeRequest for every sub-request and
   // likely loop. Real refresh-token-style middlewares call separate endpoints
   // that don't need the same auth applied.
-  const realRequest = async (reqOrUrl) => {
-    const req =
-      typeof reqOrUrl === 'string' ? { url: reqOrUrl } : { ...reqOrUrl };
+  const realRequest = async (reqOrUrl, options) => {
+    const req = { ...createRequestOptions(reqOrUrl, options) };
     const response = await fetch(req.url, {
       method: req.method || 'GET',
       headers: req.headers,
@@ -310,9 +310,8 @@ const renderAuthTemplate = async (compiledApp, input) => {
 
     const testStubZ = {
       ...stubZ,
-      request: async (reqOrUrl) => {
-        const req =
-          typeof reqOrUrl === 'string' ? { url: reqOrUrl } : { ...reqOrUrl };
+      request: async (reqOrUrl, options) => {
+        const req = { ...createRequestOptions(reqOrUrl, options) };
         const response = await testClient({
           ...req,
           method: req.method || 'GET',

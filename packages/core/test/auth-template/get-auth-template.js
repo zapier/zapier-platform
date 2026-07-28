@@ -926,6 +926,335 @@ describe('getAuthTemplate', () => {
     });
   });
 
+  describe('two-argument z.request in the test function', () => {
+    const oauth2App = (testFn) => ({
+      authentication: {
+        type: 'oauth2',
+        test: testFn,
+        fields: [{ key: 'access_token' }],
+      },
+      beforeRequest: [
+        (req, z, bundle) => {
+          if (req.withUserToken) {
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+          }
+          return req;
+        },
+      ],
+    });
+
+    it('honours a flag passed on a single object argument', async () => {
+      // createRequestOptions only merges when the first arg is a string; an
+      // object first arg is used as-is, matching the real client.
+      const testFn = async (z) => {
+        const res = await z.request({
+          url: 'https://example.com/api/auth.test',
+          withUserToken: true,
+        });
+        return res.data;
+      };
+      const result = await run(oauth2App(testFn));
+      result.supported.should.be.true();
+      result.source.should.eql('authentication.test');
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+    });
+
+    it('honours a flag passed as the second argument', async () => {
+      const testFn = async (z) => {
+        const res = await z.request('https://example.com/api/auth.test', {
+          withUserToken: true,
+        });
+        return res.data;
+      };
+      const result = await run(oauth2App(testFn));
+      result.supported.should.be.true();
+      result.source.should.eql('authentication.test');
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+    });
+
+    it('merges headers supplied via the second argument', async () => {
+      const testFn = async (z) => {
+        const res = await z.request('https://example.com/me', {
+          headers: { 'X-Api-Key': '{{bundle.authData.api_key}}' },
+        });
+        return res.data;
+      };
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: testFn,
+          fields: [{ key: 'api_key' }],
+        },
+      });
+      result.supported.should.be.true();
+      result.template.headers['X-Api-Key'].should.eql(
+        '{{bundle.authData.api_key}}',
+      );
+    });
+  });
+
+  describe('customRequestProperties', () => {
+    // customRequestProperties arrives on the bundle from the request client. It
+    // must reach the app's beforeRequest middleware, but its values are
+    // per-connection and must never appear in the emitted template.
+    const runWithCustom = (compiledApp, customRequestProperties) =>
+      getAuthTemplate(
+        compiledApp,
+        buildInput(compiledApp, { customRequestProperties }),
+      );
+
+    it('exposes custom properties to beforeRequest', async () => {
+      let seen;
+      const beforeRequest = (req, z, bundle) => {
+        seen = req.subdomain;
+        req.headers = req.headers || {};
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+        return req;
+      };
+      const result = await runWithCustom(
+        {
+          authentication: {
+            type: 'oauth2',
+            test: STUB_TEST,
+            fields: [{ key: 'access_token' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { subdomain: 'acme' },
+      );
+      seen.should.eql('acme');
+      result.supported.should.be.true();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+      // The custom property itself is not part of the template
+      should(result.template.subdomain).be.undefined();
+      should(result.template.headers.subdomain).be.undefined();
+    });
+
+    it('does not let custom headers override the request headers', async () => {
+      // The request's own headers take precedence: custom headers neither
+      // replace nor merge into them, so nothing custom reaches the request.
+      let seen;
+      const beforeRequest = (req, z, bundle) => {
+        seen = { ...req.headers };
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+        return req;
+      };
+      const result = await runWithCustom(
+        {
+          authentication: {
+            type: 'oauth2',
+            test: STUB_TEST,
+            fields: [{ key: 'access_token' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { headers: { 'X-Tenant': 'acme-corp' } },
+      );
+      should(seen['X-Tenant']).be.undefined();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+      JSON.stringify(result.template).should.not.match(/acme-corp/);
+    });
+
+    it('keeps a custom-keyed header whose value middleware rewrote', async () => {
+      // The value changed, so it's the middleware's contribution now, not
+      // the raw per-connection value — it belongs in the template.
+      const beforeRequest = (req, z, bundle) => {
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+        return req;
+      };
+      const result = await runWithCustom(
+        {
+          authentication: {
+            type: 'oauth2',
+            test: STUB_TEST,
+            fields: [{ key: 'access_token' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { headers: { Authorization: 'Bearer raw-secret' } },
+      );
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+    });
+
+    it("preserves an auth.test object's own headers against custom headers", async () => {
+      // The auth.test request declares Accept; a custom headers object must
+      // not displace it. Defaults win, so Accept survives and X-Tenant
+      // never arrives.
+      let seen;
+      const beforeRequest = (req, z, bundle) => {
+        seen = { ...req.headers };
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+        return req;
+      };
+      const result = await runWithCustom(
+        {
+          authentication: {
+            type: 'oauth2',
+            test: {
+              url: 'https://example.com',
+              headers: { Accept: 'application/vnd.v2+json' },
+            },
+            fields: [{ key: 'access_token' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { headers: { 'X-Tenant': 'acme' } },
+      );
+      seen.Accept.should.eql('application/vnd.v2+json');
+      should(seen['X-Tenant']).be.undefined();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+    });
+
+    it('does not let custom params override the request params', async () => {
+      let seen;
+      const beforeRequest = (req, z, bundle) => {
+        seen = { ...req.params };
+        req.params.api_key = bundle.authData.api_key;
+        return req;
+      };
+      const result = await runWithCustom(
+        {
+          authentication: {
+            type: 'custom',
+            test: STUB_TEST,
+            fields: [{ key: 'api_key' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { params: { region: 'us-east-1' } },
+      );
+      should(seen.region).be.undefined();
+      result.template.params.api_key.should.eql('{{bundle.authData.api_key}}');
+      JSON.stringify(result.template).should.not.match(/us-east-1/);
+    });
+
+    it('does not let custom properties override url or plumbing', async () => {
+      let seenUrl;
+      const beforeRequest = (req, z, bundle) => {
+        seenUrl = req.url;
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+        return req;
+      };
+      const result = await runWithCustom(
+        {
+          authentication: {
+            type: 'oauth2',
+            test: { url: 'https://api.example.com/me' },
+            fields: [{ key: 'access_token' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { url: 'https://evil.example.com', merge: false },
+      );
+      seenUrl.should.eql('https://api.example.com/me');
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+    });
+
+    it('exposes custom properties from authentication.test function in beforeRequest', async () => {
+      const testFn = async (z, bundle) => {
+        const res = await z.request({
+          url: 'https://api.example.com/me',
+          headers: { Authorization: `Bearer ${bundle.authData.access_token}` },
+          subdomain: 'acme', // custom request property passed in authentication.test
+        });
+        return res.data;
+      };
+      let seen;
+      const beforeRequest = (req) => {
+        seen = req.subdomain;
+        return req;
+      };
+
+      const compiledApp = {
+        authentication: {
+          type: 'oauth2',
+          test: testFn,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [beforeRequest],
+      };
+      const result = await getAuthTemplate(
+        compiledApp,
+        buildInput(compiledApp),
+      );
+
+      seen.should.eql('acme');
+      result.supported.should.be.true();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+      should(result.template.subdomain).be.undefined();
+    });
+
+    it('keeps custom body, form, and json out of the template', async () => {
+      // sugarBody moves req.form and req.json into req.body, so they reach
+      // the template by the same route a custom body would.
+      for (const custom of [
+        { body: { tenant: 'acme-corp' }, allowGetBody: true },
+        { json: { tenant: 'acme-corp' }, allowGetBody: true },
+        { form: { tenant: 'acme-corp' }, allowGetBody: true },
+      ]) {
+        const result = await runWithCustom(
+          {
+            authentication: {
+              type: 'custom',
+              // A test function that makes no request, so the middleware-path
+              // template is what gets returned.
+              test: async () => ({}),
+              fields: [{ key: 'api_key' }],
+            },
+            beforeRequest: [
+              (req, z, bundle) => {
+                req.headers['X-Api-Key'] = bundle.authData.api_key;
+                return req;
+              },
+            ],
+          },
+          custom,
+        );
+
+        result.supported.should.be.true();
+        result.template.headers['X-Api-Key'].should.eql(
+          '{{bundle.authData.api_key}}',
+        );
+        JSON.stringify(result.template).should.not.match(/acme-corp/);
+      }
+    });
+
+    it('behaves exactly as before when the bundle has no custom properties', async () => {
+      const app = {
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+            return req;
+          },
+        ],
+      };
+      const withEmpty = await runWithCustom(app, {});
+      const withNone = await run(app);
+      withEmpty.should.deepEqual(withNone);
+    });
+  });
+
   describe('fallback when nothing captures auth', () => {
     it('returns supported: true with empty template when there is no path to capture auth', async () => {
       // Auth declared but no beforeRequest, no requestTemplate, and no
