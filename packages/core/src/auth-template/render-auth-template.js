@@ -110,7 +110,7 @@ const renderAuthTemplate = async (compiledApp, input) => {
   // produces a signature for the wrong request.
   //
   // customRequestProperties carries integration-internal middleware flags
-  // (e.g. Slack's `withUserToken: true`) that control which credential the
+  // (e.g. `withUserToken: true`) that control which credential the
   // integration's beforeRequest injects. They are spread onto the synthetic
   // request below — kept separate from targetRequest because they are not
   // HTTP fields and must not participate in signature computation.
