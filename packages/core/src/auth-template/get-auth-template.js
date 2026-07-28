@@ -293,12 +293,19 @@ const createUrlProbe = (baseUrl, matchAll) => {
 const extractTemplate = (req) => {
   const template = {};
 
+  // A body without placeholders is the auth test's own payload, not auth.
+  const body = req.body && hasAuthPlaceholders(req.body) ? req.body : null;
+
   if (req.headers) {
     const headers = { ...req.headers };
-    // Strip transport-level headers that shouldn't be in the auth template
+    // Transport headers aren't auth; content-type travels with the body.
     for (const key of Object.keys(headers)) {
       const lower = key.toLowerCase();
-      if (lower === 'content-length') {
+      if (
+        lower === 'content-length' ||
+        lower === 'user-agent' ||
+        (lower === 'content-type' && !body)
+      ) {
         delete headers[key];
       }
     }
@@ -338,8 +345,8 @@ const extractTemplate = (req) => {
     template.params = params;
   }
 
-  if (req.body) {
-    template.body = req.body;
+  if (body) {
+    template.body = body;
   }
 
   return template;
