@@ -103,12 +103,18 @@ const renderAuthTemplate = async (compiledApp, input) => {
 
   // Ensure all bundle fields are populated so middleware doesn't crash
   // accessing e.g. bundle.inputData.someField or bundle.meta.isLoadingSample
+  //
+  // targetRequest carries the partner request being proxied. Signature-based
+  // auth (AWS SigV4, OAuth1, HMAC) needs the real url/method/body to compute
+  // a valid signature; absent it, the middleware runs against a stub and
+  // produces a signature for the wrong request.
   const bundle = {
     authData: eventBundle.authData || {},
     inputData: eventBundle.inputData || {},
     meta: eventBundle.meta || {},
     subscribeData: eventBundle.subscribeData || {},
     targetUrl: eventBundle.targetUrl || '',
+    targetRequest: eventBundle.targetRequest || null,
   };
 
   // Rebuild input with the fully-populated bundle so prepareRequest
@@ -213,12 +219,14 @@ const renderAuthTemplate = async (compiledApp, input) => {
     extraArgs: [stubZ, bundle],
   });
 
+  const target = bundle.targetRequest || {};
   try {
     await client({
-      url: 'https://example.com',
-      method: 'GET',
-      headers: {},
-      params: {},
+      url: target.url || 'https://example.com',
+      method: target.method || 'GET',
+      headers: target.headers || {},
+      params: target.params || {},
+      body: target.body,
       merge: true,
       [REPLACE_CURLIES]: true,
     });
