@@ -228,13 +228,16 @@ const renderAuthTemplate = async (compiledApp, input) => {
 
   const target = bundle.targetRequest || {};
   try {
+    // customRequestProperties is spread first so the explicit HTTP fields
+    // below always win — registry-supplied flags must never clobber the
+    // request being signed.
     await client({
+      ...bundle.customRequestProperties,
       url: target.url || 'https://example.com',
       method: target.method || 'GET',
       headers: target.headers || {},
       params: target.params || {},
       body: target.body,
-      ...bundle.customRequestProperties,
       merge: true,
       [REPLACE_CURLIES]: true,
     });

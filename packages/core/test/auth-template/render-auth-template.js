@@ -284,6 +284,37 @@ describe('renderAuthTemplate', () => {
         result.template.headers.Authorization === undefined).should.be.true();
     });
 
+    it('cannot clobber HTTP fields of the target request', async () => {
+      let observed = null;
+      const observingMiddleware = (req, z, bundle) => {
+        observed = { url: req.url, method: req.method };
+        return slackShapedMiddleware(req, z, bundle);
+      };
+      const result = await run(
+        {
+          ...slackShapedApp,
+          beforeRequest: [observingMiddleware],
+        },
+        slackShapedAuthData,
+        {
+          targetRequest: {
+            url: 'https://slack.com/api/chat.postMessage',
+            method: 'POST',
+          },
+          customRequestProperties: {
+            withUserToken: true,
+            url: 'https://evil.example.com',
+            method: 'DELETE',
+          },
+        },
+      );
+      observed.url.should.eql('https://slack.com/api/chat.postMessage');
+      observed.method.should.eql('POST');
+      result.template.headers.Authorization.should.eql(
+        'Bearer xoxp-user-token',
+      );
+    });
+
     it('combines with targetRequest without clobbering HTTP fields', async () => {
       let observed = null;
       const observingMiddleware = (req, z, bundle) => {
