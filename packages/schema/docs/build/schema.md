@@ -25,6 +25,7 @@ Alternatively, modify the URL directly: https://github.com/zapier/zapier-platfor
 * [/AuthenticationDigestConfigSchema](#authenticationdigestconfigschema)
 * [/AuthenticationOAuth1ConfigSchema](#authenticationoauth1configschema)
 * [/AuthenticationOAuth2ConfigSchema](#authenticationoauth2configschema)
+* [/AuthenticationOIDCFederationConfigSchema](#authenticationoidcfederationconfigschema)
 * [/AuthenticationSchema](#authenticationschema)
 * [/AuthenticationSessionConfigSchema](#authenticationsessionconfigschema)
 * [/BasicActionOperationSchema](#basicactionoperationschema)
@@ -415,6 +416,33 @@ Key | Required | Type | Description
 
 -----
 
+## /AuthenticationOIDCFederationConfigSchema
+
+Config for OIDC federation authentication.
+
+#### Details
+
+* **Type** - `object`
+* [**Source Code**](https://github.com/zapier/zapier-platform/blob/zapier-platform-schema@19.0.0/packages/schema/lib/schemas/AuthenticationOIDCFederationConfigSchema.js)
+
+#### Properties
+
+Key | Required | Type | Description
+--- | -------- | ---- | -----------
+`perform` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | Define how Zapier fetches the additional authData needed to make API calls.
+`audience` | **yes** | `string` | The service the OIDC token is generated for.
+
+#### Examples
+
+* `{ perform: { require: 'some/path/to/file.js' }, audience: 'sts.amazonaws.com' }`
+
+#### Anti-Examples
+
+* `{}` - _Missing required key: perform and audience_
+* `{ perform: { require: 'some/path/to/file.js' } }` - _Missing required key: audience_
+
+-----
+
 ## /AuthenticationSchema
 
 Represents authentication schemes.
@@ -428,7 +456,7 @@ Represents authentication schemes.
 
 Key | Required | Type | Description
 --- | -------- | ---- | -----------
-`type` | **yes** | `string` in (`'basic'`, `'custom'`, `'digest'`, `'oauth1'`, `'oauth2'`, `'session'`) | Choose which scheme you want to use.
+`type` | **yes** | `string` in (`'basic'`, `'custom'`, `'digest'`, `'oauth1'`, `'oauth2'`, `'session'`, `'oidcFederation'`) | Choose which scheme you want to use.
 `test` | **yes** | oneOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema)) | A function or request that confirms the authentication is working.
 `fields` | no | [/AuthFieldsSchema](#authfieldsschema) | Fields you can request from the user before they connect your app to Zapier.
 `connectionLabel` | no | anyOf([/RequestSchema](#requestschema), [/FunctionSchema](#functionschema), `string`) | A string with variables, function, or request that returns the connection label for the authenticated user.
@@ -438,6 +466,7 @@ Key | Required | Type | Description
 `oauth1Config` | no | [/AuthenticationOAuth1ConfigSchema](#authenticationoauth1configschema) | _No description given._
 `oauth2Config` | no | [/AuthenticationOAuth2ConfigSchema](#authenticationoauth2configschema) | _No description given._
 `sessionConfig` | no | [/AuthenticationSessionConfigSchema](#authenticationsessionconfigschema) | _No description given._
+`oidcFederationConfig` | no | [/AuthenticationOIDCFederationConfigSchema](#authenticationoidcfederationconfigschema) | _No description given._
 
 #### Examples
 
