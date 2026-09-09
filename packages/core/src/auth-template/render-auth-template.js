@@ -31,8 +31,25 @@ const extractTemplate = (capturedReq) => {
     }
   }
 
+  const params = {};
   if (capturedReq.params && Object.keys(capturedReq.params).length > 0) {
-    template.params = capturedReq.params;
+    Object.assign(params, capturedReq.params);
+  }
+  // addQueryParams moves req.params onto the URL and deletes req.params.
+  if (capturedReq.url) {
+    try {
+      const parsed = new URL(capturedReq.url);
+      for (const [key, value] of parsed.searchParams.entries()) {
+        if (!(key in params)) {
+          params[key] = value;
+        }
+      }
+    } catch {
+      // URL might have unresolved placeholders
+    }
+  }
+  if (Object.keys(params).length > 0) {
+    template.params = params;
   }
 
   if (capturedReq.body) {
