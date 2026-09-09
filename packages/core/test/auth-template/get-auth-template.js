@@ -385,7 +385,9 @@ describe('getAuthTemplate', () => {
         beforeRequest: [beforeRequest],
       });
       result.supported.should.be.true();
-      result.template.headers['api-key'].should.eql('{{bundle.authData.apiKey}}');
+      result.template.headers['api-key'].should.eql(
+        '{{bundle.authData.apiKey}}',
+      );
       // undefined-valued headers drop when the template is serialized to JSON.
       const serialized = JSON.parse(JSON.stringify(result.template));
       serialized.headers.should.not.have.property('company-id');
@@ -1407,6 +1409,106 @@ describe('getAuthTemplate', () => {
       result.template.headers.should.not.have.property('content-length');
     });
   });
+
+  describe('derived auth params stripped by extractTemplate', () => {
+    const crypto = require('crypto');
+
+    const facebookLikeBeforeRequest = (req, z, bundle) => {
+      req.headers = req.headers || {};
+      req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+      const token = bundle.authData.access_token;
+      const time = Math.floor(Date.now() / 1000);
+      const appsecretProof = crypto
+        .createHmac('sha256', 'test-secret')
+        .update(`${token}|${time}`)
+        .digest('hex');
+      req.params = {
+        ...req.params,
+        appsecret_proof: appsecretProof,
+        appsecret_time: time,
+      };
+      return req;
+    };
+
+    it('returns stripped_derived_params when middleware computes appsecret_proof', async () => {
+      const result = await run({
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [facebookLikeBeforeRequest],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('appsecret_proof');
+      result.strippedParams.should.containEql('appsecret_time');
+    });
+
+    it('returns stripped_derived_params when auth.test calls z.request through the pipeline', async () => {
+      const result = await run({
+        authentication: {
+          type: 'oauth2',
+          fields: [{ key: 'access_token' }],
+          test: async (z) =>
+            z.request({ url: 'https://graph.facebook.com/me' }),
+        },
+        beforeRequest: [facebookLikeBeforeRequest],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('appsecret_proof');
+    });
+
+    it('stays supported when params use auth placeholders', async () => {
+      const beforeRequest = (req, z, bundle) => {
+        req.params = req.params || {};
+        req.params.api_key = bundle.authData.api_key;
+        return req;
+      };
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [beforeRequest],
+      });
+      result.supported.should.be.true();
+      result.template.params.api_key.should.eql('{{bundle.authData.api_key}}');
+    });
+
+    it('does not flag test-only params excluded from capture', async () => {
+      const beforeRequest = (req, z, bundle) => {
+        req.headers = req.headers || {};
+        req.headers['X-Primary'] = bundle.authData.primary_key;
+        return req;
+      };
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: {
+            url: 'https://example.com',
+            headers: { 'X-Secondary': '{{bundle.authData.secondary_key}}' },
+            params: {
+              alt_key: '{{bundle.authData.alt_key}}',
+              from_test: 'true',
+            },
+          },
+          fields: [
+            { key: 'primary_key' },
+            { key: 'secondary_key' },
+            { key: 'alt_key' },
+          ],
+        },
+        beforeRequest: [beforeRequest],
+      });
+      result.supported.should.be.true();
+      result.source.should.eql('authentication.test');
+      result.template.params.should.not.have.property('from_test');
+    });
+  });
+
   describe('legacy session auth with an empty auth mapping', () => {
     // An empty legacy auth mapping makes the scripting middleware write the
     // whole credential set into the request. Under capture those values are
