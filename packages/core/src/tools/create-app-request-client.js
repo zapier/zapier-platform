@@ -59,6 +59,7 @@ const createAppRequestClient = (input, options) => {
   if (
     app.authentication &&
     (app.authentication.type === 'session' ||
+      app.authentication.type === 'oidcFederation' ||
       (app.authentication.type === 'oauth2' &&
         _.get(app, 'authentication.oauth2Config.autoRefresh')))
   ) {

@@ -648,6 +648,30 @@
       },
       "additionalProperties": false
     },
+    "AuthenticationOIDCFederationConfigSchema": {
+      "id": "/AuthenticationOIDCFederationConfigSchema",
+      "description": "Config for OIDC federation authentication.",
+      "type": "object",
+      "required": ["perform", "audience"],
+      "properties": {
+        "perform": {
+          "description": "Define how Zapier fetches the additional authData needed to make API calls.",
+          "oneOf": [
+            {
+              "$ref": "/RequestSchema"
+            },
+            {
+              "$ref": "/FunctionSchema"
+            }
+          ]
+        },
+        "audience": {
+          "description": "The service the OIDC token is generated for.",
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
     "RefResourceSchema": {
       "id": "/RefResourceSchema",
       "description": "Reference a resource by key and the data it returns. In the format of: `{resource_key}.{foreign_key}(.{human_label_key})`.",
@@ -2037,7 +2061,15 @@
         "type": {
           "description": "Choose which scheme you want to use.",
           "type": "string",
-          "enum": ["basic", "custom", "digest", "oauth1", "oauth2", "session"]
+          "enum": [
+            "basic",
+            "custom",
+            "digest",
+            "oauth1",
+            "oauth2",
+            "session",
+            "oidcFederation"
+          ]
         },
         "test": {
           "description": "A function or request that confirms the authentication is working.",
@@ -2085,6 +2117,9 @@
         },
         "sessionConfig": {
           "$ref": "/AuthenticationSessionConfigSchema"
+        },
+        "oidcFederationConfig": {
+          "$ref": "/AuthenticationOIDCFederationConfigSchema"
         }
       },
       "additionalProperties": false
