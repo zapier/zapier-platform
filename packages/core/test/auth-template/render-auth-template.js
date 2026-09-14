@@ -134,6 +134,60 @@ describe('renderAuthTemplate', () => {
       result.error.should.match(/middleware blew up/);
       result.template.should.deepEqual({});
     });
+
+    it('extracts params moved onto the URL by addQueryParams', async () => {
+      const beforeRequest = (req, z, bundle) => {
+        req.params = { ...req.params, api_key: bundle.authData.api_key };
+        return req;
+      };
+      const result = await run(
+        {
+          authentication: {
+            type: 'custom',
+            test: { url: 'https://example.com' },
+            fields: [{ key: 'api_key' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { api_key: 'real-key-abc' },
+      );
+      result.template.params.api_key.should.eql('real-key-abc');
+    });
+
+    it('extracts computed query params when targetRequest is absent', async () => {
+      const crypto = require('crypto');
+      const beforeRequest = (req, z, bundle) => {
+        req.headers = req.headers || {};
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+        const time = Math.floor(Date.now() / 1000);
+        const appsecretProof = crypto
+          .createHmac('sha256', 'test-secret')
+          .update(`${bundle.authData.access_token}|${time}`)
+          .digest('hex');
+        req.params = {
+          ...req.params,
+          appsecret_proof: appsecretProof,
+          appsecret_time: time,
+        };
+        return req;
+      };
+      const result = await run(
+        {
+          authentication: {
+            type: 'oauth2',
+            test: { url: 'https://example.com' },
+            fields: [{ key: 'access_token' }],
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { access_token: 'real-token-123' },
+      );
+      result.template.headers.Authorization.should.eql('Bearer real-token-123');
+      result.template.params.should.have
+        .property('appsecret_proof')
+        .which.is.a.String();
+      result.template.params.should.have.property('appsecret_time');
+    });
   });
 
   describe('targetRequest', () => {
@@ -268,10 +322,7 @@ describe('renderAuthTemplate', () => {
     });
 
     it('takes the middleware default path when absent', async () => {
-      const result = await run(
-        credentialSwitchingApp,
-        multiCredentialAuthData,
-      );
+      const result = await run(credentialSwitchingApp, multiCredentialAuthData);
       result.template.headers.Authorization.should.eql('Bearer service-token');
     });
 
@@ -294,8 +345,10 @@ describe('renderAuthTemplate', () => {
           customRequestProperties: { withManualToken: true },
         },
       );
-      (result.template.headers === undefined ||
-        result.template.headers.Authorization === undefined).should.be.true();
+      (
+        result.template.headers === undefined ||
+        result.template.headers.Authorization === undefined
+      ).should.be.true();
     });
 
     it('cannot clobber HTTP fields of the target request', async () => {

@@ -36,7 +36,10 @@ const AUTH_SENTINEL_RE = /__placeholder_auth__(.+?)__end_placeholder__/g;
 // Returns a new object; the input is not mutated.
 const sentinelsToCurlies = (value) => {
   if (typeof value === 'string') {
-    return value.replace(AUTH_SENTINEL_RE, (_, k) => `{{bundle.authData.${k}}}`);
+    return value.replace(
+      AUTH_SENTINEL_RE,
+      (_, k) => `{{bundle.authData.${k}}}`,
+    );
   }
   if (Array.isArray(value)) {
     return value.map(sentinelsToCurlies);
@@ -60,6 +63,77 @@ const hasAuthPlaceholders = (obj) => {
   );
 };
 
+const getCapturedParams = (req) => {
+  const params = {};
+  if (req.params) {
+    for (const [key, value] of Object.entries(req.params)) {
+      params[key] = value;
+    }
+  }
+  if (req.url) {
+    try {
+      const parsed = new URL(req.url);
+      for (const [key, value] of parsed.searchParams.entries()) {
+        if (!(key in params)) {
+          params[key] = value;
+        }
+      }
+    } catch {
+      // URL might have unresolved placeholders
+    }
+  }
+  return params;
+};
+
+const paramValueWouldSurviveExtraction = (value) => {
+  if (typeof value === 'string') {
+    return (
+      value.includes(AUTH_SENTINEL_OPEN) ||
+      /\{\{bundle\.authData\./.test(value) ||
+      /\{\{process\.env\./.test(value)
+    );
+  }
+  if (Array.isArray(value) || (value && typeof value === 'object')) {
+    return hasAuthPlaceholders(value);
+  }
+  return false;
+};
+
+// Params present on the captured request that extractTemplate dropped because
+// middleware computed them (e.g. HMAC appsecret_proof) instead of emitting a
+// placeholder.
+const findStrippedDerivedAuthParams = (
+  req,
+  template,
+  excludedParamKeys = new Set(),
+) => {
+  const capturedParams = getCapturedParams(req);
+  const templateParams = template.params || {};
+  const strippedParams = [];
+
+  for (const [key, value] of Object.entries(capturedParams)) {
+    if (excludedParamKeys.has(key)) {
+      continue;
+    }
+    if (key in templateParams) {
+      continue;
+    }
+    if (paramValueWouldSurviveExtraction(value)) {
+      continue;
+    }
+    strippedParams.push(key);
+  }
+
+  return strippedParams;
+};
+
+const strippedDerivedParamsResult = (authType, strippedParams) => ({
+  supported: false,
+  reason: 'stripped_derived_params',
+  authType,
+  strippedParams,
+});
+
 // Check if auth field placeholders were consumed by encoding (e.g.,
 // base64). Returns true if the template has placeholders but none of
 // them are bundle.authData, AND the app has declared auth fields that
@@ -72,12 +146,31 @@ const hasAuthPlaceholders = (obj) => {
 // oauth2's access_token, etc.) aren't a strong "I expect this in the
 // request" signal — apps may use process.env exclusively and never
 // reference standard fields, which would be a false positive here.
-const supportedResult = (authType, source, template, auth, legacyDump) => {
+const supportedResult = (
+  authType,
+  source,
+  template,
+  auth,
+  legacyDump,
+  captureContext = {},
+) => {
   // An empty legacy auth mapping dumps the whole credential set. Under capture
   // those values are placeholders, so the template names credentials the app
   // may never populate.
   if (legacyDump) {
     return { supported: false, reason: 'legacy_authdata_dump', authType };
+  }
+
+  const { capturedReq, excludedParamKeys } = captureContext;
+  if (capturedReq) {
+    const strippedParams = findStrippedDerivedAuthParams(
+      capturedReq,
+      template,
+      excludedParamKeys,
+    );
+    if (strippedParams.length > 0) {
+      return strippedDerivedParamsResult(authType, strippedParams);
+    }
   }
 
   if (template && Object.keys(template).length > 0) {
@@ -416,6 +509,7 @@ const runMiddlewareSurvival = async (
   placeholderAuthData,
   { url = 'https://example.com', urlProbe, reqOverrides = {}, cachedZap } = {},
 ) => {
+  const excludedParamKeys = new Set(Object.keys(reqOverrides.params || {}));
   const syntheticInput = buildSyntheticInput(input, placeholderAuthData);
 
   const httpBefores = [
@@ -506,10 +600,15 @@ const runMiddlewareSurvival = async (
   }
 
   if (!capturedReq) {
-    return { template: {} };
+    return { template: {}, excludedParamKeys };
   }
 
-  return { legacyAuthDump, template: extractTemplate(capturedReq) };
+  return {
+    legacyAuthDump,
+    template: extractTemplate(capturedReq),
+    capturedReq,
+    excludedParamKeys,
+  };
 };
 
 // Run placeholder authData through authentication.test (when it's a function).
@@ -616,6 +715,8 @@ const runTestFunctionSurvival = async (
         legacyAuthDump,
         template: extractTemplate(capturedReq),
         requestMade: true,
+        capturedReq,
+        excludedParamKeys: new Set(),
       };
     }
     return { template: {}, requestMade: false, error: err.message };
@@ -629,6 +730,8 @@ const runTestFunctionSurvival = async (
     legacyAuthDump,
     template: extractTemplate(capturedReq),
     requestMade: true,
+    capturedReq,
+    excludedParamKeys: new Set(),
   };
 };
 
@@ -664,6 +767,8 @@ const getAuthTemplate = async (compiledApp, input) => {
 
   const placeholderAuthData = buildPlaceholderAuthData(auth);
   let beforeRequestTemplate;
+  let beforeRequestCapturedReq;
+  let beforeRequestExcludedParamKeys = new Set();
   let beforeRequestFailed = false;
 
   const beforeRequest = ensureArray(compiledApp.beforeRequest);
@@ -708,13 +813,25 @@ const getAuthTemplate = async (compiledApp, input) => {
   // Run placeholder authData through the beforeRequest pipeline directly.
   // This captures auth injected by middleware (most common pattern).
   if (beforeRequest.length > 0) {
-    const { template, error, legacyAuthDump } = await runMiddlewareSurvival(
-      compiledApp,
-      input,
-      auth,
-      placeholderAuthData,
-    );
+    const { template, error, legacyAuthDump, capturedReq, excludedParamKeys } =
+      await runMiddlewareSurvival(
+        compiledApp,
+        input,
+        auth,
+        placeholderAuthData,
+      );
     sawLegacyDump = sawLegacyDump || legacyAuthDump;
+
+    if (!error && capturedReq) {
+      const strippedParams = findStrippedDerivedAuthParams(
+        capturedReq,
+        template,
+        excludedParamKeys,
+      );
+      if (strippedParams.length > 0) {
+        return strippedDerivedParamsResult(authType, strippedParams);
+      }
+    }
 
     if (error) {
       if (!auth.test) {
@@ -791,6 +908,8 @@ const getAuthTemplate = async (compiledApp, input) => {
             // produces a superset (e.g., adds per-operation auth headers from
             // legacy scripting hooks), we'll prefer that instead.
             beforeRequestTemplate = cleanTemplate(template);
+            beforeRequestCapturedReq = capturedReq;
+            beforeRequestExcludedParamKeys = excludedParamKeys;
           }
         } // end else (proxy check passed)
       }
@@ -818,22 +937,35 @@ const getAuthTemplate = async (compiledApp, input) => {
   if (auth.test && typeof auth.test !== 'function') {
     const placeholderAuthData = buildPlaceholderAuthData(auth);
     const testReq = auth.test;
-    const { template, error, legacyAuthDump } = await runMiddlewareSurvival(
-      compiledApp,
-      input,
-      auth,
-      placeholderAuthData,
-      {
-        url: testReq.url || 'https://example.com',
-        reqOverrides: {
-          method: testReq.method || 'GET',
-          headers: testReq.headers || {},
-          params: testReq.params || {},
-          body: testReq.body,
+    const testReqOverrides = {
+      method: testReq.method || 'GET',
+      headers: testReq.headers || {},
+      params: testReq.params || {},
+      body: testReq.body,
+    };
+    const { template, error, legacyAuthDump, capturedReq, excludedParamKeys } =
+      await runMiddlewareSurvival(
+        compiledApp,
+        input,
+        auth,
+        placeholderAuthData,
+        {
+          url: testReq.url || 'https://example.com',
+          reqOverrides: testReqOverrides,
         },
-      },
-    );
+      );
     sawLegacyDump = sawLegacyDump || legacyAuthDump;
+
+    if (!error && capturedReq) {
+      const strippedParams = findStrippedDerivedAuthParams(
+        capturedReq,
+        template,
+        excludedParamKeys,
+      );
+      if (strippedParams.length > 0) {
+        return strippedDerivedParamsResult(authType, strippedParams);
+      }
+    }
 
     if (error) {
       return {
@@ -843,13 +975,6 @@ const getAuthTemplate = async (compiledApp, input) => {
         error,
       };
     }
-
-    const testReqOverrides = {
-      method: testReq.method || 'GET',
-      headers: testReq.headers || {},
-      params: testReq.params || {},
-      body: testReq.body,
-    };
 
     if (hasAuthPlaceholders(template)) {
       // Divergence checks: authData proxy + URL probe
@@ -913,6 +1038,7 @@ const getAuthTemplate = async (compiledApp, input) => {
         cleanTemplate(template),
         auth,
         sawLegacyDump,
+        { capturedReq, excludedParamKeys },
       );
     }
 
@@ -925,13 +1051,19 @@ const getAuthTemplate = async (compiledApp, input) => {
 
   // --- Step 4: authentication.test is a function ---
   if (typeof auth.test === 'function') {
-    const { template, requestMade, error, legacyAuthDump } =
-      await runTestFunctionSurvival(
-        auth.test,
-        placeholderAuthData,
-        compiledApp,
-        input,
-      );
+    const {
+      template,
+      requestMade,
+      error,
+      legacyAuthDump,
+      capturedReq,
+      excludedParamKeys,
+    } = await runTestFunctionSurvival(
+      auth.test,
+      placeholderAuthData,
+      compiledApp,
+      input,
+    );
     sawLegacyDump = sawLegacyDump || legacyAuthDump;
 
     if (error && !requestMade) {
@@ -1004,6 +1136,10 @@ const getAuthTemplate = async (compiledApp, input) => {
             beforeRequestTemplate,
             auth,
             sawLegacyDump,
+            {
+              capturedReq: beforeRequestCapturedReq,
+              excludedParamKeys: beforeRequestExcludedParamKeys,
+            },
           );
         }
 
@@ -1013,6 +1149,7 @@ const getAuthTemplate = async (compiledApp, input) => {
           testTemplate,
           auth,
           sawLegacyDump,
+          { capturedReq, excludedParamKeys },
         );
       }
 
@@ -1023,6 +1160,10 @@ const getAuthTemplate = async (compiledApp, input) => {
           beforeRequestTemplate,
           auth,
           sawLegacyDump,
+          {
+            capturedReq: beforeRequestCapturedReq,
+            excludedParamKeys: beforeRequestExcludedParamKeys,
+          },
         );
       }
 
@@ -1043,6 +1184,10 @@ const getAuthTemplate = async (compiledApp, input) => {
       beforeRequestTemplate,
       auth,
       sawLegacyDump,
+      {
+        capturedReq: beforeRequestCapturedReq,
+        excludedParamKeys: beforeRequestExcludedParamKeys,
+      },
     );
   }
 
