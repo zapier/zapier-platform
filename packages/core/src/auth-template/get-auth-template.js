@@ -217,12 +217,33 @@ const SESSION_AUTH_COMMON_KEYS = [
   'token',
 ];
 
+// The authData keys a connection actually populated, sent by the request
+// client as `bundle.populatedAuthFields` (names only, never values). `null`
+// means the caller has no connection in hand — `zapier invoke auth template`
+// passes an empty bundle by design — and the auth schema alone decides the
+// placeholders, which is the right answer for an app with one credential
+// shape and the wrong one to guess at for any other.
+//
+// A multi-credential integration (API key OR OAuth, or a declared-optional
+// credential) branches in its middleware on which fields a connection has.
+// Giving every schema field a placeholder makes all of those branches look
+// present at once, so the captured template carries whichever branch won: an
+// OAuth Authorization header served to API-key connections, or a header for an
+// optional field the customer left blank. Restricting the placeholders to the
+// fields this connection populated captures the branch it actually takes.
+const getPopulatedAuthFields = (input) => {
+  const fields = input?._zapier?.event?.bundle?.populatedAuthFields;
+  // An empty list is a real shape (a connection with no populated
+  // credentials), distinct from the key being absent.
+  return fields ? new Set(fields) : null;
+};
+
 // Build placeholder authData where each value is an opaque sentinel
 // string. Sentinels survive core's normalize/curly-stripping and any
 // stringification middleware does, so the captured request still
 // contains them verbatim. cleanTemplate converts sentinels back to
 // {{bundle.authData.X}} on the way out.
-const buildPlaceholderAuthData = (auth) => {
+const buildSchemaPlaceholderAuthData = (auth) => {
   const authData = {};
 
   for (const field of auth.fields || []) {
@@ -275,6 +296,79 @@ const buildPlaceholderAuthData = (auth) => {
   return authData;
 };
 
+// Placeholder authData for one connection shape: the schema's placeholders,
+// minus the fields this connection did not populate.
+const buildPlaceholderAuthData = (auth, populatedFields = null) => {
+  const authData = buildSchemaPlaceholderAuthData(auth);
+  if (!populatedFields) {
+    return authData;
+  }
+  for (const key of Object.keys(authData)) {
+    if (!populatedFields.has(key)) {
+      delete authData[key];
+    }
+  }
+  return authData;
+};
+
+// Drop template entries that reference an authData key this connection does
+// not have. Restricting the placeholders is not enough on its own: a literal
+// {{bundle.authData.X}} written into an authentication.test request or a
+// requestTemplate is not produced by a placeholder, so it survives capture
+// unresolved and would be baked into the template shared by every connection
+// of this shape.
+const dropAbsentAuthEntries = (template, absentAuthFields) => {
+  if (!template || !absentAuthFields || absentAuthFields.size === 0) {
+    return template;
+  }
+  const patterns = [...absentAuthFields].map(
+    (key) =>
+      new RegExp(
+        `\\{\\{\\s*bundle\\.authData\\.${key.replace(
+          /[.*+?^${}()|[\]\\]/g,
+          '\\$&',
+        )}\\s*\\}\\}`,
+      ),
+  );
+  const referencesAbsentField = (value) => {
+    const serialized =
+      typeof value === 'string' ? value : JSON.stringify(value) || '';
+    return patterns.some((pattern) => pattern.test(serialized));
+  };
+
+  const kept = {};
+  for (const [section, value] of Object.entries(template)) {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const entries = {};
+      for (const [key, entry] of Object.entries(value)) {
+        if (!referencesAbsentField(entry)) {
+          entries[key] = entry;
+        }
+      }
+      if (Object.keys(entries).length > 0) {
+        kept[section] = entries;
+      }
+    } else if (!referencesAbsentField(value)) {
+      kept[section] = value;
+    }
+  }
+  return kept;
+};
+
+// Keys the schema could placeholder that this connection does not have.
+// buildProxyAuthData must read these as absent instead of fabricating a
+// value: their absence is precisely what the capture needs to observe.
+const knownAbsentAuthFields = (auth, populatedFields) => {
+  if (!populatedFields) {
+    return new Set();
+  }
+  return new Set(
+    Object.keys(buildSchemaPlaceholderAuthData(auth)).filter(
+      (key) => !populatedFields.has(key),
+    ),
+  );
+};
+
 // Check if template A is a superset of template B (all keys in B exist in A
 // with the same values, but A may have extra keys).
 const isSuperset = (a, b) => {
@@ -301,7 +395,13 @@ const isSuperset = (a, b) => {
 // undeclared key accessed by middleware. Used for divergence detection:
 // if middleware branches on undeclared authData fields, the Proxy run will
 // produce a different template than the plain run.
-const buildProxyAuthData = (placeholderAuthData) =>
+//
+// `knownAbsentKeys` are exempt: a field the schema declares but this
+// connection left empty is genuinely absent at render time, not an unknown.
+// Fabricating a value for one would make the two runs diverge and demote
+// every multi-credential app to the per-request render path — the outcome
+// connection shape exists to avoid.
+const buildProxyAuthData = (placeholderAuthData, knownAbsentKeys = new Set()) =>
   new Proxy(placeholderAuthData, {
     get(target, prop) {
       if (prop in target) {
@@ -311,9 +411,15 @@ const buildProxyAuthData = (placeholderAuthData) =>
       if (typeof prop === 'symbol') {
         return undefined;
       }
+      if (knownAbsentKeys.has(prop)) {
+        return undefined;
+      }
       return `__undeclared_${prop}__`;
     },
     has(target, prop) {
+      if (typeof prop === 'string' && knownAbsentKeys.has(prop)) {
+        return false;
+      }
       // Make `'key' in authData` return true for any string key
       return typeof prop === 'string' || prop in target;
     },
@@ -765,7 +871,25 @@ const getAuthTemplate = async (compiledApp, input) => {
     return { supported: false, reason: 'basic', authType };
   }
 
-  const placeholderAuthData = buildPlaceholderAuthData(auth);
+  const populatedAuthFields = getPopulatedAuthFields(input);
+  const absentAuthFields = knownAbsentAuthFields(auth, populatedAuthFields);
+  const placeholderAuthData = buildPlaceholderAuthData(
+    auth,
+    populatedAuthFields,
+  );
+
+  // Every supported return goes through here, so the connection shape is
+  // applied to the template whichever path produced it.
+  const supported = (source, template, legacyDump, captureContext) =>
+    supportedResult(
+      authType,
+      source,
+      dropAbsentAuthEntries(template, absentAuthFields),
+      auth,
+      legacyDump,
+      captureContext,
+    );
+
   let beforeRequestTemplate;
   let beforeRequestCapturedReq;
   let beforeRequestExcludedParamKeys = new Set();
@@ -804,7 +928,7 @@ const getAuthTemplate = async (compiledApp, input) => {
         })) ||
       (cleaned.params && Object.keys(cleaned.params).length > 0);
     if (Object.keys(cleaned).length > 0 && hasAuthContent) {
-      return supportedResult(authType, 'requestTemplate', cleaned, auth);
+      return supported('requestTemplate', cleaned);
     }
     // requestTemplate has no auth content — fall through to Step 2
   }
@@ -846,7 +970,10 @@ const getAuthTemplate = async (compiledApp, input) => {
     } else {
       if (hasAuthPlaceholders(template)) {
         // Divergence check: authData proxy
-        const proxyAuthData = buildProxyAuthData(placeholderAuthData);
+        const proxyAuthData = buildProxyAuthData(
+          placeholderAuthData,
+          absentAuthFields,
+        );
         const { template: proxyTemplate, error: proxyError } =
           await runMiddlewareSurvival(compiledApp, input, auth, proxyAuthData);
 
@@ -935,7 +1062,10 @@ const getAuthTemplate = async (compiledApp, input) => {
   // Run it through the beforeRequest pipeline just like core's
   // executeRequest does, so auth headers/params are included.
   if (auth.test && typeof auth.test !== 'function') {
-    const placeholderAuthData = buildPlaceholderAuthData(auth);
+    const placeholderAuthData = buildPlaceholderAuthData(
+      auth,
+      populatedAuthFields,
+    );
     const testReq = auth.test;
     const testReqOverrides = {
       method: testReq.method || 'GET',
@@ -978,7 +1108,10 @@ const getAuthTemplate = async (compiledApp, input) => {
 
     if (hasAuthPlaceholders(template)) {
       // Divergence checks: authData proxy + URL probe
-      const proxyAuthData = buildProxyAuthData(placeholderAuthData);
+      const proxyAuthData = buildProxyAuthData(
+        placeholderAuthData,
+        absentAuthFields,
+      );
       const { template: proxyTemplate, error: proxyError } =
         await runMiddlewareSurvival(compiledApp, input, auth, proxyAuthData, {
           url: testReq.url || 'https://example.com',
@@ -1032,13 +1165,14 @@ const getAuthTemplate = async (compiledApp, input) => {
         };
       }
 
-      return supportedResult(
-        authType,
+      return supported(
         'authentication.test',
         cleanTemplate(template),
-        auth,
         sawLegacyDump,
-        { capturedReq, excludedParamKeys },
+        {
+          capturedReq,
+          excludedParamKeys,
+        },
       );
     }
 
@@ -1099,7 +1233,10 @@ const getAuthTemplate = async (compiledApp, input) => {
     } else {
       if (hasAuthPlaceholders(template)) {
         // Divergence check: run again with Proxy authData
-        const proxyAuthData = buildProxyAuthData(placeholderAuthData);
+        const proxyAuthData = buildProxyAuthData(
+          placeholderAuthData,
+          absentAuthFields,
+        );
         const { template: proxyTemplate, error: proxyError } =
           await runTestFunctionSurvival(
             auth.test,
@@ -1130,11 +1267,9 @@ const getAuthTemplate = async (compiledApp, input) => {
           beforeRequestTemplate &&
           !isSuperset(testTemplate, beforeRequestTemplate)
         ) {
-          return supportedResult(
-            authType,
+          return supported(
             'beforeRequest',
             beforeRequestTemplate,
-            auth,
             sawLegacyDump,
             {
               capturedReq: beforeRequestCapturedReq,
@@ -1143,22 +1278,16 @@ const getAuthTemplate = async (compiledApp, input) => {
           );
         }
 
-        return supportedResult(
-          authType,
-          'authentication.test',
-          testTemplate,
-          auth,
-          sawLegacyDump,
-          { capturedReq, excludedParamKeys },
-        );
+        return supported('authentication.test', testTemplate, sawLegacyDump, {
+          capturedReq,
+          excludedParamKeys,
+        });
       }
 
       if (beforeRequestTemplate) {
-        return supportedResult(
-          authType,
+        return supported(
           'beforeRequest',
           beforeRequestTemplate,
-          auth,
           sawLegacyDump,
           {
             capturedReq: beforeRequestCapturedReq,
@@ -1178,17 +1307,10 @@ const getAuthTemplate = async (compiledApp, input) => {
   // No authentication.test captured a request. Use beforeRequestTemplate
   // if available.
   if (beforeRequestTemplate) {
-    return supportedResult(
-      authType,
-      'beforeRequest',
-      beforeRequestTemplate,
-      auth,
-      sawLegacyDump,
-      {
-        capturedReq: beforeRequestCapturedReq,
-        excludedParamKeys: beforeRequestExcludedParamKeys,
-      },
-    );
+    return supported('beforeRequest', beforeRequestTemplate, sawLegacyDump, {
+      capturedReq: beforeRequestCapturedReq,
+      excludedParamKeys: beforeRequestExcludedParamKeys,
+    });
   }
 
   return { supported: true, authType, source: 'none', template: {} };
