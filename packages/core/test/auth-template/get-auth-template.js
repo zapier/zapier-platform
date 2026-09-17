@@ -1586,4 +1586,238 @@ describe('getAuthTemplate', () => {
       result.source.should.eql('requestTemplate');
     });
   });
+  describe('populatedAuthFields (connection shape)', () => {
+    // The request client sends the auth field names a connection populated, so
+    // the capture reflects the credential branch that connection takes rather
+    // than whichever branch won with every schema field placeholdered.
+    const runWithShape = (compiledApp, populatedAuthFields) =>
+      getAuthTemplate(
+        compiledApp,
+        buildInput(compiledApp, { populatedAuthFields }),
+      );
+
+    // Glean: middleware sets Authorization from api_token, then a second block
+    // overwrites it from access_token. With both placeholdered the OAuth
+    // branch always won, so API-token connections were served an
+    // {{bundle.authData.access_token}} they could not resolve.
+    const MULTI_CREDENTIAL_APP = {
+      authentication: {
+        type: 'custom',
+        test: STUB_TEST,
+        fields: [
+          { key: 'api_token', required: false },
+          { key: 'access_token', required: false },
+        ],
+      },
+      beforeRequest: [
+        (req, z, bundle) => {
+          if (bundle.authData.api_token) {
+            req.headers.Authorization = `Bearer ${bundle.authData.api_token}`;
+          }
+          if (bundle.authData.access_token) {
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+            req.headers['X-Auth-Type'] = 'OAUTH';
+          }
+          return req;
+        },
+      ],
+    };
+
+    it('captures the api-token branch for an api-token connection', async () => {
+      const result = await runWithShape(MULTI_CREDENTIAL_APP, ['api_token']);
+
+      result.supported.should.be.true();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.api_token}}',
+      );
+      should(result.template.headers['X-Auth-Type']).be.undefined();
+    });
+
+    it('captures the oauth branch for an oauth connection', async () => {
+      const result = await runWithShape(MULTI_CREDENTIAL_APP, ['access_token']);
+
+      result.supported.should.be.true();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+      result.template.headers['X-Auth-Type'].should.eql('OAUTH');
+    });
+
+    it('keeps the last-wins branch when a connection has both', async () => {
+      const result = await runWithShape(MULTI_CREDENTIAL_APP, [
+        'api_token',
+        'access_token',
+      ]);
+
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+    });
+
+    it('falls back to the schema when no shape is sent', async () => {
+      // `zapier invoke auth template` has no connection, so it sends no
+      // shape: every declared field is placeholdered and the later branch
+      // wins. Correct for a single-credential app, best-effort here.
+      const result = await getAuthTemplate(
+        MULTI_CREDENTIAL_APP,
+        buildInput(MULTI_CREDENTIAL_APP),
+      );
+
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+    });
+
+    it('treats an empty shape as a connection with no credentials', async () => {
+      // Not the same as sending no shape at all: nothing is placeholdered, so
+      // neither branch is captured and there is no template to share. The
+      // connection goes to the per-request render path instead of inheriting
+      // another shape's credential.
+      const result = await runWithShape(MULTI_CREDENTIAL_APP, []);
+
+      result.supported.should.be.false();
+      should(result.template).be.undefined();
+    });
+
+    // ChatGPT / OpenAI: organization_id is declared optional, so the template
+    // carried OpenAI-Organization unconditionally and connections without an
+    // org sent an empty header.
+    const OPTIONAL_FIELD_APP = {
+      authentication: {
+        type: 'custom',
+        test: STUB_TEST,
+        fields: [
+          { key: 'api_key' },
+          { key: 'organization_id', required: false },
+        ],
+      },
+      beforeRequest: [
+        (req, z, bundle) => {
+          req.headers.Authorization = `Bearer ${bundle.authData.api_key}`;
+          if (bundle.authData.organization_id) {
+            req.headers['OpenAI-Organization'] =
+              bundle.authData.organization_id;
+          }
+          return req;
+        },
+      ],
+    };
+
+    it('omits an optional field the connection did not populate', async () => {
+      const result = await runWithShape(OPTIONAL_FIELD_APP, ['api_key']);
+
+      result.supported.should.be.true();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.api_key}}',
+      );
+      should(result.template.headers['OpenAI-Organization']).be.undefined();
+    });
+
+    it('includes an optional field the connection did populate', async () => {
+      const result = await runWithShape(OPTIONAL_FIELD_APP, [
+        'api_key',
+        'organization_id',
+      ]);
+
+      result.template.headers['OpenAI-Organization'].should.eql(
+        '{{bundle.authData.organization_id}}',
+      );
+    });
+
+    it('stays supported when middleware branches on an absent declared field', async () => {
+      // The divergence check must treat a declared-but-unpopulated field as
+      // genuinely absent. Fabricating a value for it in the proxy run would
+      // demote every app with an optional credential to the render path.
+      const result = await runWithShape(OPTIONAL_FIELD_APP, ['api_key']);
+
+      result.supported.should.be.true();
+      should(result.reason).be.undefined();
+    });
+
+    it('still demotes when middleware branches on an undeclared field', async () => {
+      // The proxy safety net has to survive: keys outside the schema are
+      // unknowns, not known-absent, so branching on one is still non-static.
+      const app = {
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers.Authorization = `Bearer ${bundle.authData.api_key}`;
+            if (bundle.authData.instance_url) {
+              req.headers['X-Instance'] = bundle.authData.instance_url;
+            }
+            return req;
+          },
+        ],
+      };
+      const result = await runWithShape(app, ['api_key']);
+
+      result.supported.should.be.false();
+      result.reason.should.eql('beforeRequest_not_static');
+    });
+
+    it('applies the shape to oauth2 standard fields', async () => {
+      // access_token is placeholdered from the auth type, not from declared
+      // fields, so the shape has to reach those too.
+      const app = {
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          oauth2Config: { autoRefresh: true, refreshAccessToken: () => {} },
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+            if (bundle.authData.refresh_token) {
+              req.headers['X-Refreshable'] = 'yes';
+            }
+            return req;
+          },
+        ],
+      };
+
+      const withRefresh = await runWithShape(app, [
+        'access_token',
+        'refresh_token',
+      ]);
+      withRefresh.template.headers['X-Refreshable'].should.eql('yes');
+
+      const withoutRefresh = await runWithShape(app, ['access_token']);
+      withoutRefresh.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+      should(withoutRefresh.template.headers['X-Refreshable']).be.undefined();
+    });
+
+    it('applies the shape to an auth.test object path', async () => {
+      // No beforeRequest: the template comes from the test request itself.
+      const app = {
+        authentication: {
+          type: 'custom',
+          fields: [{ key: 'api_key' }, { key: 'organization_id' }],
+          test: {
+            url: 'https://example.com',
+            headers: {
+              Authorization: 'Bearer {{bundle.authData.api_key}}',
+              'OpenAI-Organization': '{{bundle.authData.organization_id}}',
+            },
+          },
+        },
+      };
+      const result = await runWithShape(app, ['api_key']);
+
+      result.supported.should.be.true();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.api_key}}',
+      );
+      // The literal curly in the test snapshot is not produced by a
+      // placeholder, so restricting the placeholders cannot remove it: the
+      // entry itself has to be dropped, or every connection of this shape
+      // sends the phantom header.
+      should(result.template.headers['OpenAI-Organization']).be.undefined();
+    });
+  });
 });
