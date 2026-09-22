@@ -678,6 +678,148 @@ describe('renderAuthTemplate', () => {
     });
   });
 
+  describe('legacy session auth with an empty auth mapping', () => {
+    // An empty mapping makes the legacy bridge dump the stored credentials
+    // into the request as headers, so the pipeline produces a template naming
+    // those fields rather than the header the app authenticates with. These
+    // apps apply their real auth in a per-operation pre method, which runs
+    // only inside legacyScripting.run — never in beforeRequest. Without the
+    // pre method the render is a silent failure: a valid-looking template
+    // that the partner answers with a 401.
+    const scriptingSource = `
+      var Zap = {
+        add_custom_headers: function (bundle) {
+          bundle.request.headers['X-User-Token'] = bundle.auth_fields.user_token;
+
+          delete bundle.request.headers.username;
+          delete bundle.request.headers.password;
+          delete bundle.request.headers.user_token;
+
+          return bundle;
+        },
+        auth_test_pre_poll: function (bundle) {
+          bundle = this.add_custom_headers(bundle);
+          return bundle.request;
+        }
+      };
+    `;
+
+    const legacyBeforeRequest = (request, z, bundle) =>
+      z.legacyScripting.beforeRequest(request, z, bundle);
+
+    // .invalid never resolves: if the pre method ran against the network
+    // instead of the capture, these tests would not pass quietly.
+    const sessionApp = ({
+      source = scriptingSource,
+      mapping = {},
+      test,
+    } = {}) => ({
+      authentication: {
+        type: 'session',
+        fields: [{ key: 'username' }, { key: 'password' }],
+        test:
+          test === undefined
+            ? (z, bundle) =>
+                z.legacyScripting.run(bundle, 'trigger', 'auth_test')
+            : test,
+      },
+      legacy: {
+        scriptingSource: source,
+        authentication: { mapping, placement: 'header' },
+        triggers: {
+          auth_test: { operation: { url: 'https://api.example.invalid/me' } },
+        },
+      },
+      beforeRequest: [legacyBeforeRequest],
+    });
+
+    const AUTH_DATA = {
+      username: 'user@example.com',
+      password: 'pw',
+      user_token: 'tok-123',
+    };
+
+    it('applies the auth headers the pre method sets', async () => {
+      const result = await run(sessionApp(), AUTH_DATA);
+
+      result.authType.should.eql('session');
+      result.template.headers['X-User-Token'].should.eql('tok-123');
+    });
+
+    it('drops the credential headers the pre method deletes', async () => {
+      const result = await run(sessionApp(), AUTH_DATA);
+
+      result.template.headers.should.not.have.property('username');
+      result.template.headers.should.not.have.property('password');
+      result.template.headers.should.not.have.property('user_token');
+    });
+
+    it('does not carry over the transport headers run() seeds', async () => {
+      // They belong to the auth-test operation, not to the app's auth;
+      // applying them would override the content type of every proxied
+      // request.
+      const result = await run(sessionApp(), AUTH_DATA);
+
+      result.template.headers.should.not.have.property('Accept');
+      result.template.headers.should.not.have.property('Content-Type');
+    });
+
+    it('falls back to the dumped credentials when there is no pre method', async () => {
+      const result = await run(
+        sessionApp({ source: 'var Zap = {};' }),
+        AUTH_DATA,
+      );
+
+      result.template.headers.username.should.eql('user@example.com');
+      result.template.headers.user_token.should.eql('tok-123');
+      result.template.headers.should.not.have.property('X-User-Token');
+    });
+
+    it('keeps the dumped credentials when the pre method throws', async () => {
+      const result = await run(
+        sessionApp({
+          source: `
+            var Zap = {
+              auth_test_pre_poll: function (bundle) {
+                throw new Error('boom');
+              }
+            };
+          `,
+        }),
+        AUTH_DATA,
+      );
+
+      result.template.headers.username.should.eql('user@example.com');
+      result.template.headers.should.not.have.property('X-User-Token');
+    });
+
+    it('leaves the pipeline template alone when nothing drives run()', async () => {
+      // A request-object test cannot invoke legacyScripting.run, so the pre
+      // method never applies and the dump is all there is. The production
+      // population does not have this shape.
+      const result = await run(
+        sessionApp({ test: { url: 'https://api.example.invalid/me' } }),
+        AUTH_DATA,
+      );
+
+      result.template.headers.username.should.eql('user@example.com');
+      result.template.headers.user_token.should.eql('tok-123');
+    });
+
+    it('leaves a legacy session app with a real mapping alone', async () => {
+      // No dump, so the pipeline's template is the app's real auth and the
+      // pre-method path must not displace it.
+      const result = await run(
+        sessionApp({ mapping: { 'X-Api-Token': '{{user_token}}' } }),
+        AUTH_DATA,
+      );
+
+      result.template.headers['X-Api-Token'].should.eql('tok-123');
+      result.template.headers.should.not.have.property('username');
+      result.template.headers.should.not.have.property('X-User-Token');
+    });
+  });
+
   describe('beforeRequest with z.request (real network call)', () => {
     let origFetch;
     beforeEach(() => {

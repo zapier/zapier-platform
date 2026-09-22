@@ -167,6 +167,14 @@ const getLegacyOperationUrl = (compiledApp, typeOf, key) => {
   );
 };
 
+// Transport defaults `run` seeds on the request it builds for an operation.
+// They belong to that operation, not to the app's auth, so a caller deriving
+// an auth template from a captured run must not carry them over.
+const LEGACY_RUN_DEFAULT_HEADERS = {
+  Accept: 'application/json',
+  'Content-Type': 'application/json; charset=utf-8',
+};
+
 // Build a `legacyScripting` object suitable for stubZ that mirrors what
 // production's legacy-scripting-runner provides for `z.legacyScripting`:
 // - `beforeRequest(req, z, bundle)` applies the legacy auth mapping.
@@ -187,10 +195,7 @@ const buildLegacyScripting = (compiledApp, requestFn, cachedZap, onDump) => {
     run: async (bundle, typeOf, key) => {
       let request = {
         url: getLegacyOperationUrl(compiledApp, typeOf, key),
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json; charset=utf-8',
-        },
+        headers: { ...LEGACY_RUN_DEFAULT_HEADERS },
         params: {},
         body: {},
       };
@@ -212,7 +217,9 @@ const buildLegacyScripting = (compiledApp, requestFn, cachedZap, onDump) => {
               auth_fields: bundle.authData || {},
               request: { ...request },
             };
-            const modified = await preMethod(legacyBundle);
+            // Called on Zap so `this` is the scripting object: these methods
+            // routinely delegate to a sibling helper via `this.<name>()`.
+            const modified = await Zap[preMethodName](legacyBundle);
             if (modified) {
               request = { ...request, ...modified };
             }
@@ -228,6 +235,7 @@ const buildLegacyScripting = (compiledApp, requestFn, cachedZap, onDump) => {
 };
 
 module.exports = {
+  LEGACY_RUN_DEFAULT_HEADERS,
   buildLegacyScripting,
   createLegacyBeforeRequest,
   loadLegacyZap,
