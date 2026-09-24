@@ -425,13 +425,112 @@ const buildProxyAuthData = (placeholderAuthData, knownAbsentKeys = new Set()) =>
     },
   });
 
+// --- Declared env values must never reach the template ---
+//
+// The app's environment is loaded during capture (natively on the
+// function, or copied out of the event by applyEnvironment), so middleware
+// reading `process.env.SOME_VAR` receives the real secret, not a placeholder.
+// hasAuthPlaceholders only requires *one* placeholder anywhere, so a template
+// mixing an authData placeholder with a real env value passes every check and
+// is cached with a live secret inside it.
+//
+// Scrubbing non-placeholder values is the wrong fix: integrations legitimately
+// send constants and removing them would make the template diverge from what the app does.
+// Instead we reverse-map: a captured value that equals a declared env var's value becomes
+// {{process.env.NAME}}, which the backend resolves at render time.
+// Genuine constants match no env value and are left alone.
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// Build the function that rewrites an app's declared env values as
+// {{process.env.NAME}}, or null when there is nothing to rewrite.
+//
+// `bundle.declaredEnvNames` is the only source: the request client is the one
+// that knows which names the app owns, and therefore which
+// {{process.env.NAME}} it can resolve at render time. Inferring the set from
+// the environment instead would mean guessing from values, which needs a
+// minimum-length guard (leaving short secrets behind) and an exclusion list
+// for the runtime's own variables (or risk baking in a curly nothing can
+// resolve). With the names in hand every declared var is mapped whatever its
+// value looks like. The values themselves always come from the environment,
+// never from the bundle.
+const buildEnvPlaceholderReplacer = (input, envSnapshot) => {
+  const event = input?._zapier?.event;
+  const declaredNames = event?.bundle?.declaredEnvNames;
+  if (!declaredNames) {
+    return null;
+  }
+
+  const values = {
+    ...envSnapshot,
+    ...(event?.environment || {}),
+  };
+
+  // Two variables can hold the same value, and nothing in a captured request
+  // says which one the middleware read. Sorting the names makes the choice
+  // deterministic, so the same app always yields the same template rather
+  // than one that varies between captures. The ambiguity itself remains: if
+  // those values later diverge, the template names whichever variable won
+  // here, not necessarily the one the app reads.
+  const placeholderByValue = new Map();
+  for (const name of [...declaredNames].sort()) {
+    const value = values[name];
+    if (typeof value === 'string' && value && !placeholderByValue.has(value)) {
+      placeholderByValue.set(value, `{{process.env.${name}}}`);
+    }
+  }
+  if (placeholderByValue.size === 0) {
+    return null;
+  }
+
+  // Longest value first, so a value that contains another is matched whole.
+  const pattern = new RegExp(
+    [...placeholderByValue.keys()]
+      .sort((a, b) => b.length - a.length)
+      .map(escapeRegExp)
+      .join('|'),
+    'g',
+  );
+
+  // One scan, not one pass per variable: replacing sequentially lets a later
+  // value match inside a placeholder an earlier one just wrote (a value equal
+  // to another variable's name would corrupt it into
+  // `{{process.env.{{process.env.OTHER}}}}`). A single regex never revisits
+  // what it has already emitted.
+  return (text) =>
+    text.replace(pattern, (match) => placeholderByValue.get(match));
+};
+
+// Replace declared env values anywhere in the template with their
+// {{process.env.NAME}} equivalent. Substring rather than whole-value, so a
+// secret embedded in a larger string (`Bearer <secret>`, a URL) is caught too.
+const withEnvPlaceholders = (value, replaceEnvValues) => {
+  if (!replaceEnvValues) {
+    return value;
+  }
+  if (typeof value === 'string') {
+    return replaceEnvValues(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => withEnvPlaceholders(item, replaceEnvValues));
+  }
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [key, item] of Object.entries(value)) {
+      out[key] = withEnvPlaceholders(item, replaceEnvValues);
+    }
+    return out;
+  }
+  return value;
+};
+
 // Check if two templates are structurally equal (same keys and values).
 const templatesEqual = (a, b) =>
   JSON.stringify(cleanTemplate(a)) === JSON.stringify(cleanTemplate(b));
 
 // Run fn with process.env proxied so an undeclared variable reads as undefined,
-// matching production (the AppVersion env is loaded during capture, so a var
-// absent from it is undefined, not a placeholder).
+// matching production (the app's environment is loaded during capture, so a
+// var absent from it is undefined, not a placeholder).
 // Concurrent withProxiedEnv calls (e.g., parallel URL probe runs) must
 // share the same proxy — naive "save current; restore current" would let
 // the inner call save the outer's Proxy and "restore" to it, leaking the
@@ -878,13 +977,22 @@ const getAuthTemplate = async (compiledApp, input) => {
     populatedAuthFields,
   );
 
-  // Every supported return goes through here, so the connection shape is
-  // applied to the template whichever path produced it.
+  // Snapshotted before any capture runs, so it is the real environment rather
+  // than the Proxy withProxiedEnv installs.
+  const replaceEnvValues = buildEnvPlaceholderReplacer(input, {
+    ...process.env,
+  });
+
+  // Every supported return goes through here, so the connection shape and the
+  // env reverse-map are applied to the template whichever path produced it.
   const supported = (source, template, legacyDump, captureContext) =>
     supportedResult(
       authType,
       source,
-      dropAbsentAuthEntries(template, absentAuthFields),
+      withEnvPlaceholders(
+        dropAbsentAuthEntries(template, absentAuthFields),
+        replaceEnvValues,
+      ),
       auth,
       legacyDump,
       captureContext,

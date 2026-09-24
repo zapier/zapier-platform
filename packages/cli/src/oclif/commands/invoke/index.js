@@ -86,6 +86,13 @@ class InvokeCommand extends BaseCommand {
     };
 
     const dotenvResult = dotenv.config({ override: true, quiet: true });
+
+    // Sent to core by `auth template`, which needs them to keep real env
+    // values out of the captured template.
+    context.declaredEnvNames = Object.keys(dotenvResult.parsed || {}).filter(
+      (name) => !name.startsWith(AUTH_FIELD_ENV_PREFIX),
+    );
+
     if (!context.authId && _.isEmpty(dotenvResult.parsed)) {
       console.warn(
         'The .env file does not exist or is empty. ' +

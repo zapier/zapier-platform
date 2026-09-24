@@ -21,8 +21,9 @@ const run = (compiledApp) =>
 
 const STUB_TEST = { url: 'https://example.com' };
 
-// Set variables on process.env for fn, then restore. Simulates the AppVersion
-// env being loaded during production capture (local invoke doesn't load it).
+// Set variables on process.env for fn, then restore. Simulates the app's
+// environment being loaded during production capture (local invoke doesn't
+// load it).
 const withStubbedEnv = async (vars, fn) => {
   const saved = new Map();
   for (const [key, value] of Object.entries(vars)) {
@@ -393,30 +394,38 @@ describe('getAuthTemplate', () => {
       serialized.headers.should.not.have.property('company-id');
     });
 
-    it('keeps a declared server-side env var and stays supported', async () => {
-      // A declared value is present in process.env during capture, so the proxy
-      // returns it unchanged; the fix only affects undeclared vars.
+    it('reverse-maps a declared env value to its process.env placeholder', async () => {
+      // A declared value is present in process.env during capture, so
+      // middleware reads the real value. It must not reach the template: the
+      // value is mapped back to its name, which the backend resolves at
+      // render time.
       const beforeRequest = (req, z, bundle) => {
         req.headers = req.headers || {};
         req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
         req.headers['X-Region'] = process.env.SERVER_REGION;
         return req;
       };
+      const app = {
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [beforeRequest],
+      };
       const result = await withStubbedEnv({ SERVER_REGION: 'us-east-1' }, () =>
-        run({
-          authentication: {
-            type: 'oauth2',
-            test: STUB_TEST,
-            fields: [{ key: 'access_token' }],
-          },
-          beforeRequest: [beforeRequest],
-        }),
+        getAuthTemplate(
+          app,
+          buildInput(app, { declaredEnvNames: ['SERVER_REGION'] }),
+        ),
       );
       result.supported.should.be.true();
       result.template.headers.Authorization.should.eql(
         'Bearer {{bundle.authData.access_token}}',
       );
-      result.template.headers['X-Region'].should.eql('us-east-1');
+      result.template.headers['X-Region'].should.eql(
+        '{{process.env.SERVER_REGION}}',
+      );
     });
 
     it('flags auth_fields_consumed when declared fields are gone but a declared process.env value survives', async () => {
@@ -1818,6 +1827,264 @@ describe('getAuthTemplate', () => {
       // entry itself has to be dropped, or every connection of this shape
       // sends the phantom header.
       should(result.template.headers['OpenAI-Organization']).be.undefined();
+    });
+  });
+  describe('declared env values never reach the template', () => {
+    // The app's environment is loaded during capture, so middleware
+    // reading process.env gets the real secret. hasAuthPlaceholders only
+    // requires one placeholder anywhere, so a mixed template used to be
+    // cached with a live secret inside it. The request client sends the names
+    // it owns; every one of them is mapped back to {{process.env.NAME}},
+    // which it resolves per render.
+    const SECRET = 'sk-live-9f2c41ab77de';
+
+    // Run with `env` on process.env and `declaredEnvNames` on the bundle,
+    // defaulting to every name in `env`.
+    const runWithEnv = (app, env, declaredEnvNames = Object.keys(env)) =>
+      withStubbedEnv(env, () =>
+        getAuthTemplate(app, buildInput(app, { declaredEnvNames })),
+      );
+
+    const withSecretHeaderApp = (envName) => ({
+      authentication: {
+        type: 'oauth2',
+        test: STUB_TEST,
+        fields: [{ key: 'access_token' }],
+      },
+      beforeRequest: [
+        (req, z, bundle) => {
+          req.headers = req.headers || {};
+          req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+          req.headers['X-App-Key'] = process.env[envName];
+          return req;
+        },
+      ],
+    });
+
+    it('maps a secret riding alongside an authData placeholder', async () => {
+      const result = await runWithEnv(withSecretHeaderApp('APP_SECRET'), {
+        APP_SECRET: SECRET,
+      });
+
+      result.supported.should.be.true();
+      result.template.headers.Authorization.should.eql(
+        'Bearer {{bundle.authData.access_token}}',
+      );
+      result.template.headers['X-App-Key'].should.eql(
+        '{{process.env.APP_SECRET}}',
+      );
+      JSON.stringify(result.template).should.not.containEql(SECRET);
+    });
+
+    it('maps a secret embedded in a larger value', async () => {
+      const app = {
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+            req.headers['X-Signature'] = `v1=${process.env.APP_SECRET}=end`;
+            return req;
+          },
+        ],
+      };
+      const result = await runWithEnv(app, { APP_SECRET: SECRET });
+
+      result.template.headers['X-Signature'].should.eql(
+        'v1={{process.env.APP_SECRET}}=end',
+      );
+      JSON.stringify(result.template).should.not.containEql(SECRET);
+    });
+
+    it('maps a secret in the body', async () => {
+      const app = {
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+            req.body = {
+              client_secret: process.env.APP_SECRET,
+              token: bundle.authData.access_token,
+            };
+            return req;
+          },
+        ],
+      };
+      const result = await runWithEnv(app, { APP_SECRET: SECRET });
+
+      result.template.body.client_secret.should.eql(
+        '{{process.env.APP_SECRET}}',
+      );
+      JSON.stringify(result.template).should.not.containEql(SECRET);
+    });
+
+    it('is not reached for a param, which is demoted upstream', async () => {
+      // extractTemplate drops a param whose value carries no placeholder, and
+      // findStrippedDerivedAuthParams then demotes the app. So params never
+      // carried this exposure and the reverse-map does not change that.
+      const app = {
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.params = req.params || {};
+            req.params.key = process.env.APP_SECRET;
+            req.params.token = bundle.authData.access_token;
+            return req;
+          },
+        ],
+      };
+      const result = await runWithEnv(app, { APP_SECRET: SECRET });
+
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      JSON.stringify(result).should.not.containEql(SECRET);
+    });
+
+    it('maps a value the request client sent on the event', async () => {
+      // Some deployments get the app's environment in the event rather
+      // than on the function.
+      const app = withSecretHeaderApp('EVENT_SECRET');
+      const input = buildInput(app, { declaredEnvNames: ['EVENT_SECRET'] });
+      input._zapier.event.environment = { EVENT_SECRET: SECRET };
+      const result = await withStubbedEnv({ EVENT_SECRET: SECRET }, () =>
+        getAuthTemplate(app, input),
+      );
+
+      result.template.headers['X-App-Key'].should.eql(
+        '{{process.env.EVENT_SECRET}}',
+      );
+      JSON.stringify(result.template).should.not.containEql(SECRET);
+    });
+
+    it('maps a short value, since the name is known', async () => {
+      // No length guard: guessing from values needed one, names do not.
+      const result = await runWithEnv(withSecretHeaderApp('APP_PIN'), {
+        APP_PIN: '4821',
+      });
+
+      result.template.headers['X-App-Key'].should.eql(
+        '{{process.env.APP_PIN}}',
+      );
+      JSON.stringify(result.template).should.not.containEql('4821');
+    });
+
+    it('maps a declared name that looks like a runtime variable', async () => {
+      // An app may legitimately own an AWS_-prefixed var. The client says it
+      // is the app's, so it is mapped.
+      const result = await runWithEnv(withSecretHeaderApp('AWS_PARTNER_KEY'), {
+        AWS_PARTNER_KEY: SECRET,
+      });
+
+      result.template.headers['X-App-Key'].should.eql(
+        '{{process.env.AWS_PARTNER_KEY}}',
+      );
+      JSON.stringify(result.template).should.not.containEql(SECRET);
+    });
+
+    it('leaves a value alone when its name is not declared', async () => {
+      // A runtime value the app does not own stays literal: nothing could
+      // resolve {{process.env.AWS_REGION}} at render time.
+      const result = await runWithEnv(
+        withSecretHeaderApp('AWS_REGION'),
+        { AWS_REGION: 'us-west-2', APP_SECRET: SECRET },
+        ['APP_SECRET'],
+      );
+
+      result.template.headers['X-App-Key'].should.eql('us-west-2');
+    });
+
+    it('maps nothing when no names are sent', async () => {
+      // No inference from the environment: without the client's list there is
+      // no way to know which names it can resolve.
+      const app = withSecretHeaderApp('APP_SECRET');
+      const result = await withStubbedEnv({ APP_SECRET: SECRET }, () =>
+        run(app),
+      );
+
+      result.template.headers['X-App-Key'].should.eql(SECRET);
+    });
+
+    it('leaves genuine constants alone', async () => {
+      // Integrations send constants like these on every request; they
+      // match no env value, so blanket scrubbing would have broken them.
+      const app = {
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+            req.headers.Prefer = 'IdType="ImmutableId"';
+            req.headers.Host = 'www.googleapis.com';
+            return req;
+          },
+        ],
+      };
+      const result = await runWithEnv(app, { APP_SECRET: SECRET });
+
+      result.template.headers.Prefer.should.eql('IdType="ImmutableId"');
+      result.template.headers.Host.should.eql('www.googleapis.com');
+    });
+
+    it('does not rewrite a placeholder it just emitted', async () => {
+      // A value that happens to equal another variable's name would, under a
+      // pass-per-variable replace, match inside the placeholder written for
+      // that variable and corrupt it into
+      // {{process.env.{{process.env.ALIAS}}}}.
+      const result = await runWithEnv(withSecretHeaderApp('API_KEY'), {
+        API_KEY: SECRET,
+        ALIAS: 'API_KEY',
+      });
+
+      result.template.headers['X-App-Key'].should.eql(
+        '{{process.env.API_KEY}}',
+      );
+      JSON.stringify(result.template).should.not.containEql('{{process.env.{{');
+    });
+
+    it('picks the same name every time when two values are identical', async () => {
+      // Nothing in a captured request says which variable the middleware
+      // read, so the choice is made by name order rather than by whichever
+      // happened to be enumerated first.
+      const env = { B_SECRET: SECRET, A_SECRET: SECRET };
+      const first = await runWithEnv(withSecretHeaderApp('B_SECRET'), env);
+      const second = await runWithEnv(withSecretHeaderApp('A_SECRET'), env);
+
+      first.template.headers['X-App-Key'].should.eql(
+        '{{process.env.A_SECRET}}',
+      );
+      second.template.headers['X-App-Key'].should.eql(
+        first.template.headers['X-App-Key'],
+      );
+      JSON.stringify(first.template).should.not.containEql(SECRET);
+    });
+
+    it('maps the longest matching value when two env vars overlap', async () => {
+      const result = await runWithEnv(withSecretHeaderApp('APP_SECRET'), {
+        APP_SECRET: SECRET,
+        APP_SECRET_PREFIX: 'sk-live-9f2c',
+      });
+
+      result.template.headers['X-App-Key'].should.eql(
+        '{{process.env.APP_SECRET}}',
+      );
+      JSON.stringify(result.template).should.not.containEql(SECRET);
     });
   });
 });
