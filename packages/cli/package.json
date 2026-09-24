@@ -44,7 +44,7 @@
     "@oclif/plugin-help": "6.2.32",
     "@oclif/plugin-not-found": "3.2.62",
     "@oclif/plugin-version": "2.2.32",
-    "adm-zip": "0.5.16",
+    "adm-zip": "0.6.0",
     "archiver": "7.0.1",
     "chrono-node": "2.8.3",
     "cli-table3": "0.6.5",
