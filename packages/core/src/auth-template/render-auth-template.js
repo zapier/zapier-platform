@@ -14,7 +14,10 @@ const sanitizeHeaders = require('../http-middlewares/before/sanatize-headers');
 
 const { REPLACE_CURLIES } = require('../constants');
 const { withHttpCapture } = require('./http-capture');
-const { buildLegacyScripting } = require('./legacy-scripting');
+const {
+  LEGACY_RUN_DEFAULT_HEADERS,
+  buildLegacyScripting,
+} = require('./legacy-scripting');
 
 /**
  * Extracts auth-contributed fields from the captured request by diffing
@@ -54,6 +57,41 @@ const extractTemplate = (capturedReq) => {
 
   if (capturedReq.body) {
     template.body = capturedReq.body;
+  }
+
+  return template;
+};
+
+/**
+ * Drop the transport headers `legacyScripting.run` seeds on the request it
+ * builds. They describe that operation, not the app's auth.
+ *
+ * Dropped by name, whatever their value: the rendered template overrides the
+ * headers of the request being proxied, so carrying a content type from the
+ * auth test would rewrite it for every caller — breaking a form post or a
+ * file upload. A value a pre method set is no safer than the seeded one, and
+ * matching is case-insensitive because a pre method may use any casing.
+ */
+const withoutLegacyRunDefaults = (template) => {
+  if (!template.headers) {
+    return template;
+  }
+
+  const seededNames = Object.keys(LEGACY_RUN_DEFAULT_HEADERS).map((name) =>
+    name.toLowerCase(),
+  );
+
+  for (const key of Object.keys(template.headers)) {
+    if (seededNames.includes(key.toLowerCase())) {
+      delete template.headers[key];
+    }
+  }
+
+  if (Object.keys(template.headers).length === 0) {
+    // Leaving an empty `headers` behind would read as a template to the caller,
+    // which would then return no auth at all rather than falling back to what
+    // the pipeline captured.
+    delete template.headers;
   }
 
   return template;
@@ -236,7 +274,18 @@ const renderAuthTemplate = async (compiledApp, input) => {
   // need this stub. It applies the same auth-mapping logic getAuthTemplate
   // uses; for legacy basic-auth apps the Authorization header has already
   // been added by addBasicAuthHeader, so this is effectively a no-op there.
-  stubZ.legacyScripting = buildLegacyScripting(compiledApp, realRequest);
+  // An empty legacy auth mapping makes the bridge dump the whole credential
+  // set into the request, so the template it produces names the stored fields
+  // rather than the headers the app actually authenticates with.
+  let sawLegacyDump = false;
+  stubZ.legacyScripting = buildLegacyScripting(
+    compiledApp,
+    realRequest,
+    undefined,
+    () => {
+      sawLegacyDump = true;
+    },
+  );
 
   const client = applyMiddleware(httpBefores, [], captureFunction, {
     skipEnvelope: true,
@@ -302,7 +351,7 @@ const renderAuthTemplate = async (compiledApp, input) => {
   // raw http/fetch interception.
   if (
     !hasRequestTemplate &&
-    Object.keys(template).length === 0 &&
+    (Object.keys(template).length === 0 || sawLegacyDump) &&
     typeof auth.test === 'function'
   ) {
     let testCapturedReq = null;
@@ -355,7 +404,16 @@ const renderAuthTemplate = async (compiledApp, input) => {
     }
 
     if (testCapturedReq) {
-      const inlineTemplate = extractTemplate(testCapturedReq);
+      // A dump means the test drove legacyScripting.run, whose seeded
+      // transport headers describe that operation rather than the auth.
+      //
+      // Only headers survive this route: the capture records url, headers and
+      // method, and the request it intercepts carries no params. A pre method
+      // that places its auth in the query string or body therefore yields
+      // nothing here, and the pipeline's own template stands.
+      const inlineTemplate = sawLegacyDump
+        ? withoutLegacyRunDefaults(extractTemplate(testCapturedReq))
+        : extractTemplate(testCapturedReq);
       if (Object.keys(inlineTemplate).length > 0) {
         return { authType, template: inlineTemplate };
       }
