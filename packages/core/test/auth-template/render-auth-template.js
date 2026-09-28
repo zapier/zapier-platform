@@ -597,12 +597,9 @@ describe('renderAuthTemplate', () => {
     });
 
     it('skips the function fallback when beforeRequest already captured auth', async () => {
-      // BR's contribution makes the pipeline-captured template non-empty,
-      // so the function fallback's `Object.keys(template).length === 0`
-      // guard fails and the testFn is not invoked. Verified by the test
-      // function throwing — if it ran, render would either swallow the
-      // throw and proceed, or end up with an empty template; here we get
-      // the BR-rendered template back.
+      // beforeRequest's contribution is new content relative to
+      // targetRequest, so the fallback is skipped and the testFn never runs
+      // — proven by the throw; we get the beforeRequest template back.
       const beforeRequest = (req, z, bundle) => {
         req.headers = req.headers || {};
         req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
@@ -622,6 +619,124 @@ describe('renderAuthTemplate', () => {
         { access_token: 'real-token' },
       );
       result.template.headers.Authorization.should.eql('Bearer real-token');
+    });
+
+    it('runs the function fallback when targetRequest has non-auth passthrough headers', async () => {
+      // No beforeRequest, no requestTemplate, auth built inside
+      // authentication.test. targetRequest's passthrough headers survive
+      // httpBefores unchanged, making the captured template non-empty
+      // although none of it is auth. The old emptiness check read that as
+      // "pipeline already produced a template" and skipped the fallback, so
+      // auth.test never ran and no Authorization was added.
+      const result = await run(
+        {
+          authentication: {
+            type: 'oauth2',
+            fields: [{ key: 'id_token' }],
+            test: async (z, bundle) => {
+              const resp = await z.request({
+                url: 'https://example.com/v1/tasks',
+                headers: {
+                  Authorization: `Bearer ${bundle.authData.id_token}`,
+                },
+              });
+              return resp.data;
+            },
+          },
+        },
+        { id_token: 'real-id-token-abc123' },
+        {
+          targetRequest: {
+            url: 'https://example.com/v1/tasks',
+            method: 'GET',
+            headers: {
+              host: 'example.com',
+              via: '1.1 proxy.example.com',
+              'x-forwarded-for': '203.0.113.10',
+              'x-request-authentication-id': 'auth-id-123',
+              'x-request-authorization': 'internal-signature',
+              'correlation-id': 'corr-id-456',
+            },
+          },
+        },
+      );
+      result.template.headers.Authorization.should.eql(
+        'Bearer real-id-token-abc123',
+      );
+    });
+
+    it('still skips the function fallback when beforeRequest adds auth on top of passthrough headers', async () => {
+      // The inverse of the regression test above: guards against
+      // `hasNewContent` over-triggering. beforeRequest genuinely adds auth,
+      // so the fallback must stay skipped even though targetRequest also
+      // carries passthrough headers. The testFn throws to prove it never ran.
+      const beforeRequest = (req, z, bundle) => {
+        req.headers = req.headers || {};
+        req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+        return req;
+      };
+      const result = await run(
+        {
+          authentication: {
+            type: 'oauth2',
+            fields: [{ key: 'access_token' }],
+            test: async () => {
+              throw new Error('testFn should not run');
+            },
+          },
+          beforeRequest: [beforeRequest],
+        },
+        { access_token: 'real-token' },
+        {
+          targetRequest: {
+            url: 'https://example.com',
+            method: 'GET',
+            headers: {
+              host: 'example.com',
+              via: '1.1 proxy.example.com',
+            },
+          },
+        },
+      );
+      result.template.headers.Authorization.should.eql('Bearer real-token');
+    });
+
+    it('runs the function fallback when passthrough headers carry stray whitespace', async () => {
+      // sanitizeHeaders trims the captured request but never touches
+      // bundle.targetRequest, so an untrimmed passthrough value would
+      // otherwise diff as pipeline-added content and skip the fallback.
+      const result = await run(
+        {
+          authentication: {
+            type: 'oauth2',
+            fields: [{ key: 'id_token' }],
+            test: async (z, bundle) => {
+              const resp = await z.request({
+                url: 'https://example.com/v1/tasks',
+                headers: {
+                  Authorization: `Bearer ${bundle.authData.id_token}`,
+                },
+              });
+              return resp.data;
+            },
+          },
+        },
+        { id_token: 'real-id-token-abc123' },
+        {
+          targetRequest: {
+            url: 'https://example.com/v1/tasks',
+            method: 'GET',
+            headers: {
+              host: 'example.com',
+              via: '1.1 proxy.example.com  ',
+              'correlation-id': '  corr-id-456',
+            },
+          },
+        },
+      );
+      result.template.headers.Authorization.should.eql(
+        'Bearer real-id-token-abc123',
+      );
     });
   });
 

@@ -60,6 +60,38 @@ const extractTemplate = (capturedReq) => {
 };
 
 /**
+ * Whether `template` holds any header/param/body content not already present,
+ * with the same value, in `baseline`.
+ *
+ * Compared trimmed: `sanitizeHeaders` trims the captured side but never
+ * touches `bundle.targetRequest`, so an untrimmed passthrough value would
+ * otherwise read as pipeline-added content.
+ */
+const hasNewContent = (template, baseline) => {
+  const normalize = (value) =>
+    typeof value === 'string' ? value.trim() : value;
+
+  for (const section of ['headers', 'params']) {
+    const entries = template[section];
+    if (!entries) {
+      continue;
+    }
+    const baseEntries = baseline[section] || {};
+    if (
+      Object.entries(entries).some(
+        ([key, value]) => normalize(baseEntries[key]) !== normalize(value),
+      )
+    ) {
+      return true;
+    }
+  }
+  return (
+    template.body !== undefined &&
+    normalize(template.body) !== normalize(baseline.body)
+  );
+};
+
+/**
  * Render auth fields from authentication.test by replacing
  * {{bundle.authData.*}} placeholders with real credential values.
  */
@@ -275,7 +307,14 @@ const renderAuthTemplate = async (compiledApp, input) => {
 
   const template = extractTemplate(capturedReq);
 
-  // Inline auth fallback: if pipeline produced an empty template and
+  // targetRequest's own passthrough headers/params survive httpBefores
+  // unchanged, so `template` is non-empty even when the pipeline added no
+  // auth. Diffing against `target` separates rendered auth from passthrough
+  // content without matching on header names. `target` is never mutated by
+  // the pipeline, so this can be read either side of the capture run.
+  const targetTemplate = extractTemplate(target);
+
+  // Inline auth fallback: if the pipeline didn't add any auth content and
   // there's no middleware/requestTemplate, render from authentication.test
   const hasBeforeRequest = beforeRequest.length > 0;
   const hasRequestTemplate =
@@ -285,7 +324,7 @@ const renderAuthTemplate = async (compiledApp, input) => {
   if (
     !hasBeforeRequest &&
     !hasRequestTemplate &&
-    Object.keys(template).length === 0 &&
+    !hasNewContent(template, targetTemplate) &&
     auth.test &&
     typeof auth.test !== 'function'
   ) {
@@ -302,7 +341,7 @@ const renderAuthTemplate = async (compiledApp, input) => {
   // raw http/fetch interception.
   if (
     !hasRequestTemplate &&
-    Object.keys(template).length === 0 &&
+    !hasNewContent(template, targetTemplate) &&
     typeof auth.test === 'function'
   ) {
     let testCapturedReq = null;
