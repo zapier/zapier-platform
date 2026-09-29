@@ -1,7 +1,20 @@
 'use strict';
 
 const vm = require('vm');
+const crypto = require('crypto');
 const lodash = require('lodash');
+
+const {
+  ErrorException,
+  HaltedException,
+  StopRequestException,
+  ExpiredAuthException,
+  RefreshTokenException,
+  InvalidSessionException,
+  atob,
+  btoa,
+  legacyZ,
+} = require('./legacy-scripting-globals');
 
 // --- Legacy scripting auth support ---
 // Minimal reimplementation of the legacy scripting runner's beforeRequest
@@ -113,12 +126,31 @@ const createLegacyBeforeRequest = (app, onDump) => {
 };
 
 // Load the Zap object from legacy scriptingSource.
+//
+// scriptingSource is one script defining every action as a property of a
+// single Zap object literal, so it all has to evaluate before any one
+// property can be read off it — including unrelated top-level code.
 const loadLegacyZap = (compiledApp) => {
   const src = compiledApp.legacy && compiledApp.legacy.scriptingSource;
   if (!src) {
     return null;
   }
-  const sandbox = { Zap: {}, _: lodash, z: { JSON }, $: {} };
+  const sandbox = {
+    Zap: {},
+    _: lodash,
+    z: legacyZ,
+    $: {},
+    require,
+    crypto,
+    atob,
+    btoa,
+    ErrorException,
+    HaltedException,
+    StopRequestException,
+    ExpiredAuthException,
+    RefreshTokenException,
+    InvalidSessionException,
+  };
   try {
     vm.runInNewContext(src, sandbox);
   } catch {
