@@ -1382,7 +1382,10 @@ describe('getAuthTemplate', () => {
       });
       result.supported.should.be.true();
       result.template.should.deepEqual({
-        headers: { Authorization: 'Bearer {{bundle.authData.api_key}}' },
+        headers: {
+          Authorization: 'Bearer {{bundle.authData.api_key}}',
+          'user-agent': 'Zapier',
+        },
       });
     });
 
@@ -1403,7 +1406,7 @@ describe('getAuthTemplate', () => {
       result.template.headers['content-type'].should.match(/application\/json/);
     });
 
-    it('strips transport headers the middleware added', async () => {
+    it('strips content-length but keeps user-agent', async () => {
       const result = await run({
         authentication: {
           type: 'custom',
@@ -1414,7 +1417,7 @@ describe('getAuthTemplate', () => {
           },
         },
       });
-      result.template.headers.should.not.have.property('user-agent');
+      result.template.headers['user-agent'].should.equal('Zapier');
       result.template.headers.should.not.have.property('content-length');
     });
   });
