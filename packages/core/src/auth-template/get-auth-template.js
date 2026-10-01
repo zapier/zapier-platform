@@ -620,13 +620,11 @@ const extractTemplate = (req) => {
   if (req.headers) {
     const headers = { ...req.headers };
     // Transport headers aren't auth; content-type travels with the body.
+    // Keep user-agent: some vendors gate auth on it (e.g. the WordPress
+    // plugin only honors X-ZAPIER-AUTH when User-Agent is "Zapier").
     for (const key of Object.keys(headers)) {
       const lower = key.toLowerCase();
-      if (
-        lower === 'content-length' ||
-        lower === 'user-agent' ||
-        (lower === 'content-type' && !body)
-      ) {
+      if (lower === 'content-length' || (lower === 'content-type' && !body)) {
         delete headers[key];
       }
     }
