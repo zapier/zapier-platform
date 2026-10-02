@@ -1450,8 +1450,10 @@ describe('getAuthTemplate', () => {
       });
       result.supported.should.be.false();
       result.reason.should.eql('stripped_derived_params');
+      // appsecret_proof is an HMAC of the token: its value changes with the
+      // credentials, so it is correctly flagged as credential-derived, which is
+      // enough to keep the whole request supported: false.
       result.strippedParams.should.containEql('appsecret_proof');
-      result.strippedParams.should.containEql('appsecret_time');
     });
 
     it('returns stripped_derived_params when auth.test calls z.request through the pipeline', async () => {
@@ -1516,6 +1518,239 @@ describe('getAuthTemplate', () => {
       result.source.should.eql('authentication.test');
       result.template.params.should.not.have.property('from_test');
     });
+  });
+
+  describe('stripped params: constant vs credential-derived', () => {
+    const crypto = require('crypto');
+
+    // Header auth that survives + a constant operation param that gets dropped.
+    // Modeled on common real-app shapes where the auth-test request carries a
+    // paging/limit/sort/format param. The constant is not auth, so the app
+    // should stay supported: true across all three capture paths.
+
+    it('keeps supported for a constant param added by beforeRequest', async () => {
+      // beforeRequest injects header auth plus a constant operation param. The
+      // param is dropped and (being constant) not flagged by the Step 2 check,
+      // so the app stays supported: true.
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-API-Key'] = bundle.authData.api_key;
+            req.params = { ...req.params, hitsPerPage: 1 };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.true();
+      result.template.headers['X-API-Key'].should.eql(
+        '{{bundle.authData.api_key}}',
+      );
+      // The constant operation param is dropped, not flagged.
+      (result.template.params || {}).should.not.have.property('hitsPerPage');
+    });
+
+    it('keeps supported for a constant param on the auth.test-object path', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: { url: 'https://example.com', params: { page_size: 1 } },
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.true();
+      result.template.headers['X-Key'].should.eql(
+        '{{bundle.authData.api_key}}',
+      );
+    });
+
+    it('keeps supported for a constant param on the auth.test-function path', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: async (z) =>
+            z.request({
+              url: 'https://example.com',
+              params: { page_size: 1 },
+            }),
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.true();
+      result.template.headers['X-Key'].should.eql(
+        '{{bundle.authData.api_key}}',
+      );
+    });
+
+    it('demotes when a dropped param is an HMAC of the credentials', async () => {
+      // Signed-request shape: header auth survives, but the request also needs
+      // a computed signature param (an HMAC of the token) that cannot be
+      // expressed as a placeholder. The derived param must still demote the app.
+      const result = await run({
+        authentication: {
+          type: 'oauth2',
+          test: STUB_TEST,
+          fields: [{ key: 'access_token' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers.Authorization = `Bearer ${bundle.authData.access_token}`;
+            const sig = crypto
+              .createHmac('sha256', 'app-secret')
+              .update(String(bundle.authData.access_token))
+              .digest('hex');
+            req.params = { ...req.params, appsecret_proof: sig };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('appsecret_proof');
+    });
+
+    it('demotes on a derived param even when a constant param is also present', async () => {
+      // One credential-derived param is enough to demote the whole request,
+      // regardless of how many constant params ride alongside it.
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'key' }, { key: 'secret' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.key;
+            const sig = crypto
+              .createHmac('sha256', 'x')
+              .update(String(bundle.authData.secret))
+              .digest('hex');
+            req.params = { ...req.params, limit: 10, sig };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('sig');
+      // The constant param is correctly NOT the reason for demotion.
+      result.strippedParams.should.not.containEql('limit');
+    });
+
+    it('demotes a param derived from a prefix of the credential', async () => {
+      // The two fake credential sets must differ along their whole length, not
+      // just in the middle — otherwise a param built from a prefix (or suffix)
+      // of the credential reads identically under both and is misclassified as
+      // a constant. Hashing the first chars of the key is still credential-
+      // derived and must demote, even though auth also survives in a header.
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            const sig = crypto
+              .createHash('md5')
+              .update(String(bundle.authData.api_key).slice(0, 10))
+              .digest('hex');
+            req.params = { ...req.params, sig };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('sig');
+    });
+
+    // The two tests below pin the invariant the prefix/suffix guard rests on:
+    // the real and alt credential sets share no leading or trailing substring.
+    // They use a RAW fragment of the credential (no hash), which is the
+    // strictest form — a hash of a fragment differs as soon as one input
+    // character does, but a raw slice differs only if that exact slice does.
+    // If someone edits the sentinel markers so the two sets share a prefix or
+    // suffix again, these fail while everything else still passes.
+
+    it('demotes a param that is a raw prefix of the credential', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            req.params = {
+              ...req.params,
+              sig: String(bundle.authData.api_key).slice(0, 8),
+            };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('sig');
+    });
+
+    it('demotes a param that is a raw suffix of the credential', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            req.params = {
+              ...req.params,
+              sig: String(bundle.authData.api_key).slice(-8),
+            };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('sig');
+    });
+
+    // NOTE on wall-clock params (e.g. a bare `Date.now()` timestamp in a param,
+    // not a signature): such a param can read differently between the two
+    // captures just because time passed, so it may be (conservatively) flagged
+    // as credential-derived and leave the app supported: false. That is the
+    // safe direction — no worse than the behaviour before this change — but it
+    // is not deterministic, so it is not pinned by a test. No first-party app
+    // is known to put a non-signature timestamp in an auth param.
   });
 
   describe('legacy session auth with an empty auth mapping', () => {
@@ -1927,10 +2162,16 @@ describe('getAuthTemplate', () => {
       JSON.stringify(result.template).should.not.containEql(SECRET);
     });
 
-    it('is not reached for a param, which is demoted upstream', async () => {
-      // extractTemplate drops a param whose value carries no placeholder, and
-      // findStrippedDerivedAuthParams then demotes the app. So params never
-      // carried this exposure and the reverse-map does not change that.
+    it('does not leak an env-secret param, which is dropped not templated', async () => {
+      // A beforeRequest sets two params: `key` from a declared env secret, and
+      // `token` from authData. extractTemplate drops `key` (no placeholder) and
+      // keeps `token` (a surviving {{bundle.authData.access_token}} placeholder).
+      //
+      // `key` is constant across the two credential sets (it reads
+      // process.env, not authData), so findStrippedDerivedAuthParams does not
+      // flag it — the app is correctly supported: true. The env secret still
+      // never reaches the template: it was dropped, not reverse-mapped, so the
+      // template carries only the token placeholder.
       const app = {
         authentication: {
           type: 'oauth2',
@@ -1948,8 +2189,11 @@ describe('getAuthTemplate', () => {
       };
       const result = await runWithEnv(app, { APP_SECRET: SECRET });
 
-      result.supported.should.be.false();
-      result.reason.should.eql('stripped_derived_params');
+      result.supported.should.be.true();
+      result.template.params.token.should.eql(
+        '{{bundle.authData.access_token}}',
+      );
+      result.template.params.should.not.have.property('key');
       JSON.stringify(result).should.not.containEql(SECRET);
     });
 
