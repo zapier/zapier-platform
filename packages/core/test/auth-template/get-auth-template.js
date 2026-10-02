@@ -1688,6 +1688,62 @@ describe('getAuthTemplate', () => {
       result.strippedParams.should.containEql('sig');
     });
 
+    // The two tests below pin the invariant the prefix/suffix guard rests on:
+    // the real and alt credential sets share no leading or trailing substring.
+    // They use a RAW fragment of the credential (no hash), which is the
+    // strictest form — a hash of a fragment differs as soon as one input
+    // character does, but a raw slice differs only if that exact slice does.
+    // If someone edits the sentinel markers so the two sets share a prefix or
+    // suffix again, these fail while everything else still passes.
+
+    it('demotes a param that is a raw prefix of the credential', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            req.params = {
+              ...req.params,
+              sig: String(bundle.authData.api_key).slice(0, 8),
+            };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('sig');
+    });
+
+    it('demotes a param that is a raw suffix of the credential', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: STUB_TEST,
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            req.params = {
+              ...req.params,
+              sig: String(bundle.authData.api_key).slice(-8),
+            };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('sig');
+    });
+
     // NOTE on wall-clock params (e.g. a bare `Date.now()` timestamp in a param,
     // not a signature): such a param can read differently between the two
     // captures just because time passed, so it may be (conservatively) flagged
