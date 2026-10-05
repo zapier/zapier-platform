@@ -1659,10 +1659,10 @@ describe('getAuthTemplate', () => {
     });
 
     it('demotes a param derived from a prefix of the credential', async () => {
-      // The two fake credential sets must differ along their whole length, not
-      // just in the middle — otherwise a param built from a prefix (or suffix)
-      // of the credential reads identically under both and is misclassified as
-      // a constant. Hashing the first chars of the key is still credential-
+      // The two fake credential sets must diverge early, not just in the
+      // middle — otherwise a param built from a prefix (or suffix) of the
+      // credential reads identically under both and is misclassified as a
+      // constant. Hashing the first chars of the key is still credential-
       // derived and must demote, even though auth also survives in a header.
       const result = await run({
         authentication: {
@@ -1688,13 +1688,66 @@ describe('getAuthTemplate', () => {
       result.strippedParams.should.containEql('sig');
     });
 
-    // The two tests below pin the invariant the prefix/suffix guard rests on:
-    // the real and alt credential sets share no leading or trailing substring.
-    // They use a RAW fragment of the credential (no hash), which is the
-    // strictest form — a hash of a fragment differs as soon as one input
-    // character does, but a raw slice differs only if that exact slice does.
-    // If someone edits the sentinel markers so the two sets share a prefix or
-    // suffix again, these fail while everything else still passes.
+    // These guard the alt-credential markers: an app may build a param from a
+    // fragment of the credential, so the two sets have to differ inside that
+    // fragment. A raw slice is the strict case — a hash of one would pass even
+    // with near-identical markers. Move the divergence past char 8 and these
+    // fail while the rest of the suite passes.
+
+    it('keeps supported when the beforeRequest template is the fallback', async () => {
+      // auth.test is a function that never makes a request, so we fall back to
+      // the beforeRequest template at the end of getAuthTemplate. That return
+      // has its own capture context, so it needs the beforeRequest alt capture
+      // passed through — otherwise the constant param is flagged again and the
+      // app is demoted on this path only.
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: async () => ({}),
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            req.params = { ...req.params, hitsPerPage: 1 };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.true();
+      result.source.should.eql('beforeRequest');
+      result.template.headers['X-Key'].should.eql(
+        '{{bundle.authData.api_key}}',
+      );
+    });
+
+    it('still demotes a derived param on the beforeRequest fallback', async () => {
+      const result = await run({
+        authentication: {
+          type: 'custom',
+          test: async () => ({}),
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [
+          (req, z, bundle) => {
+            req.headers = req.headers || {};
+            req.headers['X-Key'] = bundle.authData.api_key;
+            req.params = {
+              ...req.params,
+              sig: crypto
+                .createHmac('sha256', 's')
+                .update(String(bundle.authData.api_key))
+                .digest('hex'),
+            };
+            return req;
+          },
+        ],
+      });
+      result.supported.should.be.false();
+      result.reason.should.eql('stripped_derived_params');
+      result.strippedParams.should.containEql('sig');
+    });
 
     it('demotes a param that is a raw prefix of the credential', async () => {
       const result = await run({
@@ -1715,6 +1768,8 @@ describe('getAuthTemplate', () => {
           },
         ],
       });
+      // Failing here means the two credential sets no longer differ within
+      // their first 8 characters — check the ALT_SENTINEL markers.
       result.supported.should.be.false();
       result.reason.should.eql('stripped_derived_params');
       result.strippedParams.should.containEql('sig');
@@ -1739,6 +1794,8 @@ describe('getAuthTemplate', () => {
           },
         ],
       });
+      // Failing here means the two credential sets no longer differ within
+      // their last 8 characters — check the ALT_SENTINEL markers.
       result.supported.should.be.false();
       result.reason.should.eql('stripped_derived_params');
       result.strippedParams.should.containEql('sig');
