@@ -101,13 +101,20 @@ const paramValueWouldSurviveExtraction = (value) => {
 
 // Params present on the captured request that extractTemplate dropped because
 // middleware computed them (e.g. HMAC appsecret_proof) instead of emitting a
-// placeholder.
+// placeholder. Only credential-derived ones break a static template; a constant
+// operation arg (page size, sort order) is a correct drop.
+//
+// `altCredsReq` is the same request captured under a second set of fake
+// credentials: a derived value differs between the two, a constant does not.
+// Without it, every dropped param is flagged (the original behaviour).
 const findStrippedDerivedAuthParams = (
   req,
   template,
   excludedParamKeys = new Set(),
+  altCredsReq = null,
 ) => {
   const capturedParams = getCapturedParams(req);
+  const altCredsParams = altCredsReq ? getCapturedParams(altCredsReq) : null;
   const templateParams = template.params || {};
   const strippedParams = [];
 
@@ -119,6 +126,15 @@ const findStrippedDerivedAuthParams = (
       continue;
     }
     if (paramValueWouldSurviveExtraction(value)) {
+      continue;
+    }
+    // Unchanged across both captures means constant, not auth. A param missing
+    // from the alt capture stays flagged — the safe default.
+    if (
+      altCredsParams &&
+      key in altCredsParams &&
+      JSON.stringify(altCredsParams[key]) === JSON.stringify(value)
+    ) {
       continue;
     }
     strippedParams.push(key);
@@ -161,12 +177,14 @@ const supportedResult = (
     return { supported: false, reason: 'legacy_authdata_dump', authType };
   }
 
-  const { capturedReq, excludedParamKeys } = captureContext;
+  const { capturedReq, excludedParamKeys, altCredsCapturedReq } =
+    captureContext;
   if (capturedReq) {
     const strippedParams = findStrippedDerivedAuthParams(
       capturedReq,
       template,
       excludedParamKeys,
+      altCredsCapturedReq,
     );
     if (strippedParams.length > 0) {
       return strippedDerivedParamsResult(authType, strippedParams);
@@ -309,6 +327,22 @@ const buildPlaceholderAuthData = (auth, populatedFields = null) => {
     }
   }
   return authData;
+};
+
+// The same authData keys with a different value each — the second set of fake
+// credentials findStrippedDerivedAuthParams compares against.
+//
+// These markers must diverge from the AUTH_SENTINEL ones early: an app may
+// build a param from a fragment of the credential (`apiKey.slice(0, 8)`), and
+// a shared prefix would make that fragment read the same under both sets.
+const ALT_SENTINEL_OPEN = '__altcred_open__';
+const ALT_SENTINEL_CLOSE = '__altcred_close__';
+const buildAltCredentials = (placeholderAuthData) => {
+  const out = {};
+  for (const key of Object.keys(placeholderAuthData)) {
+    out[key] = `${ALT_SENTINEL_OPEN}${key}${ALT_SENTINEL_CLOSE}`;
+  }
+  return out;
 };
 
 // Drop template entries that reference an authData key this connection does
@@ -1001,6 +1035,10 @@ const getAuthTemplate = async (compiledApp, input) => {
   let beforeRequestTemplate;
   let beforeRequestCapturedReq;
   let beforeRequestExcludedParamKeys = new Set();
+  // Alt-credentials capture for whichever path produced the primary capture.
+  // Safe to share: the auth.test object and function blocks are mutually
+  // exclusive (auth.test cannot be both), so only one of them ever writes it.
+  let altCredsCapturedReq = null;
   let beforeRequestFailed = false;
 
   const beforeRequest = ensureArray(compiledApp.beforeRequest);
@@ -1055,10 +1093,20 @@ const getAuthTemplate = async (compiledApp, input) => {
     sawLegacyDump = sawLegacyDump || legacyAuthDump;
 
     if (!error && capturedReq) {
+      // Capture the same request again under a second set of fake credentials,
+      // so findStrippedDerivedAuthParams can tell credential-derived params
+      // from constant operation params.
+      ({ capturedReq: altCredsCapturedReq } = await runMiddlewareSurvival(
+        compiledApp,
+        input,
+        auth,
+        buildAltCredentials(placeholderAuthData),
+      ));
       const strippedParams = findStrippedDerivedAuthParams(
         capturedReq,
         template,
         excludedParamKeys,
+        altCredsCapturedReq,
       );
       if (strippedParams.length > 0) {
         return strippedDerivedParamsResult(authType, strippedParams);
@@ -1195,10 +1243,21 @@ const getAuthTemplate = async (compiledApp, input) => {
     sawLegacyDump = sawLegacyDump || legacyAuthDump;
 
     if (!error && capturedReq) {
+      ({ capturedReq: altCredsCapturedReq } = await runMiddlewareSurvival(
+        compiledApp,
+        input,
+        auth,
+        buildAltCredentials(placeholderAuthData),
+        {
+          url: testReq.url || 'https://example.com',
+          reqOverrides: testReqOverrides,
+        },
+      ));
       const strippedParams = findStrippedDerivedAuthParams(
         capturedReq,
         template,
         excludedParamKeys,
+        altCredsCapturedReq,
       );
       if (strippedParams.length > 0) {
         return strippedDerivedParamsResult(authType, strippedParams);
@@ -1280,6 +1339,7 @@ const getAuthTemplate = async (compiledApp, input) => {
         {
           capturedReq,
           excludedParamKeys,
+          altCredsCapturedReq,
         },
       );
     }
@@ -1366,6 +1426,18 @@ const getAuthTemplate = async (compiledApp, input) => {
         // divergence is only checked in the beforeRequest fallback path
         // (which uses a synthetic URL).
 
+        // Alt-credentials capture for the stripped-param check: run the test
+        // function again under a second set of fake credentials so
+        // findStrippedDerivedAuthParams can tell credential-derived params from
+        // constant operation params.
+        const { capturedReq: testFnAltCredsCapturedReq } =
+          await runTestFunctionSurvival(
+            auth.test,
+            buildAltCredentials(placeholderAuthData),
+            compiledApp,
+            input,
+          );
+
         const testTemplate = cleanTemplate(template);
 
         // If beforeRequest also produced a template, pick the richer one.
@@ -1382,6 +1454,7 @@ const getAuthTemplate = async (compiledApp, input) => {
             {
               capturedReq: beforeRequestCapturedReq,
               excludedParamKeys: beforeRequestExcludedParamKeys,
+              altCredsCapturedReq,
             },
           );
         }
@@ -1389,6 +1462,7 @@ const getAuthTemplate = async (compiledApp, input) => {
         return supported('authentication.test', testTemplate, sawLegacyDump, {
           capturedReq,
           excludedParamKeys,
+          altCredsCapturedReq: testFnAltCredsCapturedReq,
         });
       }
 
@@ -1400,6 +1474,7 @@ const getAuthTemplate = async (compiledApp, input) => {
           {
             capturedReq: beforeRequestCapturedReq,
             excludedParamKeys: beforeRequestExcludedParamKeys,
+            altCredsCapturedReq,
           },
         );
       }
@@ -1418,6 +1493,7 @@ const getAuthTemplate = async (compiledApp, input) => {
     return supported('beforeRequest', beforeRequestTemplate, sawLegacyDump, {
       capturedReq: beforeRequestCapturedReq,
       excludedParamKeys: beforeRequestExcludedParamKeys,
+      altCredsCapturedReq,
     });
   }
 
