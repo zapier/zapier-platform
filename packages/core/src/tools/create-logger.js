@@ -230,11 +230,33 @@ class LogStreamFactory {
     if (this._logStream) {
       this._logStream.end();
 
-      const clock =
-        timeoutToAbort > 0 ? sleep(timeoutToAbort) : Promise.resolve(undefined);
       const responsePromise = this._logStream.request;
 
-      const result = await Promise.race([clock, responsePromise]);
+      // `sleep()` is really `timers/promises`' setTimeout (that's what
+      // `util.promisify` resolves `setTimeout` to), which schedules a real,
+      // ref'd Timeout handle. That handle keeps the event loop - and so the
+      // Lambda execution environment - from going idle until it fires, even
+      // after Promise.race below has already settled because the log server
+      // responded first. Left uncancelled, every fast log flush would still
+      // hold the invocation open for the rest of timeoutToAbort for nothing.
+      // Passing an AbortSignal lets us cancel the handle the moment the race
+      // is decided.
+      const clockController = new AbortController();
+      const clock =
+        timeoutToAbort > 0
+          ? sleep(timeoutToAbort, undefined, {
+              signal: clockController.signal,
+            }).catch(() => undefined) // aborting rejects; treat that like "didn't time out"
+          : Promise.resolve(undefined);
+
+      let result;
+      try {
+        result = await Promise.race([clock, responsePromise]);
+      } finally {
+        // No-op if the clock already fired on its own (genuine timeout).
+        clockController.abort();
+      }
+
       const isTimeout = !result;
       if (isTimeout) {
         this._logStream.abort();

@@ -2,6 +2,9 @@
 
 require('should');
 const nock = require('nock');
+const path = require('path');
+const { execFile } = require('child_process');
+const { promisify } = require('util');
 
 const createlogger = require('../src/tools/create-logger');
 const querystring = require('querystring');
@@ -807,5 +810,32 @@ describe('logger', () => {
     const response = await logger.end(0); // should return immediately
     response.status.should.eql(200);
     response.content.should.eql('aborted');
+  });
+
+  it('should let the process exit promptly instead of waiting out the abort timer', async function () {
+    // logger.end(timeoutToAbort) races the log server's response against a
+    // setTimeout(timeoutToAbort), to bound how long we wait before
+    // force-aborting a slow/hung connection. If that timer isn't cancelled
+    // once the race is decided, it keeps the event loop - and so a Lambda
+    // execution environment - from going idle until it fires, even when the
+    // server already responded. This has to run as a real child process (see
+    // the fixture) because what we're checking is whether the process goes
+    // idle promptly, not whether some in-process promise resolves quickly -
+    // those are different things, and this bug only shows up as the former.
+    this.timeout(8000);
+
+    const start = Date.now();
+    await promisify(execFile)(process.execPath, [
+      path.join(
+        __dirname,
+        'fixtures',
+        'logger-end-leaves-no-dangling-timer.js',
+      ),
+    ]);
+    const elapsed = Date.now() - start;
+
+    // The fixture's logger.end(10000) would take ~10s if the abort timer
+    // isn't cancelled once the (instant) local response wins the race.
+    elapsed.should.be.below(3000);
   });
 });
