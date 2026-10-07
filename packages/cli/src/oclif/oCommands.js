@@ -18,6 +18,10 @@ const COMMANDS = {
   'delete:integration': require('./commands/delete/integration'),
   'delete:version': require('./commands/delete/version'),
   describe: require('./commands/describe'),
+  'domain-filter': true,
+  'domain-filter:get': require('./commands/domain-filter/get'),
+  'domain-filter:set': require('./commands/domain-filter/set'),
+  'domain-filter:unset': require('./commands/domain-filter/unset'),
   env: true, // used so that aliases are properly routed into oclif, but `env` itself doesn't show in help/docs
   'env:get': require('./commands/env/get'),
   'env:set': require('./commands/env/set'),
