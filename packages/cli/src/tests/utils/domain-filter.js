@@ -38,6 +38,16 @@ describe('appendHosts', () => {
 });
 
 describe('writeDomainFilter', () => {
+  // Other suites call nock.restore(), so make sure it's on and offline here.
+  before(() => {
+    if (!nock.isActive()) {
+      nock.activate();
+    }
+    nock.disableNetConnect();
+  });
+  after(() => {
+    nock.enableNetConnect();
+  });
   beforeEach(() => {
     process.env.ZAPIER_DEPLOY_KEY = 'fake-key';
   });
