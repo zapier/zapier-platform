@@ -24,7 +24,8 @@ const writeDomainFilter = async (command, version, domainFilter) => {
         'Your account cannot set the domain filter yet. Ask Zapier to enable it.',
       );
     }
-    command.error((e.json?.errors || [e.message]).join('\n'));
+    // callAPI throws the Response itself, with `errText` set, for non-JSON errors.
+    command.error((e.json?.errors || [e.errText || e.message]).join('\n'));
   }
 };
 

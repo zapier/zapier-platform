@@ -64,6 +64,16 @@ describe('writeDomainFilter', () => {
     ).should.be.rejectedWith(/Not allowed: \*\*\.com/);
   });
 
+  it('explains a non-JSON error instead of printing nothing', async () => {
+    nock(BASE_ENDPOINT).post(ROUTE).reply(502, '<html>Bad Gateway</html>');
+
+    await writeDomainFilter(
+      fakeCommand(),
+      '1.0.0',
+      'api.example.com',
+    ).should.be.rejectedWith(/returned "502"/);
+  });
+
   it('refuses a version the integration does not have', async () => {
     await writeDomainFilter(
       fakeCommand(),
