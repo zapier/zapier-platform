@@ -3,7 +3,7 @@ const { cyan } = require('colors/safe');
 
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { callAPI } = require('../../../utils/api');
+const { getDomainFilter } = require('../../../utils/domain-filter');
 
 class GetDomainFilterCommand extends BaseCommand {
   async perform() {
@@ -11,9 +11,7 @@ class GetDomainFilterCommand extends BaseCommand {
     this.throwForInvalidVersion(version);
     const app = await this.getWritableApp();
 
-    const { domain_filter: domainFilter } = await callAPI(
-      `/apps/${app.id}/versions/${version}`,
-    );
+    const domainFilter = await getDomainFilter(app, version);
     this.log(
       domainFilter
         ? `Domain filter for version ${cyan(version)}: ${domainFilter}`

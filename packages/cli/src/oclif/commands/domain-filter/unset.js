@@ -8,8 +8,11 @@ const { writeDomainFilter } = require('../../../utils/domain-filter');
 class UnsetDomainFilterCommand extends BaseCommand {
   async perform() {
     const { version } = this.args;
-    await writeDomainFilter(this, version, '');
-    this.log(`Cleared the domain filter for version ${cyan(version)}.`);
+    const { previous } = await writeDomainFilter(this, version, () => '');
+    this.log(
+      `Cleared the domain filter for version ${cyan(version)}` +
+        (previous ? ` (was: ${previous}).` : '.'),
+    );
   }
 }
 
