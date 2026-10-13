@@ -3,12 +3,19 @@ const { cyan } = require('colors/safe');
 
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
-const { writeDomainFilter } = require('../../../utils/domain-filter');
+const {
+  getDomainFilter,
+  setDomainFilter,
+} = require('../../../utils/domain-filter');
 
 class UnsetDomainFilterCommand extends BaseCommand {
   async perform() {
     const { version } = this.args;
-    const { previous } = await writeDomainFilter(this, version, () => '');
+    this.throwForInvalidVersion(version);
+    const app = await this.getWritableApp();
+
+    const previous = await getDomainFilter(app, version);
+    await setDomainFilter(app, version, '');
     this.log(
       `Cleared the domain filter for version ${cyan(version)}` +
         (previous ? ` (was: ${previous}).` : '.'),
@@ -23,7 +30,7 @@ UnsetDomainFilterCommand.args = {
   }),
 };
 UnsetDomainFilterCommand.flags = buildFlags();
-UnsetDomainFilterCommand.description = `Clear the hosts a version may call through Relay.`;
+UnsetDomainFilterCommand.description = `Clear the hosts a version's authentication can be sent to.`;
 UnsetDomainFilterCommand.examples = [
   `zapier-platform domain-filter:unset 1.0.0`,
 ];

@@ -1,5 +1,4 @@
 const { Args } = require('@oclif/core');
-const { cyan } = require('colors/safe');
 
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
@@ -12,11 +11,14 @@ class GetDomainFilterCommand extends BaseCommand {
     const app = await this.getWritableApp();
 
     const domainFilter = await getDomainFilter(app, version);
-    this.log(
-      domainFilter
-        ? `Domain filter for version ${cyan(version)}: ${domainFilter}`
-        : `Version ${cyan(version)} has no domain filter, so Relay calls made with its authentication are refused.`,
-    );
+    this.logTable({
+      rows: domainFilter
+        .split(',')
+        .filter(Boolean)
+        .map((host) => ({ host })),
+      headers: [['Host', 'host']],
+      emptyMessage: `Version ${version} has no domain filter, so requests that use its authentication are refused.`,
+    });
   }
 }
 
@@ -26,8 +28,8 @@ GetDomainFilterCommand.args = {
     required: true,
   }),
 };
-GetDomainFilterCommand.flags = buildFlags();
-GetDomainFilterCommand.description = `Get the hosts a version may call through Relay.`;
+GetDomainFilterCommand.flags = buildFlags({ opts: { format: true } });
+GetDomainFilterCommand.description = `Get the hosts a version's authentication can be sent to.`;
 GetDomainFilterCommand.examples = [`zapier-platform domain-filter:get 1.0.0`];
 GetDomainFilterCommand.skipValidInstallCheck = true;
 GetDomainFilterCommand.hide = true; // keeps it out of docs/cli.md
