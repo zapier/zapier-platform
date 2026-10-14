@@ -10,12 +10,14 @@ const { FORM_TYPE } = require('../../tools/http');
 const errors = require('../../errors');
 const {
   findSensitiveValuesFromAuthData,
+  findSensitiveValuesFromInputData,
 } = require('../../tools/secret-scrubber');
 
-const buildSensitiveValues = (bundle) => {
+const buildSensitiveValues = (bundle, method) => {
   const authData = bundle?.authData || {};
   const result = [
     ...findSensitiveValuesFromAuthData(authData),
+    ...findSensitiveValuesFromInputData(bundle?.inputData || {}, method),
     ...findSensitiveValues(process.env),
   ];
   return [...new Set(result)];
@@ -28,7 +30,8 @@ const _throwForStatus = (response, bundle) => {
     // Create a cleaned version of the response to avoid sensitive data leaks
     try {
       // Find sensitive values from environment variables and bundle authData
-      const sensitiveValues = buildSensitiveValues(bundle);
+      const method = response?.request?.input?._zapier?.event?.method;
+      const sensitiveValues = buildSensitiveValues(bundle, method);
       if (sensitiveValues.length > 0 && response?.request?.url) {
         response.request.url = scrub(response.request.url, sensitiveValues);
       }

@@ -119,6 +119,65 @@ describe('logger', () => {
     ]);
   });
 
+  it('should censor inputData credentials during authentication methods', async () => {
+    const bundle = {
+      authData: {},
+      inputData: {
+        clientSecret: 'super-secret-value',
+        api_key: 'abcdef123456',
+        account_id: 'acct-123456',
+        email: 'person@example.com',
+        site_url: 'https://example.com/path',
+      },
+    };
+    const logger = createlogger(
+      { bundle, method: 'authentication.oauth2Config.authorizeUrl' },
+      options,
+    );
+
+    logger(`input: ${JSON.stringify(bundle.inputData)}`, bundle.inputData);
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+    const log = response.content.logs[0];
+    log.message.should.not.containEql('super-secret-value');
+    log.message.should.not.containEql('abcdef123456');
+    log.message.should.containEql('acct-123456');
+    log.message.should.containEql('person@example.com');
+    log.message.should.containEql('https://example.com/path');
+    log.data.clientSecret.should.startWith(':censored:');
+    log.data.api_key.should.startWith(':censored:');
+    log.data.account_id.should.eql('acct-123456');
+    log.data.email.should.eql('person@example.com');
+    log.data.site_url.should.eql('https://example.com/path');
+  });
+
+  it('should censor only sensitive inputData keys outside authentication', async () => {
+    const bundle = {
+      inputData: {
+        api_key: 'abcdef123456',
+        password: 'hunter22222',
+        name: 'ordinary-value',
+        nested: { access_token: 'tok-123456789' },
+      },
+    };
+    const logger = createlogger(
+      { bundle, method: 'triggers.recipe.operation.perform' },
+      options,
+    );
+
+    logger('test hunter22222 ordinary-value tok-123456789 abcdef123456', {
+      note: 'ordinary-value',
+    });
+    const response = await logger.end(1000);
+    response.status.should.eql(200);
+    const log = response.content.logs[0];
+    log.message.should.not.containEql('hunter22222');
+    log.message.should.not.containEql('abcdef123456');
+    log.message.should.not.containEql('tok-123456789');
+    log.message.should.containEql('ordinary-value');
+    log.data.note.should.eql('ordinary-value');
+  });
+
   it('should censor auth headers', async () => {
     const bundle = {
       authData: {
