@@ -44,5 +44,10 @@
   },
   "prettier": {
     "singleQuote": true
+  },
+  "pnpm": {
+    "overrides": {
+      "simple-git": "3.36.0"
+    }
   }
 }
