@@ -9,7 +9,6 @@ const { BASE_ENDPOINT } = require('../../constants');
 const GetCommand = require('../../oclif/commands/domain-filter/get');
 const SetCommand = require('../../oclif/commands/domain-filter/set');
 const UnsetCommand = require('../../oclif/commands/domain-filter/unset');
-const { appendHosts } = require('../../utils/domain-filter');
 
 const APP_ROUTE = '/api/platform/cli/apps/42';
 const VERSION_ROUTE = `${APP_ROUTE}/versions/1.0.0`;
@@ -25,23 +24,9 @@ const mockCurrent = (domainFilter) =>
     .get(VERSION_ROUTE)
     .reply(200, { domain_filter: domainFilter });
 
-const mockSet = (domainFilter) =>
-  nock(BASE_ENDPOINT)
-    .post(ROUTE, { domain_filter: domainFilter })
-    .reply(200, { domain_filter: domainFilter });
-
-describe('appendHosts', () => {
-  it('adds new hosts after the current ones and skips duplicates', () => {
-    appendHosts('api.example.com,*.example.org', [
-      'auth.example.com',
-      'api.example.com',
-    ]).should.equal('api.example.com,*.example.org,auth.example.com');
-  });
-
-  it('works on an empty filter', () => {
-    appendHosts('', ['api.example.com']).should.equal('api.example.com');
-  });
-});
+// `body` must match the request exactly; `stored` is what the server answers with.
+const mockSet = (body, stored = body.domain_filter) =>
+  nock(BASE_ENDPOINT).post(ROUTE, body).reply(200, { domain_filter: stored });
 
 describe('domain-filter commands', () => {
   const origCwd = process.cwd();
@@ -112,7 +97,7 @@ describe('domain-filter commands', () => {
     it('replaces the current filter by default', async () => {
       mockApp();
       mockCurrent('old.example.com');
-      const save = mockSet('api.example.com');
+      const save = mockSet({ domain_filter: 'api.example.com' });
       const { stdout } = await captureOutput(() =>
         SetCommand.run(['1.0.0', 'api.example.com']),
       );
@@ -123,20 +108,21 @@ describe('domain-filter commands', () => {
     it('lowercases hosts', async () => {
       mockApp();
       mockCurrent(null);
-      const save = mockSet('api.example.com,*.example.org');
+      const save = mockSet({ domain_filter: 'api.example.com,*.example.org' });
       await captureOutput(() =>
         SetCommand.run(['1.0.0', 'API.Example.COM', '*.Example.org']),
       );
       save.isDone().should.be.true();
     });
 
-    it('appends with -a before the version, ignoring a -- separator', async () => {
+    it('asks the server to append, with -a before the version and a -- separator', async () => {
       mockApp();
       mockCurrent('api.example.com');
       const save = mockSet(
+        { domain_filter: 'auth.example.com,extra.example.com', append: true },
         'api.example.com,auth.example.com,extra.example.com',
       );
-      await captureOutput(() =>
+      const { stdout } = await captureOutput(() =>
         SetCommand.run([
           '-a',
           '1.0.0',
@@ -146,6 +132,9 @@ describe('domain-filter commands', () => {
         ]),
       );
       save.isDone().should.be.true();
+      stdout.should.containEql(
+        'is now: api.example.com,auth.example.com,extra.example.com',
+      );
     });
 
     it('requires at least one host', async () => {
@@ -192,7 +181,7 @@ describe('domain-filter commands', () => {
     it('clears the filter and shows the old value', async () => {
       mockApp();
       mockCurrent('api.example.com');
-      const save = mockSet('');
+      const save = mockSet({ domain_filter: '' });
       const { stdout } = await captureOutput(() => UnsetCommand.run(['1.0.0']));
       save.isDone().should.be.true();
       stdout.should.containEql('(was: api.example.com)');

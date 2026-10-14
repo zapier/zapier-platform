@@ -12,12 +12,14 @@ const getDomainFilter = async (app, version) => {
 };
 
 // Gated server-side by the `cli_admin_domain_filter` switch; until it is on for
-// the user, non-staff get a 401.
-const setDomainFilter = async (app, version, domainFilter) => {
+// the user, non-staff get a 401. With `append`, the server adds the hosts to the
+// stored filter, so two people appending at once don't overwrite each other.
+const setDomainFilter = async (app, version, domainFilter, { append } = {}) => {
+  const body = { domain_filter: domainFilter, ...(append && { append: true }) };
   try {
     const appVersion = await callAPI(
       `/apps/${app.id}/versions/${version}/domain-filter`,
-      { method: 'POST', body: { domain_filter: domainFilter } },
+      { method: 'POST', body },
       true,
     );
     return appVersion.domain_filter || '';
@@ -32,10 +34,4 @@ const setDomainFilter = async (app, version, domainFilter) => {
   }
 };
 
-// Keeps the current hosts first and skips ones already there.
-const appendHosts = (current, hosts) =>
-  [...new Set([...current.split(','), ...hosts].map((h) => h.trim()))]
-    .filter(Boolean)
-    .join(',');
-
-module.exports = { appendHosts, getDomainFilter, setDomainFilter };
+module.exports = { getDomainFilter, setDomainFilter };

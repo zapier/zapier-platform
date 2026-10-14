@@ -4,7 +4,6 @@ const { cyan } = require('colors/safe');
 const BaseCommand = require('../../ZapierBaseCommand');
 const { buildFlags } = require('../../buildFlags');
 const {
-  appendHosts,
   getDomainFilter,
   setDomainFilter,
 } = require('../../../utils/domain-filter');
@@ -23,11 +22,9 @@ class SetDomainFilterCommand extends BaseCommand {
     const app = await this.getWritableApp();
 
     const previous = await getDomainFilter(app, version);
-    const stored = await setDomainFilter(
-      app,
-      version,
-      this.flags.append ? appendHosts(previous, hosts) : hosts.join(','),
-    );
+    const stored = await setDomainFilter(app, version, hosts.join(','), {
+      append: this.flags.append,
+    });
     if (previous) {
       this.log(`Previous domain filter: ${previous}`);
     }
