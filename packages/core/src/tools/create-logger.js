@@ -123,17 +123,11 @@ const buildSensitiveValues = (event, data) => {
   const authData = bundle.authData || {};
   const inputData = bundle.inputData || {};
 
-  // During authentication methods the credentials a user enters arrive in
-  // inputData before authData exists, so treat inputData like authData there.
-  const isAuthenticationMethod = (event.method || '').startsWith(
-    'authentication.',
-  );
-
+  // Credentials can arrive in inputData (e.g. during authentication methods,
+  // before authData exists), so treat inputData like authData.
   const result = [
     ...findSensitiveValuesFromAuthData(authData),
-    ...(isAuthenticationMethod
-      ? findSensitiveValuesFromAuthData(inputData)
-      : findSensitiveValues(inputData)),
+    ...findSensitiveValuesFromAuthData(inputData),
     ...findSensitiveValues(process.env),
     ...findSensitiveValues(data),
   ];
