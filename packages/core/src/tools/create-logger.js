@@ -121,9 +121,13 @@ const attemptFindSecretsInStr = (s, isGettingNewSecret) => {
 const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
   const authData = bundle.authData || {};
+  const inputData = bundle.inputData || {};
 
+  // Credentials can arrive in inputData (e.g. during authentication methods,
+  // before authData exists), so treat inputData like authData.
   const result = [
     ...findSensitiveValuesFromAuthData(authData),
+    ...findSensitiveValuesFromAuthData(inputData),
     ...findSensitiveValues(process.env),
     ...findSensitiveValues(data),
   ];

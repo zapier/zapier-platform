@@ -119,6 +119,42 @@ describe('logger', () => {
     ]);
   });
 
+  for (const method of [
+    'authentication.oauth2Config.authorizeUrl',
+    'triggers.recipe.operation.perform',
+  ]) {
+    it(`should censor inputData values in console logs (${method})`, async () => {
+      const bundle = {
+        authData: {},
+        inputData: {
+          clientSecret: 'super-secret-value',
+          api_key: 'abcdef123456',
+          name: 'ordinary-value',
+          nested: { access_token: 'tok-123456789' },
+          account_id: 'acct-123456',
+          email: 'person@example.com',
+          site_url: 'https://example.com/path',
+        },
+      };
+      const logger = createlogger({ bundle, method }, options);
+
+      // Same shape as z.console.log: a formatted string with no extra data
+      logger(`input: ${JSON.stringify(bundle.inputData)}`, {
+        log_type: 'console',
+      });
+      const response = await logger.end(1000);
+      response.status.should.eql(200);
+      const { message } = response.content.logs[0];
+      message.should.not.containEql('super-secret-value');
+      message.should.not.containEql('abcdef123456');
+      message.should.not.containEql('ordinary-value');
+      message.should.not.containEql('tok-123456789');
+      message.should.containEql('acct-123456');
+      message.should.containEql('person@example.com');
+      message.should.containEql('https://example.com/path');
+    });
+  }
+
   it('should censor auth headers', async () => {
     const bundle = {
       authData: {
