@@ -16,10 +16,7 @@ const {
 } = require('../constants');
 const { unheader } = require('./http');
 const { scrub, findSensitiveValues } = require('@zapier/secret-scrubber');
-const {
-  findSensitiveValuesFromAuthData,
-  findSensitiveValuesFromInputData,
-} = require('./secret-scrubber');
+const { findSensitiveValuesFromAuthData } = require('./secret-scrubber');
 
 // The payload size per request to stream logs. This should be slighly lower
 // than the limit (16 MB) on the server side.
@@ -124,10 +121,19 @@ const attemptFindSecretsInStr = (s, isGettingNewSecret) => {
 const buildSensitiveValues = (event, data) => {
   const bundle = event.bundle || {};
   const authData = bundle.authData || {};
+  const inputData = bundle.inputData || {};
+
+  // During authentication methods the credentials a user enters arrive in
+  // inputData before authData exists, so treat inputData like authData there.
+  const isAuthenticationMethod = (event.method || '').startsWith(
+    'authentication.',
+  );
 
   const result = [
     ...findSensitiveValuesFromAuthData(authData),
-    ...findSensitiveValuesFromInputData(bundle.inputData || {}, event.method),
+    ...(isAuthenticationMethod
+      ? findSensitiveValuesFromAuthData(inputData)
+      : findSensitiveValues(inputData)),
     ...findSensitiveValues(process.env),
     ...findSensitiveValues(data),
   ];

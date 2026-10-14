@@ -1,9 +1,6 @@
 'use strict';
 
-const {
-  recurseExtract,
-  findSensitiveValues,
-} = require('@zapier/secret-scrubber');
+const { recurseExtract } = require('@zapier/secret-scrubber');
 const {
   isUrlWithSecrets,
   isSensitiveKey,
@@ -96,20 +93,6 @@ const findSensitiveValuesFromAuthData = (authData) =>
     return true;
   });
 
-// During authentication methods (e.g. oauth2Config.getAccessToken,
-// sessionConfig.perform, or test on a new connection), the credentials a user
-// enters arrive in inputData before authData exists. Treat inputData like
-// authData there. For other methods, censor only sensitive-looking keys and
-// secrets embedded in URLs.
-const isAuthenticationMethod = (method) =>
-  typeof method === 'string' && method.startsWith('authentication.');
-
-const findSensitiveValuesFromInputData = (inputData, method) =>
-  isAuthenticationMethod(method)
-    ? findSensitiveValuesFromAuthData(inputData)
-    : findSensitiveValues(inputData);
-
 module.exports = {
   findSensitiveValuesFromAuthData,
-  findSensitiveValuesFromInputData,
 };
