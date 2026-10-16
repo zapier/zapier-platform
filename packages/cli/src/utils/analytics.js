@@ -1,3 +1,4 @@
+const path = require('node:path');
 const { callAPI } = require('./api');
 // const { readFile } = require('./files');
 const debug = require('debug')('zapier:analytics');
@@ -5,6 +6,17 @@ const pkg = require('../../package.json');
 const { getLinkedAppConfig } = require('../utils/api');
 const { ANALYTICS_KEY, ANALYTICS_MODES, IS_TESTING } = require('../constants');
 const { readUserConfig, writeUserConfig } = require('./userConfig');
+
+// On Windows both the `zapier` and `zapier-platform` wrappers point at the same
+// script, so we can't reliably tell which one the user invoked. Return undefined
+// in that case — matches the avro schema's nullable default.
+const getBinaryName = () => {
+  if (process.platform === 'win32') {
+    return undefined;
+  }
+  const scriptPath = process.argv[1] || '';
+  return path.basename(scriptPath, path.extname(scriptPath)) || undefined;
+};
 
 const currentAnalyticsMode = async () => {
   const { [ANALYTICS_KEY]: mode } = await readUserConfig();
@@ -53,6 +65,7 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
     argsKeys: argKeys,
     flagKeys,
     cliVersion: pkg.version,
+    binaryName: getBinaryName(),
     os: shouldRecordAnonymously ? undefined : process.platform,
   };
 
@@ -75,6 +88,7 @@ const recordAnalytics = async (command, isValidCommand, args, flags) => {
 
 module.exports = {
   currentAnalyticsMode,
+  getBinaryName,
   recordAnalytics,
   shouldSkipAnalytics,
   modes: ANALYTICS_MODES,
