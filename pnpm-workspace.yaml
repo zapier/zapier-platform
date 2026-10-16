@@ -5,3 +5,6 @@ packages:
 onlyBuiltDependencies:
   - aws-sdk
   - esbuild
+
+overrides:
+  simple-git: 3.32.3
