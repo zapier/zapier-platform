@@ -112,6 +112,13 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install
+      - name: Use the D drive for temp files
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force D:\tmp | Out-Null
+          "TEMP=D:\tmp" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          "TMP=D:\tmp" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
       - name: Test - cli
         run: pnpm test
         working-directory: packages/cli
@@ -180,6 +187,13 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install
+      - name: Use the D drive for temp files
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force D:\tmp | Out-Null
+          "TEMP=D:\tmp" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          "TMP=D:\tmp" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
       - name: Smoke test - cli
         run: pnpm smoke-test
         working-directory: packages/cli
