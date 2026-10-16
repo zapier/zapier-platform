@@ -2,6 +2,12 @@ import type { Create, Search, Trigger } from './schemas.generated';
 import type { InputField, InputFields } from './inputs';
 import type { App } from './app';
 
+/**
+ * @deprecated use one of the following functions instead:
+ * - defineStaticInputField
+ * - defineKnownInputFieldsFunc
+ * - defineCustomInputFieldsFunc
+ */
 export declare function defineInputField<
   const $InputData extends Record<string, unknown>,
   const $InputField extends InputField<$InputData>,
