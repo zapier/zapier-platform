@@ -291,8 +291,8 @@ importers:
   packages/legacy-scripting-runner:
     dependencies:
       '@xmldom/xmldom':
-        specifier: 0.8.13
-        version: 0.8.13
+        specifier: 0.8.15
+        version: 0.8.15
       async:
         specifier: 2.6.4
         version: 2.6.4
@@ -2039,8 +2039,8 @@ packages:
     engines: {node: '>=10.0.0'}
     deprecated: this version has critical issues, please update to the latest version
 
-  '@xmldom/xmldom@0.8.13':
-    resolution: {integrity: sha512-KRYzxepc14G/CEpEGc3Yn+JKaAeT63smlDr+vjB8jRfgTBBI9wRj/nkQEO+ucV8p8I9bfKLWp37uHgFrbntPvw==}
+  '@xmldom/xmldom@0.8.15':
+    resolution: {integrity: sha512-/5NV/vDALVFDXgLmfsy9TRCBlKwO2LNBFzpzvb9iIj+jR+eSc6DLYYvVOdivT/jm7MtU6TebYuRmzEOI7w40UA==}
     engines: {node: '>=10.0.0'}
 
   '@yeoman/adapter@1.6.0':
@@ -8618,7 +8618,7 @@ snapshots:
 
   '@xmldom/xmldom@0.8.11': {}
 
-  '@xmldom/xmldom@0.8.13': {}
+  '@xmldom/xmldom@0.8.15': {}
 
   '@yeoman/adapter@1.6.0(@types/node@22.19.1)':
     dependencies:
