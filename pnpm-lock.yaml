@@ -87,8 +87,8 @@ importers:
         specifier: 2.2.32
         version: 2.2.32
       adm-zip:
-        specifier: 0.5.16
-        version: 0.5.16
+        specifier: 0.6.1
+        version: 0.6.1
       archiver:
         specifier: 7.0.1
         version: 7.0.1
@@ -263,8 +263,8 @@ importers:
         specifier: ^2.6.11
         version: 2.6.13
       adm-zip:
-        specifier: 0.5.16
-        version: 0.5.16
+        specifier: 0.6.1
+        version: 0.6.1
       aws-sdk:
         specifier: ^2.1397.0
         version: 2.1692.0
@@ -2115,9 +2115,9 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
-  adm-zip@0.5.16:
-    resolution: {integrity: sha512-TGw5yVi4saajsSEgz25grObGHEUaDrniwvA2qwSC060KfqGPdglhvPMA2lPIoxs3PQIItj2iag35fONcQqgUaQ==}
-    engines: {node: '>=12.0'}
+  adm-zip@0.6.1:
+    resolution: {integrity: sha512-Xwrja8nx9e5o2N1my4DsKCeKpdrnACyr1wtbPxBDgGzKzKyE9kRtBFA8mWldI+RVlD7CBZNWY/wQ2+ydwOR6kQ==}
+    engines: {node: '>=14.0'}
 
   agent-base@7.1.4:
     resolution: {integrity: sha512-MnA+YT8fwfJPgBx3m60MNqakm30XOkyIoH1y6huTQvC0PwZG7ki8NacLBcrPbNoo8vEZy7Jpuk7+jMO+CUovTQ==}
@@ -8700,7 +8700,7 @@ snapshots:
 
   acorn@8.15.0: {}
 
-  adm-zip@0.5.16: {}
+  adm-zip@0.6.1: {}
 
   agent-base@7.1.4: {}
 
