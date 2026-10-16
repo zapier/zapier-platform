@@ -12,7 +12,7 @@ const getDomainFilter = async (app, version) => {
 };
 
 // Gated server-side by the `cli_admin_domain_filter` switch; until it is on for
-// the user, non-staff get a 401. With `append`, the server adds the hosts to the
+// the user, non-staff get a 401. With `append`, the server adds the domains to the
 // stored filter, so two people appending at once don't overwrite each other.
 const setDomainFilter = async (app, version, domainFilter, { append } = {}) => {
   const body = { domain_filter: domainFilter, ...(append && { append: true }) };

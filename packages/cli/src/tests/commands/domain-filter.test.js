@@ -64,12 +64,12 @@ describe('domain-filter commands', () => {
       );
     });
 
-    it('prints one host per row', async () => {
+    it('prints one domain per row', async () => {
       mockApp();
       mockCurrent('api.example.com,*.example.org');
       const { stdout } = await captureOutput(() => GetCommand.run(['1.0.0']));
       stdout.should.match(
-        /Host[\s\S]*api\.example\.com[\s\S]*\*\.example\.org/,
+        /Domain[\s\S]*api\.example\.com[\s\S]*\*\.example\.org/,
       );
     });
 
@@ -80,8 +80,8 @@ describe('domain-filter commands', () => {
         GetCommand.run(['1.0.0', '--format', 'json']),
       );
       JSON.parse(stdout).should.eql([
-        { Host: 'api.example.com' },
-        { Host: '*.example.org' },
+        { Domain: 'api.example.com' },
+        { Domain: '*.example.org' },
       ]);
     });
 
@@ -105,7 +105,7 @@ describe('domain-filter commands', () => {
       stdout.should.containEql('Previous domain filter: old.example.com');
     });
 
-    it('lowercases hosts', async () => {
+    it('lowercases domains', async () => {
       mockApp();
       mockCurrent(null);
       const save = mockSet({ domain_filter: 'api.example.com,*.example.org' });
@@ -137,9 +137,23 @@ describe('domain-filter commands', () => {
       );
     });
 
-    it('requires at least one host', async () => {
+    it('requires at least one domain', async () => {
       const { error } = await captureOutput(() => SetCommand.run(['1.0.0']));
-      error.message.should.containEql('Must specify at least one host');
+      error.message.should.containEql('Must specify at least one domain');
+    });
+
+    it('does not read domains from piped stdin', async () => {
+      const isTTY = process.stdin.isTTY;
+      const oclifGlobal = globalThis.oclif;
+      process.stdin.isTTY = false;
+      globalThis.oclif = { ...oclifGlobal, stdinCache: 'piped.example.com' };
+      try {
+        const { error } = await captureOutput(() => SetCommand.run(['1.0.0']));
+        error.message.should.containEql('Must specify at least one domain');
+      } finally {
+        process.stdin.isTTY = isTTY;
+        globalThis.oclif = oclifGlobal;
+      }
     });
 
     it('explains a 401 in plain words', async () => {

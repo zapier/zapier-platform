@@ -27,10 +27,11 @@ UnsetDomainFilterCommand.args = {
   version: Args.string({
     description: 'The version to clear the domain filter for.',
     required: true,
+    ignoreStdin: true,
   }),
 };
 UnsetDomainFilterCommand.flags = buildFlags();
-UnsetDomainFilterCommand.description = `Clear the hosts a version's authentication can be sent to.`;
+UnsetDomainFilterCommand.description = `Clear the domains a version's authentication can be sent to.`;
 UnsetDomainFilterCommand.examples = [
   `zapier-platform domain-filter:unset 1.0.0`,
 ];

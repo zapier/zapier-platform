@@ -15,8 +15,8 @@ class GetDomainFilterCommand extends BaseCommand {
       rows: domainFilter
         .split(',')
         .filter(Boolean)
-        .map((host) => ({ host })),
-      headers: [['Host', 'host']],
+        .map((domain) => ({ domain })),
+      headers: [['Domain', 'domain']],
       emptyMessage: `Version ${version} has no domain filter, so requests that use its authentication are refused.`,
     });
   }
@@ -26,10 +26,11 @@ GetDomainFilterCommand.args = {
   version: Args.string({
     description: 'The version to get the domain filter for.',
     required: true,
+    ignoreStdin: true,
   }),
 };
 GetDomainFilterCommand.flags = buildFlags({ opts: { format: true } });
-GetDomainFilterCommand.description = `Get the hosts a version's authentication can be sent to.`;
+GetDomainFilterCommand.description = `Get the domains a version's authentication can be sent to.`;
 GetDomainFilterCommand.examples = [`zapier-platform domain-filter:get 1.0.0`];
 GetDomainFilterCommand.skipValidInstallCheck = true;
 GetDomainFilterCommand.hide = true; // keeps it out of docs/cli.md
