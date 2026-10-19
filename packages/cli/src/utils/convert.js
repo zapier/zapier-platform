@@ -11,6 +11,7 @@ const {
   PLATFORM_PACKAGE,
   LAMBDA_VERSION,
   LEGACY_RUNNER_PACKAGE,
+  NPM_VERSION,
   IS_TESTING,
 } = require('../constants');
 const { copyFile, ensureDir, readFile, writeFile } = require('./files');
@@ -144,7 +145,7 @@ const renderPackageJson = async (appInfo, appDefinition) => {
     },
     engines: {
       node: `>=${LAMBDA_VERSION}`,
-      npm: '>=5.6.0',
+      npm: NPM_VERSION,
     },
     dependencies,
     devDependencies: {

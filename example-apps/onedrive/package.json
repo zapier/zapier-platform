@@ -13,10 +13,6 @@
     "test": "mocha --recursive --timeout 25000",
     "coverage": "istanbul cover _mocha -- --recursive --timeout 25000"
   },
-  "engines": {
-    "node": ">=6.10.2",
-    "npm": ">=3.0.0"
-  },
   "dependencies": {
     "async": "2.4.1",
     "content-disposition": "0.5.2",

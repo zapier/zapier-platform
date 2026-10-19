@@ -18,7 +18,9 @@ const BUILD_DIR = 'build';
 const DEFINITION_PATH = `${BUILD_DIR}/definition.json`;
 const BUILD_PATH = `${BUILD_DIR}/build.zip`;
 const SOURCE_PATH = `${BUILD_DIR}/source.zip`;
-const NODE_VERSION = versionStore[versionStore.length - 1].nodeVersion;
+const latestVersion = versionStore[versionStore.length - 1];
+const NODE_VERSION = latestVersion.nodeVersion;
+const NPM_VERSION = latestVersion.npmVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;
 const NODE_VERSION_CLI_REQUIRES = '>=22'; // should be the oldest non-ETL version
 const AUTH_KEY = 'deployKey';
@@ -99,6 +101,7 @@ module.exports = {
   MAX_DESCRIPTION_LENGTH,
   NODE_VERSION,
   NODE_VERSION_CLI_REQUIRES,
+  NPM_VERSION,
   PACKAGE_NAME,
   PACKAGE_VERSION,
   PLATFORM_PACKAGE,
