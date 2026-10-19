@@ -5,9 +5,3 @@ packages:
 onlyBuiltDependencies:
   - aws-sdk
   - esbuild
-
-overrides:
-  # simple-git comes from yeoman-generator 7.x (^3.20.0). Remove this when we move
-  # to yeoman-generator 10+, which needs Node >=22.18 (cli declares >=18.20).
-  # 3.36.0 still has open advisories fixed only in 4.x: CVE-2026-102826/27/28.
-  simple-git: 3.36.0
