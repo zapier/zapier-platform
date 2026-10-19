@@ -529,7 +529,11 @@ module.exports = {
 describe('build in lerna monorepo', function () {
   let monorepo, origCwd, unzipDir;
 
-  before(async () => {
+  before(async function () {
+    // lerna bootstrap runs npm install for every package. On Windows CI it
+    // takes about 160-170s, which is too close to the 200s default timeout.
+    this.timeout(600000);
+
     monorepo = await setupLernaMonorepo();
 
     // lerna@7 removed the bootstrap command, so we use lerna@6.
