@@ -3,8 +3,6 @@ const issueGroup = (tag) => ({
   violations: [{ type: 'some_trigger', results: [{ message: tag, tag }] }],
 });
 
-// Mirrors the shape of a POST /check response. Counts drive how many issues land
-// in each bucket; the display labels are the ones the backend sends.
 const checkResult = ({ errors = 0, warnings = 0, suggestions = 0 } = {}) => ({
   errors: {
     total_failures: errors,
