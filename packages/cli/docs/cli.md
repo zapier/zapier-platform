@@ -962,9 +962,12 @@ When this command is run, their Zaps will immediately turn off. They won't be ab
 
 Run the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during `zapier-platform build`, `zapier-platform upload`, `zapier-platform push` or even as a test in `zapier-platform test`.
 
+By default this command only exits with a non-zero code when your integration is structurally invalid. Pass `--fail-for-publishing` to also exit non-zero when the server-side checks report publishing tasks, which is useful in CI before a `zapier-platform promote`. It is not a complete substitute for the checks `zapier-platform promote` runs, so a passing run does not guarantee a promote will succeed.
+
 **Flags**
 * `--without-style` | Forgo pinging the Zapier server to run further checks.
 * `--skip-build` | Skip running the _zapier-build script before validation.
+* `--fail-for-publishing` | Exit with a non-zero code when a check would block promoting or publishing this integration.
 * `-d, --debug` | Show extra debugging output.
 * `-f, --format` | Change the way structured data is presented. If "json" or "raw", you can pipe the output of the command into other tools, such as jq. One of `[plain | json | raw | row | table]`. Defaults to `table`.
 
@@ -972,6 +975,7 @@ Run the standard validation routine powered by json-schema that checks your inte
 * `zapier-platform validate`
 * `zapier-platform validate --without-style`
 * `zapier-platform validate --skip-build`
+* `zapier-platform validate --fail-for-publishing`
 * `zapier-platform validate --format json`
 
 
