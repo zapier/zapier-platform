@@ -10,10 +10,10 @@
   "scripts": {
     "zapier-build": "rm -rf lib && babel src --out-dir lib",
     "zapier-dev": "rm -rf lib && babel src --out-dir lib --watch",
-    "prepare": "npm run zapier-build",
-    "pretest": "npm run zapier-build",
+    "prepare": "rm -rf lib && babel src --out-dir lib",
+    "pretest": "rm -rf lib && babel src --out-dir lib",
     "test": "mocha --recursive lib/test --require babel-polyfill",
-    "_zapier-build": "npm run zapier-build"
+    "_zapier-build": "rm -rf lib && babel src --out-dir lib"
   },
   "engines": {
     "node": ">=8.10.0",

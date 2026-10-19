@@ -29,7 +29,7 @@ To pull down the code and install the needed dependencies, run:
 
 ```bash
 zapier-platform init --template=onedrive ./
-npm install
+npm install  # or you can use pnpm, yarn, or bun
 ```
 > We recommend using the zapier-platform-cli and `zapier-platform init .`  to create an app - you’ll be presented with a list of currently available templates to start with.
 

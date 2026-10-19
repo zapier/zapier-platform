@@ -95,7 +95,7 @@ This integration uses the [Star Wars API](https://swapi.dev/) to demonstrate:
 
 ```bash
 # Install dependencies
-npm install
+npm install  # or you can use pnpm, yarn, or bun
 
 # Run tests
 zapier-platform test

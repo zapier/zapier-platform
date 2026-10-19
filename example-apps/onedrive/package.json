@@ -9,7 +9,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "node_modules/.bin/eslint .",
-    "posttest": "npm run lint",
+    "posttest": "node_modules/.bin/eslint .",
     "test": "mocha --recursive --timeout 25000",
     "coverage": "istanbul cover _mocha -- --recursive --timeout 25000"
   },

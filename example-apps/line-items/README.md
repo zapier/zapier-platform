@@ -6,7 +6,7 @@ These are what you normally do next:
 
 ```bash
 # Install dependencies
-npm install --ignore-scripts  # or you can use pnpm or yarn
+npm install --ignore-scripts  # or you can use pnpm, yarn, or bun
 
 # Run tests
 zapier-platform test
