@@ -76,11 +76,11 @@ const writeGenericTypeScriptPackageJson = (gen, packageJsonExtension) => {
         version: '1.0.0',
         description: '',
         scripts: {
-          test: 'npm run build && vitest --run',
+          test: 'rimraf ./dist ./build && tsc && vitest --run',
           clean: 'rimraf ./dist ./build',
-          build: 'npm run clean && tsc',
-          dev: 'npm run build -- --watch',
-          '_zapier-build': 'npm run build',
+          build: 'rimraf ./dist ./build && tsc',
+          dev: 'rimraf ./dist ./build && tsc --watch',
+          '_zapier-build': 'rimraf ./dist ./build && tsc',
         },
         dependencies: {
           [PLATFORM_PACKAGE]: PACKAGE_VERSION,

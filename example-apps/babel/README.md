@@ -7,6 +7,7 @@ A barebones app that has a resource defined. This is mainly a proof-of-concept f
 Run this:
 
 ```bash
+npm install  # or you can use pnpm, yarn, or bun
 npm run zapier-dev # compiles live
 zapier-platform test
 ```

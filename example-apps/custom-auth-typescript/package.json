@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "npm run build && vitest --run",
+    "test": "rimraf ./dist ./build && tsc && vitest --run",
     "clean": "rimraf ./dist ./build",
-    "build": "npm run clean && tsc",
-    "_zapier-build": "npm run build"
+    "build": "rimraf ./dist ./build && tsc",
+    "_zapier-build": "rimraf ./dist ./build && tsc"
   },
   "dependencies": {
     "zapier-platform-core": "19.2.1"

@@ -1,3 +1,7 @@
+const fs = require('fs-extra');
+const os = require('os');
+const path = require('path');
+
 const { expect } = require('chai');
 const { createEnv } = require('../utils/esm-wrapper');
 const {
@@ -169,6 +173,54 @@ describe('ProjectGenerator', () => {
 
       // Should not prompt for module choice
       expect(result.modulePromptCalled).to.equal(false);
+    });
+  });
+
+  describe('TypeScript package.json scripts', () => {
+    let tmpDir;
+
+    const generate = async (template) => {
+      const projectDir = path.join(tmpDir, template);
+      const env = await createEnv();
+      env.registerStub(await ProjectGenerator, 'test:project');
+      await env.run('test:project', {
+        path: projectDir,
+        template,
+        language: 'typescript',
+      });
+      return fs.readJsonSync(path.join(projectDir, 'package.json'));
+    };
+
+    beforeEach(() => {
+      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zapier-generator-'));
+    });
+
+    afterEach(() => {
+      fs.removeSync(tmpDir);
+    });
+
+    for (const template of TS_SUPPORTED_TEMPLATES) {
+      it(`should not reference a package manager in ${template} scripts`, async () => {
+        const { scripts } = await generate(template);
+
+        for (const [name, command] of Object.entries(scripts)) {
+          expect(command, `${name} script`).to.not.match(
+            /\b(npm|pnpm|yarn|bun)\b/,
+          );
+        }
+      });
+    }
+
+    it('should build and clean through tsc and rimraf directly', async () => {
+      const { scripts } = await generate('oauth2');
+
+      expect(scripts).to.deep.equal({
+        test: 'rimraf ./dist ./build && tsc && vitest --run',
+        clean: 'rimraf ./dist ./build',
+        build: 'rimraf ./dist ./build && tsc',
+        dev: 'rimraf ./dist ./build && tsc --watch',
+        '_zapier-build': 'rimraf ./dist ./build && tsc',
+      });
     });
   });
 });
