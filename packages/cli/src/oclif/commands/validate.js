@@ -125,6 +125,17 @@ class ValidateCommand extends BaseCommand {
         style: { head: [], 'padding-left': 0, 'padding-right': 0 },
       });
     }
+
+    if (
+      this.flags['fail-for-publishing'] &&
+      checkResult.warnings.total_failures
+    ) {
+      this.log(
+        'Your integration has unresolved publishing tasks. Address them before promoting or publishing.',
+      );
+      process.exitCode = 1;
+    }
+
     this.log();
   }
 }
@@ -137,6 +148,11 @@ ValidateCommand.flags = buildFlags({
     'skip-build': Flags.boolean({
       description: 'Skip running the _zapier-build script before validation.',
     }),
+    'fail-for-publishing': Flags.boolean({
+      description:
+        'Exit with a non-zero code when a check would block promoting or publishing this integration.',
+      exclusive: ['without-style'],
+    }),
   },
   opts: {
     format: true,
@@ -147,10 +163,13 @@ ValidateCommand.examples = [
   'zapier-platform validate',
   'zapier-platform validate --without-style',
   'zapier-platform validate --skip-build',
+  'zapier-platform validate --fail-for-publishing',
   'zapier-platform validate --format json',
 ];
 ValidateCommand.description = `Validate your integration.
 
-Run the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during \`zapier-platform build\`, \`zapier-platform upload\`, \`zapier-platform push\` or even as a test in \`zapier-platform test\`.`;
+Run the standard validation routine powered by json-schema that checks your integration for any structural errors. This is the same routine that runs during \`zapier-platform build\`, \`zapier-platform upload\`, \`zapier-platform push\` or even as a test in \`zapier-platform test\`.
+
+By default this command only exits with a non-zero code when your integration is structurally invalid. Pass \`--fail-for-publishing\` to also exit non-zero when the server-side checks report publishing tasks, which is useful in CI before a \`zapier-platform promote\`. It is not a complete substitute for the checks \`zapier-platform promote\` runs, so a passing run does not guarantee a promote will succeed.`;
 
 module.exports = ValidateCommand;
