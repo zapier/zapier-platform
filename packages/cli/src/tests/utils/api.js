@@ -1,11 +1,31 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const should = require('should');
 const api = require('../../utils/api');
 const { AUTH_KEY, CURRENT_APP_FILE } = require('../../constants');
-const mock = require('mock-fs');
 const nock = require('nock');
 
 describe('api', () => {
   const answer = 'verysecretkey';
+
+  // The app config file is read from and written to process.cwd(), so run
+  // those tests from a fresh temp dir.
+  let origCwd;
+  let tmpDir;
+  const useTmpCwd = (files = {}) => {
+    origCwd = process.cwd();
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zapier-api-test-'));
+    process.chdir(tmpDir);
+    for (const [name, content] of Object.entries(files)) {
+      fs.writeFileSync(path.join(tmpDir, name), content);
+    }
+  };
+  const restoreCwd = () => {
+    process.chdir(origCwd);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  };
+
   describe('credentials', () => {
     beforeEach(() => {
       process.env.ZAPIER_DEPLOY_KEY = answer;
@@ -24,7 +44,7 @@ describe('api', () => {
 
   describe('linkedAppConfigs', () => {
     beforeEach(() => {
-      mock({
+      useTmpCwd({
         [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }',
       });
     });
@@ -46,7 +66,7 @@ describe('api', () => {
     });
 
     it('should write even if it fails to read', () => {
-      mock();
+      fs.rmSync(CURRENT_APP_FILE);
       return api
         .writeLinkedAppConfig({ id: 1, key: 'App1' })
         .then(api.getLinkedAppConfig)
@@ -56,7 +76,7 @@ describe('api', () => {
         });
     });
 
-    afterEach(mock.restore);
+    afterEach(restoreCwd);
   });
 
   describe('listEndpoint', () => {
@@ -68,7 +88,7 @@ describe('api', () => {
 
     beforeEach(() => {
       process.env.ZAPIER_DEPLOY_KEY = answer;
-      mock({
+      useTmpCwd({
         [CURRENT_APP_FILE]: '{ "id": 2864, "key": "App2864", "extra": 5 }',
       });
     });
@@ -109,7 +129,7 @@ describe('api', () => {
     });
 
     afterEach(() => {
-      mock.restore();
+      restoreCwd();
       delete process.env.ZAPIER_DEPLOY_KEY;
     });
 

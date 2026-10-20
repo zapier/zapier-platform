@@ -1,13 +1,29 @@
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const should = require('should');
-const mock = require('mock-fs');
 
 const tools = require('../../src/tools/exported');
 const { cleanEnvironment } = require('../../src/tools/environment');
 let env;
 
 describe('read env', () => {
+  let origCwd;
+  let tmpDir;
+
+  // env.inject() reads files relative to process.cwd(), so write the fixture
+  // files into a fresh temp dir and run the test from there.
+  const mock = (files) => {
+    for (const [name, content] of Object.entries(files)) {
+      fs.writeFileSync(path.join(tmpDir, name), content);
+    }
+  };
+
   beforeEach(() => {
     env = Object.assign({}, process.env);
+    origCwd = process.cwd();
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zapier-env-test-'));
+    process.chdir(tmpDir);
   });
 
   it('should should only read .env', () => {
@@ -47,7 +63,8 @@ describe('read env', () => {
   });
 
   afterEach(() => {
-    mock.restore();
+    process.chdir(origCwd);
+    fs.rmSync(tmpDir, { recursive: true, force: true });
     process.env = env;
   });
 });
