@@ -278,6 +278,74 @@ describe('renderAuthTemplate', () => {
         'sig:POST|https://api.example.com/widgets|{"a":1}:shh',
       );
     });
+
+    describe('passthrough query params', () => {
+      const app = (beforeRequest) => ({
+        authentication: {
+          type: 'custom',
+          test: { url: 'https://example.com' },
+          fields: [{ key: 'api_key' }],
+        },
+        beforeRequest: [beforeRequest],
+      });
+      const addApiKey = (req, z, bundle) => {
+        req.params = { ...req.params, api_key: bundle.authData.api_key };
+        return req;
+      };
+
+      it('strips params the caller already sends', async () => {
+        const result = await run(
+          app(addApiKey),
+          { api_key: 'real-key' },
+          {
+            targetRequest: {
+              url: 'https://api.example.com/widgets?limit=10',
+              params: { page: 2 },
+            },
+          },
+        );
+        result.template.params.should.eql({ api_key: 'real-key' });
+      });
+
+      it('keeps a param that shares a key but carries a different value', async () => {
+        const overrideVersion = (req, z, bundle) => {
+          req.params = { ...req.params, api_version: 'v2' };
+          return addApiKey(req, z, bundle);
+        };
+        const result = await run(
+          app(overrideVersion),
+          { api_key: 'real-key' },
+          {
+            targetRequest: {
+              url: 'https://api.example.com/widgets',
+              params: { api_version: 'v1' },
+            },
+          },
+        );
+        result.template.params.should.eql({
+          api_version: 'v2',
+          api_key: 'real-key',
+        });
+      });
+
+      it('drops params entirely when only passthrough params remain', async () => {
+        const addHeader = (req, z, bundle) => {
+          req.headers.Authorization = `Bearer ${bundle.authData.api_key}`;
+          return req;
+        };
+        const result = await run(
+          app(addHeader),
+          { api_key: 'real-key' },
+          {
+            targetRequest: {
+              url: 'https://api.example.com/widgets?limit=10',
+            },
+          },
+        );
+        result.template.should.not.have.property('params');
+        result.template.headers.Authorization.should.eql('Bearer real-key');
+      });
+    });
   });
 
   describe('customRequestProperties', () => {

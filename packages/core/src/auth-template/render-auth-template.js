@@ -95,6 +95,36 @@ const hasNewContent = (template, baseline) => {
 };
 
 /**
+ * Drop the params `template` carries over unchanged from `baseline`.
+ *
+ * The caller already sends its own query params, so echoing them back in
+ * the rendered template would duplicate them on the proxied request. A param
+ * sharing a key but carrying a different value is an auth contribution and
+ * is kept. Compared as strings: the captured side is parsed back off the URL,
+ * so a numeric passthrough value would otherwise read as changed.
+ */
+const withoutPassthroughParams = (template, baseline) => {
+  if (!template.params || !baseline.params) {
+    return template;
+  }
+
+  for (const [key, value] of Object.entries(template.params)) {
+    if (
+      key in baseline.params &&
+      String(baseline.params[key]) === String(value)
+    ) {
+      delete template.params[key];
+    }
+  }
+
+  if (Object.keys(template.params).length === 0) {
+    delete template.params;
+  }
+
+  return template;
+};
+
+/**
  * Drop the transport headers `legacyScripting.run` seeds on the request it
  * builds. They describe that operation, not the app's auth.
  *
@@ -461,7 +491,7 @@ const renderAuthTemplate = async (compiledApp, input) => {
 
   return {
     authType,
-    template,
+    template: withoutPassthroughParams(template, targetTemplate),
   };
 };
 
