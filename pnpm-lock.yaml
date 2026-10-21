@@ -195,9 +195,6 @@ importers:
       chai:
         specifier: ^4.3.7
         version: 4.5.0
-      mock-fs:
-        specifier: ^5.5.0
-        version: 5.5.0
       nock:
         specifier: ^14.0.7
         version: 14.0.10
@@ -274,9 +271,6 @@ importers:
       fs-extra:
         specifier: ^11.3.0
         version: 11.3.1
-      mock-fs:
-        specifier: ^5.5.0
-        version: 5.5.0
       nock:
         specifier: ^13.5.4
         version: 13.5.6
@@ -4625,10 +4619,6 @@ packages:
     resolution: {integrity: sha512-mTT6RgopEYABzXWFx+GcJ+ZQ32kp4fMf0xvpZIIfSq9Z8lC/++MtcCnQ9t5FP2veYEP95FIYSvW+U9fV4xrlig==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
     hasBin: true
-
-  mock-fs@5.5.0:
-    resolution: {integrity: sha512-d/P1M/RacgM3dB0sJ8rjeRNXxtapkPCUnMGmIN0ixJ16F/E4GUZCvWcSGfWGz8eaXYvn1s9baUwNjI4LOPEjiA==}
-    engines: {node: '>=12.0.0'}
 
   moment-timezone@0.5.43:
     resolution: {integrity: sha512-72j3aNyuIsDxdF1i7CEgV2FfxM1r6aaqJyLB2vwb33mXYyoyLly+F1zbWqhA3/bVIoJ4szlUoMbUnVdid32NUQ==}
@@ -11433,8 +11423,6 @@ snapshots:
       yargs: 17.7.2
       yargs-parser: 21.1.1
       yargs-unparser: 2.0.0
-
-  mock-fs@5.5.0: {}
 
   moment-timezone@0.5.43:
     dependencies:

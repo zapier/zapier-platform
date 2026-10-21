@@ -1,23 +1,42 @@
 require('should');
-const mock = require('mock-fs');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const { getPackageManager } = require('../../utils/package-manager');
 
 describe('package manager utils', () => {
   describe('getPackageManager', () => {
-    afterEach(() => {
-      mock.restore();
+    let origCwd;
+    let tmpRoot;
+    let appDir;
+
+    // getPackageManager() searches up to 5 directories upward from
+    // process.cwd(). Nest the app dir deep enough that the whole search stays
+    // inside the temp dir and can't pick up lock files from the real machine.
+    beforeEach(() => {
+      origCwd = process.cwd();
+      tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'zapier-pm-test-'));
+      appDir = path.join(tmpRoot, 'a', 'b', 'c', 'app');
+      fs.mkdirSync(appDir, { recursive: true });
+      process.chdir(appDir);
     });
 
+    afterEach(() => {
+      process.chdir(origCwd);
+      fs.rmSync(tmpRoot, { recursive: true, force: true });
+    });
+
+    // Paths are relative to the app dir, so '../x' lands in its parent.
+    const writeFiles = (files) => {
+      for (const [name, content] of Object.entries(files)) {
+        fs.writeFileSync(path.join(appDir, name), content);
+      }
+    };
+
     it('should identify npm correctly', async () => {
-      mock(
-        {
-          'package-lock.json': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package-lock.json': '',
+      });
 
       const man = await getPackageManager({
         yarn: false,
@@ -31,15 +50,9 @@ describe('package manager utils', () => {
     });
 
     it('should identify yarn correctly', async () => {
-      mock(
-        {
-          'yarn.lock': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'yarn.lock': '',
+      });
 
       const man = await getPackageManager({
         yarn: false,
@@ -53,15 +66,9 @@ describe('package manager utils', () => {
     });
 
     it('should identify pnpm correctly', async () => {
-      mock(
-        {
-          'pnpm-lock.yaml': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'pnpm-lock.yaml': '',
+      });
 
       const man = await getPackageManager({
         yarn: false,
@@ -75,15 +82,9 @@ describe('package manager utils', () => {
     });
 
     it('should force yarn correctly', async () => {
-      mock(
-        {
-          'package-lock.json': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package-lock.json': '',
+      });
 
       const man = await getPackageManager({
         yarn: true,
@@ -97,15 +98,9 @@ describe('package manager utils', () => {
     });
 
     it('should force pnpm correctly', async () => {
-      mock(
-        {
-          'package-lock.json': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package-lock.json': '',
+      });
 
       const man = await getPackageManager({
         yarn: false,
@@ -119,15 +114,9 @@ describe('package manager utils', () => {
     });
 
     it('should use npm by default', async () => {
-      mock(
-        {
-          'actually-no-package-file.json': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'actually-no-package-file.json': '',
+      });
 
       const man = await getPackageManager({
         yarn: false,
@@ -141,15 +130,9 @@ describe('package manager utils', () => {
     });
 
     it('should use package.json packageManager if defined', async () => {
-      mock(
-        {
-          'package.json': JSON.stringify({ packageManager: 'pnpm@6.32.4' }),
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package.json': JSON.stringify({ packageManager: 'pnpm@6.32.4' }),
+      });
 
       const man = await getPackageManager({});
 
@@ -160,16 +143,10 @@ describe('package manager utils', () => {
     });
 
     it('should fall back to lock file if packageManager is undefined', async () => {
-      mock(
-        {
-          'package.json': JSON.stringify({ name: 'test-app' }),
-          'yarn.lock': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package.json': JSON.stringify({ name: 'test-app' }),
+        'yarn.lock': '',
+      });
 
       const man = await getPackageManager({});
 
@@ -180,16 +157,10 @@ describe('package manager utils', () => {
     });
 
     it('should find pnpm lock file in parent directory', async () => {
-      mock(
-        {
-          'package.json': JSON.stringify({ name: 'nested-app' }),
-          '../pnpm-lock.yaml': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package.json': JSON.stringify({ name: 'nested-app' }),
+        '../pnpm-lock.yaml': '',
+      });
 
       const man = await getPackageManager({});
 
@@ -199,16 +170,10 @@ describe('package manager utils', () => {
     });
 
     it('should find packageManager in parent package.json', async () => {
-      mock(
-        {
-          'package.json': JSON.stringify({ name: 'nested-app' }),
-          '../package.json': JSON.stringify({ packageManager: 'yarn@3.0.0' }),
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package.json': JSON.stringify({ name: 'nested-app' }),
+        '../package.json': JSON.stringify({ packageManager: 'yarn@3.0.0' }),
+      });
 
       const man = await getPackageManager({});
 
@@ -218,19 +183,13 @@ describe('package manager utils', () => {
     });
 
     it('should prefer local packageManager over parent lock file', async () => {
-      mock(
-        {
-          'package.json': JSON.stringify({
-            name: 'nested-app',
-            packageManager: 'yarn@3.0.0',
-          }),
-          '../pnpm-lock.yaml': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package.json': JSON.stringify({
+          name: 'nested-app',
+          packageManager: 'yarn@3.0.0',
+        }),
+        '../pnpm-lock.yaml': '',
+      });
 
       const man = await getPackageManager({});
 
@@ -240,17 +199,11 @@ describe('package manager utils', () => {
     });
 
     it('should prefer local lock file over parent lock file', async () => {
-      mock(
-        {
-          'package.json': JSON.stringify({ name: 'nested-app' }),
-          'yarn.lock': '',
-          '../package-lock.json': '',
-        },
-        {
-          createCwd: true,
-          createTmp: true,
-        },
-      );
+      writeFiles({
+        'package.json': JSON.stringify({ name: 'nested-app' }),
+        'yarn.lock': '',
+        '../package-lock.json': '',
+      });
 
       const man = await getPackageManager({});
 
