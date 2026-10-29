@@ -17,6 +17,7 @@ const createLogger = require('./create-logger');
 const createRpcClient = require('./create-rpc-client');
 const environmentTools = require('./environment');
 const schemaTools = require('./schema');
+const redactUrlSecrets = require('./redact-url-secrets');
 const wrapFetchWithLogger = require('./fetch-logger');
 
 const isDefinedPrimitive = (value) => {
@@ -194,7 +195,16 @@ const createLambdaHandler = (appRawOrPath) => {
     const logger = createLogger(event, { logBuffer });
 
     const logErrorAndReturn = async (logMsg, logData, err) => {
-      await logger(logMsg, logData);
+      // Redact before logging, so secrets in URLs never reach logs or the response.
+      if (err && typeof err === 'object') {
+        if (typeof err.message === 'string') {
+          err.message = redactUrlSecrets(err.message);
+        }
+        if (typeof err.stack === 'string') {
+          err.stack = redactUrlSecrets(err.stack);
+        }
+      }
+      await logger(redactUrlSecrets(logMsg), logData);
 
       // Check for `.message` in case someone did `throw "My Error"`
       if (!constants.IS_TESTING && err && !err.doNotContextify && err.message) {
