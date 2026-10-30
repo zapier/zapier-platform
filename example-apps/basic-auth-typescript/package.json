@@ -9,7 +9,7 @@
     "_zapier-build": "rimraf ./dist ./build && tsc"
   },
   "dependencies": {
-    "zapier-platform-core": "19.2.1"
+    "zapier-platform-core": "19.3.0"
   },
   "devDependencies": {
     "rimraf": "^5.0.10",
