@@ -22,7 +22,7 @@ const latestVersion = versionStore[versionStore.length - 1];
 const NODE_VERSION = latestVersion.nodeVersion;
 const NPM_VERSION = latestVersion.npmVersion;
 const LAMBDA_VERSION = `v${NODE_VERSION}`;
-const NODE_VERSION_CLI_REQUIRES = '>=22'; // should be the oldest non-ETL version
+const NODE_VERSION_CLI_REQUIRES = '^22.18.0 || >=24.11.0'; // must match yeoman-generator's engines
 const AUTH_KEY = 'deployKey';
 const ANALYTICS_KEY = 'analyticsMode';
 const ANALYTICS_MODES = {
