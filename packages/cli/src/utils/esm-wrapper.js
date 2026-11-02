@@ -1,32 +1,44 @@
 /**
  * CommonJS wrapper for ESM-only modules
- * This allows us to use yeoman-environment v4+, yeoman-generator v7+, and update-notifier v7+ from CommonJS code without downgrading
+ * This allows us to use mem-fs, mem-fs-editor, @yeoman/conflicter, and update-notifier v7+ from CommonJS code without downgrading
  */
 
-let yeomanEnvironment = null;
-let yeomanGenerator = null;
+let memFs = null;
+let memFsEditor = null;
+let conflicter = null;
 let updateNotifier = null;
 
 /**
- * Lazy-load yeoman-environment using dynamic import
- * @returns {Promise<Object>} The yeoman-environment module
+ * Lazy-load mem-fs using dynamic import
+ * @returns {Promise<Object>} The mem-fs module
  */
-async function getYeomanEnvironment() {
-  if (!yeomanEnvironment) {
-    yeomanEnvironment = await import('yeoman-environment');
+async function getMemFs() {
+  if (!memFs) {
+    memFs = await import('mem-fs');
   }
-  return yeomanEnvironment;
+  return memFs;
 }
 
 /**
- * Lazy-load yeoman-generator using dynamic import
- * @returns {Promise<Object>} The yeoman-generator module
+ * Lazy-load mem-fs-editor using dynamic import
+ * @returns {Promise<Object>} The mem-fs-editor module
  */
-async function getYeomanGenerator() {
-  if (!yeomanGenerator) {
-    yeomanGenerator = await import('yeoman-generator');
+async function getMemFsEditor() {
+  if (!memFsEditor) {
+    memFsEditor = await import('mem-fs-editor');
   }
-  return yeomanGenerator;
+  return memFsEditor;
+}
+
+/**
+ * Lazy-load @yeoman/conflicter using dynamic import
+ * @returns {Promise<Object>} The @yeoman/conflicter module
+ */
+async function getConflicter() {
+  if (!conflicter) {
+    conflicter = await import('@yeoman/conflicter');
+  }
+  return conflicter;
 }
 
 /**
@@ -41,32 +53,34 @@ async function getUpdateNotifier() {
 }
 
 /**
- * Create a yeoman environment (async version of yeoman.createEnv())
- * @param {Object} options - Environment options
- * @returns {Promise<Object>} Environment instance
+ * Create an in-memory file editor that writes nothing until it is committed
+ * @returns {Promise<Object>} mem-fs-editor instance
  */
-async function createEnv(options) {
-  const yeoman = await getYeomanEnvironment();
-  return yeoman.createEnv(options);
+async function createFileEditor() {
+  const [memFsModule, memFsEditorModule] = await Promise.all([
+    getMemFs(),
+    getMemFsEditor(),
+  ]);
+  return memFsEditorModule.create(memFsModule.create());
 }
 
 /**
- * Get the Generator class (async version of require('yeoman-generator'))
- * @returns {Promise<Function>} The Generator class
+ * Create a transform that asks before it overwrites a changed file
+ * @param {Object} adapter - Provides prompt, separator, queue, and log
+ * @returns {Promise<Object>} File transform stream
  */
-async function getGenerator() {
-  const yeomanGen = await getYeomanGenerator();
-  return yeomanGen.default;
+async function createConflicterTransform(adapter) {
+  const conflicterModule = await getConflicter();
+  return conflicterModule.createConflicterTransform(adapter);
 }
 
 /**
- * Create a generator class factory that extends the yeoman Generator
- * @param {Function} generatorFactory - A function that takes Generator class and returns a class extending it
- * @returns {Promise<Function>} The generated class
+ * Create a transform that skips files listed in a .yo-resolve file
+ * @returns {Promise<Object>} File transform stream
  */
-async function createGeneratorClass(generatorFactory) {
-  const Generator = await getGenerator();
-  return generatorFactory(Generator);
+async function createYoResolveTransform() {
+  const conflicterModule = await getConflicter();
+  return conflicterModule.createYoResolveTransform();
 }
 
 /**
@@ -80,7 +94,8 @@ async function createUpdateNotifier(options) {
 }
 
 module.exports = {
-  createEnv,
-  createGeneratorClass,
+  createConflicterTransform,
+  createFileEditor,
   createUpdateNotifier,
+  createYoResolveTransform,
 };
