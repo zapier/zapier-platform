@@ -101,6 +101,36 @@ describe('create http patch', () => {
     });
   });
 
+  it('should replace an explicitly empty callback slot without adding an extra argument', () => {
+    const response = new EventEmitter();
+    response.statusCode = 200;
+    response.headers = { 'content-type': JSON_TYPE };
+
+    let forwardedArgs;
+    const fakeHttpModule = {
+      request: (...args) => {
+        forwardedArgs = args;
+        args[2](response);
+        response.emit('end');
+      },
+    };
+
+    const url = 'https://fake.zapier.com/assemblies';
+    const options = {
+      method: 'PATCH',
+      headers: { 'content-type': JSON_TYPE },
+    };
+    const httpPatch = createHttpPatch({});
+    httpPatch(fakeHttpModule, () => {});
+
+    fakeHttpModule.request(url, options, undefined);
+
+    should(forwardedArgs).have.length(3);
+    should(forwardedArgs[0]).eql(url);
+    should(forwardedArgs[1]).equal(options);
+    should(typeof forwardedArgs[2]).eql('function');
+  });
+
   it('should append a logging callback without dropping URL options', () => {
     const response = new EventEmitter();
     response.statusCode = 200;
