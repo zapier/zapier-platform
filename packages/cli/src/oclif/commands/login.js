@@ -36,7 +36,7 @@ const isValidTotpCode = (i) => {
 const isValidDeployKey = (k) =>
   k.length === 32
     ? true
-    : `Must be a 32-character code copied from from ${DEPLOY_KEY_DASH_URL}`;
+    : `Must be the 32-character deploy key shown when you created it at ${DEPLOY_KEY_DASH_URL}`;
 
 /**
  * there are a few says that someone might log into zapier:
@@ -49,7 +49,7 @@ const isValidDeployKey = (k) =>
 class LoginCommand extends BaseCommand {
   promptForDeployKey() {
     this.log(
-      `To generate a deploy key, go to ${DEPLOY_KEY_DASH_URL} and create/copy a key, then paste the result below.`,
+      `To get a deploy key, go to ${DEPLOY_KEY_DASH_URL} and create a new one. Copy it right away, since it is only shown once. Then paste it below.`,
     );
     return this.prompt('Paste your Deploy Key here:', {
       validate: isValidDeployKey,
