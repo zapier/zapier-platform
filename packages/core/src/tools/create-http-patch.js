@@ -26,17 +26,28 @@ const createHttpPatch = (event) => {
       const callbackIndex = args.findIndex((arg) => typeof arg === 'function');
       const callback = callbackIndex === -1 ? undefined : args[callbackIndex];
       const [input, maybeOptions] = args;
+      const isUrlInput = typeof input === 'string' || input instanceof URL;
+      // Preserve an explicitly supplied empty callback slot as well. For
+      // request(url, options), the callback belongs in the third argument;
+      // for request(options), it belongs in the second argument.
+      const callbackArgIndex =
+        callbackIndex !== -1
+          ? callbackIndex
+          : args.length === 2 && isUrlInput && maybeOptions && typeof maybeOptions === 'object'
+            ? 2
+            : args.length === 2
+              ? 1
+              : args.length;
 
       // Node supports both request(options[, callback]) and
       // request(url[, options][, callback]). Normalize URL forms for logging,
       // but keep the original arguments when forwarding the request.
-      const options =
-        typeof input === 'string' || input instanceof URL
-          ? {
-              ...urlToHttpOptions(input instanceof URL ? input : new URL(input)),
-              ...(maybeOptions && typeof maybeOptions === 'object' ? maybeOptions : {}),
-            }
-          : input;
+      const options = isUrlInput
+        ? {
+            ...urlToHttpOptions(input instanceof URL ? input : new URL(input)),
+            ...(maybeOptions && typeof maybeOptions === 'object' ? maybeOptions : {}),
+          }
+        : input;
 
       let requestUrl;
       if (typeof options === 'string') {
@@ -146,11 +157,7 @@ const createHttpPatch = (event) => {
       };
 
       const forwardedArgs = args.slice();
-      if (callbackIndex === -1) {
-        forwardedArgs.push(newCallback);
-      } else {
-        forwardedArgs[callbackIndex] = newCallback;
-      }
+      forwardedArgs[callbackArgIndex] = newCallback;
 
       return originalRequest(...forwardedArgs);
     };
