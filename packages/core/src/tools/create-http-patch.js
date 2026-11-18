@@ -33,11 +33,9 @@ const createHttpPatch = (event) => {
       const callbackArgIndex =
         callbackIndex !== -1
           ? callbackIndex
-          : args.length === 2 && isUrlInput && maybeOptions && typeof maybeOptions === 'object'
+          : isUrlInput && maybeOptions && typeof maybeOptions === 'object'
             ? 2
-            : args.length === 2
-              ? 1
-              : args.length;
+            : 1;
 
       // Node supports both request(options[, callback]) and
       // request(url[, options][, callback]). Normalize URL forms for logging,
