@@ -60,6 +60,113 @@ describe('create http patch', () => {
     should(logger2Buffer).deepEqual(['418 GET https://fake.zapier.com/bar']);
   });
 
+  it('should preserve the URL, options, and callback overload', () => {
+    const response = new EventEmitter();
+    response.statusCode = 201;
+    response.headers = { 'content-type': JSON_TYPE };
+
+    let forwardedArgs;
+    let callbackCalled = false;
+    const fakeHttpModule = {
+      request: (...args) => {
+        forwardedArgs = args;
+        const responseCallback = args[args.length - 1];
+        responseCallback(response);
+        response.emit('end');
+      },
+    };
+
+    const url = new URL('https://fake.zapier.com/assemblies');
+    const options = {
+      method: 'POST',
+      headers: { 'content-type': JSON_TYPE },
+      timeout: 1000,
+    };
+    const logBuffer = [];
+    const httpPatch = createHttpPatch({});
+    httpPatch(fakeHttpModule, (_, data) => logBuffer.push(data));
+
+    fakeHttpModule.request(url, options, (res) => {
+      callbackCalled = res === response;
+    });
+
+    should(forwardedArgs[0]).equal(url);
+    should(forwardedArgs[1]).equal(options);
+    should(typeof forwardedArgs[2]).eql('function');
+    should(callbackCalled).eql(true);
+    should(logBuffer[0]).containEql({
+      request_method: 'POST',
+      request_url: 'https://fake.zapier.com/assemblies',
+      request_headers: options.headers,
+    });
+  });
+
+  it('should replace an explicitly empty callback slot without adding an extra argument', () => {
+    const response = new EventEmitter();
+    response.statusCode = 200;
+    response.headers = { 'content-type': JSON_TYPE };
+
+    let forwardedArgs;
+    const fakeHttpModule = {
+      request: (...args) => {
+        forwardedArgs = args;
+        args[2](response);
+        response.emit('end');
+      },
+    };
+
+    const url = 'https://fake.zapier.com/assemblies';
+    const options = {
+      method: 'PATCH',
+      headers: { 'content-type': JSON_TYPE },
+    };
+    const httpPatch = createHttpPatch({});
+    httpPatch(fakeHttpModule, () => {});
+
+    fakeHttpModule.request(url, options, undefined);
+
+    should(forwardedArgs).have.length(3);
+    should(forwardedArgs[0]).eql(url);
+    should(forwardedArgs[1]).equal(options);
+    should(typeof forwardedArgs[2]).eql('function');
+  });
+
+  it('should append a logging callback without dropping URL options', () => {
+    const response = new EventEmitter();
+    response.statusCode = 200;
+    response.headers = { 'content-type': JSON_TYPE };
+
+    let forwardedArgs;
+    const fakeHttpModule = {
+      request: (...args) => {
+        forwardedArgs = args;
+        const responseCallback = args[args.length - 1];
+        responseCallback(response);
+        response.emit('end');
+      },
+    };
+
+    const url = 'https://fake.zapier.com/assemblies';
+    const options = {
+      method: 'PUT',
+      headers: { 'content-type': JSON_TYPE },
+    };
+    const logBuffer = [];
+    const httpPatch = createHttpPatch({});
+    httpPatch(fakeHttpModule, (_, data) => logBuffer.push(data));
+
+    fakeHttpModule.request(url, options);
+
+    should(forwardedArgs[0]).eql(url);
+    should(forwardedArgs[1]).equal(options);
+    should(typeof forwardedArgs[2]).eql('function');
+    should(logBuffer[0]).containEql({
+      request_method: 'PUT',
+      request_url: url,
+      request_headers: options.headers,
+    });
+  });
+
   it('should log request/response data for allowlisted content-types', () => {
     // Arrange
     const fakeHttpModule = {

@@ -1,4 +1,5 @@
 const zlib = require('zlib');
+const { URL, urlToHttpOptions } = require('node:url');
 const _ = require('lodash');
 
 const { ALLOWED_HTTP_DATA_CONTENT_TYPES, getContentType } = require('./http');
@@ -21,10 +22,31 @@ const createHttpPatch = (event) => {
     object.patchedByZapier = true;
 
     // Proxy the request method
-    object.request = (options, callback) => {
-      // `options` can be an object or a string. If options is a string, it is
-      // automatically parsed with url.parse().
-      // See https://nodejs.org/docs/latest-v14.x/api/http.html#http_http_request_options_callback
+    object.request = (...args) => {
+      const callbackIndex = args.findIndex((arg) => typeof arg === 'function');
+      const callback = callbackIndex === -1 ? undefined : args[callbackIndex];
+      const [input, maybeOptions] = args;
+      const isUrlInput = typeof input === 'string' || input instanceof URL;
+      // Preserve an explicitly supplied empty callback slot as well. For
+      // request(url, options), the callback belongs in the third argument;
+      // for request(options), it belongs in the second argument.
+      const callbackArgIndex =
+        callbackIndex !== -1
+          ? callbackIndex
+          : isUrlInput && maybeOptions && typeof maybeOptions === 'object'
+            ? 2
+            : 1;
+
+      // Node supports both request(options[, callback]) and
+      // request(url[, options][, callback]). Normalize URL forms for logging,
+      // but keep the original arguments when forwarding the request.
+      const options = isUrlInput
+        ? {
+            ...urlToHttpOptions(input instanceof URL ? input : new URL(input)),
+            ...(maybeOptions && typeof maybeOptions === 'object' ? maybeOptions : {}),
+          }
+        : input;
+
       let requestUrl;
       if (typeof options === 'string') {
         requestUrl = options;
@@ -45,12 +67,12 @@ const createHttpPatch = (event) => {
 
       // Ignore logger requests
       if (requestUrl.indexOf(loggerUrl) !== -1) {
-        return originalRequest(options, callback);
+        return originalRequest(...args);
       }
 
       // Ignore requests made via the request client (z.request)
       if (_.get(options.headers, 'user-agent', []).indexOf('Zapier') !== -1) {
-        return originalRequest(options, callback);
+        return originalRequest(...args);
       }
 
       // Proxy the callback to get the response
@@ -132,7 +154,10 @@ const createHttpPatch = (event) => {
         }
       };
 
-      return originalRequest(options, newCallback);
+      const forwardedArgs = args.slice();
+      forwardedArgs[callbackArgIndex] = newCallback;
+
+      return originalRequest(...forwardedArgs);
     };
   };
 
