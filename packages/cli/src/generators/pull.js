@@ -2,54 +2,56 @@ const colors = require('colors/safe');
 const debug = require('debug')('zapier:pull');
 const inquirer = require('inquirer');
 const path = require('path');
-const { createGeneratorClass } = require('../utils/esm-wrapper');
 
-const maybeOverwriteFiles = async (gen) => {
-  const dstDir = gen.options.dstDir;
-  const srcDir = gen.options.srcDir;
-  for (const file of gen.options.sourceFiles) {
-    gen.fs.copy(path.join(srcDir, file), path.join(dstDir, file), gen.options);
-  }
-};
+const { createFileEditor } = require('../utils/esm-wrapper');
+const { commitFiles } = require('./commit-files');
 
-// Export a factory function that creates the PullGenerator class
-module.exports = createGeneratorClass((Generator) => {
-  return class PullGenerator extends Generator {
-    initializing() {
-      debug('SRC', this.options.sourceFiles);
-    }
-
-    prompting() {
-      const prompts = [
-        {
-          type: 'confirm',
-          name: 'confirm',
-          message: `Warning: You are about to overwrite existing files.
+const confirmOverwrite = async () => {
+  const prompts = [
+    {
+      type: 'confirm',
+      name: 'confirm',
+      message: `Warning: You are about to overwrite existing files.
 
 Before proceeding, please make sure you have saved your work. Consider creating a backup or saving your current state in a git branch.
 
-If presented with a series of options ('ynarxdeiH'), you may
+If presented with a series of options ('ynadxreiH'), you may
 press Enter to view more details about each option. For example, 'x' will abort the process.
 
 Do you want to continue?`,
-          default: false,
-        },
-      ];
+      default: false,
+    },
+  ];
 
-      return inquirer.prompt(prompts).then((answers) => {
-        if (!answers.confirm) {
-          this.log(colors.green('zapier pull cancelled'));
-          process.exit(1);
-        }
-      });
-    }
+  const answers = await inquirer.prompt(prompts);
+  if (!answers.confirm) {
+    console.log(colors.green('zapier pull cancelled'));
+    process.exit(1);
+  }
+};
 
-    writing() {
-      maybeOverwriteFiles(this);
-    }
+/**
+ * Copies the pulled source files over the local integration files, asking
+ * before it overwrites a file that has different contents.
+ * @param {object} options
+ * @param {string[]} options.sourceFiles paths relative to `srcDir`
+ * @param {string} options.srcDir directory that holds the pulled source files
+ * @param {string} options.dstDir directory of the local integration
+ */
+const pullFiles = async ({ sourceFiles, srcDir, dstDir }) => {
+  debug('SRC', sourceFiles);
 
-    end() {
-      this.log(colors.green('zapier pull completed successfully'));
-    }
-  };
-});
+  await confirmOverwrite();
+
+  const editor = await createFileEditor();
+  for (const file of sourceFiles) {
+    editor.copy(path.join(srcDir, file), path.join(dstDir, file));
+  }
+  await commitFiles(editor);
+
+  console.log(colors.green('zapier pull completed successfully'));
+};
+
+module.exports = {
+  pullFiles,
+};

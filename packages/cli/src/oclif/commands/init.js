@@ -1,13 +1,13 @@
 const { join } = require('path');
 
 const { Args, Flags } = require('@oclif/core');
-const { createEnv } = require('../../utils/esm-wrapper');
 
 const BaseCommand = require('../ZapierBaseCommand');
 const { buildFlags } = require('../buildFlags');
 const {
   TEMPLATE_CHOICES,
-  ProjectGenerator: ProjectGeneratorPromise,
+  generateProject,
+  getProjectOptions,
 } = require('../../generators');
 
 class InitCommand extends BaseCommand {
@@ -15,11 +15,13 @@ class InitCommand extends BaseCommand {
     const { path } = this.args;
     const { template, module, language } = this.flags;
 
-    const env = await createEnv(); // await needed because createEnv() uses dynamic import() for ESM-only yeoman-environment
-    const ProjectGenerator = await ProjectGeneratorPromise; // await needed because generator classes are now created via ESM dynamic import
-    env.registerStub(ProjectGenerator, 'zapier:integration');
-
-    await env.run('zapier:integration', { path, template, module, language });
+    const options = await getProjectOptions({
+      path,
+      template,
+      module,
+      language,
+    });
+    await generateProject(options);
 
     this.log();
     this.log(`A new integration has been created in directory "${path}".`);

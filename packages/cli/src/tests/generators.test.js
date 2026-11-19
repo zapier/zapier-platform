@@ -3,18 +3,19 @@ const os = require('os');
 const path = require('path');
 
 const { expect } = require('chai');
-const { createEnv } = require('../utils/esm-wrapper');
 const {
-  ProjectGenerator,
+  generateProject,
+  getProjectOptions,
   TEMPLATE_CHOICES,
   ESM_SUPPORTED_TEMPLATES,
   TS_SUPPORTED_TEMPLATES,
 } = require('../generators');
 
-describe('ProjectGenerator', () => {
+describe('generators', () => {
   describe('ESM template filtering', () => {
     /**
-     * Helper function to test template filtering by running the actual generator
+     * Runs getProjectOptions with a fake prompt that records the questions it
+     * was asked
      */
     async function testTemplateFiltering(options = {}) {
       const testResult = {
@@ -26,48 +27,26 @@ describe('ProjectGenerator', () => {
         modulePromptCalled: false,
       };
 
-      // Create a Yeoman environment
-      const env = await createEnv();
+      const prompt = async (questions) => {
+        if (questions[0].name === 'template') {
+          testResult.promptChoices = questions[0].choices;
+          testResult.promptDefault = questions[0].default;
+          testResult.promptCalled = true;
 
-      // Create a custom generator class that extends ProjectGenerator and captures prompt calls
-      const ResolvedProjectGenerator = await ProjectGenerator;
-      const TestProjectGenerator = class extends ResolvedProjectGenerator {
-        // Override only the prompt method to capture what would be shown
-        async prompt(questions) {
-          if (questions && questions.length > 0) {
-            if (questions[0].name === 'template') {
-              testResult.promptChoices = questions[0].choices;
-              testResult.promptDefault = questions[0].default;
-              testResult.promptCalled = true;
+          // Return the first choice to simulate user selection
+          return { template: questions[0].choices[0] };
+        } else if (questions[0].name === 'module') {
+          testResult.modulePromptChoices = questions[0].choices;
+          testResult.modulePromptDefault = questions[0].default;
+          testResult.modulePromptCalled = true;
 
-              // Return the first choice to simulate user selection
-              return { template: questions[0].choices[0] };
-            } else if (questions[0].name === 'module') {
-              testResult.modulePromptChoices = questions[0].choices;
-              testResult.modulePromptDefault = questions[0].default;
-              testResult.modulePromptCalled = true;
-
-              // Return 'esm' to simulate user selection
-              return { module: 'esm' };
-            }
-          }
-          return {};
+          // Return 'esm' to simulate user selection
+          return { module: 'esm' };
         }
-
-        // Use this hook to ensure prompting is called
-        async writing() {
-          await this.prompting();
-        }
+        return {};
       };
 
-      // Register the test generator
-      env.registerStub(TestProjectGenerator, 'test:project');
-
-      // Run the generator through the environment
-      await env.run('test:project', {
-        path: '/tmp/test',
-        ...options,
-      });
+      await getProjectOptions({ path: '/tmp/test', ...options }, prompt);
 
       return testResult;
     }
@@ -114,7 +93,7 @@ describe('ProjectGenerator', () => {
         template: 'minimal',
       });
 
-      // When template is specified, the generator should skip template prompting
+      // When template is specified, template prompting is skipped
       expect(result.promptCalled).to.equal(false);
     });
 
@@ -181,13 +160,13 @@ describe('ProjectGenerator', () => {
 
     const generate = async (template) => {
       const projectDir = path.join(tmpDir, template);
-      const env = await createEnv();
-      env.registerStub(await ProjectGenerator, 'test:project');
-      await env.run('test:project', {
-        path: projectDir,
-        template,
-        language: 'typescript',
-      });
+      await generateProject(
+        await getProjectOptions({
+          path: projectDir,
+          template,
+          language: 'typescript',
+        }),
+      );
       return fs.readJsonSync(path.join(projectDir, 'package.json'));
     };
 
