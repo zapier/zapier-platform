@@ -8,6 +8,14 @@ const simplePerform = (async (z, bundle) => {
   return [{ id: '1', name: 'test' }];
 }) satisfies PollingTriggerPerform;
 
+const numericIdPerform = (async (z, bundle) => {
+  return [{ id: 123, name: 'numeric id' }];
+}) satisfies PollingTriggerPerform;
+
+expectAssignable<PollingTriggerPerform<{}, { id: number; name: string }>>(
+  numericIdPerform,
+);
+
 expectAssignable<PollingTriggerPerform<{}, { id: string; name: string }>>(
   simplePerform,
 );
