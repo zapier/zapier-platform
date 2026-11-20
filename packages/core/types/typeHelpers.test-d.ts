@@ -107,6 +107,20 @@ const basicTrigger = defineTrigger({
   },
 });
 
+const numericIdTrigger = defineTrigger({
+  key: 'numericIdTrigger',
+  noun: 'Numeric ID Trigger Noun',
+  display: { label: 'Numeric ID Trigger Display' },
+  operation: {
+    type: 'polling',
+    perform: async () => [{ id: 123, name: 'numeric id' }],
+    outputFields: [
+      { key: 'id', type: 'integer', primary: true },
+      { key: 'name', type: 'string' },
+    ],
+  },
+});
+
 // "Raw" Trigger uses only raw types and uses no `define` functions,
 // (showing why `define` functions are better).
 const rawInputFields = [
