@@ -224,6 +224,7 @@ const app = defineApp({
   },
   triggers: {
     [basicTrigger.key]: basicTrigger,
+    [numericIdTrigger.key]: numericIdTrigger,
     [rawTrigger.key]: rawTrigger,
     [expandedTrigger.key]: expandedTrigger,
   },
