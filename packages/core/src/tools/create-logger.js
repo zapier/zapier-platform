@@ -5,7 +5,6 @@ const { Transform } = require('stream');
 const { parse: querystringParse } = require('querystring');
 
 const _ = require('lodash');
-const { AbortController } = require('node-abort-controller');
 
 const request = require('./request-client-internal');
 const { simpleTruncate, recurseReplace, truncateData } = require('./data');
