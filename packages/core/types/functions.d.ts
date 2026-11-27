@@ -24,7 +24,7 @@ type AutoBundle<$InputDataOrFields extends DefaultInputData | InputField[]> =
  */
 export type PollingTriggerPerform<
   $InputDataOrFields extends DefaultInputData | InputField[] = DefaultInputData,
-  $Return extends {} = { id: string },
+  $Return extends {} = { id: string | number },
 > = (
   z: ZObject,
   bundle: AutoBundle<$InputDataOrFields>,
